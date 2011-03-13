@@ -1,0 +1,14 @@
+2011-03-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+	* First release with the following features:
+	  * multi-dimension template containers with unlimited number of
+	    dimensions to store points in space,
+	  * dimensions may be of different types,
+          * static or dynamic time determination of the number of dimensions,
+	  * O(log(n)) class of complexity on insertion and removal,
+	  * use custom predicate to define a range of elements,
+	  * STL-compatible iterators that go over that range of elements,
+	  * flexible definition of a metric space for elements in the container,
+	  * STL-compatible iterators going from the nearest to the furthest
+	    neighbr of a point according to the metric space applied.
+

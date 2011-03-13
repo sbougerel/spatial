@@ -1,0 +1,6 @@
+cmake_minimum_required (VERSION 2.6)
+project (kdtree_verify) 
+#set(CMAKE_CXX_FLAGS "-O4 -Wall -pedantic -Wextra -ansi")
+set(CMAKE_CXX_FLAGS "-O0 -ggdb -Wall -pedantic -Wextra -ansi")
+add_executable (verify verify.cpp)
+target_link_libraries(verify boost_unit_test_framework)
