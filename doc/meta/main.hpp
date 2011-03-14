@@ -2,6 +2,7 @@
 \mainpage Spatial Manual
 
 - \ref intro
+- \ref source
 - \subpage changelog
 - \subpage install
 - \subpage structure
@@ -44,6 +45,32 @@ Features include:
 - flexible definition of a metric space for elements in the container,
 - \STL-compatible iterators going from the nearest to the furthest neighbor
   of a point according to the metric space applied.
+
+\section source Getting the Source and Sending Feedbacks
+
+You can access all the above from the \project_page. Some packages are
+available at the \project_download. You can file issues or send feedbacks
+on the \project_issue.
+
+The packages on the \project_download include the entire content of the
+source tree, plus the generated documentation files.
+
+If you have a Git client and which to use this instead of the packages, you
+can clone the repository using the following command:
+
+\code
+git clone git://spatial.git.sourceforge.net/gitroot/spatial/spatial
+\endcode
+
+The above will only give you readonly access. If you wish to become a
+full-time contributor, you will need to register an account with
+Sourceforge.net. Thereafter, please send a mail to the current project
+administrators, listed on the \project_page. Once your access is granted, you
+can use the following command to clone the repository:
+
+\code
+git clone ssh://<your_name>@spatial.git.sourceforge.net/gitroot/spatial/spatial 
+\endcode
 
 \prev \ref intro \next \ref changelog \endprevnext
 */

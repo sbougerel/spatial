@@ -214,7 +214,10 @@ ALIASES = "libkdtree=<a href=\"http://libkdtree.alioth.debian.org/\"><b>libkdtre
 	  "project=<a href=\"http://projectpage.willsee\"><b>Project page</b></a>" \
 	  "prev=<div style=\"text-align:right\">Previous:&nbsp;<b>" \
 	  "next=</b>Next:&nbsp;<b>" \
-	  "endprevnext=</b></div>"
+	  "endprevnext=</b></div>" \
+	  "project_page=<a href=\"http://sourceforge.net/projects/spatial/\"><b>Project Page on Sourceforge</b></a>" \
+	  "project_download=<a href=\"http://sourceforge.net/projects/spatial/files/\"><b>Project Download Page on Sourceforge</b></a>" \
+	  "project_issue=<a href=\"http://sourceforge.net/projects/spatial/support\"><b>Project Issue Trackers on Sourceforge</b></a>"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C 
 # sources only. Doxygen will then generate output that is more tailored for C. 
