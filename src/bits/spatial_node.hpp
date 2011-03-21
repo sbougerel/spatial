@@ -208,24 +208,21 @@ namespace spatial
      *  @brief  A bidirectional iterator traversing all node in the tree in
      *  symetric order.
      */
-    template<typename Key, typename Node, bool Constant>
+    template<typename Key, typename Node>
     struct Node_iterator
     {
       typedef Key                              value_type;
-      typedef typename details::condition
-      <Constant, const Key&, Key&>::type       reference;
-      typedef typename details::condition
-      <Constant, const Key*, Key*>::type       pointer;
+      typedef Key&                             reference;
+      typedef Key*                             pointer;
       typedef std::ptrdiff_t                   difference_type;
       typedef std::bidirectional_iterator_tag  iterator_category;
 
     private:
-      typedef Node_iterator<Key, Node, Constant>     Self;
-      typedef Node_base::Base_ptr                    Base_ptr;
-      typedef Node*                                  Link_type;
+      typedef Node_iterator<Key, Node>         Self;
+      typedef Node_base::Base_ptr              Base_ptr;
+      typedef Node*                            Link_type;
 
     public:
-      explicit
       Node_iterator() : node() { }
 
       explicit
@@ -280,7 +277,7 @@ namespace spatial
       Base_ptr node;
     };
 
-    template<typename Key, typename Node, bool Constant>
+    template<typename Key, typename Node>
     struct Const_Node_iterator
     {
       typedef const Key                         value_type;
@@ -291,12 +288,11 @@ namespace spatial
 
     private:
       typedef Const_Node_iterator
-      <Key, Node, Constant>             Self;
-      typedef Node_base::Const_Base_ptr Base_ptr;
-      typedef const Node*               Link_type;
+      <Key, Node>                               Self;
+      typedef Node_base::Const_Base_ptr         Base_ptr;
+      typedef const Node*                       Link_type;
 
-      typedef Node_iterator
-      <Key, Node, Constant>             iterator;
+      typedef Node_iterator<Key, Node>          iterator;
 
     public:
       Const_Node_iterator() : node() { }

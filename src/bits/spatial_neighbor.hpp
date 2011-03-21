@@ -323,17 +323,17 @@ namespace spatial
      *  @brief  A mutable iterator based on Neighbor_iterator_base.
      */
     template <typename Rank, typename Key, typename Node,
-	      typename Compare, typename Geometry, bool Constant>
+	      typename Compare, typename Geometry>
     struct Neighbor_iterator
       : Neighbor_iterator_base
-    <Rank, Key, Node, Compare, Geometry, Constant,
-     Neighbor_iterator<Rank, Key, Node, Compare, Geometry, Constant> >
+    <Rank, Key, Node, Compare, Geometry, false,
+     Neighbor_iterator<Rank, Key, Node, Compare, Geometry> >
     {
     private:
       typedef Neighbor_iterator_base
-      <Rank, Key, Node, Compare, Geometry, Constant,
+      <Rank, Key, Node, Compare, Geometry, false,
        Neighbor_iterator
-       <Rank, Key, Node, Compare, Geometry, Constant> >   Base;
+       <Rank, Key, Node, Compare, Geometry> >   Base;
 
     public:
       Neighbor_iterator(const Rank& rank, const Compare& compare,
@@ -352,20 +352,20 @@ namespace spatial
      *  @brief  A constant iterator based on Neighbor_iterator_base.
      */
     template <typename Rank, typename Key, typename Node,
-	      typename Compare, typename Geometry, bool Constant>
+	      typename Compare, typename Geometry>
     struct Const_Neighbor_iterator
       : Neighbor_iterator_base
     <Rank, Key, Node, Compare, Geometry, true,
-     Const_Neighbor_iterator<Rank, Key, Node, Compare, Geometry, Constant> >
+     Const_Neighbor_iterator<Rank, Key, Node, Compare, Geometry> >
     {
     private:
       typedef Neighbor_iterator
-      <Rank, Key, Node, Compare, Geometry, Constant>      iterator;
+      <Rank, Key, Node, Compare, Geometry>      iterator;
 
       typedef Neighbor_iterator_base
       <Rank, Key, Node, Compare, Geometry, true,
        Const_Neighbor_iterator
-       <Rank, Key, Node, Compare, Geometry, Constant> >   Base;
+       <Rank, Key, Node, Compare, Geometry> >   Base;
 
     public:
       Const_Neighbor_iterator(const Rank& rank, const Compare& compare,
@@ -402,10 +402,7 @@ namespace spatial
 	 typename container_traits<Container>::key_type,
 	 typename container_traits<Container>::node_type,
 	 typename container_traits<Container>::compare_type,
-	 Geometry,
-	 spatial::details::constant_required
-	 <typename container_traits<Container>::key_type>::value
-	 >
+	 Geometry>
 	type;
       };
 
@@ -417,10 +414,7 @@ namespace spatial
 	 typename container_traits<Container>::key_type,
 	 typename container_traits<Container>::node_type,
 	 typename container_traits<Container>::compare_type,
-	 Geometry,
-	 spatial::details::constant_required
-	 <typename container_traits<Container>::key_type>::value
-	 >
+	 Geometry>
 	type;
       };
 
@@ -560,12 +554,15 @@ namespace spatial
       typedef typename traits_type::difference_type     difference_type;
       typedef typename traits_type::allocator_type      allocator_type;
       typedef typename traits_type::compare_type        compare_type;
-      typedef typename traits_type::key_dimension_type  key_dimension_type;
+      typedef typename traits_type::rank_type           rank_type;
 
       typedef typename Geometry::distance_type          distance_type;
 
-      typedef typename details::neighbor_iterator
-      <Container, Geometry>::type                       iterator;
+      typedef typename spatial::details::condition
+      <traits_type::const_iterator_tag::value,
+       typename details::const_neighbor_iterator<Container, Geometry>::type,
+       typename details::neighbor_iterator<Container, Geometry>::type
+       >::type                                          iterator;
       typedef typename details::const_neighbor_iterator
       <Container, Geometry>::type                       const_iterator;
       typedef std::reverse_iterator<iterator>           reverse_iterator;
@@ -670,7 +667,7 @@ namespace spatial
       typedef typename traits_type::difference_type     difference_type;
       typedef typename traits_type::allocator_type      allocator_type;
       typedef typename traits_type::compare_type        compare_type;
-      typedef typename traits_type::key_dimension_type  key_dimension_type;
+      typedef typename traits_type::rank_type           rank_type;
 
       typedef typename Geometry::distance_type          distance_type;
 

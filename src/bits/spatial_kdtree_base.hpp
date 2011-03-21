@@ -24,6 +24,109 @@ namespace spatial
   namespace details
   {
 
+    /*
+     * Define the equal_iterator type that is used in the base tree structures
+     * to search through a set of object of equivalent coordinates.
+     */
+    template<typename Container>
+    struct equal_iterator
+    {
+      typedef spatial::details::Range_iterator
+      <typename container_traits<Container>::rank_type,
+       typename container_traits<Container>::key_type,
+       typename container_traits<Container>::node_type,
+       equal_bounds<typename container_traits<Container>::key_type,
+		    typename container_traits<Container>::compare_type> >
+      type;
+    };
+
+    /*
+     * Define the const_equal_iterator type that is used in the base tree
+     * structures to search through a set of object of equivalent coordinates.
+     */
+    template<typename Container>
+    struct const_equal_iterator
+    {
+      typedef spatial::details::Const_Range_iterator
+      <typename container_traits<Container>::rank_type,
+       typename container_traits<Container>::key_type,
+       typename container_traits<Container>::node_type,
+       equal_bounds<typename container_traits<Container>::key_type,
+		    typename container_traits<Container>::compare_type> >
+	type;
+    };
+
+    /*
+     * Forward declaration spell.
+     */
+    template <typename Rank, typename Key, typename Node,
+	      typename Compare, typename Alloc, bool ConstantIterator>
+    class Kdtree_base;
+
+    /*
+     * Accessor to header of the kd-tree. These functions are useful outside of
+     * the k-d tree to initialize iterators.
+     */
+    template <typename Rank, typename Key, typename Node,
+	      typename Compare, typename Alloc, bool ConstantIterator>
+    inline typename Kdtree_base<Rank, Key, Node, Compare, Alloc,
+				ConstantIterator>::node_type*
+    get_end(Kdtree_base<Rank, Key, Node, Compare, Alloc,
+			ConstantIterator>& value)
+    {
+      return static_cast
+	<typename Kdtree_base<Rank, Key, Node, Compare, Alloc,
+			      ConstantIterator>::node_type*>
+	(value.get_header());
+    }
+
+    template <typename Rank, typename Key, typename Node,
+	      typename Compare, typename Alloc, bool ConstantIterator>
+    inline const typename Kdtree_base<Rank, Key, Node, Compare, Alloc,
+				      ConstantIterator>::node_type*
+    get_end(const Kdtree_base<Rank, Key, Node, Compare, Alloc,
+			      ConstantIterator>& value)
+    {
+      return static_cast
+	<const typename Kdtree_base<Rank, Key, Node, Compare, Alloc,
+				    ConstantIterator>::node_type*>
+	(value.get_header());
+    }
+
+    /*
+     * Accessor to the inexisting linked value of the header of the
+     * kd-tree. These functions are useful outside of the k-d tree to initialize
+     * iterators.
+     */
+    template <typename Rank, typename Key, typename Node,
+	      typename Compare, typename Alloc, bool ConstantIterator>
+    inline typename Kdtree_base<Rank, Key, Node, Compare, Alloc,
+				ConstantIterator>::node_type*
+    get_begin(Kdtree_base<Rank, Key, Node, Compare, Alloc,
+			  ConstantIterator>& value)
+    {
+      return static_cast
+	<typename Kdtree_base<Rank, Key, Node, Compare, Alloc,
+			      ConstantIterator>::node_type*>
+	(value.get_root());
+    }
+
+    template <typename Rank, typename Key, typename Node,
+	      typename Compare, typename Alloc, bool ConstantIterator>
+    inline const typename Kdtree_base<Rank, Key, Node, Compare, Alloc,
+				      ConstantIterator>::node_type*
+    get_begin(const Kdtree_base<Rank, Key, Node, Compare, Alloc,
+				ConstantIterator>& value)
+    {
+      return static_cast
+	<const typename Kdtree_base<Rank, Key, Node, Compare, Alloc,
+				    ConstantIterator>::node_type*>
+	(value.get_root());
+    }
+
+    /*
+     *
+     */
     template <typename Rank, typename Key, typename Node,
 	      typename Compare, typename Alloc, bool ConstantIterator>
     class Kdtree_base
@@ -35,16 +138,20 @@ namespace spatial
       typedef typename Alloc::template rebind
       <Node>::other                        Node_allocator;
 
-      typedef Node_base*                   Base_ptr;
-      typedef const Node_base*             Const_Base_ptr;
+      typedef Node_base::Base_ptr          Base_ptr;
+      typedef Node_base::Const_Base_ptr    Const_Base_ptr;
       typedef Node*                        Link_type;
       typedef const Node*                  Const_Link_type;
 
     public:
       typedef Key                          key_type;
-      typedef Key*                         pointer;
+      typedef typename details::condition
+      <ConstantIterator, const Key*,
+       Key*>::type                         pointer;
       typedef const Key*                   const_pointer;
-      typedef Key&                         reference;
+      typedef typename details::condition
+      <ConstantIterator, const Key&,
+       Key&>::type                         reference;
       typedef const Key&                   const_reference;
       typedef Node                         node_type;
       typedef std::size_t                  size_type;
@@ -53,14 +160,25 @@ namespace spatial
       typedef Node_allocator               node_allocator_type;
       typedef Compare                      compare_type;
       typedef Rank                         rank_type;
+      typedef typename true_or_false_type
+      <ConstantIterator>::type             const_iterator_tag;
 
-      typedef Node_iterator
-      <Key, Node, ConstantIterator>            iterator;
-      typedef Const_Node_iterator
-      <Key, Node, ConstantIterator>            const_iterator;
-      typedef std::reverse_iterator<iterator>  reverse_iterator;
+      // Conformant to C++ standard, if Key and Value are the same type then
+      // iterator and const_iterator shall be the same.
+      typedef typename details::condition
+      <ConstantIterator, Const_Node_iterator<Key, Node>,
+       Node_iterator<Key, Node> >::type         iterator;
+      typedef Const_Node_iterator<Key, Node>    const_iterator;
+      typedef std::reverse_iterator<iterator>   reverse_iterator;
       typedef std::reverse_iterator
-      <const_iterator>                         const_reverse_iterator;
+      <const_iterator>                          const_reverse_iterator;
+
+      typedef typename details::condition
+      <ConstantIterator, typename details::const_equal_iterator<Self>::type,
+       typename details::equal_iterator<Self>::type >
+      ::type                                    equal_iterator;
+      typedef typename
+      details::const_equal_iterator<Self>::type const_equal_iterator;
 
     private:
       /**
@@ -187,6 +305,19 @@ namespace spatial
       destroy_all_nodes();
 
     protected:
+      // External accessor
+      friend Self::Link_type
+      get_end<>(Self& value);
+
+      friend Self::Const_Link_type
+      get_end<>(const Self& value);
+
+      friend Self::Link_type
+      get_begin<>(Self& value);
+
+      friend Self::Const_Link_type
+      get_begin<>(const Self& value);
+
       // Internal accessors
       Base_ptr
       get_header()
@@ -387,6 +518,67 @@ namespace spatial
       size_type
       max_size() const
       { return get_node_allocator().max_size(); }
+
+      //@{
+      /**
+       *  @brief  Find all nodes with the same coordinate as @c value and return
+       *  the first that matches @c predicate.
+       *
+       *  The type @c key_type must be equally comparable.
+       */
+      template<typename Predicate>
+      iterator
+      find_if(const key_type& value, const Predicate& predicate);
+
+      template<typename Predicate>
+      const_iterator
+      find_if(const key_type& value, const Predicate& predicate) const;
+      //@}
+
+      //@{
+      /**
+       *  @brief  Find all nodes with the same coordinate as @c value and return
+       *  the first that is equal to @c value.
+       *
+       *  The type @c key_type must be equally comparable.
+       */
+      iterator
+      find(const key_type& value)
+      { return find_if(value, std::equal_to<key_type>()); }
+
+      const_iterator
+      find(const key_type& value) const
+      { return find_if(value, std::equal_to<key_type>()); }
+      //@}
+
+      //@{
+      /**
+       *  @brief  Return a pair of iterator around keys of similar coordinates.
+       *
+       *  @attention These iterator are not similar to the other iterator, but
+       *  are special types of iterators can only be used to list the equal
+       *  objects in the container.
+       */
+      std::pair<equal_iterator, equal_iterator>
+      equal_range(const key_type& key)
+      {
+	equal_bounds<key_type, compare_type> pred(compare(), key);
+	equal_iterator first = view::details::begin_range(*this, pred);
+	equal_iterator last = view::details::end_range(*this, pred);
+	return std::make_pair(first, last);
+      }
+
+      std::pair<const_equal_iterator, const_equal_iterator>
+      equal_range(const key_type& key) const
+      {
+	equal_bounds<key_type, compare_type> pred(compare(), key);
+	const_equal_iterator first
+	  = view::details::const_begin_range(*this, pred);
+	const_equal_iterator last
+	  = view::details::const_end_range(*this, pred);
+	return std::make_pair(first, last);
+      }
+      //@}
     };
 
     /**

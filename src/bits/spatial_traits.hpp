@@ -74,15 +74,16 @@ namespace spatial
     { return typename node_traits<Node>::invariant_category(); }
 
     /*
-     *  Determine whether a key requires constant access or not.
-     *  test:   test_constant_required
+     * A helper function to tag container for contant or non constant
+     * iterators.
      */
-    template <typename>
-    struct constant_required : std::tr1::true_type { };
+    template<bool ConstantIterator>
+    struct true_or_false_type
+    { typedef std::tr1::false_type type; };
 
-    template <typename Key, typename Value>
-    struct constant_required<std::pair<Key, Value> >
-      : std::tr1::false_type { };
+    template<>
+    struct true_or_false_type<true>
+    { typedef std::tr1::true_type type; };
 
   } // namespace details
 
@@ -134,6 +135,13 @@ namespace spatial
     typedef typename Tp::const_iterator         const_iterator;
     typedef typename Tp::reverse_iterator       reverse_iterator;
     typedef typename Tp::const_reverse_iterator const_reverse_iterator;
+
+    /**
+     *  @brief  A tag that defines whether the iterator of the container are
+     *  constant or not. It can take 2 values, either std::tr1::true_type or
+     *  std::tr1::false_type.
+     */
+    typedef typename Tp::const_iterator_tag     const_iterator_tag;
   };
 
   /**

@@ -82,12 +82,9 @@ BOOST_AUTO_TEST_CASE( test_node_traits )
   type2 must_compile_2 = details::relaxed_invariant_tag();
 }
 
-BOOST_AUTO_TEST_CASE( test_constant_required )
+BOOST_AUTO_TEST_CASE( test_true_or_false_type )
 {
-  typedef details::constant_required<int>::type type1;
-  type1 must_compile_1 = std::tr1::true_type();
-  typedef details::constant_required<std::pair<int, int> >::type type2;
-  type2 must_compile_2 = std::tr1::false_type();
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
 ///////////////////////////  spatial_details.hpp  //////////////////////////////
@@ -732,7 +729,7 @@ BOOST_AUTO_TEST_CASE( test_Node_iterator )
   // derefencing
   {
     typedef details::Node_iterator<pair_type,
-      Kdtree_node<pair_type>, false> iterator;
+      Kdtree_node<pair_type> > iterator;
     pair_type test_object(1, 2);
     Kdtree_node<pair_type> test_node;
     test_node.parent = &test_node;
@@ -749,7 +746,7 @@ BOOST_AUTO_TEST_CASE( test_Node_iterator )
   }
   {
     typedef details::Node_iterator<pair_type,
-      Relaxed_kdtree_node<pair_type>, false> iterator;
+      Relaxed_kdtree_node<pair_type> > iterator;
     pair_type test_object(1, 2);
     Relaxed_kdtree_node<pair_type> test_node;
     test_node.parent = &test_node;
@@ -767,13 +764,13 @@ BOOST_AUTO_TEST_CASE( test_Node_iterator )
   {
     // Make sure that constant iterator does not invalidate anything
     Five_Kdtree_node_fixture fix;
-    typedef details::Node_iterator<point2d, Kdtree_node<point2d>, true> iterator;
+    typedef details::Node_iterator<point2d, Kdtree_node<point2d> > iterator;
     iterator iter(&fix.node_root);
     BOOST_CHECK(*iter == twos);
   }
   {
     Five_Kdtree_node_fixture fix;
-    typedef details::Node_iterator<point2d, Kdtree_node<point2d>, false> iterator;
+    typedef details::Node_iterator<point2d, Kdtree_node<point2d> > iterator;
     iterator iter(&fix.node_root);
     BOOST_REQUIRE((++iter).node == &fix.node_right);
     BOOST_REQUIRE((--iter).node == &fix.node_root);
@@ -790,7 +787,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Node_iterator )
   // derefencing
   {
     typedef details::Const_Node_iterator<pair_type,
-      Kdtree_node<pair_type>, false> iterator;
+      Kdtree_node<pair_type> > iterator;
     pair_type test_object(1, 2);
     Kdtree_node<pair_type> test_node;
     test_node.parent = &test_node;
@@ -804,7 +801,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Node_iterator )
   }
   {
     typedef details::Const_Node_iterator<pair_type,
-      Relaxed_kdtree_node<pair_type>, false> iterator;
+      Relaxed_kdtree_node<pair_type> > iterator;
     pair_type test_object(1, 2);
     Relaxed_kdtree_node<pair_type> test_node;
     test_node.parent = &test_node;
@@ -819,13 +816,13 @@ BOOST_AUTO_TEST_CASE( test_Const_Node_iterator )
   {
     // Make sure that constant iterator does not invalidate anything
     Five_Kdtree_node_fixture fix;
-    typedef details::Const_Node_iterator<point2d, Kdtree_node<point2d>, true> iterator;
+    typedef details::Const_Node_iterator<point2d, Kdtree_node<point2d> > iterator;
     iterator iter(&fix.node_root);
     BOOST_CHECK(*iter == twos);
   }
   {
     Five_Kdtree_node_fixture fix;
-    typedef details::Const_Node_iterator<point2d, Kdtree_node<point2d>, false> iterator;
+    typedef details::Const_Node_iterator<point2d, Kdtree_node<point2d> > iterator;
     iterator iter(&fix.node_root);
     BOOST_REQUIRE((++iter).node == &fix.node_right);
     BOOST_REQUIRE((--iter).node == &fix.node_root);
@@ -908,14 +905,15 @@ BOOST_AUTO_TEST_CASE( text_except_check_node )
 BOOST_AUTO_TEST_CASE( text_except_check_iterator )
 {
   {
-    details::Node_iterator<point2d, Kdtree_node<point2d>, false> i(0);
+    details::Node_iterator<point2d, Kdtree_node<point2d> > i(0);
     BOOST_CHECK_THROW(except::check_iterator_argument(i.node),
 		      invalid_iterator_argument);
   }
   {
     Five_Kdtree_node_fixture fix;
-    details::Node_iterator<point2d, Kdtree_node<point2d>, false> i(&fix.node_root);
-    details::Node_iterator<point2d, Kdtree_node<point2d>, false>
+    details::Node_iterator<point2d, Kdtree_node<point2d> >
+      i(&fix.node_root);
+    details::Node_iterator<point2d, Kdtree_node<point2d> >
       j(static_cast<Kdtree_node<point2d>*>
 	(static_cast<Node_base*>(&fix.header)));
     BOOST_CHECK_NO_THROW(except::check_iterator_argument(i.node));
@@ -1188,6 +1186,16 @@ BOOST_AUTO_TEST_CASE( test_empty_Kdtree_base_accessor )
   BOOST_CHECK_NO_THROW(node_alloc = fix.kdtree.node_allocator());
 }
 
+BOOST_AUTO_TEST_CASE( test_Kdtree_base_equal_range )
+{
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
+}
+
+BOOST_AUTO_TEST_CASE( test_Kdtree_base_const_equal_range )
+{
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
+}
+
 //////////////////////////////  spatial_kdtree.hpp  ////////////////////////////
 
 using details::Kdtree;
@@ -1393,88 +1401,44 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_equal )
   Pair_Kdtree_fixture fix;
   {
     details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> it1
+      Kdtree_node<pair_type>, pair_less> it1
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> it2
-      (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
-       static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
-    BOOST_CHECK(it1 == it2);
-  }
-  {
-    details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> it1
-      (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
-       static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
-    details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> it2
-      (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
-       static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
-    BOOST_CHECK(it1 == it2);
-  }
-  {
-    details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> it1
-      (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
-       static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
-    details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> it2
+      Kdtree_node<pair_type>, pair_less> it2
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     BOOST_CHECK(it1 == it2);
   }
   {
     details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> it1
+      Kdtree_node<pair_type>, pair_less> it1
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> it2
-      (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
-       static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
-    BOOST_CHECK(it1 == it2);
-  }
-  {
-    details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> it1
-      (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
-       static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
-    details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> it2
+      Kdtree_node<pair_type>, pair_less> it2
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     BOOST_CHECK(it1 == it2);
   }
   {
     details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> it1
-      (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
-       static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
-    details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> it2
-      (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
-       static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
-    BOOST_CHECK(it1 == it2);
-  }
-  {
-    details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> it1
+      Kdtree_node<pair_type>, pair_less> it1
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> it2
+      Kdtree_node<pair_type>, pair_less> it2
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     BOOST_CHECK(it1 == it2);
   }
   {
-    details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> it1
+    details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
+      Kdtree_node<pair_type>, pair_less> it1
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
-    details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> it2
+    details::Mapping_iterator<details::Dynamic_rank, pair_type,
+      Kdtree_node<pair_type>, pair_less> it2
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     BOOST_CHECK(it1 == it2);
@@ -1486,7 +1450,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_deference )
   {
     Pair_Kdtree_fixture fix;
     details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> itr
+      Kdtree_node<pair_type>, pair_less> itr
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     BOOST_CHECK_EQUAL((*itr).first, 1);
@@ -1503,7 +1467,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_deference )
   {
     Pair_Kdtree_fixture fix;
     details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> itr
+      Kdtree_node<pair_type>, pair_less> itr
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     BOOST_CHECK_EQUAL((*itr).first, 1);
@@ -1518,7 +1482,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_deference )
   {
     Pair_Kdtree_fixture fix;
     details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> itr
+      Kdtree_node<pair_type>, pair_less> itr
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     BOOST_CHECK_EQUAL((*itr).first, 1);
@@ -1529,7 +1493,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_deference )
   {
     Pair_Kdtree_fixture fix;
     details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> itr
+      Kdtree_node<pair_type>, pair_less> itr
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     BOOST_CHECK_EQUAL((*itr).first, 1);
@@ -1545,7 +1509,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_minimum )
     dimension_type mapping_dim = 0;
     Hundred_Kdtree_2D_fixture fix;
     typedef details::Mapping_iterator<details::Dynamic_rank, point2d,
-      Kdtree_node<point2d>, bracket_less<point2d>, false> iter_type;
+      Kdtree_node<point2d>, bracket_less<point2d> > iter_type;
     iter_type iter;
     int count = 0;
     int min_value = (*fix.kdtree.begin())[mapping_dim];
@@ -1568,7 +1532,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_minimum )
     dimension_type mapping_dim = 1;
     Hundred_Kdtree_2D_fixture fix;
     typedef details::Mapping_iterator<details::Dynamic_rank, point2d,
-      Kdtree_node<point2d>, bracket_less<point2d>, true> iter_type;
+      Kdtree_node<point2d>, bracket_less<point2d> > iter_type;
     iter_type iter;
     int count = 0;
     int min_value = (*fix.kdtree.begin())[mapping_dim];
@@ -1591,7 +1555,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_minimum )
     dimension_type mapping_dim = 1;
     Unbalanced_right_Kdtree_fixture fix;
     typedef details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> iterator;
+      Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::minimum
 			   (fix.kdtree.rank(),
@@ -1605,7 +1569,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_minimum )
     dimension_type mapping_dim = 0;
     Unbalanced_left_Kdtree_fixture fix;
     typedef details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> iterator;
+      Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::minimum
 			   (fix.kdtree.rank(),
@@ -1623,7 +1587,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_maximum )
     dimension_type mapping_dim = 0;
     Hundred_Kdtree_2D_fixture fix;
     typedef details::Const_Mapping_iterator<details::Dynamic_rank, point2d,
-      Kdtree_node<point2d>, bracket_less<point2d>, false> iter_type;
+      Kdtree_node<point2d>, bracket_less<point2d> > iter_type;
     iter_type iter;
     int count = 0;
     int max_value = (*fix.kdtree.begin())[mapping_dim];
@@ -1646,7 +1610,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_maximum )
     dimension_type mapping_dim = 1;
     Hundred_Kdtree_2D_fixture fix;
     typedef details::Const_Mapping_iterator<details::Dynamic_rank, point2d,
-      Kdtree_node<point2d>, bracket_less<point2d>, true> iter_type;
+      Kdtree_node<point2d>, bracket_less<point2d> > iter_type;
     iter_type iter;
     int count = 0;
     int max_value = (*fix.kdtree.begin())[mapping_dim];
@@ -1669,7 +1633,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_maximum )
     dimension_type mapping_dim = 1;
     Unbalanced_right_Kdtree_fixture fix;
     typedef details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> iterator;
+      Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::maximum
 			   (fix.kdtree.rank(),
@@ -1683,7 +1647,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_maximum )
     dimension_type mapping_dim = 0;
     Unbalanced_left_Kdtree_fixture fix;
     typedef details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> iterator;
+      Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::maximum
 			   (fix.kdtree.rank(),
@@ -1701,7 +1665,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_increment )
     dimension_type mapping_dim = 0;
     Hundred_Kdtree_2D_fixture fix;
     typedef details::Mapping_iterator<details::Dynamic_rank, point2d,
-      Kdtree_node<point2d>, bracket_less<point2d>, false> iter_type;
+      Kdtree_node<point2d>, bracket_less<point2d> > iter_type;
     iter_type iter;
     BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
 			   (fix.kdtree.rank(),
@@ -1730,7 +1694,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_increment )
     dimension_type mapping_dim = 1;
     Hundred_Kdtree_2D_fixture fix;
     typedef details::Const_Mapping_iterator<details::Dynamic_rank, point2d,
-      Kdtree_node<point2d>, bracket_less<point2d>, true> iter_type;
+      Kdtree_node<point2d>, bracket_less<point2d> > iter_type;
     iter_type iter;
     BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
 			   (fix.kdtree.rank(),
@@ -1759,7 +1723,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_increment )
     dimension_type mapping_dim = 0;
     Unbalanced_left_Kdtree_fixture fix;
     typedef details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> iterator;
+      Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::minimum
 			   (fix.kdtree.rank(),
@@ -1784,7 +1748,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_increment )
     dimension_type mapping_dim = 1;
     Unbalanced_right_Kdtree_fixture fix;
     typedef details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> iterator;
+      Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::minimum
 			   (fix.kdtree.rank(),
@@ -1812,11 +1776,11 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_pre_post_increment )
   {
     Pair_Kdtree_fixture fix;
     details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> it
+      Kdtree_node<pair_type>, pair_less> it
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> end
+      Kdtree_node<pair_type>, pair_less> end
       (fix.kdtree.rank(), fix.kdtree.compare(), 0,
        details::decr_dim(fix.kdtree.rank(), 0),
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.end().node));
@@ -1825,11 +1789,11 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_pre_post_increment )
   {
     Pair_Kdtree_fixture fix;
     details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> it
+      Kdtree_node<pair_type>, pair_less> it
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> end
+      Kdtree_node<pair_type>, pair_less> end
       (fix.kdtree.rank(), fix.kdtree.compare(), 0,
        details::decr_dim(fix.kdtree.rank(), 0),
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.end().node));
@@ -1844,7 +1808,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_decrement )
     dimension_type mapping_dim = 0;
     Hundred_Kdtree_2D_fixture fix;
     typedef details::Mapping_iterator<details::Dynamic_rank, point2d,
-      Kdtree_node<point2d>, bracket_less<point2d>, false> iter_type;
+      Kdtree_node<point2d>, bracket_less<point2d> > iter_type;
     iter_type iter;
     BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
 			   (fix.kdtree.rank(),
@@ -1876,7 +1840,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_decrement )
     dimension_type mapping_dim = 1;
     Hundred_Kdtree_2D_fixture fix;
     typedef details::Mapping_iterator<details::Dynamic_rank, point2d,
-      Kdtree_node<point2d>, bracket_less<point2d>, true> iter_type;
+      Kdtree_node<point2d>, bracket_less<point2d> > iter_type;
     iter_type iter;
     BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
 			   (fix.kdtree.rank(),
@@ -1908,7 +1872,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_decrement )
     dimension_type mapping_dim = 0;
     Unbalanced_left_Kdtree_fixture fix;
     typedef details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> iterator;
+      Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::maximum
 			   (fix.kdtree.rank(),
@@ -1933,7 +1897,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_decrement )
     dimension_type mapping_dim = 1;
     Unbalanced_right_Kdtree_fixture fix;
     typedef details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> iterator;
+      Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::maximum
 			   (fix.kdtree.rank(),
@@ -1961,11 +1925,11 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_pre_post_decrement )
   {
     Pair_Kdtree_fixture fix;
     details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> it
+      Kdtree_node<pair_type>, pair_less> it
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, false> end
+      Kdtree_node<pair_type>, pair_less> end
       (fix.kdtree.rank(), fix.kdtree.compare(), 0,
        details::decr_dim(fix.kdtree.rank(), 0),
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.end().node));
@@ -1974,11 +1938,11 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_pre_post_decrement )
   {
     Pair_Kdtree_fixture fix;
     details::Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> it
+      Kdtree_node<pair_type>, pair_less> it
       (fix.kdtree.rank(), fix.kdtree.compare(), 0, 0,
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.begin().node));
     details::Const_Mapping_iterator<details::Dynamic_rank, pair_type,
-      Kdtree_node<pair_type>, pair_less, true> end
+      Kdtree_node<pair_type>, pair_less> end
       (fix.kdtree.rank(), fix.kdtree.compare(), 0,
        details::decr_dim(fix.kdtree.rank(), 0),
        static_cast<Kdtree_node<pair_type>*>(fix.kdtree.end().node));
@@ -1995,7 +1959,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_lower_bound )
     dimension_type mapping_dim = 1;
     Hundred_Kdtree_2D_fixture fix;
     typedef details::Mapping_iterator<details::Dynamic_rank, point2d,
-      Kdtree_node<point2d>, bracket_less<point2d>, false> iter_type;
+      Kdtree_node<point2d>, bracket_less<point2d> > iter_type;
     point2d flag = { { 10, 10 } };
     point2d low_flag = { { -10, -10 } };
     point2d high_flag = { { 30, 30 } };
@@ -2049,7 +2013,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_lower_bound )
     dimension_type mapping_dim = 2;  // triple::z
     Twenty_Kdtree_3D_fixture fix;
     typedef details::Mapping_iterator<details::Dynamic_rank, triple,
-      Kdtree_node<triple>, triple_less, false> iter_type;
+      Kdtree_node<triple>, triple_less> iter_type;
     triple flag; flag.x = 0; flag.y = 0; flag.z = 0;
     iter_type iter;
     BOOST_REQUIRE_NO_THROW(iter = iter_type::lower_bound
@@ -2093,7 +2057,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_upper_bound )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bracket_less<point2d>, false> mapping_iterator;
+      bracket_less<point2d> > mapping_iterator;
     dimension_type mapping_dim = 1;
     Hundred_Kdtree_2D_fixture fix;
     point2d flag = { { 10, 10 } };
@@ -2150,7 +2114,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_upper_bound )
       <Twenty_Kdtree_3D_fixture::kdtree_type::rank_type,
       Twenty_Kdtree_3D_fixture::kdtree_type::key_type,
       Twenty_Kdtree_3D_fixture::kdtree_type::node_type,
-      triple_less, false> mapping_iterator;
+      triple_less> mapping_iterator;
     dimension_type mapping_dim = 2;  // triple::z
     Twenty_Kdtree_3D_fixture fix;
     triple flag; flag.x = 0; flag.y = 0; flag.z = 0;
@@ -2236,7 +2200,7 @@ BOOST_AUTO_TEST_CASE( test_kdtree_erase_iter )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bracket_less<point2d>, false> mapping_iterator;
+      bracket_less<point2d> > mapping_iterator;
     Hundred_Kdtree_2D_fixture fix;
     int track_size = fix.kdtree.size();
     while (fix.kdtree.size() != 0)
@@ -2472,7 +2436,7 @@ BOOST_AUTO_TEST_CASE( test_kdtree_rebalance )
     <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
     Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
     Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-    bracket_less<point2d>, false> mapping_iterator;
+    bracket_less<point2d> > mapping_iterator;
   // The performance gain of rebalance cannot be mesured now (see performance
   // executable) but we can make sure that total ordering as remained.
   Hundred_Kdtree_2D_fixture fix;
@@ -2571,7 +2535,7 @@ BOOST_AUTO_TEST_CASE( test_kdtree_copy_and_rebalance )
     <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
     Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
     Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-    bracket_less<point2d>, false> mapping_iterator;
+    bracket_less<point2d> > mapping_iterator;
   // The performance gain of rebalance cannot be mesured now (see performance
   // executable) but we can make sure that total ordering as remained.
   Hundred_Kdtree_2D_fixture fix;
@@ -2675,17 +2639,17 @@ BOOST_AUTO_TEST_CASE( test_kdtree_rebalance_empty )
 BOOST_AUTO_TEST_CASE( test_range_iterator_default_ctor )
 {
   typedef details::Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    true> range_iterator_true_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      range_iterator_true_type;
   typedef details::Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    false> range_iterator_false_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      range_iterator_false_type;
   typedef details::Const_Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    true> const_range_iterator_true_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      const_range_iterator_true_type;
   typedef details::Const_Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    false> const_range_iterator_false_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      const_range_iterator_false_type;
   range_iterator_true_type i;
   const_range_iterator_true_type ci;
   range_iterator_false_type j;
@@ -2695,17 +2659,17 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_default_ctor )
 BOOST_AUTO_TEST_CASE( test_range_iterator_value_ctor_equal )
 {
   typedef details::Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    true> range_iterator_true_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      range_iterator_true_type;
   typedef details::Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    false> range_iterator_false_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      range_iterator_false_type;
   typedef details::Const_Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    true> const_range_iterator_true_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      const_range_iterator_true_type;
   typedef details::Const_Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    false> const_range_iterator_false_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      const_range_iterator_false_type;
   range_bounds<pair_type, pair_less> bounds;
   range_iterator_true_type i(details::Dynamic_rank(2), bounds, 1, 0);
   range_iterator_false_type j(details::Dynamic_rank(2), bounds, 1, 0);
@@ -2730,17 +2694,17 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_value_ctor_equal )
 BOOST_AUTO_TEST_CASE( test_range_iterator_copy_ctor )
 {
   typedef details::Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    true> range_iterator_true_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      range_iterator_true_type;
   typedef details::Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    false> range_iterator_false_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      range_iterator_false_type;
   typedef details::Const_Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    true> const_range_iterator_true_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      const_range_iterator_true_type;
   typedef details::Const_Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    false> const_range_iterator_false_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      const_range_iterator_false_type;
   range_bounds<pair_type, pair_less> bounds;
   range_iterator_true_type k(details::Dynamic_rank(2), bounds, 1, 0);
   range_iterator_false_type l(details::Dynamic_rank(2), bounds, 1, 0);
@@ -2777,17 +2741,17 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_copy_ctor )
 BOOST_AUTO_TEST_CASE( test_range_iterator_assignment )
 {
   typedef details::Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    true> range_iterator_true_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      range_iterator_true_type;
   typedef details::Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    false> range_iterator_false_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      range_iterator_false_type;
   typedef details::Const_Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    true> const_range_iterator_true_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      const_range_iterator_true_type;
   typedef details::Const_Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    false> const_range_iterator_false_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      const_range_iterator_false_type;
   range_bounds<pair_type, pair_less> bounds;
   range_iterator_true_type k(details::Dynamic_rank(2), bounds, 1, 0);
   range_iterator_false_type l(details::Dynamic_rank(2), bounds, 1, 0);
@@ -2824,17 +2788,17 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_assignment )
 BOOST_AUTO_TEST_CASE( test_range_iterator_equal )
 {
   typedef details::Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    true> range_iterator_true_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      range_iterator_true_type;
   typedef details::Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    false> range_iterator_false_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      range_iterator_false_type;
   typedef details::Const_Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    true> const_range_iterator_true_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      const_range_iterator_true_type;
   typedef details::Const_Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    false> const_range_iterator_false_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      const_range_iterator_false_type;
   range_bounds<pair_type, pair_less> bounds;
   range_iterator_true_type k(details::Dynamic_rank(2), bounds, 1, 0);
   range_iterator_false_type l(details::Dynamic_rank(2), bounds, 1, 0);
@@ -2854,8 +2818,8 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_equal )
 BOOST_AUTO_TEST_CASE( test_range_iterator_deference )
 {
   typedef details::Range_iterator<details::Dynamic_rank, pair_type,
-    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less>,
-    true> range_iterator_true_type;
+    Kdtree_node<pair_type>, range_bounds<pair_type, pair_less> >
+      range_iterator_true_type;
   Kdtree_node<pair_type> node;
   node.parent = 0;
   node.right = 0;
@@ -2880,7 +2844,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_minimum )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     // bounds totally encloses the tree, whose elements are between 0 and 20.
     point2d low = { {0, 0} };
     point2d high = { {20, 20} };
@@ -2900,7 +2864,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_minimum )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     // reverse in-order iteration until we hit a different key
     Hundred_Kdtree_2D_fixture::kdtree_type::iterator
       max = --fix.kdtree.end(), tmp = max, begin = fix.kdtree.begin();
@@ -2926,7 +2890,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_minimum_empty )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     // These bounds are too narrow to contain anything
     point2d mid = { {10, 10} };
     bounds_type empty_bounds(fix.kdtree.compare(), mid, mid);
@@ -2946,7 +2910,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_minimum_empty )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     // These bounds do not intersect with the tree bounding box
     point2d low = { {20, 20} };
     point2d high = { {30, 30} };
@@ -2967,7 +2931,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_minimum_empty )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     // These bounds do not intersect with the tree bounding box
     point2d low = { {-10, -10} };
     point2d high = { {0, 0} };
@@ -2987,7 +2951,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_minimum_empty )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     // reverse in-order iteration until we hit a different key
     for (int shrink = 0; shrink != 20; ++shrink)
       {
@@ -3018,7 +2982,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_maximum )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     // bounds totally encloses the tree, whose elements are between 0 and 20.
     point2d low = { {0, 0} };
     point2d high = { {20, 20} };
@@ -3038,7 +3002,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_maximum )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     // reverse in-order iteration until we hit a different key
     Hundred_Kdtree_2D_fixture::kdtree_type::iterator
       min = fix.kdtree.begin(), tmp = min, end = fix.kdtree.end();
@@ -3059,7 +3023,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_maximum )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     // reverse in-order iteration until we hit a different key
     for (int shrink = 20; shrink != 0; --shrink)
       {
@@ -3094,7 +3058,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_maximum_empty )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     // These bounds are too narrow to contain anything
     point2d mid = { {10, 10} };
     bounds_type empty_bounds(fix.kdtree.compare(), mid, mid);
@@ -3114,7 +3078,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_maximum_empty )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     // These bounds do not intersect with the tree bounding box
     point2d low = { {20, 20} };
     point2d high = { {30, 30} };
@@ -3135,7 +3099,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_maximum_empty )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     // These bounds do not intersect with the tree bounding box
     point2d low = { {-10, -10} };
     point2d high = { {0, 0} };
@@ -3158,7 +3122,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_pre_increment )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     typedef Hundred_Kdtree_2D_fixture::kdtree_type::const_iterator
       const_iterator;
     // in order range iteration.
@@ -3192,7 +3156,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_pre_increment )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     typedef Hundred_Kdtree_2D_fixture::kdtree_type::const_iterator
       const_iterator;
     // in order range iteration.
@@ -3230,7 +3194,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_pre_decrement )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     typedef Hundred_Kdtree_2D_fixture::kdtree_type::const_iterator
       const_iterator;
     // in order range iteration.
@@ -3264,7 +3228,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_pre_decrement )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     typedef Hundred_Kdtree_2D_fixture::kdtree_type::const_iterator
       const_iterator;
     // in order range iteration.
@@ -3301,7 +3265,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_post_decrement )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     typedef Hundred_Kdtree_2D_fixture::kdtree_type::const_iterator
       const_iterator;
     // in order range iteration.
@@ -3331,7 +3295,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_post_increment )
       <Hundred_Kdtree_2D_fixture::kdtree_type::rank_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::key_type,
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type, false> range_iterator;
+      bounds_type> range_iterator;
     typedef Hundred_Kdtree_2D_fixture::kdtree_type::const_iterator
       const_iterator;
     // in order range iteration.
@@ -3351,7 +3315,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_post_increment )
     BOOST_CHECK(after == test);
 }
 
-//////////////////  spatial_kdtree.hpp (find, erase value) /////////////////////
+///////////////////  spatial_kdtree.hpp (find, erase value) ////////////////////
 
 BOOST_AUTO_TEST_CASE( test_kdtree_find )
 {
@@ -3560,7 +3524,7 @@ BOOST_AUTO_TEST_CASE ( test_kdtree_erase_key )
   }
 }
 
-////////////////////////////  spatial_geometry.hpp  //////////////////////////////
+////////////////////////////  spatial_geometry.hpp  ////////////////////////////
 
 
 struct triple_access
@@ -4502,14 +4466,12 @@ BOOST_AUTO_TEST_CASE( test_neighbor_equal )
   details::Neighbor_iterator<details::Static_rank<2>, point2d,
 		    Kdtree_node<point2d>, bracket_less<point2d>,
 		    euclidian_double<point2d,
-				     bracket_cast_accessor<point2d, double> >,
-		    false>
+				     bracket_cast_accessor<point2d, double> > >
     iter;
   details::Const_Neighbor_iterator<details::Static_rank<2>, point2d,
 			  Kdtree_node<point2d>, bracket_less<point2d>,
 			  euclidian_double<point2d,
-					   bracket_cast_accessor<point2d, double> >,
-			  true>
+					   bracket_cast_accessor<point2d, double> > >
     citer;
   iter.impl.node = 0;
   citer.impl.node = 0;
@@ -4523,8 +4485,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_distance )
   details::Neighbor_iterator<details::Static_rank<2>, point2d,
 		    Kdtree_node<point2d>, bracket_less<point2d>,
 		    euclidian_double<point2d,
-				     bracket_cast_accessor<point2d, double> >,
-		    false>
+				     bracket_cast_accessor<point2d, double> > >
     iter;
   iter.impl.distance = .1;
   BOOST_CHECK_EQUAL(iter.distance(), .1);
@@ -4536,14 +4497,12 @@ BOOST_AUTO_TEST_CASE( test_neighbor_deference )
   details::Neighbor_iterator<details::Static_rank<2>, point2d,
 		    Kdtree_node<point2d>, bracket_less<point2d>,
 		    euclidian_double<point2d,
-				     bracket_cast_accessor<point2d, double> >,
-		    false>
+				     bracket_cast_accessor<point2d, double> > >
     iter;
   details::Const_Neighbor_iterator<details::Static_rank<2>, point2d,
 			  Kdtree_node<point2d>, bracket_less<point2d>,
 			  euclidian_double<point2d,
-					   bracket_cast_accessor<point2d, double> >,
-			  true>
+					   bracket_cast_accessor<point2d, double> > >
     citer;
   Kdtree_node<point2d> node;
   iter.impl.node = &node;
@@ -4566,7 +4525,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_minimum )
   typedef details::Neighbor_iterator
     <kdtree_type::rank_type, kdtree_type::key_type,
      kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type, true> iterator_type;
+     geometry_type> iterator_type;
   {
     // If tree has one node, it should always return that node.
     Empty_Kdtree_2D_fixture fix;
@@ -4618,7 +4577,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_minimum )
     typedef details::Neighbor_iterator
       <kdtree_type::rank_type, kdtree_type::key_type,
        kdtree_type::node_type, kdtree_type::compare_type,
-       geometry_type, true> iterator_type;
+       geometry_type> iterator_type;
     Hundred_Kdtree_5D_fixture fix;
     geometry_type geometry;
     for(int i=0; i<20; ++i)
@@ -4662,7 +4621,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_maximum )
   typedef details::Neighbor_iterator
     <kdtree_type::rank_type, kdtree_type::key_type,
      kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type, true> iterator_type;
+     geometry_type> iterator_type;
   {
     // If tree has one node, it should always return that node.
     Empty_Kdtree_2D_fixture fix;
@@ -4714,7 +4673,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_maximum )
     typedef details::Neighbor_iterator
       <kdtree_type::rank_type, kdtree_type::key_type,
        kdtree_type::node_type, kdtree_type::compare_type,
-       geometry_type, true> iterator_type;
+       geometry_type> iterator_type;
     Hundred_Kdtree_5D_fixture fix;
     geometry_type geometry;
     for(int i=0; i<20; ++i)
@@ -4758,7 +4717,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_increment )
   typedef details::Neighbor_iterator
     <kdtree_type::rank_type, kdtree_type::key_type,
      kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type, true> iterator_type;
+     geometry_type> iterator_type;
   {
     // If tree has one node, it should iterate to the end
     Empty_Kdtree_2D_fixture fix;
@@ -4837,7 +4796,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_increment )
     typedef details::Neighbor_iterator
       <kdtree_type::rank_type, kdtree_type::key_type,
        kdtree_type::node_type, kdtree_type::compare_type,
-       geometry_type, true> iterator_type;
+       geometry_type> iterator_type;
     Hundred_Kdtree_5D_fixture fix;
     geometry_type geometry;
     for(int i=0; i<20; ++i)
@@ -4882,7 +4841,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_decrement )
   typedef details::Neighbor_iterator
     <kdtree_type::rank_type, kdtree_type::key_type,
      kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type, true> iterator_type;
+     geometry_type> iterator_type;
   {
     // If tree has one node, it should iterate to the end
     Empty_Kdtree_2D_fixture fix;
@@ -4965,7 +4924,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_decrement )
     typedef details::Neighbor_iterator
       <kdtree_type::rank_type, kdtree_type::key_type,
        kdtree_type::node_type, kdtree_type::compare_type,
-       geometry_type, true> iterator_type;
+       geometry_type> iterator_type;
     Hundred_Kdtree_5D_fixture fix;
     geometry_type geometry;
     for(int i=0; i<20; ++i)
@@ -5011,7 +4970,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_lower_bound )
   typedef details::Neighbor_iterator
     <kdtree_type::rank_type, kdtree_type::key_type,
      kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type, true> iterator_type;
+     geometry_type> iterator_type;
   {
     // Check that there is no failure out of limits
     Empty_Kdtree_2D_fixture fix;
@@ -5048,7 +5007,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_lower_bound )
     typedef details::Neighbor_iterator
       <kdtree_type::rank_type, kdtree_type::key_type,
        kdtree_type::node_type, kdtree_type::compare_type,
-       geometry_type, true> iterator_type;
+       geometry_type> iterator_type;
     Hundred_Kdtree_5D_fixture fix;
     geometry_type geometry;
     for (int i = 0; i < 100; ++i)
@@ -5085,7 +5044,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_upper_bound )
   typedef details::Neighbor_iterator
     <kdtree_type::rank_type, kdtree_type::key_type,
      kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type, true> iterator_type;
+     geometry_type> iterator_type;
   {
     // Check that there is no failure out of limits
     Empty_Kdtree_2D_fixture fix;
@@ -5121,7 +5080,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_upper_bound )
     typedef details::Neighbor_iterator
       <kdtree_type::rank_type, kdtree_type::key_type,
        kdtree_type::node_type, kdtree_type::compare_type,
-       geometry_type, true> iterator_type;
+       geometry_type> iterator_type;
     Hundred_Kdtree_5D_fixture fix;
     geometry_type geometry;
     for (int i = 0; i < 100; ++i)
@@ -5159,17 +5118,17 @@ BOOST_AUTO_TEST_CASE( test_pointset_constructors )
 
 BOOST_AUTO_TEST_CASE( test_pointset_insert_iter_erase )
 {
-  BOOST_CHECK(false);
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_equality )
 {
-  BOOST_CHECK(false);
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_swap )
 {
-  BOOST_CHECK(false);
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
 ///////////////////////////  pointset.hpp views ////////////////////////////////
@@ -5185,52 +5144,85 @@ BOOST_AUTO_TEST_CASE( test_pointset_mapping )
 BOOST_AUTO_TEST_CASE( test_pointset_range )
 {
   // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK(false);
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_equal_range )
 {
   // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK(false);
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_close_range )
 {
   // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK(false);
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_open_range )
 {
   // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK(false);
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_range_predicate )
 {
   // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK(false);
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_upper_partition )
 {
   // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK(false);
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_lower_partition )
 {
   // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK(false);
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_neighborhood )
 {
   // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK(false);
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
 /////////////////////////  spatial_relaxed_kdtree.hpp  /////////////////////////
+
+BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_ctor )
+{
+  typedef details::Relaxed_kdtree
+    <details::Dynamic_rank, point2d, bracket_less<point2d>,
+     tight_balancing, std::allocator<point2d>, true> kdtree_type;
+  kdtree_type instance_one;
+  kdtree_type instance_two(details::Dynamic_rank(2));
+  kdtree_type instance_three(details::Dynamic_rank(2), bracket_less<point2d>());
+  kdtree_type instance_four(details::Dynamic_rank(2), bracket_less<point2d>(),
+			    tight_balancing());
+  kdtree_type instance_five(details::Dynamic_rank(2), bracket_less<point2d>(),
+			    tight_balancing(), std::allocator<point2d>());
+  // Trees should be empty.
+  BOOST_CHECK(instance_one.empty());
+  BOOST_CHECK(instance_two.empty());
+  BOOST_CHECK(instance_three.empty());
+  BOOST_CHECK(instance_four.empty());
+  BOOST_CHECK(instance_five.empty());
+  // That also mean that beginning equal end for each of them
+  BOOST_CHECK(instance_one.begin() == instance_one.end());
+  BOOST_CHECK(instance_two.begin() == instance_two.end());
+  BOOST_CHECK(instance_three.begin() == instance_three.end());
+  BOOST_CHECK(instance_four.begin() == instance_four.end());
+  BOOST_CHECK(instance_five.begin() == instance_five.end());
+  // And that also mean that have a size of 0
+  BOOST_CHECK_EQUAL(instance_one.size(), 0);
+  BOOST_CHECK_EQUAL(instance_two.size(), 0);
+  BOOST_CHECK_EQUAL(instance_three.size(), 0);
+  BOOST_CHECK_EQUAL(instance_four.size(), 0);
+  BOOST_CHECK_EQUAL(instance_five.size(), 0);
+}
+
 
 
 ///////////////////////////  spatial_intersect.hpp  ////////////////////////////

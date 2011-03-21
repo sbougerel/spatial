@@ -59,9 +59,6 @@ namespace spatial
       typedef typename Base::iterator            iterator;
       typedef typename Base::const_iterator      const_iterator;
 
-      typedef details::equal_iterator<Self>       equal_iterator;
-      typedef details::const_equal_iterator<Self> const_equal_iterator;
-
     private:
       /**
        *  @brief  Keeps tracks of the number of nodes in the tree.
@@ -111,21 +108,21 @@ namespace spatial
 	: Base(Rank(), Compare(), allocator_type()), m_count(0)
       { }
 
-      explicit Kdtree(const Rank& key_dimension)
-	: Base(key_dimension, Compare(), allocator_type()), m_count(0)
+      explicit Kdtree(const Rank& rank)
+	: Base(rank, Compare(), allocator_type()), m_count(0)
       { }
 
       explicit Kdtree(const compare_type& compare)
 	: Base(Rank(), compare, allocator_type()), m_count(0)
       { }
 
-      Kdtree(const Rank& key_dimension, const compare_type& compare)
-	: Base(key_dimension, compare, allocator_type()), m_count(0)
+      Kdtree(const Rank& rank, const compare_type& compare)
+	: Base(rank, compare, allocator_type()), m_count(0)
       { }
 
-      Kdtree(const Rank& key_dimension, const compare_type& compare,
+      Kdtree(const Rank& rank, const compare_type& compare,
 	     const allocator_type& alloc)
-	: Base(key_dimension, compare, alloc), m_count(0)
+	: Base(rank, compare, alloc), m_count(0)
       { }
 
       /**
@@ -222,38 +219,6 @@ namespace spatial
 	std::swap(m_count, other.m_count);
       }
 
-      //@{
-      /**
-       *  @brief  Find all nodes with the same coordinate as @c value and return
-       *  the first that matches @c predicate.
-       *
-       *  The type @c key_type must be equally comparable.
-       */
-      template<typename Predicate>
-      iterator
-      find_if(const key_type& value, const Predicate& predicate);
-
-      template<typename Predicate>
-      const_iterator
-      find_if(const key_type& value, const Predicate& predicate) const;
-      //@}
-
-      //@{
-      /**
-       *  @brief  Find all nodes with the same coordinate as @c value and return
-       *  the first that is equal to @c value.
-       *
-       *  The type @c key_type must be equally comparable.
-       */
-      iterator
-      find(const key_type& value)
-      { return find_if(value, std::equal_to<key_type>()); }
-
-      const_iterator
-      find(const key_type& value) const
-      { return find_if(value, std::equal_to<key_type>()); }
-      //@}
-
       /**
        *  @brief  Insert a single key v in the tree.
        */
@@ -274,7 +239,6 @@ namespace spatial
 	for (; first != last; ++first) { insert(*first); }
       }
 
-      //@{
       /**
        *  @brief  Deletes the node pointed to by the iterator.
        *
@@ -282,11 +246,7 @@ namespace spatial
        *  related tree, or dire things may happen.
        */
       void
-      erase(iterator pointer);
-
-      void
       erase(const_iterator pointer);
-      //@}
 
       /**
        *  @brief  Deletes all nodes that match key @c value.
@@ -298,36 +258,13 @@ namespace spatial
       size_type
       erase(const key_type& value);
 
-      //@{
       /**
        *  @brief  Deletes any node that matches one of the keys in the sequence
        *  covered by the input iterators.
        */
       void
-      erase(iterator first, iterator last)
-      { for (; first != last; ++first) { erase(first); } }
-
-      void
       erase(const_iterator first, const_iterator last)
       { for (; first != last; ++first) { erase(first); } }
-      //@}
-
-      //@{
-      /**
-       *  @brief  Return a pair of iterator around keys of similar coordinates.
-       *
-       *  @attention These iterator are not similar to the other iterator, but
-       *  are special types of iterators can only be used to list the equal
-       *  objects in the container.
-       */
-      std::pair<equal_iterator, equal_iterator>
-      equal_range(const key_type& key)
-      { return details::equal_range(*this, key); }
-
-      std::pair<const_equal_iterator, const_equal_iterator>
-      equal_range(const key_type& key) const
-      { return details::const_equal_range(*this, key); }
-      //@}
     };
 
     /**

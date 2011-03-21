@@ -26,136 +26,142 @@ namespace spatial
   namespace details
   {
 
-    template<typename Dimension, typename Key, typename Compare,
-	     typename Balance_policy, typename Alloc, bool ConstIterator>
+    template<typename Rank, typename Key, typename Compare,
+	     typename Balancing, typename Alloc, bool ConstIterator>
     inline
-    typename Relaxed_kdtree<Dimension, Key, Compare,
-			    Balance_policy, Alloc, ConstIterator>
-    ::unordered_iterator
-    Relaxed_kdtree<Dimension, Key, Compare, Balance_policy,
-		   Alloc, ConstIterator>::insert_aux
-    (dimension_type k,
-     typename Relaxed_kdtree<Dimension, Key, Compare, Balance_policy,
-     Alloc, ConstIterator>::Base_ptr x,
-     const typename Relaxed_kdtree<Dimension, Key, Compare, Balance_policy,
-     Alloc, ConstIterator>::key_type& v)
+    typename Relaxed_kdtree<Rank, Key, Compare,
+			    Balancing, Alloc, ConstIterator>
+    ::iterator
+    Relaxed_kdtree<Rank, Key, Compare, Balancing,
+		   Alloc, ConstIterator>
+    ::insert_aux
+    (dimension_type node_dim,
+     typename Relaxed_kdtree<Rank, Key, Compare, Balancing,
+     Alloc, ConstIterator>::Base_ptr node,
+     const typename Relaxed_kdtree<Rank, Key, Compare, Balancing,
+     Alloc, ConstIterator>::key_type& key)
     {
-      Link_type new_node = create_node(v);
+      Link_type new_node = create_node(key);
+      const Compare& cmp = Base::compare();
+      const Rank& rank = Base::rank();
       while (true)
 	{
 	  // Balancing equal values on both side of the tree
-	  if (compare()(k, v, static_cast<Const_Link_type>(x)->key_field)
-	      || (!compare()(k, static_cast<Const_Link_type>(x)->key_field, v)
-		  && (x->left == 0 || (x->right != 0
-				       && x->left->weight < x->right->weight))))
+	  if (cmp(node_dim, key, SPATIAL_KEY(node))
+	      || (!cmp(node_dim, SPATIAL_KEY(node), key)
+		  && (node->left == 0
+		      || (node->right != 0
+			  && node->left->weight < node->right->weight))))
 	    {
-	      if (x->left != 0)
+	      if (node->left != 0)
 		{
-		  ++x->left->weight;
-		  bool balance = balance_policy()(x, dimension_function());
-		  if (balance)
+		  ++node->left->weight;
+		  if (m_balancing(node, rank))
 		    {
-		      --x->left->weight;
-		      key_type tmp = static_cast<Link_type>(x)->key_field;
-		      if (x->left == 0 || (x->right != 0
-					   && x->left->weight < x->right->weight))
-			{ balance_aux(true, k, x); }
+		      --node->left->weight;
+		      if (node->left == 0
+			  || (node->right != 0
+			      && node->left->weight < node->right->weight))
+			{ balance_aux(true, node_dim, node); }
 		      else
-			{ balance_aux(false, k, x); }
-		      insert_aux(k, x, tmp);
+			{ balance_aux(false, node_dim, node); }
+		      insert_aux(node_dim, node, SPATIAL_KEY(node));
 		    }
 		  else
-		    { x = x->left; k = (k + 1) % dimension(); }
+		    { node = node->left; node_dim = incr_dim(rank, node_dim); }
 		}
 	      else
 		{
-		  x->left = new_node;
-		  new_node->parent = x;
-		  if (get_leftmost() == x)
-		    { get_header()->left = new_node; }
+		  node->left = new_node;
+		  new_node->parent = node;
+		  if (Base::get_leftmost() == node)
+		    { Base::get_header()->left = new_node; }
 		  break;
 		}
 	    }
 	  else
 	    {
-	      if (x->right != 0)
+	      if (node->right != 0)
 		{
-		  ++x->right->weight;
-		  bool balance = balance_policy()(x, dimension_function());
-		  if (balance)
+		  ++node->right->weight;
+		  if (m_balancing(node, rank))
 		    {
-		      --x->right->weight;
-		      key_type tmp = static_cast<Link_type>(x)->key_field;
-		      if (x->right == 0 || (x->left != 0
-					    && x->right->weight < x->left->weight))
-			{ balance_aux(false, k, x); }
+		      --node->right->weight;
+		      key_type tmp = SPATIAL_KEY(node);
+		      if (node->right == 0
+			  || (node->left != 0
+			      && node->right->weight < node->left->weight))
+			{ balance_aux(false, node_dim, node); }
 		      else
-			{ balance_aux(true, k, x); }
-		      insert_aux(k, x, tmp);
+			{ balance_aux(true, node_dim, node); }
+		      insert_aux(node_dim, node, tmp);
 		    }
 		  else
-		    { x = x->right; k = (k + 1) % dimension(); }
+		    { node = node->right; node_dim = incr_dim(rank, node_dim); }
 		}
 	      else
 		{
-		  x->right = new_node;
-		  new_node->parent = x;
-		  if (get_rightmost() == x)
-		    { get_header()->right = new_node; }
+		  node->right = new_node;
+		  new_node->parent = node;
+		  if (Base::get_rightmost() == node)
+		    { Base::get_header()->right = new_node; }
 		  break;
 		}
 	    }
 	}
-      return unordered_iterator(new_node);
+      return iterator(new_node);
     }
 
     // insert the new node in place of current if it is the minimum/maximum!
 
-    template<typename Dimension, typename Key, typename Compare,
-	     typename Balance_policy, typename Alloc, bool ConstIterator>
+    template<typename Rank, typename Key, typename Compare,
+	     typename Balancing, typename Alloc, bool ConstIterator>
     inline void
-    Relaxed_kdtree<Dimension, Key, Compare, Balance_policy, Alloc, ConstIterator>
+    Relaxed_kdtree<Rank, Key, Compare, Balancing, Alloc, ConstIterator>
     ::balance_aux
-    (bool left_tree, dimension_type k,
-     typename Relaxed_kdtree<Dimension, Key, Compare, Balance_policy,
-     Alloc, ConstIterator>::Base_ptr x)
+    (bool left_tree, dimension_type top_dim,
+     typename Relaxed_kdtree<Rank, Key, Compare, Balancing,
+     Alloc, ConstIterator>::Base_ptr top)
     {
-      Base_ptr node = x;
-      dimension_type node_dim = k;
+      const Compare& cmp = Base::compare();
+      const Rank& rank = Base::rank();
+      Base_ptr node = top;
+      dimension_type node_dim = top_dim;
       if (left_tree)
 	{
-	  node = iterator::maximum(k, (k + 1) % dimension(),
-				   node->left, get_header(),
-				   dimension_function(), compare()).node;
+	  node = iterator::maximum
+	    (top_dim, incr_dim(rank, top_dim), top->left, Base::get_header(),
+	     rank, cmp).node;
 	}
       else
 	{
-	  node = iterator::minimum(k, (k + 1) % dimension(),
-				   node->right, get_header(),
-				   dimension_function(), compare()).node;
+	  node = iterator::minimum
+	    (top_dim, incr_dim(rank, top_dim), top->right, Base::get_header(),
+	     rank, cmp).node;
 	}
       Base_ptr up = node;
-      while (up != x)
+      while (up != top)
 	{
 	  --up->weight;
-	  node_dim = (node_dim + 1) % dimension();
+	  node_dim = decr_dim(rank, node_dim);
 	  up = up->parent;
 	}
-      std::memcpy(&static_cast<Link_type>(x)->key_field,
+      // SWAP instead!!
+      std::memcpy(&static_cast<Link_type>(top)->key_field,
 		  &static_cast<Link_type>(node)->key_field,
 		  sizeof(key_type));
       if (node->left == 0 && node->right == 0)
 	{
 	  if (node->parent->left == node)
 	    {
-	      if (get_leftmost() == node)
-		{ get_header()->left = node->parent; }
+	      if (Base::get_leftmost() == node)
+		{ Base::get_header()->left = node->parent; }
 	      node->parent->left = 0;
 	    }
 	  else
 	    {
-	      if (get_rightmost() == node)
-		{ get_header()->right = node->parent; }
+	      if (Base::get_rightmost() == node)
+		{ Base::get_header()->right = node->parent; }
 	      node->parent->right = 0;
 	    }
 	  destroy_node(static_cast<Link_type>(node));
@@ -169,47 +175,48 @@ namespace spatial
 	    { left_tree = false; }
 	  else
 	    { left_tree = true; }
-	  x = node;
+	  top = node;
 	}
       while(node != 0)
 	{
 	  if (left_tree)
 	    {
-	      node = mapping_iterator::maximum
-		(node_dim, (node_dim + 1) % dimension(), x->left,
-		 get_header(), dimension_function(), compare()).node;
+	      node = iterator::maximum
+		(node_dim, incr_dim(rank, node_dim), node->left,
+		 Base::get_header(), rank, cmp).node;
 	    }
 	  else
 	    {
-	      node = mapping_iterator::minimum
-		(node_dim, (node_dim + 1) % dimension(), x->right,
-		 get_header(), dimension_function(), compare()).node;
+	      node = view::details::mapping_iterator<Self>::type::minimum
+		(node_dim, incr_dim(rank, node_dim), node->right,
+		 Base::get_header(), rank, cmp).impl.node;
 	    }
 	  Base_ptr up = node;
-	  while (up != x)
+	  while (up != top)
 	    {
 	      --up->weight;
-	      node_dim = (node_dim + 1) % dimension();
+	      node_dim = decr_dim(rank, node_dim);
 	      up = up->parent;
 	    }
-	  std::memcpy(&static_cast<Link_type>(x)->key_field,
+	  // SWAP HERE TOO!!!!
+	  std::memcpy(&static_cast<Link_type>(top)->key_field,
 		      &static_cast<Link_type>(node)->key_field,
 		      sizeof(key_type));
 	  if (node->left == 0 && node->right == 0)
 	    {
 	      if (node->parent->left == node)
 		{
-		  if (get_leftmost() == node)
-		    { get_header()->left = node->parent; }
+		  if (Base::get_leftmost() == node)
+		    { Base::get_header()->left = node->parent; }
 		  node->parent->left = 0;
 		}
 	      else
 		{
-		  if (get_rightmost() == node)
-		    { get_header()->right = node->parent; }
+		  if (Base::get_rightmost() == node)
+		    { Base::get_header()->right = node->parent; }
 		  node->parent->right = 0;
 		}
-	      destroy_node(static_cast<Link_type>(node));
+	      Base::destroy_node(static_cast<Link_type>(node));
 	      node = 0;
 	    }
 	  else
@@ -220,7 +227,7 @@ namespace spatial
 		{ left_tree = false; }
 	      else
 		{ left_tree = true; }
-	      x = node;
+	      top = node;
 	    }
 	}
     }

@@ -38,6 +38,8 @@ namespace spatial
       Base_ptr node = Base::get_root();
       dimension_type node_dim = 0;
       target_node->left = target_node->right = 0;
+      const Compare& cmp = Base::compare();
+      const Rank& rank = Base::rank();
       if (Node_base::header(node))
 	{
 	  SPATIAL_ASSERT_CHECK(m_count == 0);
@@ -51,13 +53,12 @@ namespace spatial
 	{
 	  while (true)
 	    {
-	      if (less(Base::compare(), node_dim, SPATIAL_KEY(target_node),
-			  SPATIAL_KEY(node)))
+	      if (cmp(node_dim, SPATIAL_KEY(target_node), SPATIAL_KEY(node)))
 		{
 		  if (node->left != 0)
 		    {
 		      node = node->left;
-		      node_dim = incr_dim(Base::rank(), node_dim);
+		      node_dim = incr_dim(rank, node_dim);
 		    }
 		  else
 		    {
@@ -74,7 +75,7 @@ namespace spatial
 		  if (node->right != 0)
 		    {
 		      node = node->right;
-		      node_dim = incr_dim(Base::rank(), node_dim);
+		      node_dim = incr_dim(rank, node_dim);
 		    }
 		  else
 		    {
@@ -196,27 +197,21 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(!Base::empty());
     }
 
-    namespace details
+    template<typename Compare, typename Base_ptr, typename Link_type>
+    struct std_less
     {
-      namespace kdtree
+      Compare compare;
+      dimension_type dimension;
+
+      std_less(const Compare& c, dimension_type d)
+	: compare(c), dimension(d) { }
+
+      bool
+      operator() (const Base_ptr& x, const Base_ptr& y) const
       {
-	template<typename Compare, typename Base_ptr, typename Link_type>
-	struct std_less
-	{
-	  Compare compare;
-	  dimension_type dimension;
-
-	  std_less(const Compare& c, dimension_type d)
-	    : compare(c), dimension(d) { }
-
-	  bool
-	  operator() (const Base_ptr& x, const Base_ptr& y) const
-	  {
-	    return compare(dimension, SPATIAL_KEY(x), SPATIAL_KEY(y));
-	  }
-	};
+	return compare(dimension, SPATIAL_KEY(x), SPATIAL_KEY(y));
       }
-    }
+    };
 
     template <typename Rank, typename Key, typename Compare,
 	      typename Alloc, bool ConstantIterator>
@@ -226,8 +221,7 @@ namespace spatial
     {
       SPATIAL_ASSERT_CHECK(first != last);
       SPATIAL_ASSERT_CHECK(dim < Base::dimension());
-      typedef details::kdtree
-	::std_less<Compare, Base_ptr, Link_type> compare_type;
+      typedef std_less<Compare, Base_ptr, Link_type> compare_type;
       do
 	{
 	  size_type half = (last - first) >> 1;
@@ -268,16 +262,19 @@ namespace spatial
     {
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!Node_base::header(node));
-      typedef Mapping_iterator<Rank, Key, node_type, Compare,
-			       ConstantIterator> mapping_iterator;
+      typedef Mapping_iterator<Rank, Key, node_type, Compare> mapping_iterator;
+      const Compare& cmp = Base::compare();
+      const Rank& rank = Base::rank();
       while (node->right != 0 || node->left != 0)
 	{
-	  // If there is nothing on the right, to preserve the invariant, we need
-	  // to shift the whole sub-tree to the right. This K-d tree rotation is
-	  // not documented anywhere I've searched. The previous known rotation by
-	  // J. L. Bentely for erasing nodes in the K-d tree is incorrect. This
-	  // could explain while it is hard to find an implementation of K-d Tree
-	  // with the O(log(n)) erase function predicted in his paper.
+	  // If there is nothing on the right, to preserve the invariant, we
+	  // need to shift the whole sub-tree to the right. This K-d tree
+	  // rotation is not documented anywhere I've searched. The previous
+	  // known rotation by J. L. Bentely for erasing nodes in the K-d tree
+	  // is incorrect for strict invariant (left nodes strictly less than
+	  // root node). This could explain while it is hard to find an
+	  // implementation of K-d Tree with the O(log(n)) erase function
+	  // predicted in his paper.
 	  mapping_iterator candidate;
 	  if (node->right == 0)
 	    {
@@ -298,8 +295,7 @@ namespace spatial
 		}
 	    }
 	  candidate = mapping_iterator::minimum
-	    (Base::rank(), Base::compare(), node_dim,
-	     incr_dim(Base::rank(), node_dim), node->right);
+	    (rank, cmp, node_dim, incr_dim(rank, node_dim), node->right);
 	  if (Base::get_rightmost() == candidate.impl.node)
 	    { Base::set_rightmost(node); }
 	  if (Base::get_leftmost() == node)
@@ -338,93 +334,20 @@ namespace spatial
 
     template <typename Rank, typename Key, typename Compare,
 	      typename Alloc, bool ConstantIterator>
-    template <typename Predicate>
-    inline
-    typename Kdtree<Rank, Key, Compare, Alloc,
-		    ConstantIterator>::iterator
-    Kdtree<Rank, Key, Compare, Alloc, ConstantIterator>::find_if
-    (const key_type& value, const Predicate& predicate)
-    {
-      typedef Range_iterator
-	<Rank, Key, node_type, equal_bounds<Key, Compare>, ConstantIterator>
-	equal_iterator;
-      if (Base::empty()) return Base::end();
-      equal_iterator begin
-	= equal_iterator::minimum(Base::rank(), make_equal_bounds(*this, value),
-				  0, Base::get_root());
-      equal_iterator end
-	= equal_iterator(Base::rank(), make_equal_bounds(*this, value),
-			 Base::rank()() - 1,
-			 static_cast<Link_type>(Base::get_header()));
-      for (; begin != end; ++begin)
-	{
-	  if (predicate(*begin, value))
-	    return iterator(static_cast<Link_type>(begin.impl.node));
-	}
-      return Base::end();
-    }
-
-    template <typename Rank, typename Key, typename Compare,
-	      typename Alloc, bool ConstantIterator>
-    template <typename Predicate>
-    inline
-    typename Kdtree<Rank, Key, Compare, Alloc,
-		    ConstantIterator>::const_iterator
-    Kdtree<Rank, Key, Compare, Alloc, ConstantIterator>::find_if
-    (const key_type& value, const Predicate& predicate) const
-    {
-      typedef Const_Range_iterator
-	<Rank, Key, node_type, equal_bounds<Key, Compare>, ConstantIterator>
-	const_equal_iterator;
-      if (Base::empty()) return Base::end();
-      equal_bounds<Key, Compare> bounds = make_equal_bounds(*this, value);
-      const_equal_iterator begin
-	= const_equal_iterator::minimum(Base::rank(), bounds, 0,
-					Base::get_root());
-      const_equal_iterator end
-	= const_equal_iterator(Base::rank(), bounds, Base::rank()() - 1,
-			       static_cast<Const_Link_type>(Base::get_header()));
-      for (; begin != end; ++begin)
-	{
-	  if (predicate(*begin, value))
-	    return const_iterator(static_cast<Const_Link_type>
-				  (begin.impl.node));
-	}
-      return Base::end();
-    }
-
-    template <typename Rank, typename Key, typename Compare,
-	      typename Alloc, bool ConstantIterator>
     inline void
     Kdtree<Rank, Key, Compare, Alloc, ConstantIterator>::erase
     (const_iterator pointer)
     {
       except::check_iterator_argument(pointer.node);
-      dimension_type node_dim = Base::dimension() - 1;
+      const Rank& rank = Base::rank();
+      dimension_type node_dim = rank() - 1;
       Const_Base_ptr node = pointer.node;
       while (!Node_base::header(node))
 	{
 	  node = node->parent;
-	  node_dim = incr_dim(Base::rank(), node_dim);
+	  node_dim = incr_dim(rank, node_dim);
 	}
       erase_node(node_dim, const_cast<Base_ptr>(pointer.node));
-    }
-
-    template <typename Rank, typename Key, typename Compare,
-	      typename Alloc, bool ConstantIterator>
-    inline void
-    Kdtree<Rank, Key, Compare, Alloc, ConstantIterator>::erase
-    (iterator pointer)
-    {
-      except::check_iterator_argument(pointer.node);
-      dimension_type node_dim = Base::dimension() - 1;
-      Base_ptr node = pointer.node;
-      while (!Node_base::header(node))
-	{
-	  node = node->parent;
-	  node_dim = incr_dim(Base::rank(), node_dim);
-	}
-      erase_node(node_dim, pointer.node);
     }
 
     template <typename Rank, typename Key, typename Compare,
@@ -434,21 +357,15 @@ namespace spatial
     Kdtree<Rank, Key, Compare, Alloc, ConstantIterator>::erase
     (const key_type& value)
     {
-      typedef Range_iterator
-	<Rank, Key, node_type, equal_bounds<Key, Compare>, ConstantIterator>
-	equal_iterator;
       size_type cnt = 0;
       while (true)
 	{
 	  if (Base::empty()) break;
-	  equal_bounds<Key, Compare> bounds = make_equal_bounds(*this, value);
-	  equal_iterator begin
-	    = equal_iterator::minimum(Base::rank(), bounds, 0,
-				      Base::get_root());
-	  equal_iterator end
-	    = equal_iterator(Base::rank(), bounds, Base::rank()() - 1,
-			     static_cast<Link_type>(Base::get_header()));
-	  for (; begin != end; ++begin)
+	  std::pair<typename Base::equal_iterator,
+		    typename Base::equal_iterator>
+	    found = Base::equal_range(value);
+	  typename Base::equal_iterator begin = found.first;
+	  for (; begin != found.second; ++begin)
 	    {
 	      /*
 	       * If the compiler throws you an error at the line below, please,
@@ -458,10 +375,11 @@ namespace spatial
 		{
 		  erase_node(begin.impl.node_dim(), begin.impl.node);
 		  ++cnt;
+		  // We modified the tree, so we re-initialize the iterators
 		  break;
 		}
 	    }
-	  if (begin == end) break;
+	  if (begin == found.second) break;
 	}
       return cnt;
     }

@@ -27,12 +27,14 @@
 #include "bits/spatial_neighbor.hpp"
 #include "bits/spatial_kdtree_base.hpp"
 #include "bits/spatial_kdtree.hpp"
+#include "bits/spatial_relaxed_kdtree.hpp"
 #include "bits/spatial_node.tpp"
 #include "bits/spatial_mapping.tpp"
 #include "bits/spatial_range.tpp"
+#include "bits/spatial_neighbor.tpp"
 #include "bits/spatial_kdtree_base.tpp"
 #include "bits/spatial_kdtree.tpp"
-#include "bits/spatial_neighbor.tpp"
+#include "bits/spatial_relaxed_kdtree.tpp"
 #include "bits/spatial_unset_macro.hpp"
 
 namespace spatial

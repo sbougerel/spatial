@@ -2,8 +2,29 @@
 
 /**
  *  @file   spatial_relaxed_kdtree.hpp
- *  @brief  
+ *  @brief  Defines a \kdtree with a relaxed invariant. On a given dimension, if
+ *  coordinates between a root node and a child node are equal, the child node
+ *  may be placed either on the left or the right of the tree. The relaxed
+ *  \kdtree is a self-balancing tree.
  *
+ *  Balancing the tree occurs when the number of children in the left part of
+ *  a node differs from that in the right part, by a significant margin. The
+ *  \kdtree is then rebalanced slightly, by shifting one child node from one
+ *  side to the other side.
+ *
+ *  Relaxed \kdtree are implemented as scapegoat tree, and so, for each node
+ *  they store an additional size_t count of number of children in the
+ *  node. Although they are self-balancing, they are not as memory efficient as
+ *  regular \kdtree.
+ *
+ *  Additionally, scapegoat roatations are not as efficient as the one in the
+ *  \rbtree. Sadly, \rbtree rotation cannot be applied for \kdtree, due to the
+ *  complexity of in invariant. However scapegoat rotations still provide
+ *  amortized insertion and deletion times on the tree, and allow for multiple
+ *  balancing policies to be defined.
+ */
+
+/*
  *  Change Log:
  *
  *  - 2009-02-26 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
@@ -11,27 +32,6 @@
  *
  *  - (next change goes here)
  *
- *
- *  Todo:
- *
- *  - Test with different rebalancing models, using the sliding balance
- *    algorithm, start with relaxed rebalance first.
- *
- *  - Standards allocators have hints. Use cache oblivious tree allocators!
- *
- *  - Try to store only when you are convinced that it is the right way to do!
- *
- *  - Red-black will be tricky to implement.... arggge... but it'll be hard with
- *    using paper before to compute complexity.
- *
- *  - Use random sets on random queries, cloudy set on cloudy queries, etc...
- *
- *  - try with a red/black first on paper to validate idea... add a third color
- *    to know in which direction to perform the switch? Interesting... but at
- *    which node should I perform the split????? How do I recolor????
- *
- *  - Put all the POD types at the beginning of the function for register
- *    optimization!
  */
 
 #ifndef SPATIAL_RELAXED_KDTREE_HPP
@@ -46,127 +46,100 @@
 
 namespace spatial
 {
+  /**
+   *  @brief  This balancing policy leaves the tree totally unbalanced.
+   *
+   *  This policy is simply a marker, and creating a container with this
+   *  policy will, in fact, have the same result as using containers that do
+   *  not implement balancing at all, such as spatial::frozen_pointset family
+   *  of containers.
+   */
+  struct non_balancing { };
+
+  /**
+   *  @brief  This policy triggers rebalancing for the node when the
+   *  difference in weight between left or right is more than a half. The
+   *  default policy for rebalancing.
+   *
+   *  In effect, this policy leaves the tree roughly balanced: the path from
+   *  the root to the furthest leaf is no more than twice as long as the path
+   *  from the root to the nearest leaf.
+   *
+   *  This policy is adequate in many cases cause it prevents worse-case
+   *  insertion or deletion time, and worst-case run-time on many search
+   *  algorithms, and does not require a large amount of rebalancing.
+   */
+  struct loose_balancing
+  {
+    /**
+     *  @brief  Rebalancing predicate.
+     *  @param x  The node to examine for rebalancing.
+     *  @param d  The current dimension function to use for examination.
+     *  @return  true indicate that reblancing must occurs, otherwise false.
+     */
+    template <typename Rank>
+    bool
+    operator()(const details::Weighted_node* x, const Rank& r) const
+    {
+      typedef std::pair<weight_type, weight_type> weight_pair;
+      weight_type left_weight = (x->left != 0)
+	? static_cast<const details::Weighted_node*>(x->left)->weight : 0;
+      weight_type right_weight = (x->right != 0)
+	? static_cast<const details::Weighted_node*>(x->right)->weight : 0;
+      if (left_weight < right_weight)
+	{
+	  return (right_weight > r() && left_weight < (right_weight >> 1))
+	    ? true : false;
+	}
+      else
+	{
+	  return (left_weight > r() && right_weight < (left_weight >> 1))
+	    ? true : false;
+	}
+    }
+  };
+
+  /**
+   *  @brief  A policy that balances a node if the difference in weight
+   *  between left and right is higher than the current rank of the tree.
+   *
+   *  The dimension is choosen as a limiter because balancing the tree even
+   *  more strictly will not have an impact on most search algorithm, since
+   *  dimensions at each level of the \kdtree are rotated.
+   */
+  struct tight_balancing
+  {
+    /**
+     *  @brief  Rebalancing predicate.
+     *  @param x  The node to examine for rebalancing.
+     *  @param d  The current dimension function to use for examination.
+     *  @return  true indicate that reblancing must occurs, otherwise false.
+     */
+    template <typename Rank>
+    bool
+    operator()(const details::Weighted_node* x, const Rank& r) const
+    {
+      typedef std::pair<weight_type, weight_type> weight_pair;
+      weight_type left_weight = (x->left != 0)
+	? static_cast<const details::Weighted_node*>(x->left)->weight : 0;
+      weight_type right_weight = (x->right != 0)
+	? static_cast<const details::Weighted_node*>(x->right)->weight : 0;
+      dimension_type rank = r();
+      if (left_weight < right_weight)
+	{
+	  return (right_weight > rank && left_weight < (right_weight - rank))
+	    ? true : false;
+	}
+      else
+	{
+	  return (left_weight > r() && right_weight < (left_weight - rank))
+	    ? true : false;
+	}
+    }
+  };
+
   namespace details
   {
-
-    /**
-     *  @brief  This balancing policy leaves the tree totally unbalanced.
-     *
-     *  With such policy, the tree will never be balanced. If you do not need
-     *  balancing of the tree, you should consider using plain old k-d trees and
-     *  not relaxed k-d trees.
-     */
-    struct unbalanced
-    {
-      /**
-       *  @brief  Always return false, thus prevent rebalancing to occur.
-       *  @return  false, always.
-       */
-      template <typename Dimension>
-      bool
-      operator()(const Relaxed_kdtree_node_base*,
-		 const Dimension&) const
-      { return false; }
-    };
-
-    /**
-     *  @brief  Provide loose balacing with a fixed factor of 0.5.
-     *
-     *  This policy triggers rebalancing for the node is the smallest weight of
-     *  left or right is less than half that of the biggest weight.
-     */
-    struct loosely_balanced
-    {
-      /**
-       *  @brief  Rebalancing predicate.
-       *  @param x  The node to examine for rebalancing.
-       *  @param d  The current dimension function to use for examination.
-       *  @return  true indicate that reblancing must occurs, otherwise false.
-       */
-      template <typename Dimension>
-      bool
-      operator()(const Relaxed_kdtree_node_base* x,
-		 const Dimension& d) const
-      {
-	typedef std::pair<weight_type, weight_type> weight_pair;
-	weight_type left_weight = (x->left != 0) ? x->left->weight : 0;
-	weight_type right_weight = (x->right != 0) ? x->right->weight : 0;
-	weight_pair p
-	  = left_weight < right_weight ?
-	  weight_pair(left_weight, right_weight) :
-	  weight_pair(right_weight, left_weight);
-	if(p.second > d() && p.first < (p.second >> 1) )
-	  { return true; }
-	else { return false; }
-      }
-    };
-
-    /**
-     *  @brief  A policy that resutls in a tightly balanced tree.
-     *
-     *  With such policy, the node is rebalanced if the smallest weight of left or
-     *  right children is less than that of the biggest, by a difference equal the
-     *  dimension of the tree plus 1.
-     */
-    struct tightly_balanced
-    {
-      /**
-       *  @brief  Rebalancing predicate.
-       *  @param x  The node to examine for rebalancing.
-       *  @param d  The current dimension function to use for examination.
-       *  @return  true indicate that reblancing must occurs, otherwise false.
-       */
-      template <typename Dimension>
-      bool
-      operator()(const Relaxed_kdtree_node_base* x,
-		 const Dimension& d) const
-      {
-	typedef std::pair<weight_type, weight_type> weight_pair;
-	weight_type left_weight = (x->left != 0) ? x->left->weight : 0;
-	weight_type right_weight = (x->right != 0) ? x->right->weight : 0;
-	weight_pair p
-	  = left_weight < right_weight ?
-	  weight_pair(left_weight, right_weight) :
-	  weight_pair(right_weight, left_weight);
-	if(p.second > (d() + 1) && p.first < (p.second - d() - 1))
-	  { return true; }
-	else { return false; }
-      }
-    };
-
-    /**
-     *  @brief  Provide tighter balacing with a fixed Difference.
-     *
-     *  With such policy, the node is rebalanced if the smallest weight of left
-     *  and right children is different from the biggest by @Difference.
-     */
-    template <weight_type Difference>
-    struct tight_balancing
-    {
-      /**
-       *  @brief  Rebalancing predicate.
-       *  @param x  The node to examine for rebalancing.
-       *  @param d  The current dimension function to use for examination.
-       *  @return  true indicate that reblancing must occurs, otherwise false.
-       */
-      template <typename Dimension>
-      bool
-      operator()(const Relaxed_kdtree_node_base* x,
-		 const Dimension& d) const
-      {
-	typedef std::pair<weight_type, weight_type> weight_pair;
-	weight_type left_weight = (x->left != 0) ? x->left->weight : 0;
-	weight_type right_weight = (x->right != 0) ? x->right->weight : 0;
-	weight_pair p
-	  = left_weight < right_weight ?
-	  weight_pair(left_weight, right_weight) :
-	  weight_pair(right_weight, left_weight);
-	if(p.second > Difference && p.first < (p.second - Difference))
-	  { return true; }
-	else { return false; }
-      }
-    };
-
     // Detailed implementation of the relaxed kd-tree. Used by point_set,
     // point_multiset, point_map, point_multimap, box_set, box_multiset and their
     // equivalent in variant orders: variant_pointer_set, as chosen by the
@@ -174,16 +147,15 @@ namespace spatial
     // neighbor_point_multiset... Compare must provide strict unordered ordering
     // along each dimension! Each node maintains the count of its children nodes
     // plus one.
-    template <typename Dimension, typename Key, typename Compare,
-	      typename Balance_policy, typename Alloc, bool Const_condition>
+    template <typename Rank, typename Key, typename Compare,
+	      typename Balancing, typename Alloc, bool Const_condition>
     class Relaxed_kdtree
-      : public Kdtree_base<Dimension, Key, Relaxed_kdtree_node<Key>, Compare,
-			   Alloc, Const_condition>,
-						  private Balance_policy
+      : public Kdtree_base<Rank, Key, Relaxed_kdtree_node<Key>, Compare,
+			   Alloc, Const_condition>
     {
-      typedef Relaxed_kdtree<Dimension, Key, Compare, Balance_policy,
+      typedef Relaxed_kdtree<Rank, Key, Compare, Balancing,
 			     Alloc, Const_condition> Self;
-      typedef Kdtree_base<Dimension, Key, Relaxed_kdtree_node<Key>, Compare,
+      typedef Kdtree_base<Rank, Key, Relaxed_kdtree_node<Key>, Compare,
 			  Alloc, Const_condition>    Base;
 
       typedef typename Base::Base_ptr            Base_ptr;
@@ -208,8 +180,8 @@ namespace spatial
       typedef typename Base::iterator            iterator;
       typedef typename Base::const_iterator      const_iterator;
 
-      typedef details::equal_iterator<Self>       equal_iterator;
-      typedef details::const_equal_iterator<Self> const_equal_iterator;
+    private:
+      Balancing m_balancing;
 
     protected:
       Link_type
@@ -225,11 +197,14 @@ namespace spatial
 
     public:
       // Functors accessors
-      const Balance_policy&
-      balance_policy() const
-      { return *static_cast<const Balance_policy*>(this); }
+      const Balancing&
+      balancing() const
+      { return balancing; }
 
     private:
+      void
+      copy_structure(const Self& other);
+
       template <typename InputIterator>
       void
       copy_aux(InputIterator first, InputIterator last);
@@ -267,69 +242,86 @@ namespace spatial
     public:
       // allocation/deallocation
       Relaxed_kdtree()
-	: Base(Dimension(), Compare(), allocator_type()), Balance_policy()
+	: Base(Rank(), Compare(), allocator_type()), m_balancing()
       { }
 
-      explicit Relaxed_kdtree(const Dimension& d)
-	: Base(d, Compare(), allocator_type()), Balance_policy()
+      explicit Relaxed_kdtree(const Rank& rank)
+	: Base(rank, Compare(), allocator_type()), m_balancing()
       { }
 
-      Relaxed_kdtree(const Dimension& d, const compare_type& c)
-	: Base(d, c, allocator_type()), Balance_policy()
+      Relaxed_kdtree(const Rank& rank, const compare_type& compare)
+	: Base(rank, compare, allocator_type()), m_balancing()
       { }
 
-      Relaxed_kdtree(const Dimension& d, const compare_type& c,
-		     const Balance_policy& b)
-	: Base(d, c, allocator_type()), Balance_policy(b)
+      Relaxed_kdtree(const Rank& rank, const compare_type& compare,
+		     const Balancing& b)
+	: Base(rank, compare, allocator_type()), m_balancing(b)
       { }
 
-      Relaxed_kdtree(const Dimension& d, const compare_type& c,
-		     const Balance_policy& b, const allocator_type& alloc)
-	: Base(d, c, alloc), Balance_policy(b)
+      Relaxed_kdtree(const Rank& rank, const compare_type& compare,
+		     const Balancing& b, const allocator_type& alloc)
+	: Base(rank, compare, alloc), m_balancing(b)
       { }
 
-      Relaxed_kdtree(const Self& t)
-	: Base(t), Balance_policy(t.balance_policy())
+      Relaxed_kdtree(const Self& other)
+	: Base(other), m_balancing(other.balancing())
       {
-	if (!t.empty())
-	  {
-	    // copy stuff now.
-	  }
+	if (!other.empty())
+	  { copy_structure(other); }
       }
 
       Self&
-      operator=(const Self& t)
+      operator=(const Self& other)
       {
-	Base::operator=(t);
-	node_count = 0;
-	if (!t.empty())
+	if (&other != this)
 	  {
-	    // copy stuff now.
+	    clear();
+	    Base::operator=(other);
+	    // No need to copy balancing policy.
+	    if (!other.empty())
+	      { copy_structure(other); }
 	  }
       }
 
-
     public:
-      void swap(Self& t);
+      size_type
+      size() const
+      {
+	return Base::empty() ? 0
+	  : static_cast<const Weighted_node*>(Base::get_root())->weight;
+      }
+
+      size_type
+      count() const
+      { return size(); }
+
+      void
+      clear()
+      { Base::clear(); }
+
+      void swap(Self& other)
+      {
+	Base::swap(*static_cast<Base*>(&other));
+      }
 
       // Insertion
       iterator
-      insert(const key_type& v)
+      insert(const key_type& key)
       {
-	Base_ptr x = get_root();
-	if (x == get_header())
+	Base_ptr node = Base::get_root();
+	if (node == Base::get_header())
 	  {
-	    Link_type new_node = create_node(v);
-	    x->parent = new_node;
-	    x->left = new_node;
-	    x->right = new_node;
-	    new_node->parent = x;
-	    return unordered_iterator(new_node);
+	    // insert root node in empty tree
+	    Link_type new_node = create_node(key);
+	    node->parent = new_node;
+	    node->left = new_node;
+	    node->right = new_node;
+	    new_node->parent = node;
+	    return iterator(new_node);
 	  }
 	else
 	  {
-	    iterator i = insert_aux(0, x, v);
-	    ++x->weight; // increment after in case above alloc fails
+	    iterator i = insert_aux(0, node, key);
 	    return i;
 	  }
       }
@@ -349,23 +341,6 @@ namespace spatial
       template<typename InputIterator>
       void
       erase(InputIterator first, InputIterator last);
-
-      //@{
-      /**
-       *  @brief  Return a pair of iterator around keys of similar coordinates.
-       *
-       *  @attention These iterator are not similar to the other iterator, but
-       *  are special types of iterators can only be used to list the equal
-       *  objects in the container.
-       */
-      std::pair<equal_iterator, equal_iterator>
-      equal_range(const key_type& key)
-      { return details::equal_range(*this, key); }
-
-      std::pair<const_equal_iterator, const_equal_iterator>
-      equal_range(const key_type& key) const
-      { return details::const_equal_range(*this, key); }
-      //@}
     };
 
   } // namespace details

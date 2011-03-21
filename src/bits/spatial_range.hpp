@@ -235,16 +235,16 @@ namespace spatial
      *  @brief  A mutable iterator based on Range_iterator_base.
      */
     template <typename Rank, typename Key, typename Node,
-	      typename Predicate, bool Constant>
+	      typename Predicate>
     struct Range_iterator
       : public Range_iterator_base
-    <Rank, Key, Node, Predicate, Constant,
-     Range_iterator<Rank, Key, Node, Predicate, Constant> >
+    <Rank, Key, Node, Predicate, false,
+     Range_iterator<Rank, Key, Node, Predicate> >
     {
     private:
       typedef Range_iterator_base
-      <Rank, Key, Node, Predicate, Constant, Range_iterator
-       <Rank, Key, Node, Predicate, Constant> > Base;
+      <Rank, Key, Node, Predicate, false, Range_iterator
+       <Rank, Key, Node, Predicate> > Base;
 
     public:
       explicit
@@ -262,19 +262,19 @@ namespace spatial
      *  @brief  A constant iterator based on Range_iterator_base.
      */
     template <typename Rank, typename Key, typename Node,
-	      typename Predicate, bool Constant>
+	      typename Predicate>
     struct Const_Range_iterator
       : public Range_iterator_base
     <Rank, Key, Node, Predicate, true,
-     Const_Range_iterator<Rank, Key, Node, Predicate, Constant> >
+     Const_Range_iterator<Rank, Key, Node, Predicate> >
     {
     private:
       typedef Range_iterator
-      <Rank, Key, Node, Predicate, Constant>    iterator;
+      <Rank, Key, Node, Predicate>    iterator;
 
       typedef Range_iterator_base
       <Rank, Key, Node, Predicate, true, Const_Range_iterator
-       <Rank, Key, Node, Predicate, Constant> > Base;
+       <Rank, Key, Node, Predicate> > Base;
 
     public:
       explicit
@@ -307,10 +307,7 @@ namespace spatial
 	<typename container_traits<Container>::rank_type,
 	 typename container_traits<Container>::key_type,
 	 typename container_traits<Container>::node_type,
-	 Predicate,
-	 spatial::details::constant_required
-	 <typename container_traits<Container>::key_type>::value
-	 > type;
+	 Predicate> type;
       };
 
       template<typename Container, typename Predicate>
@@ -320,10 +317,7 @@ namespace spatial
 	<typename container_traits<Container>::rank_type,
 	 typename container_traits<Container>::key_type,
 	 typename container_traits<Container>::node_type,
-	 Predicate,
-	 spatial::details::constant_required
-	 <typename container_traits<Container>::key_type>::value
-	 > type;
+	 Predicate> type;
       };
 
       template <typename Container, typename Predicate>
@@ -452,8 +446,11 @@ namespace spatial
       typedef typename traits_type::compare_type       compare_type;
       typedef typename traits_type::rank_type          rank_type;
 
-      typedef typename details::range_iterator
-      <Container, Predicate>::type                     iterator;
+      typedef typename spatial::details::condition
+      <traits_type::const_iterator_tag::value,
+       typename details::const_range_iterator<Container, Predicate>::type,
+       typename details::range_iterator<Container, Predicate>::type
+       >::type                                         iterator;
       typedef typename details::const_range_iterator
       <Container, Predicate>::type                     const_iterator;
 
@@ -500,7 +497,7 @@ namespace spatial
       typedef typename traits_type::difference_type    difference_type;
       typedef typename traits_type::allocator_type     allocator_type;
       typedef typename traits_type::compare_type       compare_type;
-      typedef typename traits_type::rank_type key_dimension_type;
+      typedef typename traits_type::rank_type          rank_type;
 
       typedef typename details::const_range_iterator
       <Container, Predicate>::type                     iterator;
@@ -717,76 +714,6 @@ namespace spatial
     //@}
 
   } // namespace view
-
-  namespace details
-  {
-    /*
-     * Define the equal_iterator type that is used in the base tree structures
-     * to search through a set of object of equivalent coordinates.
-     */
-    template<typename Container>
-    struct equal_iterator
-    {
-      typedef spatial::details::Range_iterator
-      <typename container_traits<Container>::rank_type,
-       typename container_traits<Container>::key_type,
-       typename container_traits<Container>::node_type,
-       equal_bounds<typename container_traits<Container>::key_type,
-		    typename container_traits<Container>::compare_type>,
-       spatial::details::constant_required
-       <typename container_traits<Container>::key_type>::value
-       > type;
-    };
-
-    /*
-     * Define the const_equal_iterator type that is used in the base tree
-     * structures to search through a set of object of equivalent coordinates.
-     */
-    template<typename Container>
-    struct const_equal_iterator
-    {
-      typedef spatial::details::Const_Range_iterator
-      <typename container_traits<Container>::rank_type,
-       typename container_traits<Container>::key_type,
-       typename container_traits<Container>::node_type,
-       equal_bounds<typename container_traits<Container>::key_type,
-		    typename container_traits<Container>::compare_type>,
-       spatial::details::constant_required
-       <typename container_traits<Container>::key_type>::value
-       > type;
-    };
-
-    template <typename Container>
-    inline std::pair<equal_iterator<Container>, equal_iterator<Container> >
-    equal_range
-    (Container& container,
-     const typename container_traits<Container>::key_type& key)
-    {
-      equal_bounds<typename container_traits<Container>::key_type,
-		   typename container_traits<Container>::compare_type>
-	predicate(container.compare(), key);
-      return std::pair<equal_iterator<Container>, equal_iterator<Container> >
-	(view::details::begin_range(container, predicate),
-	 view::details::end_range(container, predicate));
-    }
-
-    template <typename Container>
-    inline std::pair<const_equal_iterator<Container>,
-		     const_equal_iterator<Container> >
-    const_equal_range
-    (const Container& container,
-     const typename container_traits<Container>::key_type& key)
-    {
-      equal_bounds<typename container_traits<Container>::key_type,
-		   typename container_traits<Container>::compare_type>
-	predicate(container.compare(), key);
-      return std::pair<const_equal_iterator<Container>,
-		       const_equal_iterator<Container> >
-	(view::details::const_begin_range(container, predicate),
-	 view::details::const_end_range(container, predicate));
-    }
-
-  } // namespace details
 } // namespace spatial
 
 #endif // SPATIAL_RANGE_HPP

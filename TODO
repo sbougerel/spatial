@@ -4,17 +4,18 @@ Spatial TODO List
 (Also used as a detailed roadmap, may change according to user
 expectations or interests)
 
-* Mar 11   Some documentation and unit test missing on the first
-           release, so we just need to add them. Just a few are
-           missing, only. Additionaly, check that the library is
-           compiling fine on Visual Studio.
-
-* Apr 11   Finish the implementation of the self-balancing containers,
+* Mar 11   Finish the implementation of the self-balancing containers,
            and create the new family of containers, frozen_pointset,
            in order to store points without rebalancing. By default,
            *_pointset will be self-blancing containers. This involves
            a heavy unit-testing and thus, it should take a good 3
            months.
+
+* Jun 11   Some documentation and unit test missing on the first
+           release, so we just need to add them. Just a few are
+           missing, only. Additionaly, check that the library is
+           compiling fine on Visual Studio. Plus add examples and
+	   performance comparisions.
 
 * Jul 11   Add interator_cast() operators to cast a view interator
            into a container iterator, to facilitate erasing a node
@@ -60,6 +61,14 @@ expectations or interests)
            a long, long period of bug fixing and compatibility
            improvements.
 
-* Oct 12   Porting Spatial to scripting/duck-typing languages? Python,
-           Lua, Ruby, .Net, others?
+* Oct 12   Porting Spatial to scripting/duck-typing languages or
+           frameworks? Python, Java, Lua, Ruby, .Net, others?
+
+* Dec 12   Final optimization: work on cache oblivious tree allocator,
+           that would store nodes that are related closer to one another
+	   in memory.
+
+* Jan 13   A new type of tree to add: VP-tree. They come with a much faster
+      	   neighbor iterator, and a new type of range search iterator, which is
+ 	   not orthogonal by metric based, as is the rest of the tree.
 
