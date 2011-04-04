@@ -220,24 +220,22 @@ namespace spatial
       }
 
       /**
-       *  @brief  Insert a single key v in the tree.
+       *  @brief  Insert a single key @c key in the tree.
        */
       iterator
-      insert(const key_type& value)
+      insert(const key_type& key)
       {
-	Link_type tmp = Base::create_node(value); // may throw
+	Link_type tmp = Base::create_node(key); // may throw
 	return insert_node(tmp);
       }
 
       /**
-       *  @brief  Insert a serie of value in the tree at once.
+       *  @brief  Insert a serie of values in the tree at once.
        */
       template<typename InputIterator>
       void
       insert(InputIterator first, InputIterator last)
-      {
-	for (; first != last; ++first) { insert(*first); }
-      }
+      { for (; first != last; ++first) { insert(*first); } }
 
       /**
        *  @brief  Deletes the node pointed to by the iterator.
@@ -260,7 +258,7 @@ namespace spatial
 
       /**
        *  @brief  Deletes any node that matches one of the keys in the sequence
-       *  covered by the input iterators.
+       *  covered by the iterators.
        */
       void
       erase(const_iterator first, const_iterator last)

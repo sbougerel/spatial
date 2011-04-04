@@ -155,19 +155,6 @@ namespace spatial
     { return node_dim ? node_dim - 1 : dim() - 1; }
 
     /**
-     *  @brief  Return true if @x coordinate is less than @y coordinate over
-     *  dimension @node_dim, given @compare.
-     *  @test   test_details_less
-     */
-    template <typename Key, typename Compare>
-    inline bool
-    less(const Compare& compare, dimension_type node_dim,
-	 const Key& x, const Key& y)
-    {
-      return compare(node_dim, x, y);
-    }
-
-    /**
      *  @brief  Return true if x coordinate is less than y coordinate over
      *  dimension @node_dim, given @compare. If both coordinate are equal,
      *  then return true if address of x is less than address of y.
@@ -181,9 +168,8 @@ namespace spatial
     less_by_ref(const Compare& compare, dimension_type node_dim,
 		const Key& x, const Key& y)
     {
-      namespace d = spatial::details;
-      return (d::less(compare, node_dim, x, y)
-	      || (&x < &y && !d::less(compare, node_dim, y, x)));
+      return (compare(node_dim, x, y)
+	      || (&x < &y && !compare(node_dim, y, x)));
     }
 
     /**

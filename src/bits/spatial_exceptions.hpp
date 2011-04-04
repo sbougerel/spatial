@@ -117,6 +117,16 @@ namespace spatial
       : logic_error(arg) { }
   };
 
+  /**
+   *  @brief  Thrown to report that the iterator used is not a valid one or not
+   *  an iterator belonging to the container in use.
+   */
+  struct invalid_iterator : std::logic_error
+  {
+    explicit invalid_iterator(const std::string& arg)
+      : logic_error(arg) { }
+  };
+
   namespace except
   {
     inline void check_dimension_argument
@@ -192,6 +202,15 @@ namespace spatial
       if (rank_arg > max_rank)
 	throw invalid_rank_argument
 	  ("rank is too large, brute force would yield better results");
+    }
+
+    template <typename Node1, typename Node2>
+    inline void check_invalid_iterator
+    (const Node1& node1, const Node2& node2)
+    {
+      if (node1 != node2)
+	throw invalid_iterator
+	  ("iterator is invalid or does not belong to the container used");
     }
 
   } // namespace except

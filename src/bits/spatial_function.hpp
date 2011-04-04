@@ -130,10 +130,10 @@ namespace spatial
     relative_order
     operator()(dimension_type dim, const Key& key) const
     {
-      const Compare* compare = static_cast<const Compare*>(this);
-      return (details::less(*compare, dim, key, match)
+      const Compare& compare = *static_cast<const Compare*>(this);
+      return (compare(dim, key, match)
 	      ? below
-	      : (details::less(*compare, dim, match, key)
+	      : (compare(dim, match, key)
 		 ? above
 		 : matching));
     }
@@ -200,10 +200,10 @@ namespace spatial
     relative_order
     operator()(dimension_type dim, const Key& key) const
     {
-      const Compare* compare = static_cast<const Compare*>(this);
-      return (!details::less(*compare, dim, lower, key)
+      const Compare& compare = *static_cast<const Compare*>(this);
+      return (!compare(dim, lower, key)
 	      ? below
-	      : (details::less(*compare, dim, key, upper)
+	      : (compare(dim, key, upper)
 		 ? matching
 		 : above));
     }
@@ -275,10 +275,10 @@ namespace spatial
     relative_order
     operator()(dimension_type dim, const Key& key) const
     {
-      const Compare* compare = static_cast<const Compare*>(this);
-      return (details::less(*compare, dim, key, lower)
+      const Compare& compare = *static_cast<const Compare*>(this);
+      return (compare(dim, key, lower)
 	      ? below
-	      : (details::less(*compare, dim, key, upper)
+	      : (compare(dim, key, upper)
 		 ? matching
 		 : above));
     }
@@ -356,10 +356,10 @@ namespace spatial
     relative_order
     operator()(dimension_type dim, const Key& key) const
     {
-      const Compare* compare = static_cast<const Compare*>(this);
-      return (details::less(*compare, dim, key, lower)
+      const Compare& compare = *static_cast<const Compare*>(this);
+      return (compare(dim, key, lower)
 	      ? below
-	      : (details::less(*compare, dim, upper, key)
+	      : (compare(dim, upper, key)
 		 ? above
 		 : matching));
     }

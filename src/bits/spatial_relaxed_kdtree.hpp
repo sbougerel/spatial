@@ -132,7 +132,7 @@ namespace spatial
 	}
       else
 	{
-	  return (left_weight > r() && right_weight < (left_weight - rank))
+	  return (left_weight > rank && right_weight < (left_weight - rank))
 	    ? true : false;
 	}
     }
@@ -185,9 +185,9 @@ namespace spatial
 
     protected:
       Link_type
-      create_node(const key_type& x)
+      create_node(const key_type& key)
       {
-	Link_type node = Base::create_node(x);
+	Link_type node = Base::create_node(key);
 	node->parent = 0;
 	node->left = 0;
 	node->right = 0;
@@ -195,49 +195,56 @@ namespace spatial
 	return node;
       }
 
+      Link_type
+      clone_node(Const_Base_ptr node)
+      {
+	Const_Link_type origin_node = static_cast<Const_Link_type>(node);
+	Link_type new_node = create_node(origin_node->key_field);
+	new_node->weight = origin_node->weight;
+	return node;
+      }
+
     public:
       // Functors accessors
       const Balancing&
       balancing() const
-      { return balancing; }
+      { return m_balancing; }
 
     private:
+
+      /**
+       *  @brief  Copy the exact sturcture of the sub-tree pointed to by @c
+       *  other_node into the current empty tree.
+       *
+       *  The structural copy preserve all characteristics of the sub-tree
+       *  pointed to by @c other_node.
+       */
       void
       copy_structure(const Self& other);
 
-      template <typename InputIterator>
-      void
-      copy_aux(InputIterator first, InputIterator last);
-
       /**
-       *  @brief  Insert the key @c v into the tree located at node @c x or
-       *  below.
+       *  @brief  Insert the new node @c new_node into the tree located at node.
        *
-       *  @param k  The current dimension for the node.
-       *  @param x  The node below which the new key shall be inserted.
-       *  @param v  The key to insert
+       *  @param node_dim  The current dimension for the node.
+       *  @param node      The node below which the new key shall be inserted.
+       *  @param mew_node  The new node to insert
        */
       iterator
-      insert_aux(dimension_type k, Base_ptr x, const key_type& v);
+      insert_node(dimension_type node_dim, Base_ptr node, Base_ptr new_node);
 
       /**
-       *  @brief  Erase and replace the value at @x by the minimum or the maximum
-       *  value in the right tree or left tree respectively.
+       *  Erase the node pointed by @c node.
        *
-       *  If @c left_tree is @c true, look into the left tree to find the maximum
-       *  value along the dimension @c k, and use this value to replace the value
-       *  at @c x. If @c left_tree is @c false, look into the right tree to find
-       *  the minimum value along the dimension @c k, and use this value to
-       *  replace the value at @c x. Do this recursively until a leaf of the tree
-       *  is destroyed.
+       *  @c node cannot be null or a root node, or else dire things may
+       *  happen. This function does not destroy the node and it does not
+       *  decrement weight to the parents of node.
        *
-       *  @param left_tree  Determine which side of the tree shall be visited.
-       *  @param k          The current dimension for the node @c x.
-       *  @param x          The node whose value shall be replaced.
-       *  @param key        Try balancing with key.
+       *  @param dim      The current dimension for @c node
+       *  @param node     The node to erase
+       *  @return         The address of the node that has replaced the erased
+       *                  one or @c node if it was a leaf.
        */
-      void
-      balance_aux(bool left_tree, dimension_type k, Base_ptr x);
+      Base_ptr erase_node(dimension_type dim, Base_ptr node);
 
     public:
       // allocation/deallocation
@@ -263,6 +270,13 @@ namespace spatial
 	: Base(rank, compare, alloc), m_balancing(b)
       { }
 
+      /**
+       *  @brief  Deep copy of @c other into the new tree.
+       *
+       *  This operation results in an identical the structure to the @p other
+       *  tree. Therefore, all operations should behave similarly to both trees
+       *  after the copy.
+       */
       Relaxed_kdtree(const Self& other)
 	: Base(other), m_balancing(other.balancing())
       {
@@ -270,6 +284,14 @@ namespace spatial
 	  { copy_structure(other); }
       }
 
+      /**
+       *  @brief  Assignment of @c other into the tree, with deep copy.
+       *
+       *  The copy preserve the structure of the tree @c other. Therefore, all
+       *  operations should behave similarly to both trees after the copy.
+       *
+       *  @note  The allocator of the tree is not modified by the assignment.
+       */
       Self&
       operator=(const Self& other)
       {
@@ -284,6 +306,9 @@ namespace spatial
       }
 
     public:
+      /**
+       *  @brief  Returns the number of elements in the K-d tree.
+       */
       size_type
       size() const
       {
@@ -291,56 +316,84 @@ namespace spatial
 	  : static_cast<const Weighted_node*>(Base::get_root())->weight;
       }
 
+      /**
+       *  @brief  Returns the number of elements in the K-d tree. Same as size().
+       *  @see size()
+       */
       size_type
       count() const
       { return size(); }
 
+      /**
+       *  @brief  Erase all elements in the K-d tree.
+       */
       void
       clear()
       { Base::clear(); }
 
+      /**
+       *  @brief  Swap the K-d tree content with other.
+       */
       void swap(Self& other)
-      {
-	Base::swap(*static_cast<Base*>(&other));
-      }
+      { Base::swap(*static_cast<Base*>(&other)); }
 
       // Insertion
+      /**
+       *  @brief  Insert a single key @c key in the tree.
+       */
       iterator
       insert(const key_type& key)
       {
+	Link_type new_node = create_node(key);
 	Base_ptr node = Base::get_root();
-	if (node == Base::get_header())
+	if (Node_base::header(node))
 	  {
 	    // insert root node in empty tree
-	    Link_type new_node = create_node(key);
-	    node->parent = new_node;
-	    node->left = new_node;
-	    node->right = new_node;
+	    Base::set_leftmost(new_node);
+	    Base::set_rightmost(new_node);
+	    Base::set_root(new_node);
 	    new_node->parent = node;
 	    return iterator(new_node);
 	  }
 	else
-	  {
-	    iterator i = insert_aux(0, node, key);
-	    return i;
-	  }
+	  { return insert_node(0, node, new_node); }
       }
 
+      /**
+       *  @brief  Insert a serie of values in the tree at once.
+       */
       template<typename InputIterator>
       void
       insert(InputIterator first, InputIterator last)
-      { copy_aux(first, last); }
+      { for (; first != last; ++first) { insert(*first); } }
 
       // Deletion
+      /**
+       *  @brief  Deletes the node pointed to by the iterator.
+       *
+       *  The iterator must be pointing to an existing node belonging to the
+       *  related tree, or dire things may happen.
+       */
       void
-      erase(const_iterator p);
+      erase(const_iterator position);
 
+      /**
+       *  @brief  Deletes all nodes that match key @c value.
+       *  @see    find
+       *  @param  value that will be compared with the tree nodes.
+       *
+       *  The type @c key_type must be equally comparable.
+       */
       size_type
-      erase(const key_type& x);
+      erase(const key_type& key);
 
-      template<typename InputIterator>
+      /**
+       *  @brief  Deletes any node that matches one of the keys in the sequence
+       *  covered by the iterators.
+       */
       void
-      erase(InputIterator first, InputIterator last);
+      erase(const_iterator first, const_iterator last)
+      { for (; first != last; ++first) { erase(first); } }
     };
 
   } // namespace details

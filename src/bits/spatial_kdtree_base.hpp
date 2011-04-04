@@ -24,7 +24,7 @@ namespace spatial
   namespace details
   {
 
-    /*
+    /**
      * Define the equal_iterator type that is used in the base tree structures
      * to search through a set of object of equivalent coordinates.
      */
@@ -40,7 +40,7 @@ namespace spatial
       type;
     };
 
-    /*
+    /**
      * Define the const_equal_iterator type that is used in the base tree
      * structures to search through a set of object of equivalent coordinates.
      */
@@ -63,7 +63,7 @@ namespace spatial
 	      typename Compare, typename Alloc, bool ConstantIterator>
     class Kdtree_base;
 
-    /*
+    /**
      * Accessor to header of the kd-tree. These functions are useful outside of
      * the k-d tree to initialize iterators.
      */
@@ -93,7 +93,7 @@ namespace spatial
 	(value.get_header());
     }
 
-    /*
+    /**
      * Accessor to the inexisting linked value of the header of the
      * kd-tree. These functions are useful outside of the k-d tree to initialize
      * iterators.

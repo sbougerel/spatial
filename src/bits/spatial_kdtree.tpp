@@ -347,6 +347,7 @@ namespace spatial
 	  node = node->parent;
 	  node_dim = incr_dim(rank, node_dim);
 	}
+      except::check_invalid_iterator(node, Base::get_header());
       erase_node(node_dim, const_cast<Base_ptr>(pointer.node));
     }
 

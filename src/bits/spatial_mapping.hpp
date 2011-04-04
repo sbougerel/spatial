@@ -572,7 +572,7 @@ namespace spatial
     };
 
     /**
-     *  @brief  Spcialization of the kdtree
+     *  @brief  Specialization of the view for constant containers
      */
     template <typename Container>
     class mapping<const Container>
