@@ -5187,278 +5187,52 @@ BOOST_AUTO_TEST_CASE( test_pointset_neighborhood )
 
 /////////////////////////  spatial_relaxed_kdtree.hpp  /////////////////////////
 
-typedef std::tr1::array<details::Weighted_node, 3> three_node;
-
-three_node
-create_three_node(weight_type root, weight_type left, weight_type right)
-{
-  three_node trio;
-  trio[0].parent = &trio[0];
-  trio[0].left = &trio[1];
-  trio[0].right = &trio[2];
-  trio[0].weight = root;
-  trio[1].parent = &trio[0];
-  trio[1].left = 0;
-  trio[1].right = 0;
-  trio[1].weight = left;
-  trio[2].parent = &trio[0];
-  trio[2].left = 0;
-  trio[2].right = 0;
-  trio[2].weight = right;
-  return trio;
-}
-
 BOOST_AUTO_TEST_CASE( test_loose_balancing )
 {
-  {
-    details::Dynamic_rank rank(2);
-    details::Weighted_node node;
-    node.parent = &node;
-    node.left = 0;
-    node.right = 0;
-    node.weight = 10;
-    loose_balancing test;
-    // A leaf node is always balanced!
-    BOOST_CHECK_EQUAL(test(&node, rank), false);
-  }
-  {
-    details::Dynamic_rank rank(2);
-    details::Weighted_node root;
-    details::Weighted_node left;
-    root.parent = &root;
-    root.left = &left;
-    root.right = 0;
-    root.weight = 10;
-    left.parent = &root;
-    left.left = 0;
-    left.right = 0;
-    left.weight = 9;
-    loose_balancing test;
-    // rebalance even if no right.
-    BOOST_CHECK_EQUAL(test(&root, rank), true);
-  }
-  {
-    details::Dynamic_rank rank(9);
-    details::Weighted_node root;
-    details::Weighted_node left;
-    root.parent = &root;
-    root.left = &left;
-    root.right = 0;
-    root.weight = 10;
-    left.parent = &root;
-    left.left = 0;
-    left.right = 0;
-    left.weight = 9;
-    loose_balancing test;
-    // high dimension prevent rebalance.
-    BOOST_CHECK_EQUAL(test(&root, rank), false);
-  }
-  {
-    details::Dynamic_rank rank(2);
-    details::Weighted_node root;
-    details::Weighted_node right;
-    root.parent = &root;
-    root.right = &right;
-    root.left = 0;
-    root.weight = 10;
-    right.parent = &root;
-    right.left = 0;
-    right.right = 0;
-    right.weight = 9;
-    loose_balancing test;
-    // reblance even if no left.
-    BOOST_CHECK_EQUAL(test(&root, rank), true);
-  }
-  {
-    details::Dynamic_rank rank(9);
-    details::Weighted_node root;
-    details::Weighted_node right;
-    root.parent = &root;
-    root.right = &right;
-    root.left = 0;
-    root.weight = 10;
-    right.parent = &root;
-    right.left = 0;
-    right.right = 0;
-    right.weight = 9;
-    loose_balancing test;
-    // high dimension prevent rebalance.
-    BOOST_CHECK_EQUAL(test(&root, rank), false);
-  }
-  {
-    details::Dynamic_rank rank(2);
-    three_node trio = create_three_node(1, 0, 0);
-    loose_balancing test;
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), false);
-  }
-  {
-    details::Dynamic_rank rank(10);
-    three_node trio = create_three_node(11, 2, 8);
-    loose_balancing test;
-    // should fail cause the dimension is too large to reblance
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), false);
-  }
-  {
-    details::Dynamic_rank rank(10);
-    three_node trio = create_three_node(9, 7, 1);
-    loose_balancing test;
-    // should fail cause the dimension is too large to reblance
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), false);
-  }
-  {
-    details::Dynamic_rank rank(2);
-    three_node trio = create_three_node(7, 4, 2);
-    loose_balancing test;
-    // should fail cause we are right under loose balancing conditions
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), false);
-  }
-  {
-    details::Dynamic_rank rank(2);
-    three_node trio = create_three_node(7, 3, 6);
-    loose_balancing test;
-    // should fail cause we are right under loose balancing conditions
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), false);
-  }
-  {
-    details::Dynamic_rank rank(2);
-    three_node trio = create_three_node(7, 2, 6);
-    loose_balancing test;
-    // should pass cause we are above loose balancing conditions
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), true);
-  }
-  {
-    details::Dynamic_rank rank(2);
-    three_node trio = create_three_node(7, 6, 2);
-    loose_balancing test;
-    // should pass cause we are above loose balancing conditions
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), true);
-  }
+  details::Dynamic_rank rank(2);
+  loose_balancing test;
+  // A leaf node is always balanced!
+  BOOST_CHECK_EQUAL(test(rank, 0, 0), false);
+  // rebalance even if no right.
+  BOOST_CHECK_EQUAL(test(rank, 3, 0), true);
+  // reblance even if no left.
+  BOOST_CHECK_EQUAL(test(rank, 0, 3), true);
+  // should fail cause we are right under loose balancing conditions
+  BOOST_CHECK_EQUAL(test(rank, 4, 2), false);
+  // should fail cause we are right under loose balancing conditions
+  BOOST_CHECK_EQUAL(test(rank, 6, 3), false);
+  // should pass cause we are above loose balancing conditions
+  BOOST_CHECK_EQUAL(test(rank, 2, 6), true);
+  // should pass cause we are above loose balancing conditions
+  BOOST_CHECK_EQUAL(test(rank, 6, 2), true);
 }
 
 BOOST_AUTO_TEST_CASE( test_tight_balancing )
 {
   {
     details::Dynamic_rank rank(2);
-    details::Weighted_node node;
-    node.parent = 0;
-    node.left = 0;
-    node.right = 0;
-    node.weight = 10;
     tight_balancing test;
     // A leaf node is always balanced!
-    BOOST_CHECK_EQUAL(test(&node, rank), false);
-  }
-  {
-    details::Dynamic_rank rank(2);
-    details::Weighted_node root;
-    details::Weighted_node left;
-    root.parent = &root;
-    root.left = &left;
-    root.right = 0;
-    root.weight = 10;
-    left.parent = &root;
-    left.left = 0;
-    left.right = 0;
-    left.weight = 9;
-    tight_balancing test;
+    BOOST_CHECK_EQUAL(test(rank, 0, 0), false);
     // rebalance even if no right.
-    BOOST_CHECK_EQUAL(test(&root, rank), true);
+    BOOST_CHECK_EQUAL(test(rank, 9, 0), true);
+    // rebalance even if no left.
+    BOOST_CHECK_EQUAL(test(rank, 0, 9), true);
+    // should fail cause we are right under tight balancing conditions
+    BOOST_CHECK_EQUAL(test(rank, 4, 2), false);
+    // should fail cause we are right under tight balancing conditions
+    BOOST_CHECK_EQUAL(test(rank, 2, 4), false);
+    // should pass cause we are above tight balancing conditions
+    BOOST_CHECK_EQUAL(test(rank, 3, 6), true);
+    // should pass cause we are above tight balancing conditions
+    BOOST_CHECK_EQUAL(test(rank, 6, 3), true);
   }
   {
     details::Dynamic_rank rank(9);
-    details::Weighted_node root;
-    details::Weighted_node left;
-    root.parent = &root;
-    root.left = &left;
-    root.right = 0;
-    root.weight = 10;
-    left.parent = &root;
-    left.left = 0;
-    left.right = 0;
-    left.weight = 9;
     tight_balancing test;
     // high dimension prevent rebalance.
-    BOOST_CHECK_EQUAL(test(&root, rank), false);
-  }
-  {
-    details::Dynamic_rank rank(2);
-    details::Weighted_node root;
-    details::Weighted_node right;
-    root.parent = &root;
-    root.right = &right;
-    root.left = 0;
-    root.weight = 10;
-    right.parent = &root;
-    right.left = 0;
-    right.right = 0;
-    right.weight = 9;
-    tight_balancing test;
-    // reblance even if no left.
-    BOOST_CHECK_EQUAL(test(&root, rank), true);
-  }
-  {
-    details::Dynamic_rank rank(9);
-    details::Weighted_node root;
-    details::Weighted_node right;
-    root.parent = &root;
-    root.right = &right;
-    root.left = 0;
-    root.weight = 10;
-    right.parent = &root;
-    right.left = 0;
-    right.right = 0;
-    right.weight = 9;
-    tight_balancing test;
-    // high dimension prevent rebalance.
-    BOOST_CHECK_EQUAL(test(&root, rank), false);
-  }
-  {
-    details::Dynamic_rank rank(2);
-    three_node trio = create_three_node(1, 0, 0);
-    tight_balancing test;
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), false);
-  }
-  {
-    details::Dynamic_rank rank(10);
-    three_node trio = create_three_node(11, 2, 8);
-    tight_balancing test;
-    // should fail cause the dimension is too large to reblance
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), false);
-  }
-  {
-    details::Dynamic_rank rank(10);
-    three_node trio = create_three_node(9, 7, 1);
-    tight_balancing test;
-    // should fail cause the dimension is too large to reblance
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), false);
-  }
-  {
-    details::Dynamic_rank rank(2);
-    three_node trio = create_three_node(7, 4, 2);
-    tight_balancing test;
-    // should fail cause we are right under loose balancing conditions
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), false);
-  }
-  {
-    details::Dynamic_rank rank(3);
-    three_node trio = create_three_node(7, 3, 6);
-    tight_balancing test;
-    // should fail cause we are right under loose balancing conditions
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), false);
-  }
-  {
-    details::Dynamic_rank rank(2);
-    three_node trio = create_three_node(7, 3, 6);
-    tight_balancing test;
-    // should pass cause we are above loose balancing conditions
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), true);
-  }
-  {
-    details::Dynamic_rank rank(2);
-    three_node trio = create_three_node(7, 6, 3);
-    tight_balancing test;
-    // should pass cause we are above loose balancing conditions
-    BOOST_CHECK_EQUAL(test(&trio[0], rank), true);
+    BOOST_CHECK_EQUAL(test(rank, 1, 8), false);
+    BOOST_CHECK_EQUAL(test(rank, 8, 1), false);
   }
 }
 
@@ -5502,59 +5276,16 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_tight )
   typedef details::Relaxed_kdtree
     <details::Static_rank<2>, point2d, bracket_less<point2d>,
      tight_balancing, std::allocator<point2d>, true> const_kdtree_type;
-  {
-    kdtree_type tree;
-    kdtree_type::const_iterator it;
-    BOOST_CHECK_NO_THROW(it = tree.insert(zeros));
-    BOOST_CHECK(*it == zeros);
-    BOOST_CHECK(!tree.empty());
-    BOOST_CHECK(tree.begin() != tree.end());
-    BOOST_CHECK_EQUAL(tree.size(), 1);
-    BOOST_CHECK(zeros == *tree.begin());
-    BOOST_CHECK(++tree.begin() == tree.end());
-    BOOST_CHECK(tree.begin() == --tree.end());
-  }
-  {
-    // force balancing by inserting zero, one, two, three, four
-    const_kdtree_type tree;
-    const_kdtree_type::const_iterator it;
-    BOOST_CHECK_NO_THROW(it = tree.insert(zeros));
-    BOOST_CHECK(*it == zeros);
-    BOOST_CHECK_NO_THROW(it = tree.insert(ones));
-    BOOST_CHECK(*it == ones);
-    BOOST_CHECK_NO_THROW(it = tree.insert(twos));
-    BOOST_CHECK(*it == twos);
-    BOOST_CHECK_NO_THROW(it = tree.insert(threes));
-    BOOST_CHECK(*it == threes);
-    BOOST_CHECK_NO_THROW(it = tree.insert(fours));
-    BOOST_CHECK(*it == fours);
-    BOOST_CHECK(!tree.empty());
-    BOOST_CHECK(tree.begin() != tree.end());
-    BOOST_CHECK_EQUAL(tree.size(), 5);
-    // With iterators checks that we are still under balancing conditions
-    it = tree.begin();
-    using details::Weighted_node;
-    BOOST_CHECK_EQUAL
-      (tree.balancing()(static_cast<const Weighted_node*>(it.node), tree.rank()), false);
-    BOOST_CHECK_NO_THROW(++it);
-    BOOST_REQUIRE(it != tree.end());
-    BOOST_CHECK_EQUAL
-      (tree.balancing()(static_cast<const Weighted_node*>(it.node), tree.rank()), false);
-    BOOST_CHECK_NO_THROW(++it);
-    BOOST_REQUIRE(it != tree.end());
-    BOOST_CHECK_EQUAL
-      (tree.balancing()(static_cast<const Weighted_node*>(it.node), tree.rank()), false);
-    BOOST_CHECK_NO_THROW(++it);
-    BOOST_REQUIRE(it != tree.end());
-    BOOST_CHECK_EQUAL
-      (tree.balancing()(static_cast<const Weighted_node*>(it.node), tree.rank()), false);
-    BOOST_CHECK_NO_THROW(++it);
-    BOOST_REQUIRE(it != tree.end());
-    BOOST_CHECK_EQUAL
-      (tree.balancing()(static_cast<const Weighted_node*>(it.node), tree.rank()), false);
-    BOOST_CHECK_NO_THROW(++it);
-    BOOST_CHECK(it == tree.end());
-  }
+  kdtree_type tree;
+  kdtree_type::const_iterator it;
+  BOOST_CHECK_NO_THROW(it = tree.insert(zeros));
+  BOOST_CHECK(*it == zeros);
+  BOOST_CHECK(!tree.empty());
+  BOOST_CHECK(tree.begin() != tree.end());
+  BOOST_CHECK_EQUAL(tree.size(), 1);
+  BOOST_CHECK(zeros == *tree.begin());
+  BOOST_CHECK(++tree.begin() == tree.end());
+  BOOST_CHECK(tree.begin() == --tree.end());
 }
 
 BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_loose )
@@ -5565,59 +5296,16 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_loose )
   typedef details::Relaxed_kdtree
     <details::Static_rank<2>, point2d, bracket_less<point2d>,
      loose_balancing, std::allocator<point2d>, true> const_kdtree_type;
-  {
-    kdtree_type tree;
-    kdtree_type::const_iterator it;
-    BOOST_CHECK_NO_THROW(it = tree.insert(zeros));
-    BOOST_CHECK(*it == zeros);
-    BOOST_CHECK(!tree.empty());
-    BOOST_CHECK(tree.begin() != tree.end());
-    BOOST_CHECK_EQUAL(tree.size(), 1);
-    BOOST_CHECK(zeros == *tree.begin());
-    BOOST_CHECK(++tree.begin() == tree.end());
-    BOOST_CHECK(tree.begin() == --tree.end());
-  }
-  {
-    // force balancing by inserting zero, one, two, three, four
-    const_kdtree_type tree;
-    const_kdtree_type::const_iterator it;
-    BOOST_CHECK_NO_THROW(it = tree.insert(zeros));
-    BOOST_CHECK(*it == zeros);
-    BOOST_CHECK_NO_THROW(it = tree.insert(ones));
-    BOOST_CHECK(*it == ones);
-    BOOST_CHECK_NO_THROW(it = tree.insert(twos));
-    BOOST_CHECK(*it == twos);
-    BOOST_CHECK_NO_THROW(it = tree.insert(threes));
-    BOOST_CHECK(*it == threes);
-    BOOST_CHECK_NO_THROW(it = tree.insert(fours));
-    BOOST_CHECK(*it == fours);
-    BOOST_CHECK(!tree.empty());
-    BOOST_CHECK(tree.begin() != tree.end());
-    BOOST_CHECK_EQUAL(tree.size(), 5);
-    // With iterators checks that we are still under balancing conditions
-    it = tree.begin();
-    using details::Weighted_node;
-    BOOST_CHECK_EQUAL
-      (tree.balancing()(static_cast<const Weighted_node*>(it.node), tree.rank()), false);
-    BOOST_CHECK_NO_THROW(++it);
-    BOOST_REQUIRE(it != tree.end());
-    BOOST_CHECK_EQUAL
-      (tree.balancing()(static_cast<const Weighted_node*>(it.node), tree.rank()), false);
-    BOOST_CHECK_NO_THROW(++it);
-    BOOST_REQUIRE(it != tree.end());
-    BOOST_CHECK_EQUAL
-      (tree.balancing()(static_cast<const Weighted_node*>(it.node), tree.rank()), false);
-    BOOST_CHECK_NO_THROW(++it);
-    BOOST_REQUIRE(it != tree.end());
-    BOOST_CHECK_EQUAL
-      (tree.balancing()(static_cast<const Weighted_node*>(it.node), tree.rank()), false);
-    BOOST_CHECK_NO_THROW(++it);
-    BOOST_REQUIRE(it != tree.end());
-    BOOST_CHECK_EQUAL
-      (tree.balancing()(static_cast<const Weighted_node*>(it.node), tree.rank()), false);
-    BOOST_CHECK_NO_THROW(++it);
-    BOOST_CHECK(it == tree.end());
-  }
+  kdtree_type tree;
+  kdtree_type::const_iterator it;
+  BOOST_CHECK_NO_THROW(it = tree.insert(zeros));
+  BOOST_CHECK(*it == zeros);
+  BOOST_CHECK(!tree.empty());
+  BOOST_CHECK(tree.begin() != tree.end());
+  BOOST_CHECK_EQUAL(tree.size(), 1);
+  BOOST_CHECK(zeros == *tree.begin());
+  BOOST_CHECK(++tree.begin() == tree.end());
+  BOOST_CHECK(tree.begin() == --tree.end());
 }
 
 struct Twenty_Relaxed_Kdtree_3D_fixture
@@ -5627,17 +5315,80 @@ struct Twenty_Relaxed_Kdtree_3D_fixture
    tight_balancing, std::allocator<triple>, false> kdtree_type;
 
   kdtree_type kdtree;
-  std::vector<triple> array;
-  Twenty_Relaxed_Kdtree_3D_fixture() : kdtree()
+  std::vector<triple> mem;
+  Twenty_Relaxed_Kdtree_3D_fixture() : kdtree(), mem()
   {
     for(int i = 0; i != 20; ++i)
     {
-      array.reserve(20);
+      mem.reserve(20);
       triple t;
       t.x = rand() % 10 - 5; // small range to have colisions
       t.y = rand() % 10 - 5;
       t.z = rand() % 10 - 5;
-      array.push_back(t);
+      mem.push_back(t);
+      kdtree_type::const_iterator it = kdtree.insert(t);
+      BOOST_CHECK(*it == t);
+    }
+  }
+};
+
+struct Twenty_Relaxed_Kdtree_2D_fixture
+{
+  typedef details::Relaxed_kdtree
+  <details::Static_rank<2>, point2d, bracket_less<point2d>,
+   tight_balancing, std::allocator<point2d>, false> kdtree_type;
+
+  kdtree_type kdtree;
+  std::vector<point2d> mem;
+  Twenty_Relaxed_Kdtree_2D_fixture() : kdtree(), mem()
+  {
+    for(int i = 0; i != 20; ++i)
+    {
+      mem.reserve(20);
+      point2d t;
+      t[0] = rand() % 10 - 5; // small range to have colisions
+      t[1] = rand() % 10 - 5;
+      mem.push_back(t);
+      kdtree_type::const_iterator it = kdtree.insert(t);
+      BOOST_CHECK(*it == t);
+    }
+  }
+};
+
+struct Grow_Relaxed_Kdtree_2D_fixture
+{
+  typedef details::Relaxed_kdtree
+  <details::Static_rank<2>, point2d, bracket_less<point2d>,
+   tight_balancing, std::allocator<point2d>, false> kdtree_type;
+
+  kdtree_type kdtree;
+  Grow_Relaxed_Kdtree_2D_fixture() : kdtree()
+  {
+    for(int i = 0; i != 20; ++i)
+    {
+      point2d t;
+      t[0] = i;
+      t[1] = i;
+      kdtree_type::const_iterator it = kdtree.insert(t);
+      BOOST_CHECK(*it == t);
+    }
+  }
+};
+
+struct Reduce_Relaxed_Kdtree_2D_fixture
+{
+  typedef details::Relaxed_kdtree
+  <details::Static_rank<2>, point2d, bracket_less<point2d>,
+   tight_balancing, std::allocator<point2d>, false> kdtree_type;
+
+  kdtree_type kdtree;
+  Reduce_Relaxed_Kdtree_2D_fixture() : kdtree()
+  {
+    for(int i = 20; i != 0; --i)
+    {
+      point2d t;
+      t[0] = i;
+      t[1] = i;
       kdtree_type::const_iterator it = kdtree.insert(t);
       BOOST_CHECK(*it == t);
     }
@@ -5670,13 +5421,52 @@ struct Hundred_Relaxed_Kdtree_5D_fixture
   }
 };
 
+BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_growing )
+{
+  Grow_Relaxed_Kdtree_2D_fixture fix;
+  // because the tree is ordered on all dimensions and nodes are all sequential
+  // values, iteration should be ordered as well.
+  int i = 0;
+  for (Grow_Relaxed_Kdtree_2D_fixture::kdtree_type::iterator it
+	 = fix.kdtree.begin(); it != fix.kdtree.end(); ++it, ++i)
+    {
+      BOOST_CHECK_EQUAL((*it)[0], i);
+      BOOST_CHECK_EQUAL((*it)[1], i);
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_reduce )
+{
+  Reduce_Relaxed_Kdtree_2D_fixture fix;
+  // because the tree is ordered on all dimensions and nodes are all sequential
+  // values, iteration should be ordered as well.
+  int i = 1; // Values inserted in [1:20], not [0:19]
+  for (Reduce_Relaxed_Kdtree_2D_fixture::kdtree_type::iterator it
+	 = fix.kdtree.begin(); it != fix.kdtree.end(); ++it, ++i)
+    {
+      BOOST_CHECK_EQUAL((*it)[0], i);
+      BOOST_CHECK_EQUAL((*it)[1], i);
+    }
+}
+
 BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_lots )
 {
   {
-    Twenty_Relaxed_Kdtree_3D_fixture fix;
-  }
-  {
-    Hundred_Relaxed_Kdtree_5D_fixture fix;
+    // build repeatitively a lot of them, should not fail.
+    // This tree has multiple similar node, by construction
+    for (int i=0; i<100; ++i)
+      {
+	Twenty_Relaxed_Kdtree_2D_fixture fix;
+	int count = 0;
+	for (Twenty_Relaxed_Kdtree_2D_fixture::kdtree_type
+	       ::iterator it = fix.kdtree.begin(); it != fix.kdtree.end(); ++it)
+	  {
+	    BOOST_CHECK(std::find(fix.mem.begin(), fix.mem.end(), *it)
+			!= fix.mem.end());
+	    ++count;
+	  }
+	BOOST_CHECK_EQUAL(count, 20);
+      }
   }
 }
 
@@ -5775,6 +5565,55 @@ struct Seven_Relaxed_kdtree_node_fixture
     node_left_left.key_field = zeros;
   }
 };
+
+/*
+struct Unbalanced_Relaxed_kdtree_node_fixture
+{
+  Node_base header;
+  Node_base::Base_ptr leftmost;
+  std::vector<Relaxed_kdtree_node<point2d> > memory;
+  Unbalanced_Relaxed_kdtree_node_fixture ()
+  {
+    header.left = &header;
+    memory.reserve(32);
+    point2d p;
+    p[0] = rand() % 20 - 10;
+    p[1] = rand() % 20 - 10;
+    Relaxed_kdtree_node<point2d> root;
+    root.parent = &header;
+    root.left = 0;
+    root.right = 0;
+    root.weight = 1;
+    root.key_field = p;
+    memory.push_back(root);
+    header.parent = &memory.back();
+    header.right = &memory.back();
+    leftmost = &memory.back();
+    // insertion of the rest...
+    for (int i = 0; i < 32; ++i)
+      {
+	Relaxed_kdtree_node<point2d> node;
+	node.parent = 0;
+	node.left = 0;
+	node.right = 0;
+	node.weight = 1;
+	node.key_field[0] = rand() % 20 - 10;
+	node.key_field[1] = rand() % 20 - 10;
+	memory.push_back(node);
+	Relaxed_kdtree_node<point2d>* new_ptr = &memory.back();
+	Relaxed_kdtree_node<point2d>* ptr = &memory.front();
+	dimension_type dim = 0;
+	while (true)
+	  {
+	    if (ptr.key_field[dim] < new_ptr.key_field[dim])
+	      {
+		
+	      }
+	  }
+      }
+  }
+};
+*/
 
 BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_increment )
 {

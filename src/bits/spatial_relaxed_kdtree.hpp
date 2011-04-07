@@ -73,29 +73,19 @@ namespace spatial
   {
     /**
      *  @brief  Rebalancing predicate.
-     *  @param x  The node to examine for rebalancing.
-     *  @param d  The current dimension function to use for examination.
+     *  @param r     The current dimension function to use for examination.
+     *  @param left  The weight at the left
+     *  @param right The weight at the right
      *  @return  true indicate that reblancing must occurs, otherwise false.
      */
     template <typename Rank>
     bool
-    operator()(const details::Weighted_node* x, const Rank& r) const
+    operator()(const Rank&, weight_type left, weight_type right) const
     {
-      typedef std::pair<weight_type, weight_type> weight_pair;
-      weight_type left_weight = (x->left != 0)
-	? static_cast<const details::Weighted_node*>(x->left)->weight : 0;
-      weight_type right_weight = (x->right != 0)
-	? static_cast<const details::Weighted_node*>(x->right)->weight : 0;
-      if (left_weight < right_weight)
-	{
-	  return (right_weight > r() && left_weight < (right_weight >> 1))
-	    ? true : false;
-	}
+      if (left < right)
+	{ return (left < (right >> 1)) ? true : false; }
       else
-	{
-	  return (left_weight > r() && right_weight < (left_weight >> 1))
-	    ? true : false;
-	}
+	{ return (right < (left >> 1)) ? true : false; }
     }
   };
 
@@ -111,30 +101,20 @@ namespace spatial
   {
     /**
      *  @brief  Rebalancing predicate.
-     *  @param x  The node to examine for rebalancing.
-     *  @param d  The current dimension function to use for examination.
-     *  @return  true indicate that reblancing must occurs, otherwise false.
+     *  @param r     The current dimension function to use for examination.
+     *  @param left  The weight at the left
+     *  @param right The weight at the right
+     *  @return true Indicate that reblancing must occurs, otherwise false.
      */
     template <typename Rank>
     bool
-    operator()(const details::Weighted_node* x, const Rank& r) const
+    operator()(const Rank& r, weight_type left, weight_type right) const
     {
-      typedef std::pair<weight_type, weight_type> weight_pair;
-      weight_type left_weight = (x->left != 0)
-	? static_cast<const details::Weighted_node*>(x->left)->weight : 0;
-      weight_type right_weight = (x->right != 0)
-	? static_cast<const details::Weighted_node*>(x->right)->weight : 0;
-      dimension_type rank = r();
-      if (left_weight < right_weight)
-	{
-	  return (right_weight > rank && left_weight < (right_weight - rank))
-	    ? true : false;
-	}
+      weight_type rank = static_cast<weight_type>(r());
+      if (left < right)
+	{ return (right - left > rank) ? true : false; }
       else
-	{
-	  return (left_weight > rank && right_weight < (left_weight - rank))
-	    ? true : false;
-	}
+	{ return (left - right > rank) ? true : false; }
     }
   };
 
@@ -245,6 +225,42 @@ namespace spatial
        *                  one or @c node if it was a leaf.
        */
       Base_ptr erase_node(dimension_type dim, Base_ptr node);
+
+      /**
+       *  Erase the node pointed by @c node and balance tree up to
+       *  header. Finish the work started by erase_node by reducing weight in
+       *  parent of @c node, up to the header.
+       *
+       *  @c node cannot be null or a root node, or else dire things may
+       *  happen. This function does not destroy the node.
+       *
+       *  @param dim      The current dimension for @c node
+       *  @param node     The node to erase
+       */
+      void erase_node_finish(dimension_type dim, Base_ptr node);
+
+      /**
+       *  Attempt to balance the current node.
+       *
+       *  @c node cannot be null or a root node, or else dire things may
+       *  happen. This function does not destroy the node and it does not
+       *  modify weight of the parents of node.
+       *
+       *  @param dim      The current dimension for @c node
+       *  @param node     The node to erase
+       *  @return         The address of the node that has replaced the current
+       *                  node.
+       */
+      Base_ptr balance_node(dimension_type dim, Base_ptr node);
+
+      /**
+       *  @brief  Return true if the node is not balanced, false otherwise.
+       *  @param node       The node to check
+       *  @param more_left  Add @c more_left to the weight of the left nodes
+       *  @param more_right Add @c more_right to the weight of the right nodes
+       */
+      bool is_node_unbalanced(Base_ptr node, weight_type more_left = 0,
+			      weight_type more_right = 0);
 
     public:
       // allocation/deallocation

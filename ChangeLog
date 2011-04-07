@@ -1,3 +1,18 @@
+2011-04-07  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+	* Rewriting support for constant and mutable iterators in
+	containers. Now iterators are deterministic (either all constant or all
+	mutable), and it is up to the container to choose which to use. The
+	resulting code is much cleaner.
+	* Relaxed_kdtree types of containers now reblance on insertion. I have
+	worked out several progressive version of the algorithm and improved it
+	each time. But I still need to check what it is observed run-time when
+	inserting growing sequential integers series in the tree, to validate
+	that it remains O(log(n)), which is what preliminary tests
+	shows. Nevertheless, finally working out an efficient algorithm that
+	balances the tree completely according to the policy is immensely
+	satisfying.
+
 2011-03-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
 	* First release with the following features:
