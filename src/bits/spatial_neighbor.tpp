@@ -37,7 +37,7 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(!Node_base::header(impl.node));
       SPATIAL_ASSERT_CHECK(impl.node != 0);
       /*
-	In this algorithm, we seek to find the next nearest pointo origin. Thus
+	In this algorithm, we seek to find the next nearest point to origin. Thus
 	assuming that this point exists, its distance to origin is equal or
 	greater than that of the previous nearest point to origin.  Since K-d
 	tree are good at preserving locality, it is best to search the next
@@ -62,6 +62,9 @@ namespace spatial
       distance_type near_distance = 0;
       distance_type tmp;
       // In-order traversal that starts with all nodes after 'node'
+      //
+      // TODO: iterate one step left, one step right, and loop! Nice!!!!
+      //
       do
 	{
 	  if (node->right != 0
@@ -485,7 +488,7 @@ namespace spatial
       // more expensive than doing a simple iteration over all nodes in the
       // tree.  May be, one day we'll find a better algorithm that also has no
       // impact on the memory footprint of the tree (although I doubt these 2
-      // conditions will ever be met. Probably there will be a tradeoff.
+      // conditions will ever be met. Probably there will be a tradeoff.)
       //
       // Iterate from left most to right most, and stop at node's parent.
       while (node->left != 0)
