@@ -1,3 +1,9 @@
+2011-06-11  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+	* Passed most mapping tests for the Relaxed K-d tree. Remaining
+	Lower_bound and Upper_bound. Behind schedule. Been playing Halo:Reach
+	too much.
+
 2011-04-07  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
 	* Rewriting support for constant and mutable iterators in

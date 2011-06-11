@@ -181,7 +181,7 @@ namespace spatial
 	Const_Link_type origin_node = static_cast<Const_Link_type>(node);
 	Link_type new_node = create_node(origin_node->key_field);
 	new_node->weight = origin_node->weight;
-	return node;
+	return new_node;
       }
 
     public:
@@ -319,6 +319,7 @@ namespace spatial
 	    if (!other.empty())
 	      { copy_structure(other); }
 	  }
+	return *this;
       }
 
     public:

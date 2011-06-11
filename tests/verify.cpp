@@ -2253,7 +2253,12 @@ BOOST_AUTO_TEST_CASE( test_kdtree_erase_iter )
   }
 }
 
-BOOST_AUTO_TEST_CASE( test_kdtree_bulk_insert )
+BOOST_AUTO_TEST_CASE( test_Kdtree_bulk_erase )
+{
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
+}
+
+BOOST_AUTO_TEST_CASE( test_Kdtree_bulk_insert )
 {
   // reuse test_kdtree_insert_100_iterate_forward
   Empty_Kdtree_2D_fixture fix;
@@ -5308,7 +5313,7 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_loose )
   BOOST_CHECK(tree.begin() == --tree.end());
 }
 
-struct Twenty_Relaxed_Kdtree_3D_fixture
+struct Twenty_Relaxed_kdtree_3D_fixture
 {
   typedef details::Relaxed_kdtree
   <details::Static_rank<3>, triple, triple_less,
@@ -5316,7 +5321,7 @@ struct Twenty_Relaxed_Kdtree_3D_fixture
 
   kdtree_type kdtree;
   std::vector<triple> mem;
-  Twenty_Relaxed_Kdtree_3D_fixture() : kdtree(), mem()
+  Twenty_Relaxed_kdtree_3D_fixture() : kdtree(), mem()
   {
     for(int i = 0; i != 20; ++i)
     {
@@ -5332,7 +5337,7 @@ struct Twenty_Relaxed_Kdtree_3D_fixture
   }
 };
 
-struct Twenty_Relaxed_Kdtree_2D_fixture
+struct Twenty_Relaxed_kdtree_2D_fixture
 {
   typedef details::Relaxed_kdtree
   <details::Static_rank<2>, point2d, bracket_less<point2d>,
@@ -5340,7 +5345,7 @@ struct Twenty_Relaxed_Kdtree_2D_fixture
 
   kdtree_type kdtree;
   std::vector<point2d> mem;
-  Twenty_Relaxed_Kdtree_2D_fixture() : kdtree(), mem()
+  Twenty_Relaxed_kdtree_2D_fixture() : kdtree(), mem()
   {
     for(int i = 0; i != 20; ++i)
     {
@@ -5395,7 +5400,7 @@ struct Reduce_Relaxed_Kdtree_2D_fixture
   }
 };
 
-struct Hundred_Relaxed_Kdtree_5D_fixture
+struct Hundred_Relaxed_kdtree_5D_fixture
 {
   typedef details::Relaxed_kdtree
   <details::Static_rank<5>, point5d, bracket_less<point5d>,
@@ -5403,7 +5408,7 @@ struct Hundred_Relaxed_Kdtree_5D_fixture
 
   kdtree_type kdtree;
   std::vector<point5d> array;
-  Hundred_Relaxed_Kdtree_5D_fixture() : kdtree()
+  Hundred_Relaxed_kdtree_5D_fixture() : kdtree()
   {
     array.reserve(100);
     for(int i = 0; i != 100; ++i)
@@ -5456,9 +5461,9 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_lots )
     // This tree has multiple similar node, by construction
     for (int i=0; i<100; ++i)
       {
-	Twenty_Relaxed_Kdtree_2D_fixture fix;
+	Twenty_Relaxed_kdtree_2D_fixture fix;
 	int count = 0;
-	for (Twenty_Relaxed_Kdtree_2D_fixture::kdtree_type
+	for (Twenty_Relaxed_kdtree_2D_fixture::kdtree_type
 	       ::iterator it = fix.kdtree.begin(); it != fix.kdtree.end(); ++it)
 	  {
 	    BOOST_CHECK(std::find(fix.mem.begin(), fix.mem.end(), *it)
@@ -5472,27 +5477,271 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_lots )
 
 BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_copy )
 {
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  // Copy an 3d kdtree and iterate over it. Both iterators should yield same
+  // results and exhibit same properties.
+  Twenty_Relaxed_kdtree_3D_fixture fix;
+  Twenty_Relaxed_kdtree_3D_fixture::kdtree_type copy(fix.kdtree);
+  typedef Twenty_Relaxed_kdtree_3D_fixture::kdtree_type::iterator iterator_type;
+  iterator_type orig_begin = fix.kdtree.begin();
+  iterator_type orig_end = fix.kdtree.end();
+  iterator_type copy_begin = copy.begin();
+  iterator_type copy_end = copy.end();
+  for (; orig_begin != orig_end && copy_begin != copy_end;
+       ++copy_begin, ++orig_begin)
+    {
+      BOOST_CHECK(*orig_begin == *copy_begin);
+      if (orig_begin.node->left == 0) BOOST_CHECK(copy_begin.node->left == 0);
+      if (orig_begin.node->right == 0) BOOST_CHECK(copy_begin.node->right == 0);
+    }
 }
 
 BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_assignment )
 {
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  // Copy an 3d kdtree and iterate over it. Both iterators should yield same
+  // results and exhibit same properties.
+  Twenty_Relaxed_kdtree_3D_fixture fix;
+  Twenty_Relaxed_kdtree_3D_fixture fix_other;
+  fix_other.kdtree = fix.kdtree;
+  typedef Twenty_Relaxed_kdtree_3D_fixture::kdtree_type::iterator iterator_type;
+  iterator_type orig_begin = fix.kdtree.begin();
+  iterator_type orig_end = fix.kdtree.end();
+  iterator_type copy_begin = fix_other.kdtree.begin();
+  iterator_type copy_end = fix_other.kdtree.end();
+  for (; orig_begin != orig_end && copy_begin != copy_end;
+       ++copy_begin, ++orig_begin)
+    {
+      BOOST_CHECK(*orig_begin == *copy_begin);
+      if (orig_begin.node->left == 0) BOOST_CHECK(copy_begin.node->left == 0);
+      if (orig_begin.node->right == 0) BOOST_CHECK(copy_begin.node->right == 0);
+    }
 }
 
 BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_bulk_insert )
 {
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  // reuse test_kdtree_insert_100_iterate_forward
+  typedef details::Relaxed_kdtree
+    <details::Static_rank<2>, point2d, bracket_less<point2d>,
+     loose_balancing, std::allocator<point2d>, false> kdtree_type;
+  kdtree_type kdtree;
+  std::tr1::array<point2d, 100> points;
+  for(std::tr1::array<point2d, 100>::iterator i
+	= points.begin(); i != points.end(); ++i)
+    {
+      (*i)[0] = rand() % 20;
+      (*i)[1] = rand() % 20;
+    }
+  BOOST_REQUIRE_NO_THROW(kdtree.insert(points.begin(), points.end()));
+  BOOST_CHECK(kdtree.empty() == false);
+  BOOST_REQUIRE_EQUAL(kdtree.size(), 100);
+  BOOST_CHECK_EQUAL(kdtree.count(), 100);
+  int count = 0;
+  for(kdtree_type::iterator i = kdtree.begin(); i != kdtree.end(); ++i)
+    {
+      std::tr1::array<point2d, 100>::iterator match;
+      BOOST_REQUIRE((match = std::find(points.begin(), points.end(), *i))
+		  != points.end());
+      (*match)[0] = -1; // Prevent the same point from being found twice.
+      (*match)[1] = -1;
+      BOOST_REQUIRE_LE(++count, 100);
+    }
+  BOOST_CHECK_EQUAL(count, 100);
 }
 
-BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_erase )
+struct Empty_Relaxed_kdtree_2D_fixture
 {
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  typedef details::Relaxed_kdtree
+  <details::Static_rank<2>, point2d, bracket_less<point2d>,
+   loose_balancing, std::allocator<point2d>, false> kdtree_type;
+
+  kdtree_type kdtree;
+  Empty_Relaxed_kdtree_2D_fixture() : kdtree()
+  { }
+};
+
+BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_erase_key )
+{
+  {
+    // Erase on empty tree should return 0.
+    Empty_Relaxed_kdtree_2D_fixture fix;
+    point2d some_value = { {0, 0} };
+    size_type count = fix.kdtree.erase(some_value);
+    BOOST_CHECK_EQUAL(count, 0);
+    BOOST_CHECK(fix.kdtree.end() == fix.kdtree.begin());
+    BOOST_CHECK(fix.kdtree.empty());
+  }
+  {
+    // Erase one value of a tree should return 1 and leave an empty tree.
+    Empty_Relaxed_kdtree_2D_fixture fix;
+    point2d some_value = { {0, 0} };
+    fix.kdtree.insert(some_value);
+    BOOST_CHECK(!fix.kdtree.empty());
+    size_type count = fix.kdtree.erase(some_value);
+    BOOST_CHECK_EQUAL(count, 1);
+    BOOST_CHECK(fix.kdtree.end() == fix.kdtree.begin());
+    BOOST_CHECK(fix.kdtree.empty());
+  }
+  {
+    // Erase a value not in the tree should leave the tree untouched.
+    Empty_Relaxed_kdtree_2D_fixture fix;
+    point2d some_value = { {0, 0} };
+    point2d other_value = { {1, 1} };
+    fix.kdtree.insert(some_value);
+    Empty_Relaxed_kdtree_2D_fixture::kdtree_type::iterator
+      begin_before = fix.kdtree.begin();
+    Empty_Relaxed_kdtree_2D_fixture::kdtree_type::iterator
+      end_before = fix.kdtree.end();
+    size_type count  = fix.kdtree.erase(other_value);
+    BOOST_CHECK_EQUAL(count, 0);
+    BOOST_CHECK(!fix.kdtree.empty());
+    BOOST_CHECK(fix.kdtree.end() != fix.kdtree.begin());
+    BOOST_CHECK(fix.kdtree.end() == end_before);
+    BOOST_CHECK(fix.kdtree.begin() == begin_before);
+  }
+  {
+    // Should be able to erase multiple values
+    typedef details::Relaxed_kdtree
+      <details::Dynamic_rank, point2d, bracket_less<point2d>,
+       tight_balancing, std::allocator<point2d>, false>
+      kdtree_type;
+    // 1D tree where we store 2d objects...
+    kdtree_type tree(details::Dynamic_rank(1));
+    point2d one   = { { 0, 1 } };
+    point2d two   = { { 0, 2 } };
+    point2d four  = { { 0, 4 } };
+    tree.insert(one);
+    tree.insert(two);
+    tree.insert(two);
+    tree.insert(four);
+    // ... And equal should take the second dimension into account.
+    BOOST_REQUIRE_EQUAL(tree.count(), 4);
+    size_type count = tree.erase(two);
+    BOOST_CHECK_EQUAL(count, 2);
+    BOOST_REQUIRE_EQUAL(tree.count(), 2);
+    BOOST_CHECK(tree.find(one) != tree.end());
+    BOOST_CHECK(tree.find(four) != tree.end());
+    BOOST_CHECK(tree.find(two) == tree.end());
+    kdtree_type::iterator iter = tree.begin();
+    BOOST_REQUIRE(iter != tree.end());
+    BOOST_REQUIRE_NO_THROW(++iter);
+    BOOST_REQUIRE(iter != tree.end());
+    BOOST_REQUIRE_NO_THROW(++iter);
+    BOOST_REQUIRE(iter == tree.end());
+  }
 }
+
+struct Empty_Relaxed_kdtree_3D_fixture
+{
+  typedef details::Relaxed_kdtree
+  <details::Static_rank<3>, triple, triple_less,
+   loose_balancing, std::allocator<triple>, false> kdtree_type;
+
+  kdtree_type kdtree;
+  Empty_Relaxed_kdtree_3D_fixture() : kdtree()
+  { }
+};
 
 BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_erase_iterator )
 {
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  // check that erase at edge preserve basic iterators
+  {
+    Twenty_Relaxed_kdtree_3D_fixture fix;
+    typedef Twenty_Relaxed_kdtree_3D_fixture::kdtree_type
+      ::iterator iter_type;
+    int track_size = fix.kdtree.size();
+    while (fix.kdtree.size() != 0)
+      {
+	iter_type iter = fix.kdtree.begin();
+	BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(iter));
+	BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
+	BOOST_CHECK(iter != fix.kdtree.begin());
+	int count = 0;
+	for(iter_type i = fix.kdtree.begin();
+	    i != fix.kdtree.end(); ++i, ++count);
+	BOOST_CHECK_EQUAL(count, track_size);
+      }
+  }
+  {
+    Twenty_Relaxed_kdtree_3D_fixture fix;
+    typedef Twenty_Relaxed_kdtree_3D_fixture::kdtree_type
+      ::const_iterator iter_type;
+    typedef Twenty_Relaxed_kdtree_3D_fixture::kdtree_type
+      ::const_reverse_iterator riter_type;
+    int track_size = fix.kdtree.size();
+    while (fix.kdtree.size() != 0)
+      {
+	iter_type iter = --fix.kdtree.end();
+	BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(iter));
+	BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
+	BOOST_CHECK(iter != (--fix.kdtree.end()));
+	int count = 0;
+	for(riter_type i = fix.kdtree.rbegin();
+	    i != fix.kdtree.rend(); ++i, ++count);
+	BOOST_CHECK_EQUAL(count, track_size);
+      }
+  }
+  // erase all and check that total ordering is preserved.
+  {
+    typedef Hundred_Relaxed_kdtree_5D_fixture::kdtree_type
+      ::const_iterator iterator;
+    typedef details::Const_Mapping_iterator
+      <Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::rank_type,
+      Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::key_type,
+      Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::node_type,
+      bracket_less<point5d> > mapping_iterator;
+    Hundred_Relaxed_kdtree_5D_fixture fix;
+    int track_size = fix.kdtree.size();
+    while (fix.kdtree.size() != 0)
+      {
+	iterator eraser = fix.kdtree.begin();
+	std::advance(eraser, rand() % fix.kdtree.size());
+	mapping_iterator begin_0;
+	BOOST_REQUIRE_NO_THROW(begin_0 = mapping_iterator::minimum
+			       (fix.kdtree.rank(),
+				fix.kdtree.compare(),
+				0, 0,
+				static_cast<Relaxed_kdtree_node<point5d>*>
+				(fix.kdtree.end().node->parent)));
+	mapping_iterator end_0;
+	BOOST_REQUIRE_NO_THROW(end_0 = mapping_iterator
+			       (fix.kdtree.rank(),
+				fix.kdtree.compare(),
+				0, details::decr_dim
+				(fix.kdtree.rank(), 0),
+				static_cast<Relaxed_kdtree_node<point5d>*>
+				(fix.kdtree.end().node)));
+	mapping_iterator begin_1;
+	BOOST_REQUIRE_NO_THROW(begin_1 = mapping_iterator::minimum
+			       (fix.kdtree.rank(),
+				fix.kdtree.compare(),
+				1, 0,
+				static_cast<Relaxed_kdtree_node<point5d>*>
+				(fix.kdtree.end().node->parent)));
+	mapping_iterator end_1;
+	BOOST_REQUIRE_NO_THROW(end_1 = mapping_iterator
+			       (fix.kdtree.rank(),
+				fix.kdtree.compare(),
+				1, details::decr_dim
+				(fix.kdtree.rank(), 0),
+				static_cast<Relaxed_kdtree_node<point5d>*>
+				(fix.kdtree.end().node)));
+	int count = 0;
+	for(mapping_iterator i = begin_0; i != end_0; ++i, ++count);
+	BOOST_CHECK_EQUAL(count, track_size);
+	if (count != track_size && count < 23) abort(); // for inspection of tree
+	count = 0;
+	for(mapping_iterator i = begin_1; i != end_1; ++i, ++count);
+	BOOST_CHECK_EQUAL(count, track_size);
+	if (count != track_size && count < 23) abort(); // for inspection of tree
+	count = 0;
+	for(mapping_iterator i = end_0; i != begin_0; --i, ++count);
+	BOOST_CHECK_EQUAL(count, track_size);
+	count = 0;
+	for(mapping_iterator i = end_1; i != begin_1; --i, ++count);
+	BOOST_CHECK_EQUAL(count, track_size);
+	BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(eraser));
+	BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
+      }
+  }
 }
 
 BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_erase_bulk )
@@ -5566,55 +5815,6 @@ struct Seven_Relaxed_kdtree_node_fixture
   }
 };
 
-/*
-struct Unbalanced_Relaxed_kdtree_node_fixture
-{
-  Node_base header;
-  Node_base::Base_ptr leftmost;
-  std::vector<Relaxed_kdtree_node<point2d> > memory;
-  Unbalanced_Relaxed_kdtree_node_fixture ()
-  {
-    header.left = &header;
-    memory.reserve(32);
-    point2d p;
-    p[0] = rand() % 20 - 10;
-    p[1] = rand() % 20 - 10;
-    Relaxed_kdtree_node<point2d> root;
-    root.parent = &header;
-    root.left = 0;
-    root.right = 0;
-    root.weight = 1;
-    root.key_field = p;
-    memory.push_back(root);
-    header.parent = &memory.back();
-    header.right = &memory.back();
-    leftmost = &memory.back();
-    // insertion of the rest...
-    for (int i = 0; i < 32; ++i)
-      {
-	Relaxed_kdtree_node<point2d> node;
-	node.parent = 0;
-	node.left = 0;
-	node.right = 0;
-	node.weight = 1;
-	node.key_field[0] = rand() % 20 - 10;
-	node.key_field[1] = rand() % 20 - 10;
-	memory.push_back(node);
-	Relaxed_kdtree_node<point2d>* new_ptr = &memory.back();
-	Relaxed_kdtree_node<point2d>* ptr = &memory.front();
-	dimension_type dim = 0;
-	while (true)
-	  {
-	    if (ptr.key_field[dim] < new_ptr.key_field[dim])
-	      {
-		
-	      }
-	  }
-      }
-  }
-};
-*/
-
 BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_increment )
 {
   {
@@ -5646,6 +5846,66 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_increment )
     BOOST_CHECK(*it == threes);
     ++it;
     BOOST_CHECK(it.impl.node == &fix.header);
+  }
+  {
+    Grow_Relaxed_Kdtree_2D_fixture fix;
+    typedef view::details::mapping_iterator
+      <Grow_Relaxed_Kdtree_2D_fixture::kdtree_type>::type iterator_type;
+    iterator_type end = view::details::end_mapping(fix.kdtree, 0);
+    iterator_type begin = view::details::begin_mapping(fix.kdtree, 0);
+    int old = (*begin)[0];
+    int count = 0;
+    for(; count != 20; ++begin, ++count)
+      {
+	BOOST_CHECK((*begin)[0] >= old);
+	BOOST_CHECK(begin != end);
+	if (begin == end) break;
+	old = (*begin)[0];
+      }
+    BOOST_CHECK(begin == end);
+    BOOST_CHECK_EQUAL(count, 20);
+    end = view::details::end_mapping(fix.kdtree, 1);
+    begin = view::details::begin_mapping(fix.kdtree, 1);
+    old = (*begin)[1];
+    for(count = 0; count != 20; ++begin, ++count)
+      {
+	BOOST_CHECK((*begin)[1] >= old);
+	BOOST_CHECK(begin != end);
+	if (begin == end) break;
+	old = (*begin)[1];
+      }
+    BOOST_CHECK(begin == end);
+    BOOST_CHECK_EQUAL(count, 20);
+  }
+  {
+    Reduce_Relaxed_Kdtree_2D_fixture fix;
+    typedef view::details::mapping_iterator
+      <Reduce_Relaxed_Kdtree_2D_fixture::kdtree_type>::type iterator_type;
+    iterator_type end = view::details::end_mapping(fix.kdtree, 0);
+    iterator_type begin = view::details::begin_mapping(fix.kdtree, 0);
+    int old = (*begin)[0];
+    int count = 0;
+    for(; count != 20; ++begin, ++count)
+      {
+	BOOST_CHECK((*begin)[0] >= old);
+	BOOST_CHECK(begin != end);
+	if (begin == end) break;
+	old = (*begin)[0];
+      }
+    BOOST_CHECK(begin == end);
+    BOOST_CHECK_EQUAL(count, 20);
+    end = view::details::end_mapping(fix.kdtree, 1);
+    begin = view::details::begin_mapping(fix.kdtree, 1);
+    old = (*begin)[1];
+    for(count = 0; count != 20; ++begin, ++count)
+      {
+	BOOST_CHECK((*begin)[1] >= old);
+	BOOST_CHECK(begin != end);
+	if (begin == end) break;
+	old = (*begin)[1];
+      }
+    BOOST_CHECK(begin == end);
+    BOOST_CHECK_EQUAL(count, 20);
   }
 }
 
@@ -5683,6 +5943,88 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_maxium )
     --it;
     BOOST_REQUIRE(it.impl.node == &fix.header);
   }
+  // erase and check that max value found match returned
+  {
+    typedef Hundred_Relaxed_kdtree_5D_fixture::kdtree_type
+      ::iterator iterator;
+    typedef details::Const_Mapping_iterator
+      <Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::rank_type,
+      Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::key_type,
+      Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::node_type,
+      bracket_less<point5d> > mapping_iterator;
+    Hundred_Relaxed_kdtree_5D_fixture fix;
+    int track_size = fix.kdtree.size();
+    while (fix.kdtree.size() != 0)
+      {
+	iterator eraser = fix.kdtree.begin();
+	std::advance(eraser, rand() % fix.kdtree.size());
+	mapping_iterator max_0;
+	BOOST_REQUIRE_NO_THROW(max_0 = mapping_iterator::maximum
+			       (fix.kdtree.rank(),
+				fix.kdtree.compare(),
+				0, 0,
+				static_cast<Relaxed_kdtree_node<point5d>*>
+				(fix.kdtree.end().node->parent)));
+	mapping_iterator max_1;
+	BOOST_REQUIRE_NO_THROW(max_1 = mapping_iterator::maximum
+			       (fix.kdtree.rank(),
+				fix.kdtree.compare(),
+				1, 0,
+				static_cast<Relaxed_kdtree_node<point5d>*>
+				(fix.kdtree.end().node->parent)));
+	mapping_iterator max_2;
+	BOOST_REQUIRE_NO_THROW(max_2 = mapping_iterator::maximum
+			       (fix.kdtree.rank(),
+				fix.kdtree.compare(),
+				2, 0,
+				static_cast<Relaxed_kdtree_node<point5d>*>
+				(fix.kdtree.end().node->parent)));
+	double found_max_0 = -11.0; // absolute lower
+	Node_base* found_max_0_address = 0;
+	double found_max_1 = -11.0;
+	Node_base* found_max_1_address = 0;
+	double found_max_2 = -11.0;
+	Node_base* found_max_2_address = 0;
+	for(iterator i = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
+	  {
+	    if ((*i)[0] > found_max_0)
+	      {
+		found_max_0 = (*i)[0];
+		found_max_0_address = i.node;
+	      }
+	    if ((*i)[0] == found_max_0 && found_max_0_address < i.node)
+	      {
+		found_max_0_address = i.node;
+	      }
+	    if ((*i)[1] > found_max_1)
+	      {
+		found_max_1 = (*i)[1];
+		found_max_1_address = i.node;
+	      }
+	    if ((*i)[1] == found_max_1 && found_max_1_address < i.node)
+	      {
+		found_max_1_address = i.node;
+	      }
+	    if ((*i)[2] > found_max_2)
+	      {
+		found_max_2 = (*i)[2];
+		found_max_2_address = i.node;
+	      }
+	    if ((*i)[2] == found_max_2 && found_max_2_address < i.node)
+	      {
+		found_max_2_address = i.node;
+	      }
+	  }
+	BOOST_CHECK_EQUAL((*max_0)[0], found_max_0);
+	BOOST_CHECK_EQUAL(max_0.impl.node, found_max_0_address);
+	BOOST_CHECK_EQUAL((*max_1)[1], found_max_1);
+	BOOST_CHECK_EQUAL(max_1.impl.node, found_max_1_address);
+	BOOST_CHECK_EQUAL((*max_2)[2], found_max_2);
+	BOOST_CHECK_EQUAL(max_2.impl.node, found_max_2_address);
+	BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(eraser));
+	BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
+      }
+  }
 }
 
 BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_minimum )
@@ -5718,6 +6060,87 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_minimum )
     BOOST_CHECK(*it == threes);
     ++it;
     BOOST_CHECK(it.impl.node == &fix.header);
+  }
+  {
+    typedef Hundred_Relaxed_kdtree_5D_fixture::kdtree_type
+      ::iterator iterator;
+    typedef details::Const_Mapping_iterator
+      <Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::rank_type,
+      Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::key_type,
+      Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::node_type,
+      bracket_less<point5d> > mapping_iterator;
+    Hundred_Relaxed_kdtree_5D_fixture fix;
+    int track_size = fix.kdtree.size();
+    while (fix.kdtree.size() != 0)
+      {
+	iterator eraser = fix.kdtree.begin();
+	std::advance(eraser, rand() % fix.kdtree.size());
+	mapping_iterator min_0;
+	BOOST_REQUIRE_NO_THROW(min_0 = mapping_iterator::minimum
+			       (fix.kdtree.rank(),
+				fix.kdtree.compare(),
+				0, 0,
+				static_cast<Relaxed_kdtree_node<point5d>*>
+				(fix.kdtree.end().node->parent)));
+	mapping_iterator min_1;
+	BOOST_REQUIRE_NO_THROW(min_1 = mapping_iterator::minimum
+			       (fix.kdtree.rank(),
+				fix.kdtree.compare(),
+				1, 0,
+				static_cast<Relaxed_kdtree_node<point5d>*>
+				(fix.kdtree.end().node->parent)));
+	mapping_iterator min_2;
+	BOOST_REQUIRE_NO_THROW(min_2 = mapping_iterator::minimum
+			       (fix.kdtree.rank(),
+				fix.kdtree.compare(),
+				2, 0,
+				static_cast<Relaxed_kdtree_node<point5d>*>
+				(fix.kdtree.end().node->parent)));
+	double found_min_0 = 11.0; // absolute upper
+	Node_base* found_min_0_address = 0;
+	double found_min_1 = 11.0;
+	Node_base* found_min_1_address = 0;
+	double found_min_2 = 11.0;
+	Node_base* found_min_2_address = 0;
+	for(iterator i = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
+	  {
+	    if ((*i)[0] < found_min_0)
+	      {
+		found_min_0 = (*i)[0];
+		found_min_0_address = i.node;
+	      }
+	    if ((*i)[0] == found_min_0 && found_min_0_address > i.node)
+	      {
+		found_min_0_address = i.node;
+	      }
+	    if ((*i)[1] < found_min_1)
+	      {
+		found_min_1 = (*i)[1];
+		found_min_1_address = i.node;
+	      }
+	    if ((*i)[1] == found_min_1 && found_min_1_address > i.node)
+	      {
+		found_min_1_address = i.node;
+	      }
+	    if ((*i)[2] < found_min_2)
+	      {
+		found_min_2 = (*i)[2];
+		found_min_2_address = i.node;
+	      }
+	    if ((*i)[2] == found_min_2 && found_min_2_address > i.node)
+	      {
+		found_min_2_address = i.node;
+	      }
+	  }
+	BOOST_CHECK_EQUAL((*min_0)[0], found_min_0);
+	BOOST_CHECK_EQUAL(min_0.impl.node, found_min_0_address);
+	BOOST_CHECK_EQUAL((*min_1)[1], found_min_1);
+	BOOST_CHECK_EQUAL(min_1.impl.node, found_min_1_address);
+	BOOST_CHECK_EQUAL((*min_2)[2], found_min_2);
+	BOOST_CHECK_EQUAL(min_2.impl.node, found_min_2_address);
+	BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(eraser));
+	BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
+      }
   }
 }
 
@@ -5755,15 +6178,80 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_decrement )
     --it;
     BOOST_REQUIRE(it.impl.node == &fix.header);
   }
+  {
+    Grow_Relaxed_Kdtree_2D_fixture fix;
+    typedef view::details::mapping_iterator
+      <Grow_Relaxed_Kdtree_2D_fixture::kdtree_type>::type iterator_type;
+    iterator_type end = view::details::end_mapping(fix.kdtree, 0);
+    iterator_type begin = view::details::begin_mapping(fix.kdtree, 0);
+    iterator_type before_end = end; --before_end;
+    int old = (*before_end)[0];
+    int count = 0;
+    for(; count != 20; --end, ++count)
+      {
+	BOOST_CHECK(old >= (*before_end)[0]);
+	BOOST_CHECK(begin != end);
+	if (begin == end) break;
+	old = (*before_end)[0];
+	if (before_end != begin) --before_end;
+      }
+    BOOST_CHECK(begin == end);
+    BOOST_CHECK_EQUAL(count, 20);
+    end = view::details::end_mapping(fix.kdtree, 1);
+    begin = view::details::begin_mapping(fix.kdtree, 1);
+    before_end = end; --before_end;
+    old = (*before_end)[1];
+    for(count = 0; count != 20; --end, ++count)
+      {
+	BOOST_CHECK((*before_end)[1] <= old);
+	BOOST_CHECK(begin != end);
+	if (begin == end) break;
+	old = (*before_end)[1];
+	if (before_end != begin) --before_end;
+      }
+    BOOST_CHECK(begin == end);
+    BOOST_CHECK_EQUAL(count, 20);
+  }
+  {
+    Reduce_Relaxed_Kdtree_2D_fixture fix;
+    typedef view::details::mapping_iterator
+      <Reduce_Relaxed_Kdtree_2D_fixture::kdtree_type>::type iterator_type;
+    iterator_type end = view::details::end_mapping(fix.kdtree, 0);
+    iterator_type begin = view::details::begin_mapping(fix.kdtree, 0);
+    iterator_type before_end = end; --before_end;
+    int old = (*before_end)[0];
+    int count = 0;
+    for(; count != 20; --end, ++count)
+      {
+	BOOST_CHECK(old >= (*before_end)[0]);
+	BOOST_CHECK(begin != end);
+	if (begin == end) break;
+	old = (*before_end)[0];
+	if (before_end != begin) --before_end;
+      }
+    BOOST_CHECK(begin == end);
+    BOOST_CHECK_EQUAL(count, 20);
+    end = view::details::end_mapping(fix.kdtree, 1);
+    begin = view::details::begin_mapping(fix.kdtree, 1);
+    before_end = end; --before_end;
+    old = (*before_end)[1];
+    for(count = 0; count != 20; --end, ++count)
+      {
+	BOOST_CHECK((*before_end)[1] <= old);
+	BOOST_CHECK(begin != end);
+	if (begin == end) break;
+	old = (*before_end)[1];
+	if (before_end != begin) --before_end;
+      }
+    BOOST_CHECK(begin == end);
+    BOOST_CHECK_EQUAL(count, 20);
+  }
 }
-
 
 /////////////////// spatial_range.hpp (with Relaxed_kdtree) ////////////////////
 
 
-
 ///////////////// spatial_neighbor.hpp (with Relaxed_kdtree) ///////////////////
-
 
 
 ///////////////////////////  spatial_intersect.hpp  ////////////////////////////

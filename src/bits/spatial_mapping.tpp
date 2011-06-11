@@ -40,7 +40,7 @@ namespace spatial
 	Base_ptr node = impl.node;
 	dimension_type node_dim = impl.node_dim;
 	dimension_type best_dim = impl.node_dim;
-	if (node->left != 0 && node_dim != impl.mapping_dim())
+	if (node->left != 0)
 	  {
 	    do
 	      {
@@ -175,7 +175,7 @@ namespace spatial
 	Base_ptr node = impl.node;
 	dimension_type node_dim = impl.node_dim;
 	dimension_type best_dim = impl.node_dim;
-	if (node->left != 0 && node_dim != impl.mapping_dim())
+	if (node->left != 0 && node_dim != impl.mapping_dim()) // optimization
 	  {
 	    do
 	      {

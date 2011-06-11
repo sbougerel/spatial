@@ -102,9 +102,17 @@ namespace spatial
     {
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!Node_base::header(node));
-      // Node is always balanced when it weighs less or equal to rank.
-      if (!static_cast<Weighted_node*>(node)->weight >
-	  static_cast<weight_type>(Base::dimension()))
+      // I believe it is not necessary to balance node when it weighs less than
+      // twice the rank. This due to the k-d tree rotating invarient (each
+      // dimension is considered in turn). Therefore, it makes little difference
+      // for all algorithms to have balanced nodes if there are not enough nodes
+      // to balance along all dimensions.
+      //
+      // Note that while I can prove this for several algorithms (simple
+      // iteration, mapping iteration, range iteration), I still have to perform
+      // experiments that reflect this reality.
+      if (static_cast<Weighted_node*>(node)->weight <=
+	  static_cast<weight_type>(Base::dimension()) << 1)
 	{ return false; }
       return m_balancing(Base::rank(),
 			 more_left + (node->left
@@ -337,7 +345,6 @@ namespace spatial
       const Rank& rank = Base::rank();
       dimension_type node_dim = rank() - 1;
       Const_Base_ptr node = pointer.node;
-      Base_ptr p = const_cast<Base_ptr>(node->parent);
       while (!Node_base::header(node))
 	{
 	  node = node->parent;
@@ -345,7 +352,7 @@ namespace spatial
 	}
       except::check_invalid_iterator(node, Base::get_header());
       erase_node_finish(node_dim, const_cast<Base_ptr>(pointer.node));
-      destroy_node(static_cast<Link_type>(pointer.node));
+      destroy_node(static_cast<Link_type>(const_cast<Base_ptr>(pointer.node)));
     }
 
     template<typename Rank, typename Key, typename Compare,
@@ -372,7 +379,6 @@ namespace spatial
 	       */
 	      if (*begin == key)
 		{
-		  Base_ptr p = begin.impl.node->parent;
 		  erase_node_finish(begin.impl.node_dim(), begin.impl.node);
 		  destroy_node(static_cast<Link_type>(begin.impl.node));
 		  ++cnt;
