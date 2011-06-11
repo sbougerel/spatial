@@ -84,7 +84,9 @@ BOOST_AUTO_TEST_CASE( test_node_traits )
 
 BOOST_AUTO_TEST_CASE( test_true_or_false_type )
 {
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  // Just have to compile it to verify it :)
+  std::tr1::false_type one = details::true_or_false_type<false>::type();
+  std::tr1::true_type two = details::true_or_false_type<true>::type();
 }
 
 ///////////////////////////  spatial_details.hpp  //////////////////////////////
@@ -96,6 +98,7 @@ point2d ones = { { 1, 1 } };
 point2d twos = { { 2, 2 } };
 point2d threes = { { 3, 3 } };
 point2d fours = { { 4, 4 } };
+point2d fives = { { 5, 5 } };
 
 void swap(point2d& left, point2d& right)
 {
@@ -1172,18 +1175,6 @@ BOOST_AUTO_TEST_CASE( test_empty_Kdtree_base_accessor )
   BOOST_CHECK_NO_THROW(node_alloc = fix.kdtree.node_allocator());
 }
 
-BOOST_AUTO_TEST_CASE( test_Kdtree_base_equal_range )
-{
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
-}
-
-BOOST_AUTO_TEST_CASE( test_Kdtree_base_const_equal_range )
-{
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
-}
-
-//////////////////////////////  spatial_kdtree.hpp  ////////////////////////////
-
 using details::Kdtree;
 struct Empty_Kdtree_2D_fixture
 {
@@ -1193,6 +1184,78 @@ struct Empty_Kdtree_2D_fixture
   kdtree_type kdtree;
   Empty_Kdtree_2D_fixture() : kdtree(details::Dynamic_rank(2)) { }
 };
+
+BOOST_AUTO_TEST_CASE( test_Kdtree_base_equal_range )
+{
+  Empty_Kdtree_2D_fixture fix;
+  fix.kdtree.insert(zeros);
+  fix.kdtree.insert(ones);
+  fix.kdtree.insert(twos);
+  fix.kdtree.insert(threes);
+  fix.kdtree.insert(fours);
+  // and more twos
+  fix.kdtree.insert(twos);
+  fix.kdtree.insert(twos);
+  fix.kdtree.insert(twos);
+  // There are 4 twos.
+  typedef Empty_Kdtree_2D_fixture::kdtree_type::equal_iterator
+    equal_iterator;
+  std::pair<equal_iterator, equal_iterator>
+    eq_pair = fix.kdtree.equal_range(twos);
+  BOOST_REQUIRE(eq_pair.first != eq_pair.second);
+  BOOST_CHECK(*eq_pair.first == twos);
+  ++eq_pair.first;
+  BOOST_REQUIRE(eq_pair.first != eq_pair.second);
+  BOOST_CHECK(*eq_pair.first == twos);
+  ++eq_pair.first;
+  BOOST_REQUIRE(eq_pair.first != eq_pair.second);
+  BOOST_CHECK(*eq_pair.first == twos);
+  ++eq_pair.first;
+  BOOST_REQUIRE(eq_pair.first != eq_pair.second);
+  BOOST_CHECK(*eq_pair.first == twos);
+  ++eq_pair.first;
+  BOOST_CHECK(eq_pair.first == eq_pair.second);
+  // There are no fives...
+  eq_pair = fix.kdtree.equal_range(fives);
+  BOOST_REQUIRE(eq_pair.first == eq_pair.second);
+}
+
+BOOST_AUTO_TEST_CASE( test_Kdtree_base_const_equal_range )
+{
+  Empty_Kdtree_2D_fixture fix;
+  fix.kdtree.insert(zeros);
+  fix.kdtree.insert(ones);
+  fix.kdtree.insert(twos);
+  fix.kdtree.insert(threes);
+  fix.kdtree.insert(fours);
+  // and more twos
+  fix.kdtree.insert(twos);
+  fix.kdtree.insert(twos);
+  fix.kdtree.insert(twos);
+  // There are 4 twos.
+  typedef Empty_Kdtree_2D_fixture::kdtree_type::const_equal_iterator
+    equal_iterator;
+  std::pair<equal_iterator, equal_iterator>
+    eq_pair = fix.kdtree.equal_range(twos);
+  BOOST_REQUIRE(eq_pair.first != eq_pair.second);
+  BOOST_CHECK(*eq_pair.first == twos);
+  ++eq_pair.first;
+  BOOST_REQUIRE(eq_pair.first != eq_pair.second);
+  BOOST_CHECK(*eq_pair.first == twos);
+  ++eq_pair.first;
+  BOOST_REQUIRE(eq_pair.first != eq_pair.second);
+  BOOST_CHECK(*eq_pair.first == twos);
+  ++eq_pair.first;
+  BOOST_REQUIRE(eq_pair.first != eq_pair.second);
+  BOOST_CHECK(*eq_pair.first == twos);
+  ++eq_pair.first;
+  BOOST_CHECK(eq_pair.first == eq_pair.second);
+  // There are no fives...
+  eq_pair = fix.kdtree.equal_range(fives);
+  BOOST_REQUIRE(eq_pair.first == eq_pair.second);
+}
+
+//////////////////////////////  spatial_kdtree.hpp  ////////////////////////////
 
 BOOST_AUTO_TEST_CASE( test_empty_Kdtree )
 {
@@ -2253,12 +2316,17 @@ BOOST_AUTO_TEST_CASE( test_kdtree_erase_iter )
   }
 }
 
-BOOST_AUTO_TEST_CASE( test_Kdtree_bulk_erase )
+BOOST_AUTO_TEST_CASE( test_kdtree_bulk_erase )
 {
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  Hundred_Kdtree_2D_fixture fix;
+  std::vector<point2d> store;
+  store.reserve(100);
+  store.insert(store.end(), fix.kdtree.begin(), fix.kdtree.end());
+  BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(store.begin(), store.end()));
+  BOOST_CHECK(fix.kdtree.empty() == true);
 }
 
-BOOST_AUTO_TEST_CASE( test_Kdtree_bulk_insert )
+BOOST_AUTO_TEST_CASE( test_kdtree_bulk_insert )
 {
   // reuse test_kdtree_insert_100_iterate_forward
   Empty_Kdtree_2D_fixture fix;

@@ -1,5 +1,16 @@
 2011-06-11  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
+	* Added some missing unit test to check erase in bulk in kdtree. Adding
+	same test for relaxed kdtree soon.
+
+	* Passed all nearest neighbor iterator tests for the relaxed kdtree.
+
+	* Modified the incrementation and decrementation algorithm for the
+	nearest neighbor iterator. The old algorithm would prefer to scan the
+	nodes on one side, and then on the other side. This is not ideal when
+	the closest point is not on the first side being scanned. The new
+	algorithm scans both sides at the same time, alternating between the 2.
+
 	* Passed most mapping tests for the Relaxed K-d tree. Remaining
 	Lower_bound and Upper_bound. Behind schedule. Been playing Halo:Reach
 	too much.
