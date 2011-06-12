@@ -1,3 +1,9 @@
+2011-06-12  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+	* Fixed test for bulk erase in Relaxed Kdtree.
+
+	* Adding missing test for optimization in Kdtree.
+
 2011-06-11  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
 	* Added some missing unit test to check erase in bulk in kdtree. Adding

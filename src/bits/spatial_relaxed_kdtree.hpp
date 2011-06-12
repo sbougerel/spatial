@@ -408,9 +408,10 @@ namespace spatial
        *  @brief  Deletes any node that matches one of the keys in the sequence
        *  covered by the iterators.
        */
+      template<typename InputIterator>
       void
-      erase(const_iterator first, const_iterator last)
-      { for (; first != last; ++first) { erase(first); } }
+      erase(InputIterator first, InputIterator last)
+      { for (; first != last; ++first) { erase(*first); } }
     };
 
   } // namespace details

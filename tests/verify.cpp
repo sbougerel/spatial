@@ -2384,6 +2384,30 @@ BOOST_AUTO_TEST_CASE( test_kdtree_copy )
   BOOST_CHECK(j == copy.end());
 }
 
+BOOST_AUTO_TEST_CASE( test_kdtree_copy_rebalance )
+{
+  // Simple copy (rebalancing) should result in a tree that has the same nodes,
+  // and mapping iteration in one dimension can prove it.
+  Hundred_Kdtree_2D_fixture fix;
+  Hundred_Kdtree_2D_fixture::kdtree_type copy(fix.kdtree, true);
+  BOOST_CHECK_EQUAL(fix.kdtree.size(), copy.size());
+  BOOST_CHECK_EQUAL(fix.kdtree.dimension(), copy.dimension());
+  int count = 0;
+  typedef view::details::mapping_iterator
+    <Hundred_Kdtree_2D_fixture::kdtree_type>::type iterator;
+  iterator i = view::details::begin_mapping(fix.kdtree, 0),
+    j = view::details::begin_mapping(copy, 0),
+    i_end = view::details::end_mapping(fix.kdtree, 0),
+    j_end = view::details::end_mapping(copy, 0);
+  for(; i != i_end && j != j_end; ++i, ++j, ++count)
+    {
+      BOOST_CHECK_EQUAL((*i)[0], (*j)[0]);
+    }
+  BOOST_CHECK_EQUAL(count, fix.kdtree.size());
+  BOOST_CHECK(i == i_end);
+  BOOST_CHECK(j == j_end);
+}
+
 BOOST_AUTO_TEST_CASE( test_kdtree_assign_empty_trees )
 {
   Empty_Kdtree_2D_fixture empty;
@@ -5814,7 +5838,12 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_erase_iterator )
 
 BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_erase_bulk )
 {
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  Hundred_Relaxed_kdtree_5D_fixture fix;
+  std::vector<point5d> store;
+  store.reserve(100);
+  store.insert(store.end(), fix.kdtree.begin(), fix.kdtree.end());
+  BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(store.begin(), store.end()));
+  BOOST_CHECK(fix.kdtree.empty() == true);
 }
 
 ////////////////// spatial_mapping.hpp (with Relaxed_kdtree) ///////////////////
