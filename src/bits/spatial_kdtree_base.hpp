@@ -566,8 +566,8 @@ namespace spatial
       equal_range(const key_type& key)
       {
 	equal_bounds<key_type, compare_type> pred(compare(), key);
-	equal_iterator first = view::details::begin_range(*this, pred);
-	equal_iterator last = view::details::end_range(*this, pred);
+	equal_iterator first = details::range::begin(*this, pred);
+	equal_iterator last = details::range::end(*this, pred);
 	return std::make_pair(first, last);
       }
 
@@ -576,9 +576,9 @@ namespace spatial
       {
 	equal_bounds<key_type, compare_type> pred(compare(), key);
 	const_equal_iterator first
-	  = view::details::const_begin_range(*this, pred);
+	  = details::range::const_begin(*this, pred);
 	const_equal_iterator last
-	  = view::details::const_end_range(*this, pred);
+	  = details::range::const_end(*this, pred);
 	return std::make_pair(first, last);
       }
       //@}

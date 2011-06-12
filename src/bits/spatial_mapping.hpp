@@ -315,14 +315,10 @@ namespace spatial
       { }
     };
 
-  } // namespace details
-
-  namespace view
-  {
-    namespace details
+    namespace mapping
     {
       template<typename Container>
-      struct mapping_iterator
+      struct iterator
       {
 	typedef spatial::details::Mapping_iterator
 	<typename container_traits<Container>::rank_type,
@@ -333,7 +329,7 @@ namespace spatial
       };
 
       template<typename Container>
-      struct const_mapping_iterator
+      struct const_iterator
       {
 	typedef spatial::details::Const_Mapping_iterator
 	<typename container_traits<Container>::rank_type,
@@ -344,318 +340,319 @@ namespace spatial
       };
 
       template <typename Container>
-      inline typename mapping_iterator<Container>::type
-      end_mapping(Container& container, dimension_type mapping_dim)
+      inline typename iterator<Container>::type
+      end(Container& container, dimension_type mapping_dim)
       {
 	except::check_dimension_argument(container.dimension(), mapping_dim);
-	return typename mapping_iterator<Container>::type
+	return typename iterator<Container>::type
 	  (container.rank(), container.compare(),
 	   mapping_dim, container.dimension() - 1,
 	   get_end(container));
       }
 
       template <typename Container>
-      inline typename const_mapping_iterator<Container>::type
-      const_end_mapping
+      inline typename const_iterator<Container>::type
+      const_end
       (const Container& container, dimension_type mapping_dim)
       {
-	return end_mapping(*const_cast<Container*>(&container), mapping_dim);
+	return end(*const_cast<Container*>(&container), mapping_dim);
       }
 
       template <typename Container>
-      inline typename mapping_iterator<Container>::type
-      begin_mapping(Container& container, dimension_type mapping_dim)
+      inline typename iterator<Container>::type
+      begin(Container& container, dimension_type mapping_dim)
       {
 	// Guarentees begin(n) == end(n) if tree is empty
 	if (container.empty())
-	  { return end_mapping(container, mapping_dim); }
+	  { return end(container, mapping_dim); }
 	else
 	  {
 	    except::check_dimension_argument
 	      (container.dimension(), mapping_dim);
-	    return mapping_iterator<Container>::type::minimum
+	    return iterator<Container>::type::minimum
 	      (container.rank(), container.compare(),
 	       mapping_dim, 0, container.end().node->parent);
 	  }
       }
 
       template <typename Container>
-      inline typename const_mapping_iterator<Container>::type
-      const_begin_mapping
+      inline typename const_iterator<Container>::type
+      const_begin
       (const Container& container, dimension_type mapping_dim)
       {
-	return begin_mapping(*const_cast<Container*>(&container), mapping_dim);
+	return begin(*const_cast<Container*>(&container), mapping_dim);
       }
 
       template <typename Container>
-      inline typename mapping_iterator<Container>::type
-      lower_bound_mapping
+      inline typename iterator<Container>::type
+      lower_bound
       (Container& container, dimension_type mapping_dim,
        const typename container_traits<Container>::key_type& key)
       {
 	if (container.empty())
-	  { return end_mapping(container, mapping_dim); }
+	  { return end(container, mapping_dim); }
 	else
 	  {
 	    except::check_dimension_argument
 	      (container.dimension(), mapping_dim);
-	    return mapping_iterator<Container>::type::lower_bound
+	    return iterator<Container>::type::lower_bound
 	      (container.rank(), container.compare(),
 	       mapping_dim, 0, container.end().node->parent, key);
 	  }
       }
 
       template <typename Container>
-      inline typename const_mapping_iterator<Container>::type
-      const_lower_bound_mapping
+      inline typename const_iterator<Container>::type
+      const_lower_bound
       (const Container& container, dimension_type mapping_dim,
        const typename container_traits<Container>::key_type& key)
       {
-	return lower_bound_mapping
+	return lower_bound
 	  (*const_cast<Container*>(&container), mapping_dim, key);
       }
 
       template <typename Container>
-      inline typename mapping_iterator<Container>::type
-      upper_bound_mapping
+      inline typename iterator<Container>::type
+      upper_bound
       (Container& container, dimension_type mapping_dim,
        const typename container_traits<Container>::key_type& key)
       {
 	if (container.empty())
-	  { return end_mapping(container, mapping_dim); }
+	  { return end(container, mapping_dim); }
 	else
 	  {
 	    except::check_dimension_argument
 	      (container.dimension(), mapping_dim);
-	    return mapping_iterator<Container>::type::upper_bound
+	    return iterator<Container>::type::upper_bound
 	      (container.rank(), container.compare(),
 	       mapping_dim, 0, container.end().node->parent, key);
 	  }
       }
 
       template <typename Container>
-      inline typename const_mapping_iterator<Container>::type
-      const_upper_bound_mapping
+      inline typename const_iterator<Container>::type
+      const_upper_bound
       (const Container& container, dimension_type mapping_dim,
        const typename container_traits<Container>::key_type& key)
       {
-	return upper_bound_mapping
+	return upper_bound
 	  (*const_cast<Container*>(&container), mapping_dim, key);
       }
-    } // namespace details
+
+    } // namespace mapping
+  } // namespace details
+
 
     /**
      *  @brief  Enforces the definition of the mapping_iterable tag into a type
      *  when used.
      */
-    template <typename Type>
-    struct mapping_iterable_traits
-      : spatial::details::identity<typename Type::mapping_iterable> { };
+  template <typename Type>
+  struct mapping_iterable_traits
+    : spatial::details::identity<typename Type::mapping_iterable> { };
 
-    /**
-     *  @brief  View of the Kdtree that provides standard iterator accessors for
-     *  kdtree types that inherit from @c Mapping_iterable<KdtreeType>. Types
-     *  using this view must provide the type definition mapping_iterable, that
-     *  links back to the type itself.
-     *
-     *  This is a poor man's way to implement simple concept checking using
-     *  traits, until one day, it create a dependancy on Boost.
-     *  @see details::mapping_iterable_traits
-     */
-    template <typename Container>
-    class mapping
-    {
-      typedef typename spatial::container_traits<Container>      traits_type;
+  /**
+   *  @brief  View of the Kdtree that provides standard iterator accessors for
+   *  kdtree types that inherit from @c Mapping_iterable<KdtreeType>. Types
+   *  using this view must provide the type definition mapping_iterable, that
+   *  links back to the type itself.
+   *
+   *  This is a poor man's way to implement simple concept checking using
+   *  traits, until one day, it create a dependancy on Boost.
+   *  @see details::mapping_iterable_traits
+   */
+  template <typename Container>
+  class mapping_view
+  {
+    typedef typename spatial::container_traits<Container>      traits_type;
 
-    public:
-      typedef typename traits_type::key_type            key_type;
-      typedef typename traits_type::pointer             pointer;
-      typedef typename traits_type::const_pointer       const_pointer;
-      typedef typename traits_type::reference           reference;
-      typedef typename traits_type::const_reference     const_reference;
-      typedef typename traits_type::node_type           node_type;
-      typedef typename traits_type::size_type           size_type;
-      typedef typename traits_type::difference_type     difference_type;
-      typedef typename traits_type::allocator_type      allocator_type;
-      typedef typename traits_type::compare_type        compare_type;
-      typedef typename traits_type::rank_type           rank_type;
+  public:
+    typedef typename traits_type::key_type            key_type;
+    typedef typename traits_type::pointer             pointer;
+    typedef typename traits_type::const_pointer       const_pointer;
+    typedef typename traits_type::reference           reference;
+    typedef typename traits_type::const_reference     const_reference;
+    typedef typename traits_type::node_type           node_type;
+    typedef typename traits_type::size_type           size_type;
+    typedef typename traits_type::difference_type     difference_type;
+    typedef typename traits_type::allocator_type      allocator_type;
+    typedef typename traits_type::compare_type        compare_type;
+    typedef typename traits_type::rank_type           rank_type;
 
-      typedef typename spatial::details::condition
-      <traits_type::const_iterator_tag::value,
-       typename details::const_mapping_iterator<Container>::type,
-       typename details::mapping_iterator<Container>::type
-       >::type                                          iterator;
-      typedef typename
-      details::const_mapping_iterator<Container>::type  const_iterator;
-      typedef std::reverse_iterator<iterator>           reverse_iterator;
-      typedef std::reverse_iterator<const_iterator>     const_reverse_iterator;
+    typedef typename spatial::details::condition
+    <traits_type::const_iterator_tag::value,
+     typename details::mapping::const_iterator<Container>::type,
+     typename details::mapping::iterator<Container>::type
+     >::type                                          iterator;
+    typedef typename
+    details::mapping::const_iterator<Container>::type const_iterator;
+    typedef std::reverse_iterator<iterator>           reverse_iterator;
+    typedef std::reverse_iterator<const_iterator>     const_reverse_iterator;
 
-      iterator
-      begin()
-      { return details::begin_mapping(*container, mapping_dim); }
+    iterator
+    begin()
+    { return details::mapping::begin(*container, mapping_dim); }
 
-      const_iterator
-      begin() const
-      { return details::const_begin_mapping(*container, mapping_dim); }
+    const_iterator
+    begin() const
+    { return details::mapping::const_begin(*container, mapping_dim); }
 
-      const_iterator
-      cbegin() const
-      { return details::const_begin_mapping(*container, mapping_dim); }
+    const_iterator
+    cbegin() const
+    { return details::mapping::const_begin(*container, mapping_dim); }
 
-      iterator
-      end()
-      { return details::end_mapping(*container, mapping_dim); }
+    iterator
+    end()
+    { return details::mapping::end(*container, mapping_dim); }
 
-      const_iterator
-      end() const
-      { return details::const_end_mapping(*container, mapping_dim); }
+    const_iterator
+    end() const
+    { return details::mapping::const_end(*container, mapping_dim); }
 
-      const_iterator
-      cend() const
-      { return details::const_end_mapping(*container, mapping_dim); }
+    const_iterator
+    cend() const
+    { return details::mapping::const_end(*container, mapping_dim); }
 
-      reverse_iterator
-      rbegin()
-      { return reverse_iterator(end()); }
+    reverse_iterator
+    rbegin()
+    { return reverse_iterator(end()); }
 
-      const_reverse_iterator
-      rbegin() const
-      { return reverse_iterator(cend()); }
+    const_reverse_iterator
+    rbegin() const
+    { return reverse_iterator(cend()); }
 
-      const_reverse_iterator
-      crbegin() const
-      { return reverse_iterator(cend()); }
+    const_reverse_iterator
+    crbegin() const
+    { return reverse_iterator(cend()); }
 
-      reverse_iterator
-      rend()
-      { return reverse_iterator(begin()); }
+    reverse_iterator
+    rend()
+    { return reverse_iterator(begin()); }
 
-      const_reverse_iterator
-      rend() const
-      { return reverse_iterator(cbegin()); }
+    const_reverse_iterator
+    rend() const
+    { return reverse_iterator(cbegin()); }
 
-      const_reverse_iterator
-      crend() const
-      { return reverse_iterator(cbegin()); }
+    const_reverse_iterator
+    crend() const
+    { return reverse_iterator(cbegin()); }
 
-      iterator
-      lower_bound(const key_type& key)
-      { return details::lower_bound_mapping(*container, mapping_dim, key); }
+    iterator
+    lower_bound(const key_type& key)
+    { return details::mapping::lower_bound(*container, mapping_dim, key); }
 
-      const_iterator
-      lower_bound(const key_type& key) const
-      { return details::const_lower_bound_mapping(*container, mapping_dim, key); }
+    const_iterator
+    lower_bound(const key_type& key) const
+    { return details::mapping::const_lower_bound(*container, mapping_dim, key); }
 
-      const_iterator
-      clower_bound(const key_type& key) const
-      { return details::const_lower_bound_mapping(*container, mapping_dim, key); }
+    const_iterator
+    clower_bound(const key_type& key) const
+    { return details::mapping::const_lower_bound(*container, mapping_dim, key); }
 
-      iterator
-      upper_bound(const key_type& key)
-      { return details::upper_bound_mapping(*container, mapping_dim, key); }
+    iterator
+    upper_bound(const key_type& key)
+    { return details::mapping::upper_bound(*container, mapping_dim, key); }
 
-      const_iterator
-      upper_bound(const key_type& key) const
-      { return details::const_upper_bound_mapping(*container, mapping_dim, key); }
+    const_iterator
+    upper_bound(const key_type& key) const
+    { return details::mapping::const_upper_bound(*container, mapping_dim, key); }
 
-      const_iterator
-      cupper_bound(const key_type& key) const
-      { return details::const_upper_bound_mapping(*container, mapping_dim, key); }
+    const_iterator
+    cupper_bound(const key_type& key) const
+    { return details::mapping::const_upper_bound(*container, mapping_dim, key); }
 
-      dimension_type mapping_dim;
-      Container* container;
+    dimension_type mapping_dim;
+    Container* container;
 
-      mapping(typename mapping_iterable_traits<Container>
-	      ::type& iterable, dimension_type mapping_dim)
-	: mapping_dim(mapping_dim), container(&iterable)
-      { }
-    };
+    mapping_view(typename mapping_iterable_traits<Container>
+		 ::type& iterable, dimension_type mapping_dim)
+      : mapping_dim(mapping_dim), container(&iterable)
+    { }
+  };
 
-    /**
-     *  @brief  Specialization of the view for constant containers
-     */
-    template <typename Container>
-    class mapping<const Container>
-    {
-      typedef typename spatial::container_traits<Container>    traits_type;
+  /**
+   *  @brief  Specialization of the view for constant containers
+   */
+  template <typename Container>
+  class mapping_view<const Container>
+  {
+    typedef typename spatial::container_traits<Container>    traits_type;
 
-    public:
-      typedef typename traits_type::key_type            key_type;
-      typedef typename traits_type::const_pointer       pointer;
-      typedef typename traits_type::const_pointer       const_pointer;
-      typedef typename traits_type::const_reference     reference;
-      typedef typename traits_type::const_reference     const_reference;
-      typedef typename traits_type::node_type           node_type;
-      typedef typename traits_type::size_type           size_type;
-      typedef typename traits_type::difference_type     difference_type;
-      typedef typename traits_type::allocator_type      allocator_type;
-      typedef typename traits_type::compare_type        compare_type;
-      typedef typename traits_type::rank_type           rank_type;
+  public:
+    typedef typename traits_type::key_type            key_type;
+    typedef typename traits_type::const_pointer       pointer;
+    typedef typename traits_type::const_pointer       const_pointer;
+    typedef typename traits_type::const_reference     reference;
+    typedef typename traits_type::const_reference     const_reference;
+    typedef typename traits_type::node_type           node_type;
+    typedef typename traits_type::size_type           size_type;
+    typedef typename traits_type::difference_type     difference_type;
+    typedef typename traits_type::allocator_type      allocator_type;
+    typedef typename traits_type::compare_type        compare_type;
+    typedef typename traits_type::rank_type           rank_type;
 
-      typedef typename
-      details::const_mapping_iterator<Container>::type  const_iterator;
-      typedef const_iterator                            iterator;
-      typedef std::reverse_iterator<const_iterator>     const_reverse_iterator;
-      typedef const_reverse_iterator                    reverse_iterator;
+    typedef typename
+    details::mapping::const_iterator<Container>::type const_iterator;
+    typedef const_iterator                            iterator;
+    typedef std::reverse_iterator<const_iterator>     const_reverse_iterator;
+    typedef const_reverse_iterator                    reverse_iterator;
 
-      const_iterator
-      begin() const
-      { return details::const_begin_mapping(*container, mapping_dim); }
+    const_iterator
+    begin() const
+    { return details::mapping::const_begin(*container, mapping_dim); }
 
-      const_iterator
-      cbegin() const
-      { return details::const_begin_mapping(*container, mapping_dim); }
+    const_iterator
+    cbegin() const
+    { return details::mapping::const_begin(*container, mapping_dim); }
 
-      const_iterator
-      end() const
-      { return details::const_end_mapping(*container, mapping_dim); }
+    const_iterator
+    end() const
+    { return details::mapping::const_end(*container, mapping_dim); }
 
-      const_iterator
-      cend() const
-      { return details::const_end_mapping(*container, mapping_dim); }
+    const_iterator
+    cend() const
+    { return details::mapping::const_end(*container, mapping_dim); }
 
-      const_reverse_iterator
-      rbegin() const
-      { return reverse_iterator(cend()); }
+    const_reverse_iterator
+    rbegin() const
+    { return reverse_iterator(cend()); }
 
-      const_reverse_iterator
-      crbegin() const
-      { return reverse_iterator(cend()); }
+    const_reverse_iterator
+    crbegin() const
+    { return reverse_iterator(cend()); }
 
-      const_reverse_iterator
-      rend() const
-      { return reverse_iterator(cbegin()); }
+    const_reverse_iterator
+    rend() const
+    { return reverse_iterator(cbegin()); }
 
-      const_reverse_iterator
-      crend() const
-      { return reverse_iterator(cbegin()); }
+    const_reverse_iterator
+    crend() const
+    { return reverse_iterator(cbegin()); }
 
-      const_iterator
-      lower_bound(const key_type& key) const
-      { return details::const_lower_bound_mapping(*container, mapping_dim, key); }
+    const_iterator
+    lower_bound(const key_type& key) const
+    { return details::mapping::const_lower_bound(*container, mapping_dim, key); }
 
-      const_iterator
-      clower_bound(const key_type& key) const
-      { return details::const_lower_bound_mapping(*container, mapping_dim, key); }
+    const_iterator
+    clower_bound(const key_type& key) const
+    { return details::mapping::const_lower_bound(*container, mapping_dim, key); }
 
-      const_iterator
-      upper_bound(const key_type& key) const
-      { return details::const_upper_bound_mapping(*container, mapping_dim, key); }
+    const_iterator
+    upper_bound(const key_type& key) const
+    { return details::mapping::const_upper_bound(*container, mapping_dim, key); }
 
-      const_iterator
-      cupper_bound(const key_type& key) const
-      { return details::const_upper_bound_mapping(*container, mapping_dim, key); }
+    const_iterator
+    cupper_bound(const key_type& key) const
+    { return details::mapping::const_upper_bound(*container, mapping_dim, key); }
 
-      dimension_type mapping_dim;
-      const Container* container;
+    dimension_type mapping_dim;
+    const Container* container;
 
-      mapping(const typename mapping_iterable_traits<Container>
-	      ::type& iterable, dimension_type mapping_dim)
-	: mapping_dim(mapping_dim), container(&iterable)
-      { }
-    };
-
-  } // namespace view
+    mapping_view(const typename mapping_iterable_traits<Container>
+		 ::type& iterable, dimension_type mapping_dim)
+      : mapping_dim(mapping_dim), container(&iterable)
+    { }
+  };
 
 } // namespace spatial
 

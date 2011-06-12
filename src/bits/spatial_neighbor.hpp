@@ -387,15 +387,11 @@ namespace spatial
       { }
     };
 
-  } // namespace details
-
-  namespace view
-  {
-    namespace details
+    namespace neighbor
     {
 
       template<typename Container, typename Geometry>
-      struct neighbor_iterator
+      struct iterator
       {
 	typedef spatial::details::Neighbor_iterator
 	<typename container_traits<Container>::rank_type,
@@ -407,7 +403,7 @@ namespace spatial
       };
 
       template<typename Container, typename Geometry>
-      struct const_neighbor_iterator
+      struct const_iterator
       {
 	typedef spatial::details::Const_Neighbor_iterator
 	<typename container_traits<Container>::rank_type,
@@ -419,12 +415,12 @@ namespace spatial
       };
 
       template <typename Container, typename Geometry>
-      inline typename neighbor_iterator<Container, Geometry>::type
-      end_neighbor
+      inline typename iterator<Container, Geometry>::type
+      end
       (Container& container, const Geometry& geometry,
        const typename container_traits<Container>::key_type& origin)
       {
-	return typename neighbor_iterator<Container, Geometry>::type
+	return typename iterator<Container, Geometry>::type
 	  (container.rank(), container.compare(), geometry, origin,
 	   container.dimension() - 1,
 	   static_cast<typename container_traits<Container>::node_type*>
@@ -432,517 +428,517 @@ namespace spatial
       }
 
       template <typename Container, typename Geometry>
-      inline typename const_neighbor_iterator<Container, Geometry>::type
-      const_end_neighbor
+      inline typename const_iterator<Container, Geometry>::type
+      const_end
       (const Container& container, const Geometry& geometry,
        const typename container_traits<Container>::key_type& origin)
       {
-	return end_neighbor(*const_cast<Container*>(&container),
-			    geometry, origin);
+	return end(*const_cast<Container*>(&container),
+		   geometry, origin);
       }
 
       template <typename Container, typename Geometry>
-      inline typename neighbor_iterator<Container, Geometry>::type
-      begin_neighbor
+      inline typename iterator<Container, Geometry>::type
+      begin
       (Container& container, const Geometry& geometry,
        const typename container_traits<Container>::key_type& origin)
       {
 	// Guarentees begin(n) == end(n) if tree is empty
 	if (container.empty())
-	  { return end_neighbor(container, geometry, origin); }
+	  { return end(container, geometry, origin); }
 	else
 	  {
-	    return neighbor_iterator<Container, Geometry>::type::minimum
+	    return iterator<Container, Geometry>::type::minimum
 	      (container.rank(), container.compare(), geometry, origin,
 	       0, container.end().node->parent);
 	  }
       }
 
       template <typename Container, typename Geometry>
-      inline typename const_neighbor_iterator<Container, Geometry>::type
-      const_begin_neighbor
+      inline typename const_iterator<Container, Geometry>::type
+      const_begin
       (const Container& container, const Geometry& geometry,
        const typename container_traits<Container>::key_type& origin)
       {
-	return begin_neighbor(*const_cast<Container*>(&container),
-			      geometry, origin);
+	return begin(*const_cast<Container*>(&container),
+		     geometry, origin);
       }
 
       template <typename Container, typename Geometry>
-      inline typename neighbor_iterator<Container, Geometry>::type
-      lower_bound_neighbor
+      inline typename iterator<Container, Geometry>::type
+      lower_bound
       (Container& container, const Geometry& geometry,
        const typename container_traits<Container>::key_type& origin,
        const typename geometry_traits<Geometry>::distance_type& lower)
       {
 	if (container.empty())
-	  { return end_neighbor(container, geometry, origin); }
+	  { return end(container, geometry, origin); }
 	else
 	  {
-	    return neighbor_iterator<Container, Geometry>::type::lower_bound
+	    return iterator<Container, Geometry>::type::lower_bound
 	      (container.rank(), container.compare(), geometry, origin,
 	       lower, 0, container.end().node->parent);
 	  }
       }
 
       template <typename Container, typename Geometry>
-      inline typename const_neighbor_iterator<Container, Geometry>::type
-      const_lower_bound_neighbor
+      inline typename const_iterator<Container, Geometry>::type
+      const_lower_bound
       (const Container& container, const Geometry& geometry,
        const typename container_traits<Container>::key_type& origin,
        const typename geometry_traits<Geometry>::distance_type& lower)
       {
-	return lower_bound_neighbor(*const_cast<Container*>(&container),
-				    geometry, origin, lower);
+	return lower_bound(*const_cast<Container*>(&container),
+			   geometry, origin, lower);
       }
 
       template <typename Container, typename Geometry>
-      inline typename neighbor_iterator<Container, Geometry>::type
-      upper_bound_neighbor
+      inline typename iterator<Container, Geometry>::type
+      upper_bound
       (Container& container, const Geometry& geometry,
        const typename container_traits<Container>::key_type& origin,
        const typename geometry_traits<Geometry>::distance_type& upper)
       {
 	if (container.empty())
-	  { return end_neighbor(container, geometry, origin); }
+	  { return end(container, geometry, origin); }
 	else
 	  {
-	    return neighbor_iterator<Container, Geometry>::type::upper_bound
+	    return iterator<Container, Geometry>::type::upper_bound
 	      (container.rank(), container.compare(), geometry, origin,
 	       upper, 0, container.end().node->parent);
 	  }
       }
 
       template <typename Container, typename Geometry>
-      inline typename const_neighbor_iterator<Container, Geometry>::type
-      const_upper_bound_neighbor
+      inline typename const_iterator<Container, Geometry>::type
+      const_upper_bound
       (const Container& container, const Geometry& geometry,
        const typename container_traits<Container>::key_type& origin,
        const typename geometry_traits<Geometry>::distance_type& upper)
       {
-	return upper_bound_neighbor(*const_cast<Container*>(&container),
-				    geometry, origin, upper);
+	return upper_bound(*const_cast<Container*>(&container),
+			   geometry, origin, upper);
       }
 
-    } // namespace details
+    } // namespace neighbor
+  } // namespace details
 
-    /**
-     *  @brief  Enforces the definition of the equal_iterable tag into a type.
-     */
-    template <typename Type>
-    struct neighbor_iterable_traits
-      : spatial::details::identity<typename Type::neighbor_iterable> { };
+  /**
+   *  @brief  Enforces the definition of the equal_iterable tag into a type.
+   */
+  template <typename Type>
+  struct neighbor_iterable_traits
+    : spatial::details::identity<typename Type::neighbor_iterable> { };
 
-    //@{
-    /**
-     *  @brief  View of the Kdtree that provides standard iterator accessors for
-     *  kdtree types that inherit from @c Neighbor_iterable<Kdtree>.
-     */
-    template <typename Container, typename Geometry>
-    class neighbor
-    {
-      typedef typename spatial::container_traits<Container>  traits_type;
+  //@{
+  /**
+   *  @brief  View of the Kdtree that provides standard iterator accessors for
+   *  kdtree types that inherit from @c Neighbor_iterable<Kdtree>.
+   */
+  template <typename Container, typename Geometry>
+  class neighbor_view
+  {
+    typedef typename spatial::container_traits<Container>  traits_type;
 
-    public:
-      typedef typename traits_type::key_type            key_type;
-      typedef typename traits_type::pointer             pointer;
-      typedef typename traits_type::const_pointer       const_pointer;
-      typedef typename traits_type::reference           reference;
-      typedef typename traits_type::const_reference     const_reference;
-      typedef typename traits_type::node_type           node_type;
-      typedef typename traits_type::size_type           size_type;
-      typedef typename traits_type::difference_type     difference_type;
-      typedef typename traits_type::allocator_type      allocator_type;
-      typedef typename traits_type::compare_type        compare_type;
-      typedef typename traits_type::rank_type           rank_type;
+  public:
+    typedef typename traits_type::key_type            key_type;
+    typedef typename traits_type::pointer             pointer;
+    typedef typename traits_type::const_pointer       const_pointer;
+    typedef typename traits_type::reference           reference;
+    typedef typename traits_type::const_reference     const_reference;
+    typedef typename traits_type::node_type           node_type;
+    typedef typename traits_type::size_type           size_type;
+    typedef typename traits_type::difference_type     difference_type;
+    typedef typename traits_type::allocator_type      allocator_type;
+    typedef typename traits_type::compare_type        compare_type;
+    typedef typename traits_type::rank_type           rank_type;
 
-      typedef typename Geometry::distance_type          distance_type;
+    typedef typename Geometry::distance_type          distance_type;
 
-      typedef typename spatial::details::condition
-      <traits_type::const_iterator_tag::value,
-       typename details::const_neighbor_iterator<Container, Geometry>::type,
-       typename details::neighbor_iterator<Container, Geometry>::type
-       >::type                                          iterator;
-      typedef typename details::const_neighbor_iterator
-      <Container, Geometry>::type                       const_iterator;
-      typedef std::reverse_iterator<iterator>           reverse_iterator;
-      typedef std::reverse_iterator<const_iterator>     const_reverse_iterator;
+    typedef typename spatial::details::condition
+    <traits_type::const_iterator_tag::value,
+     typename details::neighbor::const_iterator<Container, Geometry>::type,
+     typename details::neighbor::iterator<Container, Geometry>::type
+     >::type                                          iterator;
+    typedef typename details::neighbor::const_iterator
+    <Container, Geometry>::type                       const_iterator;
+    typedef std::reverse_iterator<iterator>           reverse_iterator;
+    typedef std::reverse_iterator<const_iterator>     const_reverse_iterator;
 
-      iterator
-      begin()
-      { return details::begin_neighbor(*container, geometry, origin); }
+    iterator
+    begin()
+    { return details::neighbor::begin(*container, geometry, origin); }
 
-      const_iterator
-      begin() const
-      { return details::const_begin_neighbor(*container, geometry, origin); }
+    const_iterator
+    begin() const
+    { return details::neighbor::const_begin(*container, geometry, origin); }
 
-      const_iterator
-      cbegin() const
-      { return details::const_begin_neighbor(*container, geometry, origin); }
+    const_iterator
+    cbegin() const
+    { return details::neighbor::const_begin(*container, geometry, origin); }
 
-      iterator
-      end()
-      { return details::end_neighbor(*container, geometry, origin); }
+    iterator
+    end()
+    { return details::neighbor::end(*container, geometry, origin); }
 
-      const_iterator
-      end() const
-      { return details::const_end_neighbor(*container, geometry, origin); }
+    const_iterator
+    end() const
+    { return details::neighbor::const_end(*container, geometry, origin); }
 
-      const_iterator
-      cend() const
-      { return details::const_end_neighbor(*container, geometry, origin); }
+    const_iterator
+    cend() const
+    { return details::neighbor::const_end(*container, geometry, origin); }
 
-      reverse_iterator
-      rbegin()
-      { return reverse_iterator(end()); }
+    reverse_iterator
+    rbegin()
+    { return reverse_iterator(end()); }
 
-      const_reverse_iterator
-      rbegin() const
-      { return reverse_iterator(cend()); }
+    const_reverse_iterator
+    rbegin() const
+    { return reverse_iterator(cend()); }
 
-      const_reverse_iterator
-      crbegin() const
-      { return reverse_iterator(cend()); }
+    const_reverse_iterator
+    crbegin() const
+    { return reverse_iterator(cend()); }
 
-      reverse_iterator
-      rend()
-      { return reverse_iterator(begin()); }
+    reverse_iterator
+    rend()
+    { return reverse_iterator(begin()); }
 
-      const_reverse_iterator
-      rend() const
-      { return reverse_iterator(cbegin()); }
+    const_reverse_iterator
+    rend() const
+    { return reverse_iterator(cbegin()); }
 
-      const_reverse_iterator
-      crend() const
-      { return reverse_iterator(cbegin()); }
+    const_reverse_iterator
+    crend() const
+    { return reverse_iterator(cbegin()); }
 
-      iterator
-      lower_bound(const distance_type& lower)
-      { return details::lower_bound_neighbor(*container, geometry, origin, lower); }
+    iterator
+    lower_bound(const distance_type& lower)
+    { return details::neighbor::lower_bound(*container, geometry, origin, lower); }
 
-      const_iterator
-      lower_bound(const distance_type& lower) const
-      { return details::const_lower_bound_neighbor(*container, geometry, origin, lower); }
+    const_iterator
+    lower_bound(const distance_type& lower) const
+    { return details::neighbor::const_lower_bound(*container, geometry, origin, lower); }
 
-      const_iterator
-      clower_bound(const distance_type& lower) const
-      { return details::const_lower_bound_neighbor(*container, geometry, origin, lower); }
+    const_iterator
+    clower_bound(const distance_type& lower) const
+    { return details::neighbor::const_lower_bound(*container, geometry, origin, lower); }
 
-      iterator
-      upper_bound(const distance_type& upper)
-      { return details::upper_bound_neighbor(*container, geometry, origin, upper); }
+    iterator
+    upper_bound(const distance_type& upper)
+    { return details::neighbor::upper_bound(*container, geometry, origin, upper); }
 
-      const_iterator
-      upper_bound(const distance_type& upper) const
-      { return details::const_upper_bound_neighbor(*container, geometry, origin, upper); }
+    const_iterator
+    upper_bound(const distance_type& upper) const
+    { return details::neighbor::const_upper_bound(*container, geometry, origin, upper); }
 
-      const_iterator
-      cupper_bound(const distance_type& upper) const
-      { return details::const_upper_bound_neighbor(*container, geometry, origin, upper); }
+    const_iterator
+    cupper_bound(const distance_type& upper) const
+    { return details::neighbor::const_upper_bound(*container, geometry, origin, upper); }
 
-      key_type origin;
-      Geometry geometry;
-      Container* container;
+    key_type origin;
+    Geometry geometry;
+    Container* container;
 
-      neighbor(typename neighbor_iterable_traits<Container>::type& iterable,
-	       const Geometry& geometry, const key_type& origin)
-	: origin(origin), geometry(geometry), container(&iterable)
-      { }
-    };
+    neighbor_view(typename neighbor_iterable_traits<Container>::type& iterable,
+		  const Geometry& geometry, const key_type& origin)
+      : origin(origin), geometry(geometry), container(&iterable)
+    { }
+  };
 
-    // Specialization for constant container types.
-    template <typename Container, typename Geometry>
-    class neighbor<const Container, Geometry>
-    {
-      typedef typename spatial::container_traits<Container>  traits_type;
+  // Specialization for constant container types.
+  template <typename Container, typename Geometry>
+  class neighbor_view<const Container, Geometry>
+  {
+    typedef typename spatial::container_traits<Container>  traits_type;
 
-    public:
-      typedef typename traits_type::key_type            key_type;
-      typedef typename traits_type::pointer             pointer;
-      typedef typename traits_type::const_pointer       const_pointer;
-      typedef typename traits_type::reference           reference;
-      typedef typename traits_type::const_reference     const_reference;
-      typedef typename traits_type::node_type           node_type;
-      typedef typename traits_type::size_type           size_type;
-      typedef typename traits_type::difference_type     difference_type;
-      typedef typename traits_type::allocator_type      allocator_type;
-      typedef typename traits_type::compare_type        compare_type;
-      typedef typename traits_type::rank_type           rank_type;
+  public:
+    typedef typename traits_type::key_type            key_type;
+    typedef typename traits_type::pointer             pointer;
+    typedef typename traits_type::const_pointer       const_pointer;
+    typedef typename traits_type::reference           reference;
+    typedef typename traits_type::const_reference     const_reference;
+    typedef typename traits_type::node_type           node_type;
+    typedef typename traits_type::size_type           size_type;
+    typedef typename traits_type::difference_type     difference_type;
+    typedef typename traits_type::allocator_type      allocator_type;
+    typedef typename traits_type::compare_type        compare_type;
+    typedef typename traits_type::rank_type           rank_type;
 
-      typedef typename Geometry::distance_type          distance_type;
+    typedef typename Geometry::distance_type          distance_type;
 
-      typedef typename details::const_neighbor_iterator
-      <Container, Geometry>::type                       iterator;
-      typedef iterator                                  const_iterator;
-      typedef std::reverse_iterator<iterator>           reverse_iterator;
-      typedef reverse_iterator                          const_reverse_iterator;
+    typedef typename details::neighbor::const_iterator
+    <Container, Geometry>::type                       iterator;
+    typedef iterator                                  const_iterator;
+    typedef std::reverse_iterator<iterator>           reverse_iterator;
+    typedef reverse_iterator                          const_reverse_iterator;
 
-      const_iterator
-      begin() const
-      { return details::const_begin_neighbor(*container, geometry, origin); }
+    const_iterator
+    begin() const
+    { return details::neighbor::const_begin(*container, geometry, origin); }
 
-      const_iterator
-      cbegin() const
-      { return details::const_begin_neighbor(*container, geometry, origin); }
+    const_iterator
+    cbegin() const
+    { return details::neighbor::const_begin(*container, geometry, origin); }
 
-      const_iterator
-      end() const
-      { return details::const_end_neighbor(*container, geometry, origin); }
+    const_iterator
+    end() const
+    { return details::neighbor::const_end(*container, geometry, origin); }
 
-      const_iterator
-      cend() const
-      { return details::const_end_neighbor(*container, geometry, origin); }
+    const_iterator
+    cend() const
+    { return details::neighbor::const_end(*container, geometry, origin); }
 
-      const_reverse_iterator
-      rbegin() const
-      { return reverse_iterator(cend()); }
+    const_reverse_iterator
+    rbegin() const
+    { return reverse_iterator(cend()); }
 
-      const_reverse_iterator
-      crbegin() const
-      { return reverse_iterator(cend()); }
+    const_reverse_iterator
+    crbegin() const
+    { return reverse_iterator(cend()); }
 
-      const_reverse_iterator
-      rend() const
-      { return reverse_iterator(cbegin()); }
+    const_reverse_iterator
+    rend() const
+    { return reverse_iterator(cbegin()); }
 
-      const_reverse_iterator
-      crend() const
-      { return reverse_iterator(cbegin()); }
+    const_reverse_iterator
+    crend() const
+    { return reverse_iterator(cbegin()); }
 
-      const_iterator
-      lower_bound(const distance_type& lower) const
-      { return details::const_lower_bound_neighbor(*container, geometry, origin, lower); }
+    const_iterator
+    lower_bound(const distance_type& lower) const
+    { return details::neighbor::const_lower_bound(*container, geometry, origin, lower); }
 
-      const_iterator
-      clower_bound(const distance_type& lower) const
-      { return details::const_lower_bound_neighbor(*container, geometry, origin, lower); }
+    const_iterator
+    clower_bound(const distance_type& lower) const
+    { return details::neighbor::const_lower_bound(*container, geometry, origin, lower); }
 
-      const_iterator
-      upper_bound(const distance_type& upper) const
-      { return details::const_upper_bound_neighbor(*container, geometry, origin, upper); }
+    const_iterator
+    upper_bound(const distance_type& upper) const
+    { return details::neighbor::const_upper_bound(*container, geometry, origin, upper); }
 
-      const_iterator
-      cupper_bound(const distance_type& upper) const
-      { return details::const_upper_bound_neighbor(*container, geometry, origin, upper); }
+    const_iterator
+    cupper_bound(const distance_type& upper) const
+    { return details::neighbor::const_upper_bound(*container, geometry, origin, upper); }
 
-      key_type origin;
-      Geometry geometry;
-      const Container* container;
+    key_type origin;
+    Geometry geometry;
+    const Container* container;
 
-      neighbor(const typename neighbor_iterable_traits<Container>::type& iterable,
-	       const Geometry& geometry, const key_type& origin)
-	: origin(origin), geometry(geometry), container(&iterable)
-      { }
-    };
-    //@}
+    neighbor_view(const typename neighbor_iterable_traits<Container>::type& iterable,
+		  const Geometry& geometry, const key_type& origin)
+      : origin(origin), geometry(geometry), container(&iterable)
+    { }
+  };
+  //@}
 
-    //@{
-    template <typename Container>
-    struct neighbor_euclidian
-      : neighbor<Container, euclidian_double
-		 <typename spatial::container_traits<Container>::key_type,
-		  typename spatial::container_traits<Container>::compare_type> >
-    {
-      neighbor_euclidian
-      (typename neighbor_iterable_traits<Container>::type& iterable,
-       const typename container_traits<Container>::key_type& origin)
-	: neighbor<Container, euclidian_double
-		   <typename container_traits<Container>::key_type,
-		    typename container_traits<Container>::compare_type> >
-	  (iterable, euclidian_double
-	   <typename container_traits<Container>::key_type,
-	    typename container_traits<Container>::compare_type>
-	   (iterable.compare()), origin)
-      { }
-    };
+  //@{
+  template <typename Container>
+  struct euclidian_neighbor_view
+    : neighbor_view<Container, euclidian_double
+		    <typename spatial::container_traits<Container>::key_type,
+		     typename spatial::container_traits<Container>::compare_type> >
+  {
+    euclidian_neighbor_view
+    (typename neighbor_iterable_traits<Container>::type& iterable,
+     const typename container_traits<Container>::key_type& origin)
+      : neighbor_view<Container, euclidian_double
+		      <typename container_traits<Container>::key_type,
+		       typename container_traits<Container>::compare_type> >
+    (iterable, euclidian_double
+     <typename container_traits<Container>::key_type,
+     typename container_traits<Container>::compare_type>
+     (iterable.compare()), origin)
+    { }
+  };
 
-    template <typename Container>
-    struct neighbor_euclidian<const Container>
-      : neighbor<const Container, euclidian_double
-		 <typename spatial::container_traits<Container>::key_type,
-		  typename spatial::container_traits<Container>::compare_type> >
-    {
-      neighbor_euclidian
-      (const typename neighbor_iterable_traits<Container>::type& iterable,
-       const typename container_traits<Container>::key_type& origin)
-	: neighbor<const Container, euclidian_double
-		   <typename container_traits<Container>::key_type,
-		    typename container_traits<Container>::compare_type> >
-	  (iterable, euclidian_double
-	   <typename container_traits<Container>::key_type,
-	    typename container_traits<Container>::compare_type>
-	   (iterable.compare()), origin)
-      { }
-    };
-    //@}
+  template <typename Container>
+  struct euclidian_neighbor_view<const Container>
+    : neighbor_view<const Container, euclidian_double
+		    <typename spatial::container_traits<Container>::key_type,
+		     typename spatial::container_traits<Container>::compare_type> >
+  {
+    euclidian_neighbor_view
+    (const typename neighbor_iterable_traits<Container>::type& iterable,
+     const typename container_traits<Container>::key_type& origin)
+      : neighbor_view<const Container, euclidian_double
+		      <typename container_traits<Container>::key_type,
+		       typename container_traits<Container>::compare_type> >
+    (iterable, euclidian_double
+     <typename container_traits<Container>::key_type,
+     typename container_traits<Container>::compare_type>
+     (iterable.compare()), origin)
+    { }
+  };
+  //@}
 
-    //@{
-    template <typename Container>
-    struct neighbor_euclidian_float
-      : neighbor<Container, euclidian_float
-		 <typename spatial::container_traits<Container>::key_type,
-		  typename spatial::container_traits<Container>::compare_type> >
-    {
-      neighbor_euclidian_float
-      (typename neighbor_iterable_traits<Container>::type& iterable,
-       const typename container_traits<Container>::key_type& origin)
-	: neighbor<Container, euclidian_float
-		   <typename container_traits<Container>::key_type,
-		    typename container_traits<Container>::compare_type> >
-	  (iterable, euclidian_float
-	   <typename container_traits<Container>::key_type,
-	    typename container_traits<Container>::compare_type>
-	   (iterable.compare()), origin)
-      { }
-    };
+  //@{
+  template <typename Container>
+  struct euclidian_float_neighbor_view
+    : neighbor_view<Container, euclidian_float
+		    <typename spatial::container_traits<Container>::key_type,
+		     typename spatial::container_traits<Container>::compare_type> >
+  {
+    euclidian_float_neighbor_view
+    (typename neighbor_iterable_traits<Container>::type& iterable,
+     const typename container_traits<Container>::key_type& origin)
+      : neighbor_view<Container, euclidian_float
+		      <typename container_traits<Container>::key_type,
+		       typename container_traits<Container>::compare_type> >
+    (iterable, euclidian_float
+     <typename container_traits<Container>::key_type,
+     typename container_traits<Container>::compare_type>
+     (iterable.compare()), origin)
+    { }
+  };
 
-    template <typename Container>
-    struct neighbor_euclidian_float<const Container>
-      : neighbor<const Container, euclidian_float
-		 <typename spatial::container_traits<Container>::key_type,
-		  typename spatial::container_traits<Container>::compare_type> >
-    {
-      neighbor_euclidian_float
-      (const typename neighbor_iterable_traits<Container>::type& iterable,
-       const typename container_traits<Container>::key_type& origin)
-	: neighbor<const Container, euclidian_float
-		   <typename container_traits<Container>::key_type,
-		    typename container_traits<Container>::compare_type> >
-	  (iterable, euclidian_float
-	   <typename container_traits<Container>::key_type,
-	    typename container_traits<Container>::compare_type>
-	   (iterable.compare()), origin)
-      { }
-    };
-    //@}
+  template <typename Container>
+  struct euclidian_float_neighbor_view<const Container>
+    : neighbor_view<const Container, euclidian_float
+		    <typename spatial::container_traits<Container>::key_type,
+		     typename spatial::container_traits<Container>::compare_type> >
+  {
+    euclidian_float_neighbor_view
+    (const typename neighbor_iterable_traits<Container>::type& iterable,
+     const typename container_traits<Container>::key_type& origin)
+      : neighbor_view<const Container, euclidian_float
+		      <typename container_traits<Container>::key_type,
+		       typename container_traits<Container>::compare_type> >
+    (iterable, euclidian_float
+     <typename container_traits<Container>::key_type,
+     typename container_traits<Container>::compare_type>
+     (iterable.compare()), origin)
+    { }
+  };
+  //@}
 
-    //@{
-    template <typename Container>
-    struct neighbor_euclidian_square
-      : neighbor<Container, euclidian_square_double
-		 <typename spatial::container_traits<Container>::key_type,
-		  typename spatial::container_traits<Container>::compare_type> >
-    {
-      neighbor_euclidian_square
-      (typename neighbor_iterable_traits<Container>::type& iterable,
-       const typename container_traits<Container>::key_type& origin)
-	: neighbor<Container, euclidian_square_double
-		   <typename container_traits<Container>::key_type,
-		    typename container_traits<Container>::compare_type> >
-	  (iterable, euclidian_square_double
-	   <typename container_traits<Container>::key_type,
-	    typename container_traits<Container>::compare_type>
-	   (iterable.compare()), origin)
-      { }
-    };
+  //@{
+  template <typename Container>
+  struct euclidian_square_neighbor_view
+    : neighbor_view<Container, euclidian_square_double
+		    <typename spatial::container_traits<Container>::key_type,
+		     typename spatial::container_traits<Container>::compare_type> >
+  {
+    euclidian_square_neighbor_view
+    (typename neighbor_iterable_traits<Container>::type& iterable,
+     const typename container_traits<Container>::key_type& origin)
+      : neighbor_view<Container, euclidian_square_double
+		      <typename container_traits<Container>::key_type,
+		       typename container_traits<Container>::compare_type> >
+    (iterable, euclidian_square_double
+     <typename container_traits<Container>::key_type,
+     typename container_traits<Container>::compare_type>
+     (iterable.compare()), origin)
+    { }
+  };
 
-    template <typename Container>
-    struct neighbor_euclidian_square<const Container>
-      : neighbor<const Container, euclidian_square_double
-		 <typename spatial::container_traits<Container>::key_type,
-		  typename spatial::container_traits<Container>::compare_type> >
-    {
-      neighbor_euclidian_square
-      (const typename neighbor_iterable_traits<Container>::type& iterable,
-       const typename container_traits<Container>::key_type& origin)
-	: neighbor<const Container, euclidian_square_double
-		   <typename container_traits<Container>::key_type,
-		    typename container_traits<Container>::compare_type> >
-	  (iterable, euclidian_square_double
-	   <typename container_traits<Container>::key_type,
-	    typename container_traits<Container>::compare_type>
-	   (iterable.compare()), origin)
-      { }
-    };
-    //@}
+  template <typename Container>
+  struct euclidian_square_neighbor_view<const Container>
+    : neighbor_view<const Container, euclidian_square_double
+		    <typename spatial::container_traits<Container>::key_type,
+		     typename spatial::container_traits<Container>::compare_type> >
+  {
+    euclidian_square_neighbor_view
+    (const typename neighbor_iterable_traits<Container>::type& iterable,
+     const typename container_traits<Container>::key_type& origin)
+      : neighbor_view<const Container, euclidian_square_double
+		      <typename container_traits<Container>::key_type,
+		       typename container_traits<Container>::compare_type> >
+    (iterable, euclidian_square_double
+     <typename container_traits<Container>::key_type,
+     typename container_traits<Container>::compare_type>
+     (iterable.compare()), origin)
+    { }
+  };
+  //@}
 
-    //@{
-    template <typename Container>
-    struct neighbor_euclidian_square_float
-      : neighbor<Container, euclidian_square_float
-		 <typename spatial::container_traits<Container>::key_type,
-		  typename spatial::container_traits<Container>::compare_type> >
-    {
-      neighbor_euclidian_square_float
-      (typename neighbor_iterable_traits<Container>::type& iterable,
-       const typename container_traits<Container>::key_type& origin)
-	: neighbor<Container, euclidian_square_float
-		   <typename container_traits<Container>::key_type,
-		    typename container_traits<Container>::compare_type> >
-	  (iterable, euclidian_square_float
-	   <typename container_traits<Container>::key_type,
-	    typename container_traits<Container>::compare_type>
-	   (iterable.compare()), origin)
-      { }
-    };
+  //@{
+  template <typename Container>
+  struct euclidian_square_float_neighbor_view
+    : neighbor_view<Container, euclidian_square_float
+		    <typename spatial::container_traits<Container>::key_type,
+		     typename spatial::container_traits<Container>::compare_type> >
+  {
+    euclidian_square_float_neighbor_view
+    (typename neighbor_iterable_traits<Container>::type& iterable,
+     const typename container_traits<Container>::key_type& origin)
+      : neighbor_view<Container, euclidian_square_float
+		      <typename container_traits<Container>::key_type,
+		       typename container_traits<Container>::compare_type> >
+    (iterable, euclidian_square_float
+     <typename container_traits<Container>::key_type,
+     typename container_traits<Container>::compare_type>
+     (iterable.compare()), origin)
+    { }
+  };
 
-    template <typename Container>
-    struct neighbor_euclidian_square_float<const Container>
-      : neighbor<const Container, euclidian_square_float
-		 <typename spatial::container_traits<Container>::key_type,
-		  typename spatial::container_traits<Container>::compare_type> >
-    {
-      neighbor_euclidian_square_float
-      (const typename neighbor_iterable_traits<Container>::type& iterable,
-       const typename container_traits<Container>::key_type& origin)
-	: neighbor<const Container, euclidian_square_float
-		   <typename container_traits<Container>::key_type,
-		    typename container_traits<Container>::compare_type> >
-	  (iterable, euclidian_square_float
-	   <typename container_traits<Container>::key_type,
-	    typename container_traits<Container>::compare_type>
-	   (iterable.compare()), origin)
-      { }
-    };
-    //@}
+  template <typename Container>
+  struct euclidian_square_float_neighbor_view<const Container>
+    : neighbor_view<const Container, euclidian_square_float
+		    <typename spatial::container_traits<Container>::key_type,
+		     typename spatial::container_traits<Container>::compare_type> >
+  {
+    euclidian_square_float_neighbor_view
+    (const typename neighbor_iterable_traits<Container>::type& iterable,
+     const typename container_traits<Container>::key_type& origin)
+      : neighbor_view<const Container, euclidian_square_float
+		      <typename container_traits<Container>::key_type,
+		       typename container_traits<Container>::compare_type> >
+    (iterable, euclidian_square_float
+     <typename container_traits<Container>::key_type,
+     typename container_traits<Container>::compare_type>
+     (iterable.compare()), origin)
+    { }
+  };
+  //@}
 
-    //@{
-    template <typename Container, typename Distance>
-    struct neighbor_manhattan
-      : neighbor<Container, manhattan
-		 <typename spatial::container_traits<Container>::key_type,
-		  typename spatial::container_traits<Container>::compare_type,
-		  Distance> >
-    {
-      neighbor_manhattan
-      (typename neighbor_iterable_traits<Container>::type& iterable,
-       const typename container_traits<Container>::key_type& origin)
-	: neighbor<Container, manhattan
-		   <typename container_traits<Container>::key_type,
-		    typename container_traits<Container>::compare_type,
-		    Distance> >
-	  (iterable, manhattan
-	   <typename container_traits<Container>::key_type,
-	    typename container_traits<Container>::compare_type,
-	    Distance>
-	   (iterable.compare()), origin)
-      { }
-    };
+  //@{
+  template <typename Container, typename Distance>
+  struct manhattan_neighbor_view
+    : neighbor_view<Container, manhattan
+		    <typename spatial::container_traits<Container>::key_type,
+		     typename spatial::container_traits<Container>::compare_type,
+		     Distance> >
+  {
+    manhattan_neighbor_view
+    (typename neighbor_iterable_traits<Container>::type& iterable,
+     const typename container_traits<Container>::key_type& origin)
+      : neighbor_view<Container, manhattan
+		      <typename container_traits<Container>::key_type,
+		       typename container_traits<Container>::compare_type,
+		       Distance> >
+    (iterable, manhattan
+     <typename container_traits<Container>::key_type,
+     typename container_traits<Container>::compare_type,
+     Distance>
+     (iterable.compare()), origin)
+		       { }
+  };
 
-    template <typename Container, typename Distance>
-    struct neighbor_manhattan<const Container, Distance>
-      : neighbor<const Container, manhattan
-		 <typename spatial::container_traits<Container>::key_type,
-		  typename spatial::container_traits<Container>::compare_type,
-		  Distance> >
-    {
-      neighbor_manhattan
-      (const typename neighbor_iterable_traits<Container>::type& iterable,
-       const typename container_traits<Container>::key_type& origin)
-	: neighbor<const Container, manhattan
-		   <typename container_traits<Container>::key_type,
-		    typename container_traits<Container>::compare_type,
-		    Distance> >
-	  (iterable, manhattan
-	   <typename container_traits<Container>::key_type,
-	    typename container_traits<Container>::compare_type,
-	    Distance>
-	   (iterable.compare()), origin)
-      { }
-    };
-    //@}
+  template <typename Container, typename Distance>
+  struct manhattan_neighbor_view<const Container, Distance>
+    : neighbor_view<const Container, manhattan
+		    <typename spatial::container_traits<Container>::key_type,
+		     typename spatial::container_traits<Container>::compare_type,
+		     Distance> >
+  {
+    manhattan_neighbor_view
+    (const typename neighbor_iterable_traits<Container>::type& iterable,
+     const typename container_traits<Container>::key_type& origin)
+      : neighbor_view<const Container, manhattan
+		      <typename container_traits<Container>::key_type,
+		       typename container_traits<Container>::compare_type,
+		       Distance> >
+    (iterable, manhattan
+     <typename container_traits<Container>::key_type,
+     typename container_traits<Container>::compare_type,
+     Distance>
+     (iterable.compare()), origin)
+		       { }
+  };
+  //@}
 
-  } // namespace view
 } // namespace spatial
 
 #endif // SPATIAL_NEIGHBOR_HPP

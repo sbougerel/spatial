@@ -2393,12 +2393,12 @@ BOOST_AUTO_TEST_CASE( test_kdtree_copy_rebalance )
   BOOST_CHECK_EQUAL(fix.kdtree.size(), copy.size());
   BOOST_CHECK_EQUAL(fix.kdtree.dimension(), copy.dimension());
   int count = 0;
-  typedef view::details::mapping_iterator
+  typedef details::mapping::iterator
     <Hundred_Kdtree_2D_fixture::kdtree_type>::type iterator;
-  iterator i = view::details::begin_mapping(fix.kdtree, 0),
-    j = view::details::begin_mapping(copy, 0),
-    i_end = view::details::end_mapping(fix.kdtree, 0),
-    j_end = view::details::end_mapping(copy, 0);
+  iterator i = details::mapping::begin(fix.kdtree, 0),
+    j = details::mapping::begin(copy, 0),
+    i_end = details::mapping::end(fix.kdtree, 0),
+    j_end = details::mapping::end(copy, 0);
   for(; i != i_end && j != j_end; ++i, ++j, ++count)
     {
       BOOST_CHECK_EQUAL((*i)[0], (*j)[0]);
@@ -5305,15 +5305,36 @@ BOOST_AUTO_TEST_CASE( test_runtime_frozen_pointset_copy_assignment )
 BOOST_AUTO_TEST_CASE( test_pointset_mapping )
 {
   pointset<2, point2d> points;
-  view::mapping<pointset<2, point2d> > flat_view(points, 0);
-  BOOST_CHECK(flat_view.begin() == flat_view.end());
+  mapping_view<pointset<2, point2d> > set_zero(points, 0);
+  BOOST_CHECK(set_zero.begin() == set_zero.end());
   // Now add some points to pointset and iterate throught these points.
+  points.insert(ones);
+  points.insert(ones);
+  points.insert(twos);
+  points.insert(zeros);
+  points.insert(fives);
+  points.insert(fives);
+  BOOST_CHECK(set_zero.begin() != set_zero.end());
+  BOOST_CHECK(set_zero.cbegin() != set_zero.cend());
+  BOOST_CHECK(set_zero.rbegin() != set_zero.rend());
+  BOOST_CHECK(set_zero.crbegin() != set_zero.crend());
+  BOOST_CHECK(*set_zero.begin() == zeros);
+  BOOST_CHECK(*set_zero.cbegin() == zeros);
+  BOOST_CHECK(*--set_zero.end() == fives);
+  BOOST_CHECK(*--set_zero.cend() == fives);
+  BOOST_CHECK(*set_zero.rbegin() == fives);
+  BOOST_CHECK(*set_zero.crbegin() == fives);
+  BOOST_CHECK(*set_zero.lower_bound(ones) == ones);
+  BOOST_CHECK(*set_zero.clower_bound(ones) == ones);
+  BOOST_CHECK(*set_zero.upper_bound(ones) == twos);
+  BOOST_CHECK(*set_zero.cupper_bound(ones) == twos);
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_range )
 {
   // Now add some points to pointset and iterate throught these points.
   BOOST_CHECK_MESSAGE(false, "test not implemented");
+  
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_equal_range )
@@ -6023,10 +6044,10 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_increment )
   }
   {
     Grow_Relaxed_Kdtree_2D_fixture fix;
-    typedef view::details::mapping_iterator
+    typedef details::mapping::iterator
       <Grow_Relaxed_Kdtree_2D_fixture::kdtree_type>::type iterator_type;
-    iterator_type end = view::details::end_mapping(fix.kdtree, 0);
-    iterator_type begin = view::details::begin_mapping(fix.kdtree, 0);
+    iterator_type end = details::mapping::end(fix.kdtree, 0);
+    iterator_type begin = details::mapping::begin(fix.kdtree, 0);
     int old = (*begin)[0];
     int count = 0;
     for(; count != 20; ++begin, ++count)
@@ -6038,8 +6059,8 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_increment )
       }
     BOOST_CHECK(begin == end);
     BOOST_CHECK_EQUAL(count, 20);
-    end = view::details::end_mapping(fix.kdtree, 1);
-    begin = view::details::begin_mapping(fix.kdtree, 1);
+    end = details::mapping::end(fix.kdtree, 1);
+    begin = details::mapping::begin(fix.kdtree, 1);
     old = (*begin)[1];
     for(count = 0; count != 20; ++begin, ++count)
       {
@@ -6053,10 +6074,10 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_increment )
   }
   {
     Reduce_Relaxed_Kdtree_2D_fixture fix;
-    typedef view::details::mapping_iterator
+    typedef details::mapping::iterator
       <Reduce_Relaxed_Kdtree_2D_fixture::kdtree_type>::type iterator_type;
-    iterator_type end = view::details::end_mapping(fix.kdtree, 0);
-    iterator_type begin = view::details::begin_mapping(fix.kdtree, 0);
+    iterator_type end = details::mapping::end(fix.kdtree, 0);
+    iterator_type begin = details::mapping::begin(fix.kdtree, 0);
     int old = (*begin)[0];
     int count = 0;
     for(; count != 20; ++begin, ++count)
@@ -6068,8 +6089,8 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_increment )
       }
     BOOST_CHECK(begin == end);
     BOOST_CHECK_EQUAL(count, 20);
-    end = view::details::end_mapping(fix.kdtree, 1);
-    begin = view::details::begin_mapping(fix.kdtree, 1);
+    end = details::mapping::end(fix.kdtree, 1);
+    begin = details::mapping::begin(fix.kdtree, 1);
     old = (*begin)[1];
     for(count = 0; count != 20; ++begin, ++count)
       {
@@ -6354,10 +6375,10 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_decrement )
   }
   {
     Grow_Relaxed_Kdtree_2D_fixture fix;
-    typedef view::details::mapping_iterator
+    typedef details::mapping::iterator
       <Grow_Relaxed_Kdtree_2D_fixture::kdtree_type>::type iterator_type;
-    iterator_type end = view::details::end_mapping(fix.kdtree, 0);
-    iterator_type begin = view::details::begin_mapping(fix.kdtree, 0);
+    iterator_type end = details::mapping::end(fix.kdtree, 0);
+    iterator_type begin = details::mapping::begin(fix.kdtree, 0);
     iterator_type before_end = end; --before_end;
     int old = (*before_end)[0];
     int count = 0;
@@ -6371,8 +6392,8 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_decrement )
       }
     BOOST_CHECK(begin == end);
     BOOST_CHECK_EQUAL(count, 20);
-    end = view::details::end_mapping(fix.kdtree, 1);
-    begin = view::details::begin_mapping(fix.kdtree, 1);
+    end = details::mapping::end(fix.kdtree, 1);
+    begin = details::mapping::begin(fix.kdtree, 1);
     before_end = end; --before_end;
     old = (*before_end)[1];
     for(count = 0; count != 20; --end, ++count)
@@ -6388,10 +6409,10 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_decrement )
   }
   {
     Reduce_Relaxed_Kdtree_2D_fixture fix;
-    typedef view::details::mapping_iterator
+    typedef details::mapping::iterator
       <Reduce_Relaxed_Kdtree_2D_fixture::kdtree_type>::type iterator_type;
-    iterator_type end = view::details::end_mapping(fix.kdtree, 0);
-    iterator_type begin = view::details::begin_mapping(fix.kdtree, 0);
+    iterator_type end = details::mapping::end(fix.kdtree, 0);
+    iterator_type begin = details::mapping::begin(fix.kdtree, 0);
     iterator_type before_end = end; --before_end;
     int old = (*before_end)[0];
     int count = 0;
@@ -6405,8 +6426,8 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_decrement )
       }
     BOOST_CHECK(begin == end);
     BOOST_CHECK_EQUAL(count, 20);
-    end = view::details::end_mapping(fix.kdtree, 1);
-    begin = view::details::begin_mapping(fix.kdtree, 1);
+    end = details::mapping::end(fix.kdtree, 1);
+    begin = details::mapping::begin(fix.kdtree, 1);
     before_end = end; --before_end;
     old = (*before_end)[1];
     for(count = 0; count != 20; --end, ++count)

@@ -293,17 +293,13 @@ namespace spatial
       { }
     };
 
-  } // namespace details
-
-  namespace view
-  {
-    namespace details
+    namespace range
     {
 
       template<typename Container, typename Predicate>
-      struct range_iterator
+      struct iterator
       {
-	typedef spatial::details::Range_iterator
+	typedef Range_iterator
 	<typename container_traits<Container>::rank_type,
 	 typename container_traits<Container>::key_type,
 	 typename container_traits<Container>::node_type,
@@ -311,9 +307,9 @@ namespace spatial
       };
 
       template<typename Container, typename Predicate>
-      struct const_range_iterator
+      struct const_iterator
       {
-	typedef spatial::details::Const_Range_iterator
+	typedef Const_Range_iterator
 	<typename container_traits<Container>::rank_type,
 	 typename container_traits<Container>::key_type,
 	 typename container_traits<Container>::node_type,
@@ -321,399 +317,398 @@ namespace spatial
       };
 
       template <typename Container, typename Predicate>
-      inline typename range_iterator<Container, Predicate>::type
-      end_range(Container& container, const Predicate& predicate)
+      inline typename iterator<Container, Predicate>::type
+      end(Container& container, const Predicate& predicate)
       {
-	return typename range_iterator<Container, Predicate>::type
+	return typename iterator<Container, Predicate>::type
 	  (container.rank(), predicate, container.dimension() - 1,
 	   static_cast<typename container_traits<Container>::node_type*>
 	   (container.end().node));
       }
 
       template <typename Container, typename Predicate>
-      inline typename const_range_iterator<Container, Predicate>::type
-      const_end_range(const Container& container, const Predicate& predicate)
+      inline typename const_iterator<Container, Predicate>::type
+      const_end(const Container& container, const Predicate& predicate)
       {
-	return end_range(*const_cast<Container*>(&container), predicate);
+	return end(*const_cast<Container*>(&container), predicate);
       }
 
       template <typename Container, typename Predicate>
-      inline typename range_iterator<Container, Predicate>::type
-      begin_range(Container& container, const Predicate& predicate)
+      inline typename iterator<Container, Predicate>::type
+      begin(Container& container, const Predicate& predicate)
       {
 	// Guarentees begin(n) == end(n) if tree is empty
 	if (container.empty())
-	{ return end_range(container, predicate); }
+	{ return end(container, predicate); }
       else
 	{
-	  return range_iterator<Container, Predicate>::type::minimum
+	  return iterator<Container, Predicate>::type::minimum
 	    (container.rank(), predicate, 0,
 	     container.end().node->parent);
 	}
       }
 
       template <typename Container, typename Predicate>
-      inline typename const_range_iterator<Container, Predicate>::type
-      const_begin_range(const Container& container, const Predicate& predicate)
+      inline typename const_iterator<Container, Predicate>::type
+      const_begin(const Container& container, const Predicate& predicate)
       {
-	return begin_range(*const_cast<Container*>(&container), predicate);
+	return begin(*const_cast<Container*>(&container), predicate);
       }
 
-    } // namespace details
+    } // namespace range
+  } // namespace details
 
-    /**
-     *  @brief  Enforces the definition of the equal_iterable tag into a type.
-     */
-    template <typename Type>
-    struct range_iterable_traits
-      : spatial::details::identity<typename Type::range_iterable> { };
+  /**
+   *  @brief  Enforces the definition of the equal_iterable tag into a type.
+   */
+  template <typename Type>
+  struct range_iterable_traits
+    : spatial::details::identity<typename Type::range_iterable> { };
 
-    //@{
-    /**
-     *  @brief  View of the Container that uses a predicate to control the
-     *  orthogonal range search and provides standard iterator to access the
-     *  results of the search.
-     *
-     *  The definition of the predicate must match the following prototype:
-     *  @code
-     *  struct my_predicate
-     *  {
-     *    spatial::relative_order
-     *    operator()(spatial::dimension_type dim, const Key& key) const
-     *    {
-     *      // ...
-     *    }
-     *  };
-     *  @endcode
-     *
-     *  With the type @p Key matching the type of objects inserted in the
-     *  container. The type spatial::relative_order is an enumeration of 3
-     *  values: above, matching and below that represent the position of the @p
-     *  key with regard to the interval being considered on the dimension @p
-     *  dim.
-     *
-     *  The following example shows how to define a predicate for a type called
-     *  point3d. The predicate shall satisfy the following conditions:
-     *
-     *  @f[
-     *  -1 < x _0 < 1, -\infty < x _1 < \infty, -\infty < x _2 < 2
-     *  @f]
-     *
-     *  Supposing that @c point3d overloads the bracket operator to access its
-     *  coordinates, the following predicate can satisfy the requirement above:
-     *
-     *  @code
-     *  struct predicate
-     *  {
-     *    spatial::relative_order
-     *    operator()(dimension_type dim, const point3d& x) const
-     *    {
-     *      switch(dim)
-     *        {
-     *  	// for dimension 0, only the interval ]-1, 1[ matches...
-     *        case 0: return x[0] <= -1 ? spatial::below
-     *                       : (x[0] >= 1 ? spatial::above : spatial::matching );
-     *  	// for dimension 1, it's always a match...
-     *        case 1: return spatial::matching;
-     *  	// for dimension 2, matches unless it's equal or above 2...
-     *        case 2: return x[2] < 2 ? spatial::matching : spatial::above;
-     *  	// else we must be out of range...
-     *        default: throw std::out_of_range();
-     *        }
-     *    }
-     *  };
-     *  @endcode
-     *
-     *  As you can see, the enumeration of the type spatial::relative_order are
-     *  used to represent the position of the parameter @p x with regard to the
-     *  interval studied on the dimension @p dim.
-     */
-    template <typename Container, typename Predicate>
-    class range_predicate
-    {
-      typedef typename spatial::container_traits<Container>   traits_type;
+  //@{
+  /**
+   *  @brief  View of the Container that uses a predicate to control the
+   *  orthogonal range search and provides standard iterator to access the
+   *  results of the search.
+   *
+   *  The definition of the predicate must match the following prototype:
+   *  @code
+   *  struct my_predicate
+   *  {
+   *    spatial::relative_order
+   *    operator()(spatial::dimension_type dim, const Key& key) const
+   *    {
+   *      // ...
+   *    }
+   *  };
+   *  @endcode
+   *
+   *  With the type @p Key matching the type of objects inserted in the
+   *  container. The type spatial::relative_order is an enumeration of 3
+   *  values: above, matching and below that represent the position of the @p
+   *  key with regard to the interval being considered on the dimension @p
+   *  dim.
+   *
+   *  The following example shows how to define a predicate for a type called
+   *  point3d. The predicate shall satisfy the following conditions:
+   *
+   *  @f[
+   *  -1 < x _0 < 1, -\infty < x _1 < \infty, -\infty < x _2 < 2
+   *  @f]
+   *
+   *  Supposing that @c point3d overloads the bracket operator to access its
+   *  coordinates, the following predicate can satisfy the requirement above:
+   *
+   *  @code
+   *  struct predicate
+   *  {
+   *    spatial::relative_order
+   *    operator()(dimension_type dim, const point3d& x) const
+   *    {
+   *      switch(dim)
+   *        {
+   *  	// for dimension 0, only the interval ]-1, 1[ matches...
+   *        case 0: return x[0] <= -1 ? spatial::below
+   *                       : (x[0] >= 1 ? spatial::above : spatial::matching );
+   *  	// for dimension 1, it's always a match...
+   *        case 1: return spatial::matching;
+   *  	// for dimension 2, matches unless it's equal or above 2...
+   *        case 2: return x[2] < 2 ? spatial::matching : spatial::above;
+   *  	// else we must be out of range...
+   *        default: throw std::out_of_range();
+   *        }
+   *    }
+   *  };
+   *  @endcode
+   *
+   *  As you can see, the enumeration of the type spatial::relative_order are
+   *  used to represent the position of the parameter @p x with regard to the
+   *  interval studied on the dimension @p dim.
+   */
+  template <typename Container, typename Predicate>
+  class range_predicate_view
+  {
+    typedef typename spatial::container_traits<Container>   traits_type;
 
-    public:
-      typedef typename traits_type::key_type           key_type;
-      typedef typename traits_type::pointer            pointer;
-      typedef typename traits_type::const_pointer      const_pointer;
-      typedef typename traits_type::reference          reference;
-      typedef typename traits_type::const_reference    const_reference;
-      typedef typename traits_type::node_type          node_type;
-      typedef typename traits_type::size_type          size_type;
-      typedef typename traits_type::difference_type    difference_type;
-      typedef typename traits_type::allocator_type     allocator_type;
-      typedef typename traits_type::compare_type       compare_type;
-      typedef typename traits_type::rank_type          rank_type;
+  public:
+    typedef typename traits_type::key_type           key_type;
+    typedef typename traits_type::pointer            pointer;
+    typedef typename traits_type::const_pointer      const_pointer;
+    typedef typename traits_type::reference          reference;
+    typedef typename traits_type::const_reference    const_reference;
+    typedef typename traits_type::node_type          node_type;
+    typedef typename traits_type::size_type          size_type;
+    typedef typename traits_type::difference_type    difference_type;
+    typedef typename traits_type::allocator_type     allocator_type;
+    typedef typename traits_type::compare_type       compare_type;
+    typedef typename traits_type::rank_type          rank_type;
 
-      typedef typename spatial::details::condition
-      <traits_type::const_iterator_tag::value,
-       typename details::const_range_iterator<Container, Predicate>::type,
-       typename details::range_iterator<Container, Predicate>::type
-       >::type                                         iterator;
-      typedef typename details::const_range_iterator
-      <Container, Predicate>::type                     const_iterator;
+    typedef typename spatial::details::condition
+    <traits_type::const_iterator_tag::value,
+     typename details::range::const_iterator<Container, Predicate>::type,
+     typename details::range::iterator<Container, Predicate>::type
+     >::type                                         iterator;
+    typedef typename details::range::const_iterator
+    <Container, Predicate>::type                     const_iterator;
 
-      iterator begin()
-      { return details::begin_range(*container, predicate); }
+    iterator begin()
+    { return details::range::begin(*container, predicate); }
 
-      const_iterator begin() const
-      { return details::const_begin_range(*container, predicate); }
+    const_iterator begin() const
+    { return details::range::const_begin(*container, predicate); }
 
-      const_iterator cbegin() const
-      { return details::const_begin_range(*container, predicate); }
+    const_iterator cbegin() const
+    { return details::range::const_begin(*container, predicate); }
 
-      iterator end()
-      { return details::end_range(*container, predicate); }
+    iterator end()
+    { return details::range::end(*container, predicate); }
 
-      const_iterator end() const
-      { return details::const_end_range(*container, predicate); }
+    const_iterator end() const
+    { return details::range::const_end(*container, predicate); }
 
-      const_iterator cend() const
-      { return details::const_end_range(*container, predicate); }
+    const_iterator cend() const
+    { return details::range::const_end(*container, predicate); }
 
-      const Predicate predicate;
-      Container* container;
+    const Predicate predicate;
+    Container* container;
 
-      range_predicate(typename range_iterable_traits<Container>::type& iterable,
-		      const Predicate& predicate)
-	: predicate(predicate), container(&iterable)
-      { }
-    };
+    range_predicate_view(typename range_iterable_traits<Container>
+			 ::type& iterable, const Predicate& predicate)
+      : predicate(predicate), container(&iterable)
+    { }
+  };
 
-    // specialization for constant containers.
-    template <typename Container, typename Predicate>
-    class range_predicate<const Container, Predicate>
-    {
-      typedef typename spatial::container_traits<Container>   traits_type;
+  // specialization for constant containers.
+  template <typename Container, typename Predicate>
+  class range_predicate_view<const Container, Predicate>
+  {
+    typedef typename spatial::container_traits<Container>   traits_type;
 
-    public:
-      typedef typename traits_type::key_type           key_type;
-      typedef typename traits_type::const_pointer      pointer;
-      typedef typename traits_type::const_pointer      const_pointer;
-      typedef typename traits_type::const_reference    reference;
-      typedef typename traits_type::const_reference    const_reference;
-      typedef typename traits_type::size_type          size_type;
-      typedef typename traits_type::difference_type    difference_type;
-      typedef typename traits_type::allocator_type     allocator_type;
-      typedef typename traits_type::compare_type       compare_type;
-      typedef typename traits_type::rank_type          rank_type;
+  public:
+    typedef typename traits_type::key_type           key_type;
+    typedef typename traits_type::const_pointer      pointer;
+    typedef typename traits_type::const_pointer      const_pointer;
+    typedef typename traits_type::const_reference    reference;
+    typedef typename traits_type::const_reference    const_reference;
+    typedef typename traits_type::size_type          size_type;
+    typedef typename traits_type::difference_type    difference_type;
+    typedef typename traits_type::allocator_type     allocator_type;
+    typedef typename traits_type::compare_type       compare_type;
+    typedef typename traits_type::rank_type          rank_type;
 
-      typedef typename details::const_range_iterator
-      <Container, Predicate>::type                     iterator;
-      typedef iterator                                 const_iterator;
+    typedef typename details::range::const_iterator
+    <Container, Predicate>::type                     iterator;
+    typedef iterator                                 const_iterator;
 
-      const_iterator begin() const
-      { return details::const_begin_range(*container, predicate); }
+    const_iterator begin() const
+    { return details::range::const_begin(*container, predicate); }
 
-      const_iterator cbegin() const
-      { return details::const_begin_range(*container, predicate); }
+    const_iterator cbegin() const
+    { return details::range::const_begin(*container, predicate); }
 
-      const_iterator end() const
-      { return details::const_end_range(*container, predicate); }
+    const_iterator end() const
+    { return details::range::const_end(*container, predicate); }
 
-      const_iterator cend() const
-      { return details::const_end_range(*container, predicate); }
+    const_iterator cend() const
+    { return details::range::const_end(*container, predicate); }
 
-      const Predicate predicate;
-      const Container* container;
+    const Predicate predicate;
+    const Container* container;
 
-      range_predicate(const typename range_iterable_traits<Container>::type& iterable,
-		      const Predicate& predicate)
-	: predicate(predicate), container(&iterable)
-      { }
-    };
-    //@}
+    range_predicate_view(const typename range_iterable_traits<Container>
+			 ::type& iterable, const Predicate& predicate)
+      : predicate(predicate), container(&iterable)
+    { }
+  };
+  //@}
 
-    //@{
-    /**
-     *  @brief  View of the Container that give access to all points whose
-     *  coordinates are within the orthogonal area defined by the 2 points @p
-     *  lower and @p upper, exluding @p upper. Provides iterators to get all
-     *  results of the orthogonal range search.
-     *
-     *  The following condition is statisfied by the point returned as the
-     *  result of the iteration of the view. This condition is the
-     *  multi-dimension equivalent of an half closed interval, commonly used
-     *  when programing, and thus, it is the one you are most likely to be
-     *  using.
-     *
-     *  @f[
-     *  \forall _{i = 0 \to n} , low _i \leq x _i < high _i
-     *  @f]
-     *
-     *  The above invarient also implies that @p lower and @p upper bounds must
-     *  not overlap on any dimension. An exception of the type
-     *  spatial::invalid_range_bounds will be thrown otherwise.
-     */
-    template <typename Container>
-    struct range
-      : range_predicate
-    <Container,
-     range_bounds<typename spatial::container_traits<Container>::key_type,
-		  typename spatial::container_traits<Container>::compare_type> >
-    {
-      range
-      (typename range_iterable_traits<Container>::type& iterable,
-       const typename spatial::container_traits<Container>::key_type& lower,
-       const typename spatial::container_traits<Container>::key_type& upper)
-	: range_predicate
-	  <Container,
-	   range_bounds<typename spatial::container_traits<Container>::key_type,
-			typename spatial::container_traits<Container>::compare_type> >
-	  (iterable, make_range_bounds(lower, upper))
-      { }
-    };
+  //@{
+  /**
+   *  @brief  View of the Container that give access to all points whose
+   *  coordinates are within the orthogonal area defined by the 2 points @p
+   *  lower and @p upper, exluding @p upper. Provides iterators to get all
+   *  results of the orthogonal range search.
+   *
+   *  The following condition is statisfied by the point returned as the
+   *  result of the iteration of the view. This condition is the
+   *  multi-dimension equivalent of an half closed interval, commonly used
+   *  when programing, and thus, it is the one you are most likely to be
+   *  using.
+   *
+   *  @f[
+   *  \forall _{i = 0 \to n} , low _i \leq x _i < high _i
+   *  @f]
+   *
+   *  The above invarient also implies that @p lower and @p upper bounds must
+   *  not overlap on any dimension. An exception of the type
+   *  spatial::invalid_range_bounds will be thrown otherwise.
+   */
+  template <typename Container>
+  struct range_view
+    : range_predicate_view
+  <Container,
+   range_bounds<typename spatial::container_traits<Container>::key_type,
+		typename spatial::container_traits<Container>::compare_type> >
+  {
+    range_view
+    (typename range_iterable_traits<Container>::type& iterable,
+     const typename spatial::container_traits<Container>::key_type& lower,
+     const typename spatial::container_traits<Container>::key_type& upper)
+      : range_predicate_view
+	<Container,
+	 range_bounds<typename spatial::container_traits<Container>::key_type,
+		      typename spatial::container_traits<Container>::compare_type> >
+    (iterable, make_range_bounds(lower, upper))
+		      { }
+  };
 
-    // specialization for constant containers.
-    template <typename Container>
-    struct range<const Container>
-      : range_predicate
-    <const Container,
-     range_bounds<typename spatial::container_traits<Container>::key_type,
-		  typename spatial::container_traits<Container>::compare_type> >
-    {
-      range
-      (const typename range_iterable_traits<Container>::type& iterable,
-       const typename spatial::container_traits<Container>::key_type& lower,
-       const typename spatial::container_traits<Container>::key_type& upper)
-	: range_predicate
-	  <const Container,
-	   range_bounds<typename spatial::container_traits<Container>::key_type,
-			typename spatial::container_traits<Container>::compare_type> >
-	  (iterable, make_range_bounds(lower, upper))
-      { }
-    };
-    //@}
+  // specialization for constant containers.
+  template <typename Container>
+  struct range_view<const Container>
+    : range_predicate_view
+  <const Container,
+   range_bounds<typename spatial::container_traits<Container>::key_type,
+		typename spatial::container_traits<Container>::compare_type> >
+  {
+    range_view
+    (const typename range_iterable_traits<Container>::type& iterable,
+     const typename spatial::container_traits<Container>::key_type& lower,
+     const typename spatial::container_traits<Container>::key_type& upper)
+      : range_predicate_view
+	<const Container,
+	 range_bounds<typename spatial::container_traits<Container>::key_type,
+		      typename spatial::container_traits<Container>::compare_type> >
+    (iterable, make_range_bounds(lower, upper))
+		      { }
+  };
+  //@}
 
-    //@{
-    /**
-     *  @brief  View of the Container that give access to all points whose
-     *  coordinates are within the orthogonal area defined by the 2 points @p
-     *  lower and @p upper, included. Provides iterators to get all results of
-     *  the orthogonal range search.
-     *
-     *  The following condition is statisfied by the points returned as the
-     *  result of the iteration of the view. This condition is the
-     *  multi-dimension equivalent of a closed interval.
-     *
-     *  @f[
-     *  \forall _{i = 0 \to n} , low _i \leq x _i \leq high _i
-     *  @f]
-     *
-     *  The above invarient also implies that @p lower and @p upper bounds must
-     *  not overlap on any dimension. An exception of the type
-     *  spatial::invalid_closed_range_bounds will be thrown otherwise.
-     */
-    template <typename Container>
-    struct closed_range
-      : range_predicate
-    <Container,
-     closed_range_bounds
-     <typename spatial::container_traits<Container>::key_type,
-      typename spatial::container_traits<Container>::compare_type> >
-    {
-      closed_range
-      (typename range_iterable_traits<Container>::type& iterable,
-       const typename spatial::container_traits<Container>::key_type& lower,
-       const typename spatial::container_traits<Container>::key_type& upper)
-	: range_predicate
-	  <Container,
-	   closed_range_bounds
-	   <typename spatial::container_traits<Container>::key_type,
-	    typename spatial::container_traits<Container>::compare_type> >
-	  (iterable, make_closed_range_bounds(lower, upper))
-      { }
-    };
+  //@{
+  /**
+   *  @brief  View of the Container that give access to all points whose
+   *  coordinates are within the orthogonal area defined by the 2 points @p
+   *  lower and @p upper, included. Provides iterators to get all results of
+   *  the orthogonal range search.
+   *
+   *  The following condition is statisfied by the points returned as the
+   *  result of the iteration of the view. This condition is the
+   *  multi-dimension equivalent of a closed interval.
+   *
+   *  @f[
+   *  \forall _{i = 0 \to n} , low _i \leq x _i \leq high _i
+   *  @f]
+   *
+   *  The above invarient also implies that @p lower and @p upper bounds must
+   *  not overlap on any dimension. An exception of the type
+   *  spatial::invalid_closed_range_bounds will be thrown otherwise.
+   */
+  template <typename Container>
+  struct closed_range_view
+    : range_predicate_view
+  <Container,
+   closed_range_bounds
+   <typename spatial::container_traits<Container>::key_type,
+    typename spatial::container_traits<Container>::compare_type> >
+  {
+    closed_range_view
+    (typename range_iterable_traits<Container>::type& iterable,
+     const typename spatial::container_traits<Container>::key_type& lower,
+     const typename spatial::container_traits<Container>::key_type& upper)
+      : range_predicate_view
+	<Container,
+	 closed_range_bounds
+	 <typename spatial::container_traits<Container>::key_type,
+	  typename spatial::container_traits<Container>::compare_type> >
+    (iterable, make_closed_range_bounds(lower, upper))
+	  { }
+  };
 
-    // specialization for constant containers.
-    template <typename Container>
-    struct closed_range<const Container>
-      : range_predicate
-    <const Container,
-     closed_range_bounds
-     <typename spatial::container_traits<Container>::key_type,
-      typename spatial::container_traits<Container>::compare_type> >
-    {
-      closed_range
-      (const typename range_iterable_traits<Container>::type& iterable,
-       const typename spatial::container_traits<Container>::key_type& lower,
-       const typename spatial::container_traits<Container>::key_type& upper)
-	: range_predicate
-	  <const Container,
-	   closed_range_bounds
-	   <typename spatial::container_traits<Container>::key_type,
-	    typename spatial::container_traits<Container>::compare_type> >
-	  (iterable, make_closed_range_bounds(lower, upper))
-      { }
-    };
-    //@}
+  // specialization for constant containers.
+  template <typename Container>
+  struct closed_range_view<const Container>
+    : range_predicate_view
+  <const Container,
+   closed_range_bounds
+   <typename spatial::container_traits<Container>::key_type,
+    typename spatial::container_traits<Container>::compare_type> >
+  {
+    closed_range_view
+    (const typename range_iterable_traits<Container>::type& iterable,
+     const typename spatial::container_traits<Container>::key_type& lower,
+     const typename spatial::container_traits<Container>::key_type& upper)
+      : range_predicate_view
+	<const Container,
+	 closed_range_bounds
+	 <typename spatial::container_traits<Container>::key_type,
+	  typename spatial::container_traits<Container>::compare_type> >
+    (iterable, make_closed_range_bounds(lower, upper))
+	  { }
+  };
+  //@}
 
+  //@{
+  /**
+   *  @brief  View of the Container that give access to all points whose
+   *  coordinates are within the orthogonal area defined by the 2 points @p
+   *  lower and @p upper, excluded. Provides iterators to get all results of
+   *  the orthogonal range search.
+   *
+   *  The following condition is statisfied by the points returned as the
+   *  result of the iteration of the view. This condition is the
+   *  multi-dimension equivalent of a open interval.
+   *
+   *  @f[
+   *  \forall _{i = 0 \to n} , low _i < x _i < high _i
+   *  @f]
+   *
+   *  The above invarient also implies that @p lower and @p upper bounds must
+   *  not overlap on any dimension. An exception of the type
+   *  spatial::invalid_open_range_bounds will be thrown otherwise.
+   */
+  template <typename Container>
+  struct open_range_view
+    : range_predicate_view
+  <Container,
+   open_range_bounds
+   <typename spatial::container_traits<Container>::key_type,
+    typename spatial::container_traits<Container>::compare_type> >
+  {
+    open_range_view
+    (typename range_iterable_traits<Container>::type& iterable,
+     const typename spatial::container_traits<Container>::key_type& lower,
+     const typename spatial::container_traits<Container>::key_type& upper)
+      : range_predicate_view
+	<Container,
+	 open_range_bounds
+	 <typename spatial::container_traits<Container>::key_type,
+	  typename spatial::container_traits<Container>::compare_type> >
+    (iterable, make_open_range_bounds(lower, upper))
+	  { }
+  };
 
-    //@{
-    /**
-     *  @brief  View of the Container that give access to all points whose
-     *  coordinates are within the orthogonal area defined by the 2 points @p
-     *  lower and @p upper, excluded. Provides iterators to get all results of
-     *  the orthogonal range search.
-     *
-     *  The following condition is statisfied by the points returned as the
-     *  result of the iteration of the view. This condition is the
-     *  multi-dimension equivalent of a open interval.
-     *
-     *  @f[
-     *  \forall _{i = 0 \to n} , low _i < x _i < high _i
-     *  @f]
-     *
-     *  The above invarient also implies that @p lower and @p upper bounds must
-     *  not overlap on any dimension. An exception of the type
-     *  spatial::invalid_open_range_bounds will be thrown otherwise.
-     */
-    template <typename Container>
-    struct open_range
-      : range_predicate
-    <Container,
-     open_range_bounds
-     <typename spatial::container_traits<Container>::key_type,
-      typename spatial::container_traits<Container>::compare_type> >
-    {
-      open_range
-      (typename range_iterable_traits<Container>::type& iterable,
-       const typename spatial::container_traits<Container>::key_type& lower,
-       const typename spatial::container_traits<Container>::key_type& upper)
-	: range_predicate
-	  <Container,
-	   open_range_bounds
-	   <typename spatial::container_traits<Container>::key_type,
-	    typename spatial::container_traits<Container>::compare_type> >
-	  (iterable, make_open_range_bounds(lower, upper))
-      { }
-    };
+  // specialization for constant containers.
+  template <typename Container>
+  struct open_range_view<const Container>
+    : range_predicate_view
+  <const Container,
+   open_range_bounds
+   <typename spatial::container_traits<Container>::key_type,
+    typename spatial::container_traits<Container>::compare_type> >
+  {
+    open_range_view
+    (const typename range_iterable_traits<Container>::type& iterable,
+     const typename spatial::container_traits<Container>::key_type& lower,
+     const typename spatial::container_traits<Container>::key_type& upper)
+      : range_predicate_view
+	<const Container,
+	 open_range_bounds
+	 <typename spatial::container_traits<Container>::key_type,
+	  typename spatial::container_traits<Container>::compare_type> >
+    (iterable, make_open_range_bounds(lower, upper))
+	  { }
+  };
+  //@}
 
-    // specialization for constant containers.
-    template <typename Container>
-    struct open_range<const Container>
-      : range_predicate
-    <const Container,
-     open_range_bounds
-     <typename spatial::container_traits<Container>::key_type,
-      typename spatial::container_traits<Container>::compare_type> >
-    {
-      open_range
-      (const typename range_iterable_traits<Container>::type& iterable,
-       const typename spatial::container_traits<Container>::key_type& lower,
-       const typename spatial::container_traits<Container>::key_type& upper)
-	: range_predicate
-	  <const Container,
-	   open_range_bounds
-	   <typename spatial::container_traits<Container>::key_type,
-	    typename spatial::container_traits<Container>::compare_type> >
-	  (iterable, make_open_range_bounds(lower, upper))
-      { }
-    };
-    //@}
-
-  } // namespace view
 } // namespace spatial
 
 #endif // SPATIAL_RANGE_HPP
