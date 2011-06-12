@@ -1,5 +1,12 @@
 2011-06-12  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
+	* Fixed an issue with copy and assignment constructor on
+	Relaxed_kdtree. The weight of the root node was not copied.
+
+	* Added pointset and frozen_pointset family of contaners. Finally
+	reaching point of completion for basic types. Now need to add more
+	examples and documentation to explain how to use them.
+
 	* Fixed test for bulk erase in Relaxed Kdtree.
 
 	* Adding missing test for optimization in Kdtree.

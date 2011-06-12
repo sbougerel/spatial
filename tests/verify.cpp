@@ -5205,23 +5205,99 @@ BOOST_AUTO_TEST_CASE( test_neighbor_upper_bound )
 BOOST_AUTO_TEST_CASE( test_pointset_constructors )
 {
   pointset<2, point2d> points;
-  pointset<0, point2d> dynamic_points;
-  dynamic_pointset<point2d> more_dynamic_points;
+  pointset<0, point2d> runtime_points;
+  runtime_pointset<point2d> more_runtime_points;
 }
 
-BOOST_AUTO_TEST_CASE( test_pointset_insert_iter_erase )
+BOOST_AUTO_TEST_CASE( test_frozen_pointset_constructors )
 {
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  frozen_pointset<2, point2d> points;
+  frozen_pointset<0, point2d> runtime_points;
+  frozen_runtime_pointset<point2d> more_runtime_points;
 }
 
-BOOST_AUTO_TEST_CASE( test_pointset_equality )
+BOOST_AUTO_TEST_CASE( test_pointset_copy_assignment )
 {
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  pointset<2, point2d> points;
+  points.insert(zeros);
+  points.insert(ones);
+  points.insert(twos);
+  pointset<2, point2d> copy(points);
+  BOOST_CHECK_EQUAL(points.size(), copy.size());
+  BOOST_CHECK(*points.begin() == *copy.begin());
+  points = copy;
+  BOOST_CHECK_EQUAL(points.size(), copy.size());
+  BOOST_CHECK(*points.begin() == *copy.begin());
 }
 
-BOOST_AUTO_TEST_CASE( test_pointset_swap )
+BOOST_AUTO_TEST_CASE( test_zero_pointset_copy_assignment )
 {
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  pointset<0, point2d> points;
+  points.insert(zeros);
+  points.insert(ones);
+  points.insert(twos);
+  pointset<0, point2d> copy(points);
+  BOOST_CHECK_EQUAL(points.size(), copy.size());
+  BOOST_CHECK(*points.begin() == *copy.begin());
+  points = copy;
+  BOOST_CHECK_EQUAL(points.size(), copy.size());
+  BOOST_CHECK(*points.begin() == *copy.begin());
+}
+
+BOOST_AUTO_TEST_CASE( test_runtime_pointset_copy_assignment )
+{
+  runtime_pointset<point2d> points;
+  points.insert(zeros);
+  points.insert(ones);
+  points.insert(twos);
+  runtime_pointset<point2d> copy(points);
+  BOOST_CHECK_EQUAL(points.size(), copy.size());
+  BOOST_CHECK(*points.begin() == *copy.begin());
+  points = copy;
+  BOOST_CHECK_EQUAL(points.size(), copy.size());
+  BOOST_CHECK(*points.begin() == *copy.begin());
+}
+
+BOOST_AUTO_TEST_CASE( test_frozen_pointset_copy_assignment )
+{
+  frozen_pointset<2, point2d> points;
+  points.insert(zeros);
+  points.insert(ones);
+  points.insert(twos);
+  frozen_pointset<2, point2d> copy(points);
+  BOOST_CHECK_EQUAL(points.size(), copy.size());
+  BOOST_CHECK(*points.begin() == *copy.begin());
+  points = copy;
+  BOOST_CHECK_EQUAL(points.size(), copy.size());
+  BOOST_CHECK(*points.begin() == *copy.begin());
+}
+
+BOOST_AUTO_TEST_CASE( test_zero_frozen_pointset_copy_assignment )
+{
+  frozen_pointset<0, point2d> points;
+  points.insert(zeros);
+  points.insert(ones);
+  points.insert(twos);
+  frozen_pointset<0, point2d> copy(points);
+  BOOST_CHECK_EQUAL(points.size(), copy.size());
+  BOOST_CHECK(*points.begin() == *copy.begin());
+  points = copy;
+  BOOST_CHECK_EQUAL(points.size(), copy.size());
+  BOOST_CHECK(*points.begin() == *copy.begin());
+}
+
+BOOST_AUTO_TEST_CASE( test_runtime_frozen_pointset_copy_assignment )
+{
+  frozen_runtime_pointset<point2d> points;
+  points.insert(zeros);
+  points.insert(ones);
+  points.insert(twos);
+  frozen_runtime_pointset<point2d> copy(points);
+  BOOST_CHECK_EQUAL(points.size(), copy.size());
+  BOOST_CHECK(*points.begin() == *copy.begin());
+  points = copy;
+  BOOST_CHECK_EQUAL(points.size(), copy.size());
+  BOOST_CHECK(*points.begin() == *copy.begin());
 }
 
 ///////////////////////////  pointset.hpp views ////////////////////////////////
@@ -5573,6 +5649,7 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_copy )
   // results and exhibit same properties.
   Twenty_Relaxed_kdtree_3D_fixture fix;
   Twenty_Relaxed_kdtree_3D_fixture::kdtree_type copy(fix.kdtree);
+  BOOST_CHECK_EQUAL(fix.kdtree.size(), copy.size());
   typedef Twenty_Relaxed_kdtree_3D_fixture::kdtree_type::iterator iterator_type;
   iterator_type orig_begin = fix.kdtree.begin();
   iterator_type orig_end = fix.kdtree.end();

@@ -33,9 +33,7 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(!other.empty());
       SPATIAL_ASSERT_CHECK(Base::empty());
       Const_Base_ptr other_node = other.get_root();
-      Base_ptr node
-	= Base::create_node(SPATIAL_KEY_CONST(other_node)); // may throw
-      node->left = node->right = 0;
+      Base_ptr node = clone_node(other_node); // may throw
       node->parent = Base::get_header();
       Base::set_root(node);
       try
@@ -47,7 +45,6 @@ namespace spatial
 		  other_node = other_node->left;
 		  Base_ptr target = clone_node(other_node);
 		  target->parent = node;
-		  target->left = target->right = 0;
 		  node->left = target;
 		  node = node->left;
 		}
@@ -56,7 +53,6 @@ namespace spatial
 		  other_node = other_node->right;
 		  Base_ptr target = clone_node(other_node);
 		  target->parent = node;
-		  target->right = target->left = 0;
 		  node->right = target;
 		  node = node->right;
 		}
@@ -77,7 +73,6 @@ namespace spatial
 		      other_node = other_node->right;
 		      Base_ptr target = clone_node(other_node);
 		      target->parent = node;
-		      target->right = target->left = 0;
 		      node->right = target;
 		      node = node->right;
 		    }
@@ -108,9 +103,9 @@ namespace spatial
       // for all algorithms to have balanced nodes if there are not enough nodes
       // to balance along all dimensions.
       //
-      // Note that while I can prove this for several algorithms (simple
+      // Note that while I can theorize this for several algorithms (simple
       // iteration, mapping iteration, range iteration), I still have to perform
-      // experiments that reflect this reality.
+      // experiments that reflect this hypothesis.
       if (static_cast<Weighted_node*>(node)->weight <=
 	  static_cast<weight_type>(Base::dimension()) << 1)
 	{ return false; }

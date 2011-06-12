@@ -47,16 +47,6 @@
 namespace spatial
 {
   /**
-   *  @brief  This balancing policy leaves the tree totally unbalanced.
-   *
-   *  This policy is simply a marker, and creating a container with this
-   *  policy will, in fact, have the same result as using containers that do
-   *  not implement balancing at all, such as spatial::frozen_pointset family
-   *  of containers.
-   */
-  struct non_balancing { };
-
-  /**
    *  @brief  This policy triggers rebalancing for the node when the
    *  difference in weight between left or right is more than a half. The
    *  default policy for rebalancing.
@@ -293,7 +283,7 @@ namespace spatial
        *  tree. Therefore, all operations should behave similarly to both trees
        *  after the copy.
        */
-      Relaxed_kdtree(const Self& other)
+      Relaxed_kdtree(const Relaxed_kdtree& other)
 	: Base(other), m_balancing(other.balancing())
       {
 	if (!other.empty())
@@ -308,14 +298,14 @@ namespace spatial
        *
        *  @note  The allocator of the tree is not modified by the assignment.
        */
-      Self&
-      operator=(const Self& other)
+      Relaxed_kdtree&
+      operator=(const Relaxed_kdtree& other)
       {
 	if (&other != this)
 	  {
 	    clear();
 	    Base::operator=(other);
-	    // No need to copy balancing policy.
+	    m_balancing = other.m_balancing;
 	    if (!other.empty())
 	      { copy_structure(other); }
 	  }
