@@ -55,6 +55,7 @@ namespace spatial
   public:
     typedef Self mapping_iterable;
     typedef Self range_iterable;
+    typedef Self neighbor_iterable;
 
     pointset() { }
 
@@ -101,6 +102,7 @@ namespace spatial
   public:
     typedef Self mapping_iterable;
     typedef Self range_iterable;
+    typedef Self neighbor_iterable;
 
     pointset() { }
 
@@ -164,6 +166,7 @@ namespace spatial
   public:
     typedef Self mapping_iterable;
     typedef Self range_iterable;
+    typedef Self neighbor_iterable;
 
     runtime_pointset() { }
 
@@ -221,6 +224,7 @@ namespace spatial
   public:
     typedef Self mapping_iterable;
     typedef Self range_iterable;
+    typedef Self neighbor_iterable;
 
     frozen_pointset() { }
 
@@ -260,6 +264,7 @@ namespace spatial
   public:
     typedef Self mapping_iterable;
     typedef Self range_iterable;
+    typedef Self neighbor_iterable;
 
     frozen_pointset() { }
 
@@ -314,6 +319,7 @@ namespace spatial
   public:
     typedef Self mapping_iterable;
     typedef Self range_iterable;
+    typedef Self neighbor_iterable;
 
     frozen_runtime_pointset() { }
 

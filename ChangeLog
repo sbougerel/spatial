@@ -1,5 +1,8 @@
 2011-06-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
+	* Added neighbor_iterable capability to *_pointset family of
+	containers.
+
 	* Fixed range_views compilation issues and added unit tests.
 
 	* Changed use of view:: namespace for neighbor view. New type is named

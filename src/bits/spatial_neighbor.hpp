@@ -424,7 +424,7 @@ namespace spatial
 	  (container.rank(), container.compare(), geometry, origin,
 	   container.dimension() - 1,
 	   static_cast<typename container_traits<Container>::node_type*>
-	   (container.end().node));
+	   (get_end(container)));
       }
 
       template <typename Container, typename Geometry>
