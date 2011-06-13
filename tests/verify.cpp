@@ -5302,7 +5302,7 @@ BOOST_AUTO_TEST_CASE( test_runtime_frozen_pointset_copy_assignment )
 
 ///////////////////////////  pointset.hpp views ////////////////////////////////
 
-BOOST_AUTO_TEST_CASE( test_pointset_mapping )
+BOOST_AUTO_TEST_CASE( test_pointset_mapping_view )
 {
   pointset<2, point2d> points;
   mapping_view<pointset<2, point2d> > set_zero(points, 0);
@@ -5330,47 +5330,80 @@ BOOST_AUTO_TEST_CASE( test_pointset_mapping )
   BOOST_CHECK(*set_zero.cupper_bound(ones) == twos);
 }
 
+BOOST_AUTO_TEST_CASE( test_pointset_const_mapping_view )
+{
+  pointset<2, point2d> points;
+  mapping_view<const pointset<2, point2d> > set_zero(points, 0);
+  BOOST_CHECK(set_zero.begin() == set_zero.end());
+  // Now add some points to pointset and iterate throught these points.
+  points.insert(ones);
+  points.insert(ones);
+  points.insert(twos);
+  points.insert(zeros);
+  points.insert(fives);
+  points.insert(fives);
+  BOOST_CHECK(set_zero.begin() != set_zero.end());
+  BOOST_CHECK(set_zero.cbegin() != set_zero.cend());
+  BOOST_CHECK(set_zero.rbegin() != set_zero.rend());
+  BOOST_CHECK(set_zero.crbegin() != set_zero.crend());
+  BOOST_CHECK(*set_zero.begin() == zeros);
+  BOOST_CHECK(*set_zero.cbegin() == zeros);
+  BOOST_CHECK(*--set_zero.end() == fives);
+  BOOST_CHECK(*--set_zero.cend() == fives);
+  BOOST_CHECK(*set_zero.rbegin() == fives);
+  BOOST_CHECK(*set_zero.crbegin() == fives);
+  BOOST_CHECK(*set_zero.lower_bound(ones) == ones);
+  BOOST_CHECK(*set_zero.clower_bound(ones) == ones);
+  BOOST_CHECK(*set_zero.upper_bound(ones) == twos);
+  BOOST_CHECK(*set_zero.cupper_bound(ones) == twos);
+}
+
 BOOST_AUTO_TEST_CASE( test_pointset_range )
 {
+  pointset<2, point2d> points;
   // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
-  
+  points.insert(zeros);
+  points.insert(ones);
+  points.insert(ones);
+  points.insert(twos);
+  points.insert(twos);
+  points.insert(fours);
+  points.insert(fives);
+  range_predicate_view<pointset<2, point2d>,
+    range_bounds<typename spatial::container_traits<pointset<2, point2d> >::key_type,
+		 typename spatial::container_traits<pointset<2, point2d> >::compare_type> >
+    range1(points, make_range_bounds(points, ones, threes));
+  BOOST_CHECK(range1.begin() != range1.end());
+  BOOST_CHECK(range1.cbegin() != range1.cend());
+  range_predicate_view<pointset<2, point2d>,
+    range_bounds<typename spatial::container_traits<pointset<2, point2d> >::key_type,
+		 typename spatial::container_traits<pointset<2, point2d> >::compare_type> >
+    range2(points, make_range_bounds(points, threes, fours));
+  BOOST_CHECK(range2.begin() == range2.end());
+  BOOST_CHECK(range2.cbegin() == range2.cend());
+  range_predicate_view<const pointset<2, point2d>,
+    range_bounds<typename spatial::container_traits<pointset<2, point2d> >::key_type,
+		 typename spatial::container_traits<pointset<2, point2d> >::compare_type> >
+    range3(points, make_range_bounds(points, threes, fours));
+  BOOST_CHECK(range3.begin() == range3.end());
+  BOOST_CHECK(range3.cbegin() == range3.cend());
+  range_predicate_view<const pointset<2, point2d>,
+    range_bounds<typename spatial::container_traits<pointset<2, point2d> >::key_type,
+		 typename spatial::container_traits<pointset<2, point2d> >::compare_type> >
+    range4(points, make_range_bounds(points, ones, threes));
+  BOOST_CHECK(range4.begin() != range4.end());
+  BOOST_CHECK(range4.cbegin() != range4.cend());
 }
 
-BOOST_AUTO_TEST_CASE( test_pointset_equal_range )
+BOOST_AUTO_TEST_CASE( test_pointset_other_range_view )
 {
-  // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
-}
-
-BOOST_AUTO_TEST_CASE( test_pointset_close_range )
-{
-  // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
-}
-
-BOOST_AUTO_TEST_CASE( test_pointset_open_range )
-{
-  // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
-}
-
-BOOST_AUTO_TEST_CASE( test_pointset_range_predicate )
-{
-  // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
-}
-
-BOOST_AUTO_TEST_CASE( test_pointset_upper_partition )
-{
-  // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
-}
-
-BOOST_AUTO_TEST_CASE( test_pointset_lower_partition )
-{
-  // Now add some points to pointset and iterate throught these points.
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  pointset<2, point2d> points;
+  range_view<pointset<2, point2d> > view1(points, zeros, ones);
+  range_view<const pointset<2, point2d> > view2(points, zeros, ones);
+  closed_range_view<pointset<2, point2d> > view3(points, zeros, ones);
+  closed_range_view<const pointset<2, point2d> > view4(points, zeros, ones);
+  open_range_view<pointset<2, point2d> > view5(points, zeros, ones);
+  open_range_view<const pointset<2, point2d> > view6(points, zeros, ones);
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_neighborhood )

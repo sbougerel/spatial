@@ -47,14 +47,15 @@ namespace spatial
     : details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Compare,
 			      BalancingPolicy, Alloc, true>
   {
-    typedef pointset<Rank, Key, Compare, BalancingPolicy, Alloc>
-    mapping_iterable;
-
   private:
     typedef details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Compare,
 				    BalancingPolicy, Alloc, true>   base_type;
+    typedef pointset<Rank, Key, Compare, BalancingPolicy, Alloc>    Self;
 
   public:
+    typedef Self mapping_iterable;
+    typedef Self range_iterable;
+
     pointset() { }
 
     explicit pointset(const Compare& compare)
@@ -76,10 +77,7 @@ namespace spatial
 
     pointset&
     operator=(const pointset& other)
-    {
-      return static_cast<pointset<Rank, Key, Compare, BalancingPolicy, Alloc>&>
-	(base_type::operator=(other));
-    }
+    { return static_cast<Self&>(base_type::operator=(other)); }
   };
 
   /**
@@ -95,14 +93,15 @@ namespace spatial
     : details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
 			      BalancingPolicy, Alloc, true>
   {
-    typedef pointset<0, Key, Compare, BalancingPolicy, Alloc>
-    mapping_iterable;
-
   private:
     typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
 				    BalancingPolicy, Alloc, true> base_type;
+    typedef pointset<0, Key, Compare, BalancingPolicy, Alloc>     Self;
 
   public:
+    typedef Self mapping_iterable;
+    typedef Self range_iterable;
+
     pointset() { }
 
     explicit pointset(dimension_type dim)
@@ -142,10 +141,7 @@ namespace spatial
 
     pointset&
     operator=(const pointset& other)
-    {
-      return static_cast<pointset<0, Key, Compare, BalancingPolicy, Alloc>&>
-	(base_type::operator=(other));
-    }
+    { return static_cast<Self&>(base_type::operator=(other)); }
   };
 
   /**
@@ -160,14 +156,15 @@ namespace spatial
     : details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
 			      BalancingPolicy, Alloc, true>
   {
-    typedef runtime_pointset<Key, Compare, BalancingPolicy, Alloc>
-    mapping_iterable;
-
   private:
     typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
-				    BalancingPolicy, Alloc, true> base_type;
+				    BalancingPolicy, Alloc, true>  base_type;
+    typedef runtime_pointset<Key, Compare, BalancingPolicy, Alloc> Self;
 
   public:
+    typedef Self mapping_iterable;
+    typedef Self range_iterable;
+
     runtime_pointset() { }
 
     explicit runtime_pointset(dimension_type dim)
@@ -207,10 +204,7 @@ namespace spatial
 
     runtime_pointset&
     operator=(const runtime_pointset& other)
-    {
-      return static_cast<runtime_pointset<Key, Compare, BalancingPolicy, Alloc>&>
-	(base_type::operator=(other));
-    }
+    { return static_cast<Self&>(base_type::operator=(other)); }
   };
 
   template<dimension_type Rank, typename Key,
@@ -219,13 +213,15 @@ namespace spatial
   struct frozen_pointset
     : details::Kdtree<details::Static_rank<Rank>, Key, Compare, Alloc, true>
   {
-    typedef frozen_pointset<Rank, Key, Compare, Alloc> mapping_iterable;
-
   private:
     typedef details::Kdtree<details::Static_rank<Rank>, Key, Compare,
-			    Alloc, true>   base_type;
+			    Alloc, true>               base_type;
+    typedef frozen_pointset<Rank, Key, Compare, Alloc> Self;
 
   public:
+    typedef Self mapping_iterable;
+    typedef Self range_iterable;
+
     frozen_pointset() { }
 
     explicit frozen_pointset(const Compare& compare)
@@ -256,13 +252,15 @@ namespace spatial
   struct frozen_pointset<0, Key, Compare, Alloc>
     : details::Kdtree<details::Dynamic_rank, Key, Compare, Alloc, true>
   {
-    typedef frozen_pointset<0, Key, Compare, Alloc>  mapping_iterable;
-
   private:
     typedef details::Kdtree<details::Dynamic_rank,
 			    Key, Compare, Alloc, true> base_type;
+    typedef frozen_pointset<0, Key, Compare, Alloc>    Self;
 
   public:
+    typedef Self mapping_iterable;
+    typedef Self range_iterable;
+
     frozen_pointset() { }
 
     explicit frozen_pointset(dimension_type dim)
@@ -308,13 +306,15 @@ namespace spatial
   struct frozen_runtime_pointset
     : details::Kdtree<details::Dynamic_rank, Key, Compare, Alloc, true>
   {
-    typedef frozen_runtime_pointset<Key, Compare, Alloc> mapping_iterable;
-
   private:
     typedef details::Kdtree<details::Dynamic_rank,
 			    Key, Compare, Alloc, true>     base_type;
+    typedef frozen_runtime_pointset<Key, Compare, Alloc>   Self;
 
   public:
+    typedef Self mapping_iterable;
+    typedef Self range_iterable;
+
     frozen_runtime_pointset() { }
 
     explicit frozen_runtime_pointset(dimension_type dim)

@@ -323,7 +323,7 @@ namespace spatial
 	return typename iterator<Container, Predicate>::type
 	  (container.rank(), predicate, container.dimension() - 1,
 	   static_cast<typename container_traits<Container>::node_type*>
-	   (container.end().node));
+	   (get_end(container)));
       }
 
       template <typename Container, typename Predicate>
@@ -558,8 +558,8 @@ namespace spatial
 	<Container,
 	 range_bounds<typename spatial::container_traits<Container>::key_type,
 		      typename spatial::container_traits<Container>::compare_type> >
-    (iterable, make_range_bounds(lower, upper))
-		      { }
+	(iterable, make_range_bounds(iterable, lower, upper))
+    { }
   };
 
   // specialization for constant containers.
@@ -578,8 +578,8 @@ namespace spatial
 	<const Container,
 	 range_bounds<typename spatial::container_traits<Container>::key_type,
 		      typename spatial::container_traits<Container>::compare_type> >
-    (iterable, make_range_bounds(lower, upper))
-		      { }
+	(iterable, make_range_bounds(iterable, lower, upper))
+    { }
   };
   //@}
 
@@ -619,8 +619,8 @@ namespace spatial
 	 closed_range_bounds
 	 <typename spatial::container_traits<Container>::key_type,
 	  typename spatial::container_traits<Container>::compare_type> >
-    (iterable, make_closed_range_bounds(lower, upper))
-	  { }
+	(iterable, make_closed_range_bounds(iterable, lower, upper))
+    { }
   };
 
   // specialization for constant containers.
@@ -641,8 +641,8 @@ namespace spatial
 	 closed_range_bounds
 	 <typename spatial::container_traits<Container>::key_type,
 	  typename spatial::container_traits<Container>::compare_type> >
-    (iterable, make_closed_range_bounds(lower, upper))
-	  { }
+	(iterable, make_closed_range_bounds(iterable, lower, upper))
+    { }
   };
   //@}
 
@@ -682,8 +682,8 @@ namespace spatial
 	 open_range_bounds
 	 <typename spatial::container_traits<Container>::key_type,
 	  typename spatial::container_traits<Container>::compare_type> >
-    (iterable, make_open_range_bounds(lower, upper))
-	  { }
+	(iterable, make_open_range_bounds(iterable, lower, upper))
+    { }
   };
 
   // specialization for constant containers.
@@ -704,8 +704,8 @@ namespace spatial
 	 open_range_bounds
 	 <typename spatial::container_traits<Container>::key_type,
 	  typename spatial::container_traits<Container>::compare_type> >
-    (iterable, make_open_range_bounds(lower, upper))
-	  { }
+	(iterable, make_open_range_bounds(iterable, lower, upper))
+    { }
   };
   //@}
 

@@ -1,5 +1,7 @@
 2011-06-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
+	* Fixed range_views compilation issues and added unit tests.
+
 	* Changed use of view:: namespace for neighbor view. New type is named
 	neighbor_view to follow the naming convention adopted in Boost.
 
