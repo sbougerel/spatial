@@ -1,3 +1,8 @@
+2011-06-14  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+	* src/bits/spatial_details.hpp Removed unnecessary match function,
+	acting as an alias for predicate.
+
 2011-06-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
 	* Added neighbor_iterable capability to *_pointset family of

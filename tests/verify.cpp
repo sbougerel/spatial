@@ -189,10 +189,10 @@ BOOST_AUTO_TEST_CASE( test_details_match )
   point2d y = { { 1, 1 } };
   point2d _x = { { -1, -1 } };
   point2d x_ = { { 2, 2 } };
-  BOOST_CHECK(details::match(0, x, closed_test_range()) == matching);
-  BOOST_CHECK(details::match(1, y, closed_test_range()) == matching);
-  BOOST_CHECK(details::match(0, _x, closed_test_range()) == below);
-  BOOST_CHECK(details::match(1, x_, closed_test_range()) == above);
+  BOOST_CHECK(closed_test_range()(0, x) == matching);
+  BOOST_CHECK(closed_test_range()(1, y) == matching);
+  BOOST_CHECK(closed_test_range()(0, _x) == below);
+  BOOST_CHECK(closed_test_range()(1, x_) == above);
 }
 
 BOOST_AUTO_TEST_CASE( test_details_match_all )

@@ -173,19 +173,6 @@ namespace spatial
     }
 
     /**
-     *  @brief  Return a tribool indicating that @c key coordinate over
-     *  @node_dim is matching the range predicate
-     *  @test   test_details_match
-     */
-    template <typename Key, typename Predicate>
-    inline relative_order
-    match(dimension_type node_dim, const Key& key,
-	  const Predicate& predicate)
-    {
-      return predicate(node_dim, key);
-    }
-
-    /**
      *  @brief  Return a boolean indicating whether all @c key coordinates are
      *  within range or not.
      *  @test   test_details_match_all
