@@ -180,11 +180,12 @@ namespace spatial
       Distance one = static_cast<Distance>(1);
       // Find a non zero maximum or return 0
       Distance max = zero;
-      Distance max_dim;
+      dimension_type max_dim;
       using namespace ::std;
       for (dimension_type i=0; i<rank; ++i)
 	{
-	  Distance diff = abs(access(i, origin) - access(i, key));
+	  Distance diff
+        = abs(static_cast<Distance>(access(i, origin) - access(i, key)));
 	  if (diff == zero) continue;
 	  if (max == zero || diff > max)
 	    { max = diff; max_dim = i; }
@@ -195,7 +196,7 @@ namespace spatial
       for (dimension_type i=0; i<rank; ++i)
 	{
 	  if (i == max_dim) continue;
-	  Distance diff = access(i, origin) - access(i, key);
+	  Distance diff = static_cast<Distance>(access(i, origin) - access(i, key));
 	  Distance div = diff/max;
 	  sum += div * div;
 	}
@@ -218,7 +219,7 @@ namespace spatial
       Distance two = static_cast<Distance>(2);
       // Find a non zero maximum or return 0
       Distance max = zero;
-      Distance max_dim = 0;
+      dimension_type max_dim = 0;
       using namespace ::std;
       for (dimension_type i=0; i<rank; ++i)
 	{
@@ -257,7 +258,7 @@ namespace spatial
     (dimension_type dim, Key origin, Key key, Accessor access)
     {
       using namespace ::std;
-      return abs(access(dim, origin) - access(dim, key));
+      return abs(static_cast<Distance>(access(dim, origin) - access(dim, key)));
     }
 
     /**
@@ -271,7 +272,8 @@ namespace spatial
     euclidian_square_distance_to_plane
     (dimension_type dim, Key origin, Key key, Accessor access)
     {
-      Distance diff = access(dim, origin) - access(dim, key);
+      Distance diff = static_cast<Distance>
+        (access(dim, origin) - access(dim, key));
       return diff*diff;
     }
 
@@ -349,7 +351,8 @@ namespace spatial
     (dimension_type dim, Key origin, Key key, Accessor access)
     {
       using namespace ::std;
-      Distance diff = abs(access(dim, origin) - access(dim, key));
+      Distance diff = abs(static_cast<Distance>
+                          (access(dim, origin) - access(dim, key)));
       return diff;
     }
 

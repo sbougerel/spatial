@@ -19,9 +19,18 @@
 #  error "Do not include this file directly in your project."
 #endif
 
-#include <tr1/type_traits> // provides: std::tr1::is_empty
 #include <algorithm> // provides: std::swap
 #include <cstddef> // int32_t, available on all platforms
+
+// provides: std::tr1::is_empty
+#ifdef __GLIBCXX__
+#  include <tr1/type_traits>
+#else
+#  ifdef __IBMCPP__
+#    define __IBMCPP_TR1__
+#  endif
+#  include <type_traits>
+#endif
 
 namespace spatial
 {

@@ -20,7 +20,16 @@
 #endif
 
 #include <utility> // for std::pair
-#include <tr1/type_traits> // for std::tr1::false_type and std::tr1::true_type
+
+// for std::tr1::false_type and std::tr1::true_type
+#ifdef __GLIBCXX__
+#  include <tr1/type_traits>
+#else
+#  ifdef __IBMCPP__
+#    define __IBMCPP_TR1__
+#  endif
+#  include <type_traits>
+#endif
 
 namespace spatial
 {

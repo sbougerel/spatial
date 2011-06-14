@@ -309,16 +309,16 @@ namespace spatial
 
     protected:
       // External accessor
-      friend Self::Link_type
+      friend Link_type
       get_end<>(Self& value);
 
-      friend Self::Const_Link_type
+      friend Const_Link_type
       get_end<>(const Self& value);
 
-      friend Self::Link_type
+      friend Link_type
       get_begin<>(Self& value);
 
-      friend Self::Const_Link_type
+      friend Const_Link_type
       get_begin<>(const Self& value);
 
       // Internal accessors

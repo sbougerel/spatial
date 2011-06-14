@@ -333,15 +333,17 @@ namespace spatial
       typedef Neighbor_iterator_base
       <Rank, Key, Node, Compare, Geometry, false,
        Neighbor_iterator
-       <Rank, Key, Node, Compare, Geometry> >   Base;
+       <Rank, Key, Node, Compare, Geometry> >       Base;
+	  typedef typename Base::Link_type              Link_type;
+	  typedef typename Base::distance_type          distance_type;
+	  typedef typename Base::Neighbor_iterator_impl impl_type;
 
     public:
       Neighbor_iterator(const Rank& rank, const Compare& compare,
 			const Geometry& geometry, const Key& origin,
-			dimension_type node_dim, typename Base::Link_type link,
-			const typename Base::distance_type& distance
-			= typename Base::distance_type())
-	: Base(typename Base::Neighbor_iterator_impl
+			dimension_type node_dim, Link_type link,
+			const distance_type& distance = distance_type())
+	: Base(impl_type
 	       (rank, compare, geometry, origin, node_dim, link, distance))
       { }
 
@@ -360,28 +362,28 @@ namespace spatial
     {
     private:
       typedef Neighbor_iterator
-      <Rank, Key, Node, Compare, Geometry>      iterator;
-
+      <Rank, Key, Node, Compare, Geometry>          iterator;
       typedef Neighbor_iterator_base
       <Rank, Key, Node, Compare, Geometry, true,
        Const_Neighbor_iterator
-       <Rank, Key, Node, Compare, Geometry> >   Base;
+       <Rank, Key, Node, Compare, Geometry> >       Base;
+	  typedef typename Base::Link_type              Link_type;
+	  typedef typename Base::distance_type          distance_type;
+	  typedef typename Base::Neighbor_iterator_impl impl_type;
 
     public:
       Const_Neighbor_iterator(const Rank& rank, const Compare& compare,
 			      const Geometry& geometry, const Key& origin,
-			      dimension_type node_dim,
-			      typename Base::Link_type link,
-			      const typename Base::distance_type& distance
-			      = typename Base::distance_type())
-	: Base(typename Base::Neighbor_iterator_impl
+			      dimension_type node_dim, Link_type link,
+			      const distance_type& distance = distance_type())
+	: Base(impl_type
 	       (rank, compare, geometry, origin, node_dim, link, distance))
       { }
 
       Const_Neighbor_iterator() { }
 
       Const_Neighbor_iterator(const iterator& i)
-	: Base(typename Base::Neighbor_iterator_impl
+	: Base(impl_type
 	       (i.rank(), i.compare(), i.geometry(),
 		i.origin(), i.distance(), i.impl.node_dim, i.impl.node))
       { }
