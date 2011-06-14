@@ -18,9 +18,17 @@
 #include <utility> // std::pair
 #include <algorithm> // std::find() and others
 #include <vector>
-#include <tr1/array>
 #include <limits>
 #include <iomanip>
+
+#ifdef __GLIBCXX__
+#  include <tr1/array>
+#else
+#  ifdef __IBMCPP__
+#    define __IBMCPP_TR1__
+#  endif
+#  include <array>
+#endif
 
 #define BOOST_TEST_MAIN // single (a bit) long test file
 #include <boost/test/included/unit_test.hpp>
@@ -3734,21 +3742,21 @@ BOOST_AUTO_TEST_CASE( test_accessor_rebind )
 {
   using namespace spatial::details::geometry;
   {
-    typename rebind<point2d, double,
+    rebind<point2d, double,
 		    accessor_less<at_accessor<point2d,
 					      int>, point2d> >::type
       must_compile;
   }
   {
-    typename rebind<point2d, double,
+    rebind<point2d, double,
 		    bracket_less<point2d> >::type must_compile;
   }
   {
-    typename rebind<point2d, double,
+    rebind<point2d, double,
 		    paren_less<point2d> >::type must_compile;
   }
   {
-    typename rebind<point2d, double,
+    rebind<point2d, double,
 		    iterator_less<point2d> >::type must_compile;
   }
 }
@@ -3802,9 +3810,9 @@ BOOST_AUTO_TEST_CASE( test_euclidian_distance_to_key )
 	  <triple, cast_accessor<triple, double, triple_access>, double>
 	  (3, p, q, cast_accessor<triple, double, triple_access>());
 	using namespace ::std;
-	double other_dist = sqrt((p.x-q.x)*(p.x-q.x)
+	double other_dist = sqrt(static_cast<double>((p.x-q.x)*(p.x-q.x)
 				 +(p.y-q.y)*(p.y-q.y)
-				 +(p.z-q.z)*(p.z-q.z));
+				 +(p.z-q.z)*(p.z-q.z)));
 	BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
       }
   }
@@ -3912,7 +3920,7 @@ BOOST_AUTO_TEST_CASE( test_euclidian_distance_to_plane )
 	  (dim, p, q, cast_accessor<triple, double, triple_access>());
 	using namespace ::std;
 	triple_access access;
-	float other_dist = abs(access(dim, p) - access(dim, q));
+	float other_dist = abs(static_cast<float>(access(dim, p) - access(dim, q)));
 	BOOST_CHECK_CLOSE(dist, other_dist, .0000001f);
       }
   }
@@ -4073,7 +4081,7 @@ BOOST_AUTO_TEST_CASE( test_euclidian_square_distance_to_plane )
 	  (dim, p, q, cast_accessor<triple, double, triple_access>());
 	using namespace ::std;
 	triple_access access;
-	float other_dist = (access(dim, p) - access(dim, q))
+	float other_dist = static_cast<float>(access(dim, p) - access(dim, q))
 	  * (access(dim, p) - access(dim, q));
 	BOOST_CHECK_CLOSE(dist, other_dist, .0000001f);
       }
@@ -4231,7 +4239,7 @@ BOOST_AUTO_TEST_CASE( test_manhattan_distance_to_plane )
 	  (dim, p, q, cast_accessor<triple, double, triple_access>());
 	using namespace ::std;
 	triple_access access;
-	float other_dist = abs(access(dim, p) - access(dim, q));
+	float other_dist = abs(static_cast<float>(access(dim, p) - access(dim, q)));
 	BOOST_CHECK_CLOSE(dist, other_dist, .0000001);
       }
   }
@@ -4504,6 +4512,8 @@ BOOST_AUTO_TEST_CASE( test_geometry_manhattan )
     bracket_cast_accessor<point5d, double> access_double;
     manhattan<point5d, bracket_cast_accessor<point5d, double>, double>
       geometry_double(access_double);
+	typedef manhattan<point5d, bracket_cast_accessor<point5d, double>, double>
+      ::distance_type distance_type;
     // Bad attempt to test that given any 2 points, the result of
     // distance_to_plane is always less or equal to distance to key
     {
