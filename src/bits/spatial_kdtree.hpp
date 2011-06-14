@@ -78,8 +78,9 @@ namespace spatial
        *  This function is semi-recursive. It iterates when walking down left
        *  nodes and recurse when walking down right nodes.
        */
-      void rebalance_node_insert(Base_ptr* first, Base_ptr* last,
-				 dimension_type dim);
+      void rebalance_node_insert
+        (std::vector<Base_ptr>::iterator first,
+		 std::vector<Base_ptr>::iterator last, dimension_type dim);
 
       /**
        *  @brief  Copy the exact sturcture of the sub-tree pointed to by @c

@@ -58,7 +58,7 @@ namespace spatial
       bool ln_break = false;
       Base_ptr curr = impl.node;
       distance_type curr_distance = distance();
-      Base_ptr near = 0;
+      Base_ptr near_node = 0;
       dimension_type near_dim = 0;
       distance_type near_distance = 0;
       distance_type tmp;
@@ -68,7 +68,7 @@ namespace spatial
 	  if (rn_break) { goto left_side; }
 	  if (rn->right != 0
 	      && (!cmp(rn_dim, origin, SPATIAL_KEY(rn))
-		  || near == 0
+		  || near_node == 0
 		  || near_distance
 		  >= geo.distance_to_plane
 		  (rk(), rn_dim, origin, SPATIAL_KEY(rn))))
@@ -77,7 +77,7 @@ namespace spatial
 	      rn_dim = incr_dim(rk, rn_dim);
 	      while(rn->left != 0
 		    && (!cmp(rn_dim, SPATIAL_KEY(rn), origin)
-			|| near == 0
+			|| near_node == 0
 			|| near_distance
 			>= geo.distance_to_plane
 			(rk(), rn_dim, origin, SPATIAL_KEY(rn))))
@@ -103,15 +103,15 @@ namespace spatial
 	  tmp = geo.distance_to_key(rk(), origin, SPATIAL_KEY(rn));
 	  if (tmp < curr_distance || (tmp == curr_distance && rn < curr))
 	    { goto left_side; }
-	  if (near == 0 || tmp < near_distance)
+	  if (near_node == 0 || tmp < near_distance)
 	    {
-	      near = rn;
+	      near_node = rn;
 	      near_dim = rn_dim;
 	      near_distance = tmp;
 	    }
-	  else if (tmp == near_distance && rn < near)
+	  else if (tmp == near_distance && rn < near_node)
 	    {
-	      near = rn;
+	      near_node = rn;
 	      near_dim = rn_dim;
 	    }
 	left_side:
@@ -119,7 +119,7 @@ namespace spatial
 	  if (ln_break) { continue; }
 	  if (ln->left != 0
 	      && (!cmp(ln_dim, SPATIAL_KEY(ln), origin)
-		  || near == 0
+		  || near_node == 0
 		  || near_distance
 		  >= geo.distance_to_plane
 		  (rk(), ln_dim, origin, SPATIAL_KEY(ln))))
@@ -128,7 +128,7 @@ namespace spatial
 	      ln_dim = incr_dim(rk, ln_dim);
 	      while(ln->right != 0
 		    && (!cmp(ln_dim, origin, SPATIAL_KEY(ln))
-			|| near == 0
+			|| near_node == 0
 			|| near_distance
 			>= geo.distance_to_plane
 			(rk(), ln_dim, origin, SPATIAL_KEY(ln))))
@@ -154,33 +154,33 @@ namespace spatial
 	  tmp = geo.distance_to_key(rk(), origin, SPATIAL_KEY(ln));
 	  if (tmp < curr_distance || (tmp == curr_distance && ln < curr))
 	    { continue; }
-	  if (near == 0 || tmp < near_distance)
+	  if (near_node == 0 || tmp < near_distance)
 	    {
-	      near = ln;
+	      near_node = ln;
 	      near_dim = ln_dim;
 	      near_distance = tmp;
 	    }
-	  else if (tmp == near_distance && ln < near)
+	  else if (tmp == near_distance && ln < near_node)
 	    {
-	      near = ln;
+	      near_node = ln;
 	      near_dim = ln_dim;
 	    }
 	}
       while(true);
       SPATIAL_ASSERT_CHECK(near_dim < rk());
-      SPATIAL_ASSERT_CHECK(near != curr);
-      SPATIAL_ASSERT_CHECK(near == 0
+      SPATIAL_ASSERT_CHECK(near_node != curr);
+      SPATIAL_ASSERT_CHECK(near_node == 0
 			   || curr_distance < near_distance
-			   || (curr_distance == near_distance && curr < near));
+			   || (curr_distance == near_distance && curr < near_node));
       SPATIAL_ASSERT_CHECK(rn_dim < rk());
       SPATIAL_ASSERT_CHECK(ln_dim < rk());
       SPATIAL_ASSERT_CHECK(Node_base::header(rn));
       SPATIAL_ASSERT_CHECK(Node_base::header(ln));
       SPATIAL_ASSERT_CHECK(ln == rn);
       SPATIAL_ASSERT_CHECK(ln_dim == rn_dim);
-      if (near != 0)
+      if (near_node != 0)
 	{
-	  impl.node = near;
+	  impl.node = near_node;
 	  impl.node_dim = near_dim;
 	  impl.distance() = near_distance;
 	}
@@ -228,7 +228,7 @@ namespace spatial
       dimension_type ln_dim = impl.node_dim;
       Base_ptr curr = impl.node;
       distance_type curr_distance = distance();
-      Base_ptr near = 0;
+      Base_ptr near_node = 0;
       dimension_type near_dim = 0;
       distance_type near_distance = 0;
       distance_type tmp;
@@ -273,15 +273,15 @@ namespace spatial
 	  tmp = geo.distance_to_key(rk(), origin, SPATIAL_KEY(ln));
 	  if (tmp > curr_distance || (tmp == curr_distance && ln > curr))
 	    { goto right_side; }
-	  if (near == 0 || tmp > near_distance)
+	  if (near_node == 0 || tmp > near_distance)
 	    {
-	      near = ln;
+	      near_node = ln;
 	      near_dim = ln_dim;
 	      near_distance = tmp;
 	    }
-	  else if (tmp == near_distance && ln > near)
+	  else if (tmp == near_distance && ln > near_node)
 	    {
-	      near = ln;
+	      near_node = ln;
 	      near_dim = ln_dim;
 	    }
 	right_side:
@@ -322,33 +322,33 @@ namespace spatial
 	  tmp = geo.distance_to_key(rk(), origin, SPATIAL_KEY(rn));
 	  if (tmp > curr_distance || (tmp == curr_distance && rn > curr))
 	    { continue; }
-	  if (near == 0 || tmp > near_distance)
+	  if (near_node == 0 || tmp > near_distance)
 	    {
-	      near = rn;
+	      near_node = rn;
 	      near_dim = rn_dim;
 	      near_distance = tmp;
 	    }
-	  else if (tmp == near_distance && rn > near)
+	  else if (tmp == near_distance && rn > near_node)
 	    {
-	      near = rn;
+	      near_node = rn;
 	      near_dim = rn_dim;
 	    }
 	}
       while(true);
       SPATIAL_ASSERT_CHECK(near_dim < rk());
-      SPATIAL_ASSERT_CHECK(near != curr);
-      SPATIAL_ASSERT_CHECK(near == 0
+      SPATIAL_ASSERT_CHECK(near_node != curr);
+      SPATIAL_ASSERT_CHECK(near_node == 0
 			   || curr_distance > near_distance
-			   || (curr_distance == near_distance && curr > near));
+			   || (curr_distance == near_distance && curr > near_node));
       SPATIAL_ASSERT_CHECK(rn_dim < rk());
       SPATIAL_ASSERT_CHECK(ln_dim < rk());
       SPATIAL_ASSERT_CHECK(Node_base::header(rn));
       SPATIAL_ASSERT_CHECK(Node_base::header(ln));
       SPATIAL_ASSERT_CHECK(rn == ln);
       SPATIAL_ASSERT_CHECK(rn_dim == ln_dim);
-      if (near != 0)
+      if (near_node != 0)
 	{
-	  impl.node = near;
+	  impl.node = near_node;
 	  impl.node_dim = near_dim;
 	  impl.distance() = near_distance;
 	}
@@ -374,8 +374,8 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(node_dim < rank());
       SPATIAL_ASSERT_CHECK(!Node_base::header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
+      Base_ptr near_node = node;
       Base_ptr end = node->parent;
-      Base_ptr near = node;
       dimension_type near_dim = node_dim;
       distance_type near_distance
 	= geometry.distance_to_key(rank(), origin, SPATIAL_KEY(node));
@@ -392,16 +392,16 @@ namespace spatial
 	  tmp = geometry.distance_to_key(rank(), origin, SPATIAL_KEY(node));
 	  if (tmp < near_distance)
 	    {
-	      near = node;
+	      near_node = node;
 	      near_dim = node_dim;
 	      near_distance = tmp;
 	    }
 	  else if (tmp == near_distance
 		   // to provide total ordering among the nodes, we use the node
 		   // pointer as a fall back comparison mechanism
-		   && node < near)
+		   && node < near_node)
 	    {
-	      near = node;
+	      near_node = node;
 	      near_dim = node_dim;
 	    }
 	}
@@ -419,13 +419,13 @@ namespace spatial
 	      tmp = geometry.distance_to_key(rank(), origin, SPATIAL_KEY(node));
 	      if (tmp < near_distance)
 		{
-		  near = node;
+		  near_node = node;
 		  near_dim = node_dim;
 		  near_distance = tmp;
 		}
-	      else if (tmp == near_distance && node < near)
+	      else if (tmp == near_distance && node < near_node)
 		{
-		  near = node;
+		  near_node = node;
 		  near_dim = node_dim;
 		}
 	      while(node->left != 0
@@ -439,13 +439,13 @@ namespace spatial
 		  tmp = geometry.distance_to_key(rank(), origin, SPATIAL_KEY(node));
 		  if (tmp < near_distance)
 		    {
-		      near = node;
+		      near_node = node;
 		      near_dim = node_dim;
 		      near_distance = tmp;
 		    }
-		  else if (tmp == near_distance && node < near)
+		  else if (tmp == near_distance && node < near_node)
 		    {
-		      near = node;
+		      near_node = node;
 		      near_dim = node_dim;
 		    }
 		}
@@ -466,11 +466,11 @@ namespace spatial
 	}
       while(node != end);
       SPATIAL_ASSERT_CHECK(near_dim < rank());
-      SPATIAL_ASSERT_CHECK(!Node_base::header(near));
+      SPATIAL_ASSERT_CHECK(!Node_base::header(near_node));
       SPATIAL_ASSERT_CHECK(node != 0);
-      SPATIAL_ASSERT_CHECK(near != 0);
+      SPATIAL_ASSERT_CHECK(near_node != 0);
       return Derived(rank, cmp, geometry, origin, near_dim,
-		     static_cast<Link_type>(near), near_distance);
+		     static_cast<Link_type>(near_node), near_distance);
     }
 
     template <typename Rank, typename Key, typename Node, typename Compare,
@@ -489,7 +489,7 @@ namespace spatial
       distance_type tmp;
       // Finding the maximum is, for lack of a better algorithm, equivalent to a
       // O(n) search. An alternative has been explored: being able to find if a
-      // node is in a cell that is smaller than the current 'far' node found.
+      // node is in a cell that is smaller than the current 'far_node' node found.
       // However, with the data at hand, computing the cell turned out to be
       // more expensive than doing a simple iteration over all nodes in the
       // tree.  May be, one day we'll find a better algorithm that also has no
@@ -499,7 +499,7 @@ namespace spatial
       // Iterate from left most to right most, and stop at node's parent.
       while (node->left != 0)
 	{ node = node->left; node_dim = incr_dim(rank, node_dim); }
-      Base_ptr far = node;
+      Base_ptr far_node = node;
       dimension_type far_dim = node_dim;
       distance_type far_distance
 	= geometry.distance_to_key(rank(), origin, SPATIAL_KEY(node));
@@ -524,20 +524,20 @@ namespace spatial
 	if (node == end) { break; }
 	tmp = geometry.distance_to_key(rank(), origin, SPATIAL_KEY(node));
 	if (tmp > far_distance
-	    || (tmp == far_distance && node > far))
+	    || (tmp == far_distance && node > far_node))
 	  {
-	    far = node;
+	    far_node = node;
 	    far_dim = node_dim;
 	    far_distance = tmp;
 	  }
       }
       while(true);
       SPATIAL_ASSERT_CHECK(far_dim < rank());
-      SPATIAL_ASSERT_CHECK(!Node_base::header(far));
+      SPATIAL_ASSERT_CHECK(!Node_base::header(far_node));
       SPATIAL_ASSERT_CHECK(node != 0);
-      SPATIAL_ASSERT_CHECK(far != 0);
+      SPATIAL_ASSERT_CHECK(far_node != 0);
       return Derived(rank, cmp, geometry, origin, far_dim,
-		     static_cast<Link_type>(far), far_distance);
+		     static_cast<Link_type>(far_node), far_distance);
     }
 
     template <typename Rank, typename Key, typename Node, typename Compare,
@@ -554,16 +554,16 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(!Node_base::header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
       Base_ptr end = node->parent;
-      Base_ptr near = 0;
+      Base_ptr near_node = 0;
       dimension_type near_dim = node_dim;
       distance_type tmp;
       distance_type near_distance
 	= geometry.distance_to_key(rank(), origin, SPATIAL_KEY(node));
-      if (near_distance >= limit) { near = node; }
+      if (near_distance >= limit) { near_node = node; }
       // Depth traversal starts with left first
       while(node->left != 0
 	    && (!cmp(node_dim, SPATIAL_KEY(node), origin)
-		|| near == 0
+		|| near_node == 0
 		|| near_distance
 		>= geometry.distance_to_plane(rank(), node_dim, origin,
 					      SPATIAL_KEY(node))))
@@ -572,18 +572,18 @@ namespace spatial
 	  node_dim = incr_dim(rank, node_dim);
 	  tmp = geometry.distance_to_key(rank(), origin, SPATIAL_KEY(node));
 	  if (tmp < limit) { continue; }
-	  if (near == 0 || tmp < near_distance)
+	  if (near_node == 0 || tmp < near_distance)
 	    {
-	      near = node;
+	      near_node = node;
 	      near_dim = node_dim;
 	      near_distance = tmp;
 	    }
 	  else if (tmp == near_distance
 		   // to provide total ordering among the nodes, we use the node
 		   // pointer as a fall back comparison mechanism
-		   && node < near)
+		   && node < near_node)
 	    {
-	      near = node;
+	      near_node = node;
 	      near_dim = node_dim;
 	    }
 	}
@@ -592,7 +592,7 @@ namespace spatial
 	{
 	  if (node->right != 0
 	      && (!cmp(node_dim, origin, SPATIAL_KEY(node))
-		  || near == 0
+		  || near_node == 0
 		  || near_distance
 		  >= geometry.distance_to_plane(rank(), node_dim, origin,
 						SPATIAL_KEY(node))))
@@ -602,21 +602,21 @@ namespace spatial
 	      tmp = geometry.distance_to_key(rank(), origin, SPATIAL_KEY(node));
 	      if (tmp >= limit)
 		{
-		  if (near == 0 || tmp < near_distance)
+		  if (near_node == 0 || tmp < near_distance)
 		    {
-		      near = node;
+		      near_node = node;
 		      near_dim = node_dim;
 		      near_distance = tmp;
 		    }
-		  else if (tmp == near_distance && node < near)
+		  else if (tmp == near_distance && node < near_node)
 		    {
-		      near = node;
+		      near_node = node;
 		      near_dim = node_dim;
 		    }
 		}
 	      while(node->left != 0
 		    && (!cmp(node_dim, SPATIAL_KEY(node), origin)
-			|| near == 0
+			|| near_node == 0
 			|| near_distance
 			>= geometry.distance_to_plane(rank(), node_dim, origin,
 						      SPATIAL_KEY(node))))
@@ -627,15 +627,15 @@ namespace spatial
 						 SPATIAL_KEY(node));
 		  if (tmp >= limit)
 		    {
-		      if (near == 0 || tmp < near_distance)
+		      if (near_node == 0 || tmp < near_distance)
 			{
-			  near = node;
+			  near_node = node;
 			  near_dim = node_dim;
 			  near_distance = tmp;
 			}
-		      else if (tmp == near_distance && node < near)
+		      else if (tmp == near_distance && node < near_node)
 			{
-			  near = node;
+			  near_node = node;
 			  near_dim = node_dim;
 			}
 		    }
@@ -656,12 +656,12 @@ namespace spatial
 	    }
 	}
       while(node != end);
-      if (near == 0)
-	{ near = node; near_dim = node_dim; }
+      if (near_node == 0)
+	{ near_node = node; near_dim = node_dim; }
       SPATIAL_ASSERT_CHECK(near_dim < rank());
       SPATIAL_ASSERT_CHECK(node != 0);
       return Derived(rank, cmp, geometry, origin, near_dim,
-		     static_cast<Link_type>(near), near_distance);
+		     static_cast<Link_type>(near_node), near_distance);
     }
 
     template <typename Rank, typename Key, typename Node, typename Compare,
@@ -678,16 +678,16 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(!Node_base::header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
       Base_ptr end = node->parent;
-      Base_ptr near = 0;
+      Base_ptr near_node = 0;
       dimension_type near_dim = node_dim;
       distance_type tmp;
       distance_type near_distance
 	= geometry.distance_to_key(rank(), origin, SPATIAL_KEY(node));
-      if (near_distance > limit) { near = node; }
+      if (near_distance > limit) { near_node = node; }
       // Depth traversal starts with left first
       while(node->left != 0
 	    && (!cmp(node_dim, SPATIAL_KEY(node), origin)
-		|| near == 0
+		|| near_node == 0
 		|| near_distance
 		>= geometry.distance_to_plane(rank(), node_dim, origin,
 					      SPATIAL_KEY(node))))
@@ -696,18 +696,18 @@ namespace spatial
 	  node_dim = incr_dim(rank, node_dim);
 	  tmp = geometry.distance_to_key(rank(), origin, SPATIAL_KEY(node));
 	  if (tmp <= limit) { continue; }
-	  if (near == 0 || tmp < near_distance)
+	  if (near_node == 0 || tmp < near_distance)
 	    {
-	      near = node;
+	      near_node = node;
 	      near_dim = node_dim;
 	      near_distance = tmp;
 	    }
 	  else if (tmp == near_distance
 		   // to provide total ordering among the nodes, we use the node
 		   // pointer as a fall back comparison mechanism
-		   && node < near)
+		   && node < near_node)
 	    {
-	      near = node;
+	      near_node = node;
 	      near_dim = node_dim;
 	    }
 	}
@@ -716,7 +716,7 @@ namespace spatial
 	{
 	  if (node->right != 0
 	      && (!cmp(node_dim, origin, SPATIAL_KEY(node))
-		  || near == 0
+		  || near_node == 0
 		  || near_distance
 		  >= geometry.distance_to_plane(rank(), node_dim, origin,
 						SPATIAL_KEY(node))))
@@ -726,21 +726,21 @@ namespace spatial
 	      tmp = geometry.distance_to_key(rank(), origin, SPATIAL_KEY(node));
 	      if (tmp > limit)
 		{
-		  if (near == 0 || tmp < near_distance)
+		  if (near_node == 0 || tmp < near_distance)
 		    {
-		      near = node;
+		      near_node = node;
 		      near_dim = node_dim;
 		      near_distance = tmp;
 		    }
-		  else if (tmp == near_distance && node < near)
+		  else if (tmp == near_distance && node < near_node)
 		    {
-		      near = node;
+		      near_node = node;
 		      near_dim = node_dim;
 		    }
 		}
 	      while(node->left != 0
 		    && (!cmp(node_dim, SPATIAL_KEY(node), origin)
-			|| near == 0
+			|| near_node == 0
 			|| near_distance
 			>= geometry.distance_to_plane(rank(), node_dim, origin,
 						      SPATIAL_KEY(node))))
@@ -751,15 +751,15 @@ namespace spatial
 						 SPATIAL_KEY(node));
 		  if (tmp > limit)
 		    {
-		      if (near == 0 || tmp < near_distance)
+		      if (near_node == 0 || tmp < near_distance)
 			{
-			  near = node;
+			  near_node = node;
 			  near_dim = node_dim;
 			  near_distance = tmp;
 			}
-		      else if (tmp == near_distance && node < near)
+		      else if (tmp == near_distance && node < near_node)
 			{
-			  near = node;
+			  near_node = node;
 			  near_dim = node_dim;
 			}
 		    }
@@ -780,12 +780,12 @@ namespace spatial
 	    }
 	}
       while(node != end);
-      if (near == 0)
-	{ near = node; near_dim = node_dim; }
+      if (near_node == 0)
+	{ near_node = node; near_dim = node_dim; }
       SPATIAL_ASSERT_CHECK(near_dim < rank());
       SPATIAL_ASSERT_CHECK(node != 0);
       return Derived(rank, cmp, geometry, origin, near_dim,
-		     static_cast<Link_type>(near), near_distance);
+		     static_cast<Link_type>(near_node), near_distance);
     }
 
   } // namespace details

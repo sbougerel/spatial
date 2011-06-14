@@ -188,12 +188,12 @@ namespace spatial
 	}
       catch (...)
 	{
-	  for(typename std::vector<Base_ptr>::iterator i = ptr_store.begin();
+	  for(std::vector<Base_ptr>::iterator i = ptr_store.begin();
 	      i != ptr_store.end(); ++i)
 	    { destroy_node(static_cast<Link_type>(*i)); }
 	  throw;
 	}
-      rebalance_node_insert(&*ptr_store.begin(), &*ptr_store.end(), 0);
+      rebalance_node_insert(ptr_store.begin(), ptr_store.end(), 0);
       SPATIAL_ASSERT_CHECK(!Base::empty());
     }
 
@@ -217,7 +217,9 @@ namespace spatial
 	      typename Alloc, bool ConstantIterator>
     inline void
     Kdtree<Rank, Key, Compare, Alloc, ConstantIterator>
-    ::rebalance_node_insert(Base_ptr* first, Base_ptr* last, dimension_type dim)
+    ::rebalance_node_insert
+    (std::vector<Base_ptr>::iterator first,
+     std::vector<Base_ptr>::iterator last, dimension_type dim)
     {
       SPATIAL_ASSERT_CHECK(first != last);
       SPATIAL_ASSERT_CHECK(dim < Base::dimension());
@@ -249,7 +251,7 @@ namespace spatial
 	{ ptr_store.push_back(i.node); }
       Base::initialize();
       m_count = 0;
-      rebalance_node_insert(&*ptr_store.begin(), &*ptr_store.end(), 0);
+      rebalance_node_insert(ptr_store.begin(), ptr_store.end(), 0);
       SPATIAL_ASSERT_CHECK(!Base::empty());
       SPATIAL_ASSERT_CHECK(size() != 0);
     }
