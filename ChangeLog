@@ -1,3 +1,9 @@
+2011-06-16  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+	* src/bits/spatial_mapping.tpp fixed an issue with lower_bound and
+	upper_bound functions. Wrong initialization of 'best' pointer. Somehow
+	it has slipt uncaught until now.
+
 2011-06-14  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
 	* Added support for Microsoft Visual Studio 9.0. Generation of unit

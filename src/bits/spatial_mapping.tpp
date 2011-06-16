@@ -436,8 +436,8 @@ namespace spatial
 	SPATIAL_ASSERT_CHECK(node_dim < rank());
 	SPATIAL_ASSERT_CHECK(!Node_base::header(node));
 	Base_ptr end = node->parent;
-	Base_ptr best = end;
-	dimension_type best_dim = decr_dim(rank, node_dim);
+	Base_ptr best = 0;
+	dimension_type best_dim = 0;
 	while (node->left != 0
 	       && (node_dim != mapping_dim
 		   || !cmp(node_dim, SPATIAL_KEY(node), flag)))
@@ -450,8 +450,7 @@ namespace spatial
 	do
 	  {
 	    if (node->right != 0
-		&& (node_dim != mapping_dim
-		    || best == 0
+		&& (node_dim != mapping_dim || best == 0
 		    || !cmp(mapping_dim,
 			    SPATIAL_KEY(best), SPATIAL_KEY(node))))
 	      {
@@ -511,8 +510,8 @@ namespace spatial
 	SPATIAL_ASSERT_CHECK(node_dim < rank());
 	SPATIAL_ASSERT_CHECK(!Node_base::header(node));
 	Base_ptr end = node->parent;
-	Base_ptr best = end;
-	dimension_type best_dim = decr_dim(rank, node_dim);
+	Base_ptr best = 0;
+	dimension_type best_dim = 0;
 	while (node->left != 0
 	       && (node_dim != mapping_dim // optimization
 		   || cmp(node_dim, flag, SPATIAL_KEY(node))))
@@ -525,8 +524,7 @@ namespace spatial
 	do
 	  {
 	    if (node->right != 0
-		&& (node_dim != mapping_dim
-		    || best == 0
+		&& (node_dim != mapping_dim || best == 0
 		    || !cmp(mapping_dim,
 			    SPATIAL_KEY(best), SPATIAL_KEY(node))))
 	      {
@@ -840,8 +838,8 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(node_dim < rank());
       SPATIAL_ASSERT_CHECK(!Node_base::header(node));
       Base_ptr end = node->parent;
-      Base_ptr best = end;
-      dimension_type best_dim = decr_dim(rank, node_dim);
+      Base_ptr best = 0;
+      dimension_type best_dim = 0;
       while (node->left != 0
 	     && (node_dim != mapping_dim
 		 || cmp(node_dim, flag, SPATIAL_KEY(node))))
@@ -851,8 +849,7 @@ namespace spatial
       do
 	{
 	  if (node->right != 0
-	      && (node_dim != mapping_dim
-		  || best == 0
+	      && (node_dim != mapping_dim || best == 0
 		  || !cmp(mapping_dim,
 			  SPATIAL_KEY(best), SPATIAL_KEY(node))))
 	    {
