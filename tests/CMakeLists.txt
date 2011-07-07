@@ -3,7 +3,7 @@ project (kdtree_verify)
 if (CMAKE_COMPILER_IS_GNUCXX)
 # set(CMAKE_CXX_FLAGS "-O4 -Wall -pedantic -Wextra -ansi")
 # Make G++ very pedantic so that code compiled with it will be very portable
-  set (CMAKE_CXX_FLAGS "-O0 -ggdb -Wall -pedantic -Wextra -ansi")
+  set (CMAKE_CXX_FLAGS "-O0 -ggdb -Wall -pedantic-errors -Wextra -Wshadow -Wcast-qual -Wconversion -Wsign-conversion")
 endif ()
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 if (Boost_FOUND)

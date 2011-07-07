@@ -43,20 +43,20 @@ namespace spatial
      *  Provide the base() function to access the base class.
      *
      *  Provide the operator() has a quick accessor to member, and the
-     *  possibility to cast the class from the Member class if Base class has an
-     *  empty constructor.
+     *  possibility to cast the class into the Base class has an empty
+     *  constructor.
      */
     template<typename Base, typename Member>
     struct Compress
-      : private Base
+      : private Base // Empty member optimization
     {
       Compress() { }
 
       Compress(const Member& member)
-	: Base(), member(member) { }
+	: Base(), member_(member) { }
 
-      Compress(const Base& base, const Member& member)
-	: Base(base), member(member) { }
+      Compress(const Base& compressed_base, const Member& member)
+	: Base(compressed_base), member_(member) { }
 
       /**
        *  @brief  Accessor to the base class.
@@ -77,14 +77,15 @@ namespace spatial
        */
       const Member&
       operator()() const
-      { return member; }
+      { return member_; }
 
       Member&
       operator()()
-      { return member; }
+      { return member_; }
       //@}
 
-      Member member;
+    private:
+      Member member_;
     };
 
     /**
@@ -107,15 +108,15 @@ namespace spatial
     struct Dynamic_rank
     {
       dimension_type operator()() const
-      { return rank; }
+      { return rank_; }
 
       explicit
-      Dynamic_rank(dimension_type r = 1)
-	: rank(r)
+      Dynamic_rank(dimension_type rank = 1)
+	: rank_(rank)
       { }
 
     private:
-      dimension_type rank;
+      dimension_type rank_;
     };
 
     //@{

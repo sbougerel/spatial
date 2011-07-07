@@ -73,9 +73,9 @@ namespace spatial
     operator()(const Rank&, weight_type left, weight_type right) const
     {
       if (left < right)
-	{ return (left < (right >> 1)) ? true : false; }
+        { return (left < (right >> 1)) ? true : false; }
       else
-	{ return (right < (left >> 1)) ? true : false; }
+        { return (right < (left >> 1)) ? true : false; }
     }
   };
 
@@ -102,9 +102,9 @@ namespace spatial
     {
       weight_type rank = static_cast<weight_type>(r());
       if (left < right)
-	{ return (right - left > rank) ? true : false; }
+        { return (right - left > rank) ? true : false; }
       else
-	{ return (left - right > rank) ? true : false; }
+        { return (left - right > rank) ? true : false; }
     }
   };
 
@@ -118,15 +118,15 @@ namespace spatial
     // along each dimension! Each node maintains the count of its children nodes
     // plus one.
     template <typename Rank, typename Key, typename Compare,
-	      typename Balancing, typename Alloc, bool Const_condition>
+              typename Balancing, typename Alloc, bool Const_condition>
     class Relaxed_kdtree
       : public Kdtree_base<Rank, Key, Relaxed_kdtree_node<Key>, Compare,
-			   Alloc, Const_condition>
+                           Alloc, Const_condition>
     {
       typedef Relaxed_kdtree<Rank, Key, Compare, Balancing,
-			     Alloc, Const_condition> Self;
+                             Alloc, Const_condition> Self;
       typedef Kdtree_base<Rank, Key, Relaxed_kdtree_node<Key>, Compare,
-			  Alloc, Const_condition>    Base;
+                          Alloc, Const_condition>    Base;
 
       typedef typename Base::Base_ptr            Base_ptr;
       typedef typename Base::Const_Base_ptr      Const_Base_ptr;
@@ -157,21 +157,21 @@ namespace spatial
       Link_type
       create_node(const key_type& key)
       {
-	Link_type node = Base::create_node(key);
-	node->parent = 0;
-	node->left = 0;
-	node->right = 0;
-	node->weight = 1;
-	return node;
+        Link_type node = Base::create_node(key);
+        node->parent = 0;
+        node->left = 0;
+        node->right = 0;
+        node->weight = 1;
+        return node;
       }
 
       Link_type
       clone_node(Const_Base_ptr node)
       {
-	Const_Link_type origin_node = static_cast<Const_Link_type>(node);
-	Link_type new_node = create_node(origin_node->key_field);
-	new_node->weight = origin_node->weight;
-	return new_node;
+        Const_Link_type origin_node = static_cast<Const_Link_type>(node);
+        Link_type new_node = create_node(origin_node->key_field);
+        new_node->weight = origin_node->weight;
+        return new_node;
       }
 
     public:
@@ -250,30 +250,29 @@ namespace spatial
        *  @param more_right Add @c more_right to the weight of the right nodes
        */
       bool is_node_unbalanced(Base_ptr node, weight_type more_left = 0,
-			      weight_type more_right = 0);
+                              weight_type more_right = 0);
 
     public:
       // allocation/deallocation
       Relaxed_kdtree()
-	: Base(Rank(), Compare(), allocator_type()), m_balancing()
+        : Base(Rank(), Compare(), allocator_type()), m_balancing()
       { }
 
-      explicit Relaxed_kdtree(const Rank& rank)
-	: Base(rank, Compare(), allocator_type()), m_balancing()
+      explicit Relaxed_kdtree(const Rank& r)
+        : Base(r, Compare(), allocator_type()), m_balancing()
       { }
 
-      Relaxed_kdtree(const Rank& rank, const compare_type& compare)
-	: Base(rank, compare, allocator_type()), m_balancing()
+      Relaxed_kdtree(const Rank& r, const compare_type& c)
+        : Base(r, c, allocator_type()), m_balancing()
       { }
 
-      Relaxed_kdtree(const Rank& rank, const compare_type& compare,
-		     const Balancing& b)
-	: Base(rank, compare, allocator_type()), m_balancing(b)
+      Relaxed_kdtree(const Rank& r, const compare_type& c, const Balancing& b)
+        : Base(r, c, allocator_type()), m_balancing(b)
       { }
 
-      Relaxed_kdtree(const Rank& rank, const compare_type& compare,
-		     const Balancing& b, const allocator_type& alloc)
-	: Base(rank, compare, alloc), m_balancing(b)
+      Relaxed_kdtree(const Rank& r, const compare_type& c,
+                     const Balancing& b, const allocator_type& alloc)
+        : Base(r, c, alloc), m_balancing(b)
       { }
 
       /**
@@ -284,10 +283,10 @@ namespace spatial
        *  after the copy.
        */
       Relaxed_kdtree(const Relaxed_kdtree& other)
-	: Base(other), m_balancing(other.balancing())
+        : Base(other), m_balancing(other.balancing())
       {
-	if (!other.empty())
-	  { copy_structure(other); }
+        if (!other.empty())
+          { copy_structure(other); }
       }
 
       /**
@@ -301,15 +300,15 @@ namespace spatial
       Relaxed_kdtree&
       operator=(const Relaxed_kdtree& other)
       {
-	if (&other != this)
-	  {
-	    clear();
-	    Base::operator=(other);
-	    m_balancing = other.m_balancing;
-	    if (!other.empty())
-	      { copy_structure(other); }
-	  }
-	return *this;
+        if (&other != this)
+          {
+            clear();
+            Base::operator=(other);
+            m_balancing = other.m_balancing;
+            if (!other.empty())
+              { copy_structure(other); }
+          }
+        return *this;
       }
 
     public:
@@ -319,8 +318,8 @@ namespace spatial
       size_type
       size() const
       {
-	return Base::empty() ? 0
-	  : static_cast<const Weighted_node*>(Base::get_root())->weight;
+        return Base::empty() ? 0
+          : static_cast<const Weighted_node*>(Base::get_root())->weight;
       }
 
       /**
@@ -351,19 +350,19 @@ namespace spatial
       iterator
       insert(const key_type& key)
       {
-	Link_type new_node = create_node(key);
-	Base_ptr node = Base::get_root();
-	if (Node_base::header(node))
-	  {
-	    // insert root node in empty tree
-	    Base::set_leftmost(new_node);
-	    Base::set_rightmost(new_node);
-	    Base::set_root(new_node);
-	    new_node->parent = node;
-	    return iterator(new_node);
-	  }
-	else
-	  { return insert_node(0, node, new_node); }
+        Link_type new_node = create_node(key);
+        Base_ptr node = Base::get_root();
+        if (Node_base::header(node))
+          {
+            // insert root node in empty tree
+            Base::set_leftmost(new_node);
+            Base::set_rightmost(new_node);
+            Base::set_root(new_node);
+            new_node->parent = node;
+            return iterator(new_node);
+          }
+        else
+          { return insert_node(0, node, new_node); }
       }
 
       /**

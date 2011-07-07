@@ -1,90 +1,99 @@
+2011-07-07  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * Started working on overlap and enclose iterator. It seems overlap are
+        trickier to implement than I suspected.
+
+        * Modified the compilation parameters to make it even more strict. No
+        more shadowing of variables, and not more implicit converstion of
+        types.
+
 2011-06-16  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
-	* src/bits/spatial_mapping.tpp fixed an issue with lower_bound and
-	upper_bound functions. Wrong initialization of 'best' pointer. Somehow
-	it has slipt uncaught until now.
+        * src/bits/spatial_mapping.tpp fixed an issue with lower_bound and
+        upper_bound functions. Wrong initialization of 'best' pointer. Somehow
+        it has slipt uncaught until now.
 
 2011-06-14  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
-	* Added support for Microsoft Visual Studio 9.0. Generation of unit
-	test file is working and fixed most compilation issues (some remain).
-	
-	* src/bits/spatial_details.hpp Removed unnecessary match function,
-	acting as an alias for predicate.
+        * Added support for Microsoft Visual Studio 9.0. Generation of unit
+        test file is working and fixed most compilation issues (some remain).
+
+        * src/bits/spatial_details.hpp Removed unnecessary match function,
+        acting as an alias for predicate.
 
 2011-06-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
-	* Added neighbor_iterable capability to *_pointset family of
-	containers.
+        * Added neighbor_iterable capability to *_pointset family of
+        containers.
 
-	* Fixed range_views compilation issues and added unit tests.
+        * Fixed range_views compilation issues and added unit tests.
 
-	* Changed use of view:: namespace for neighbor view. New type is named
-	neighbor_view to follow the naming convention adopted in Boost.
+        * Changed use of view:: namespace for neighbor view. New type is named
+        neighbor_view to follow the naming convention adopted in Boost.
 
 2011-06-12  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
-	* Changed use of view:: namespace for range view. New type is named
-	range_view to follow the naming convention adopted in Boost.
+        * Changed use of view:: namespace for range view. New type is named
+        range_view to follow the naming convention adopted in Boost.
 
-	* Changed use of view:: namespace for mapping view. New type is named
-	mapping_view to follow the naming convention adopted in Boost.
+        * Changed use of view:: namespace for mapping view. New type is named
+        mapping_view to follow the naming convention adopted in Boost.
 
-	* Fixed an issue with copy and assignment constructor on
-	Relaxed_kdtree. The weight of the root node was not copied.
+        * Fixed an issue with copy and assignment constructor on
+        Relaxed_kdtree. The weight of the root node was not copied.
 
-	* Added pointset and frozen_pointset family of contaners. Finally
-	reaching point of completion for basic types. Now need to add more
-	examples and documentation to explain how to use them.
+        * Added pointset and frozen_pointset family of contaners. Finally
+        reaching point of completion for basic types. Now need to add more
+        examples and documentation to explain how to use them.
 
-	* Fixed test for bulk erase in Relaxed Kdtree.
+        * Fixed test for bulk erase in Relaxed Kdtree.
 
-	* Adding missing test for optimization in Kdtree.
+        * Adding missing test for optimization in Kdtree.
 
 2011-06-11  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
-	* Added some missing unit test to check erase in bulk in kdtree. Adding
-	same test for relaxed kdtree soon.
+        * Added some missing unit test to check erase in bulk in kdtree. Adding
+        same test for relaxed kdtree soon.
 
-	* Passed all nearest neighbor iterator tests for the relaxed kdtree.
+        * Passed all nearest neighbor iterator tests for the relaxed kdtree.
 
-	* Modified the incrementation and decrementation algorithm for the
-	nearest neighbor iterator. The old algorithm would prefer to scan the
-	nodes on one side, and then on the other side. This is not ideal when
-	the closest point is not on the first side being scanned. The new
-	algorithm scans both sides at the same time, alternating between the 2.
+        * Modified the incrementation and decrementation algorithm for the
+        nearest neighbor iterator. The old algorithm would prefer to scan the
+        nodes on one side, and then on the other side. This is not ideal when
+        the closest point is not on the first side being scanned. The new
+        algorithm scans both sides at the same time, alternating between the 2.
 
-	* Passed most mapping tests for the Relaxed K-d tree. Remaining
-	Lower_bound and Upper_bound. Behind schedule. Been playing Halo:Reach
-	too much.
+        * Passed most mapping tests for the Relaxed K-d tree. Remaining
+        Lower_bound and Upper_bound. Behind schedule. Been playing Halo:Reach
+        too much.
 
 2011-04-07  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
-	* Rewriting support for constant and mutable iterators in
-	containers. Now iterators are deterministic (either all constant or all
-	mutable), and it is up to the container to choose which to use. The
-	resulting code is much cleaner.
+        * Rewriting support for constant and mutable iterators in
+        containers. Now iterators are deterministic (either all constant or all
+        mutable), and it is up to the container to choose which to use. The
+        resulting code is much cleaner.
 
-	* Relaxed_kdtree types of containers now reblance on insertion. I have
-	worked out several progressive version of the algorithm and improved it
-	each time. But I still need to check what it is observed run-time when
-	inserting growing sequential integers series in the tree, to validate
-	that it remains O(log(n)), which is what preliminary tests
-	shows. Nevertheless, finally working out an efficient algorithm that
-	balances the tree completely according to the policy is immensely
-	satisfying.
+        * Relaxed_kdtree types of containers now reblance on insertion. I have
+        worked out several progressive version of the algorithm and improved it
+        each time. But I still need to check what it is observed run-time when
+        inserting growing sequential integers series in the tree, to validate
+        that it remains O(log(n)), which is what preliminary tests
+        shows. Nevertheless, finally working out an efficient algorithm that
+        balances the tree completely according to the policy is immensely
+        satisfying.
 
 2011-03-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
-	* First release with the following features:
-	  * multi-dimension template containers with unlimited number of
-	    dimensions to store points in space,
-	  * dimensions may be of different types,
+        * First release with the following features:
+          * multi-dimension template containers with unlimited number of
+            dimensions to store points in space,
+          * dimensions may be of different types,
           * static or dynamic time determination of the number of dimensions,
-	  * O(log(n)) class of complexity on insertion and removal,
-	  * use custom predicate to define a range of elements,
-	  * STL-compatible iterators that go over that range of elements,
-	  * flexible definition of a metric space for elements in the container,
-	  * STL-compatible iterators going from the nearest to the furthest
-	    neighbr of a point according to the metric space applied.
+          * O(log(n)) class of complexity on insertion and removal,
+          * use custom predicate to define a range of elements,
+          * STL-compatible iterators that go over that range of elements,
+          * flexible definition of a metric space for elements in the container,
+          * STL-compatible iterators going from the nearest to the furthest
+            neighbr of a point according to the metric space applied.
 

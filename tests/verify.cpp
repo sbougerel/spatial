@@ -121,8 +121,8 @@ using details::Kdtree_node;
 struct Empty_base_2D_fixture
 {
   typedef Kdtree_base<details::Dynamic_rank, point2d,
-		      Kdtree_node<point2d>, bracket_less<point2d>,
-		      std::allocator<point2d>, false> kdtree_type;
+                      Kdtree_node<point2d>, bracket_less<point2d>,
+                      std::allocator<point2d>, false> kdtree_type;
   kdtree_type kdtree;
   Empty_base_2D_fixture() : kdtree(details::Dynamic_rank(2)) { }
 };
@@ -133,10 +133,10 @@ struct closed_test_range
   operator()(dimension_type dim, const point2d& point) const
   {
     return ((point[dim] < 0)
-	    ? below
-	    : ((point[dim] > 1)
-	       ? above
-	       : matching));
+            ? below
+            : ((point[dim] > 1)
+               ? above
+               : matching));
   }
 };
 
@@ -181,11 +181,11 @@ BOOST_AUTO_TEST_CASE( test_details_less_by_ref )
   BOOST_CHECK(!details::less_by_ref(cmp, 1, x, y));
   BOOST_CHECK(details::less_by_ref(cmp, 1, y, x));
   BOOST_CHECK((&x < &z)
-	      ? details::less_by_ref(cmp, 0, x, z)
-	      : !details::less_by_ref(cmp, 0, x, z));
+              ? details::less_by_ref(cmp, 0, x, z)
+              : !details::less_by_ref(cmp, 0, x, z));
   BOOST_CHECK((&x < &z)
-	      ? !details::less_by_ref(cmp, 0, z, x)
-	      : details::less_by_ref(cmp, 0, z, x));
+              ? !details::less_by_ref(cmp, 0, z, x)
+              : details::less_by_ref(cmp, 0, z, x));
   BOOST_CHECK(!details::less_by_ref(cmp, 1, x, x));
 }
 
@@ -214,19 +214,19 @@ BOOST_AUTO_TEST_CASE( test_details_match_all )
   point2d y_ = { { 2, 0 } };
   point2d _w_ = { { 2, 2 } };
   BOOST_CHECK(details::match_all
-	      (fix.kdtree.rank(), x, closed_test_range()));
+              (fix.kdtree.rank(), x, closed_test_range()));
   BOOST_CHECK(details::match_all
-	      (fix.kdtree.rank(), y, closed_test_range()));
+              (fix.kdtree.rank(), y, closed_test_range()));
   BOOST_CHECK(details::match_all
-	      (fix.kdtree.rank(), z, closed_test_range()));
+              (fix.kdtree.rank(), z, closed_test_range()));
   BOOST_CHECK(details::match_all
-	      (fix.kdtree.rank(), w, closed_test_range()));
+              (fix.kdtree.rank(), w, closed_test_range()));
   BOOST_CHECK(!details::match_all
-	      (fix.kdtree.rank(), _x, closed_test_range()));
+              (fix.kdtree.rank(), _x, closed_test_range()));
   BOOST_CHECK(!details::match_all
-	      (fix.kdtree.rank(), y_, closed_test_range()));
+              (fix.kdtree.rank(), y_, closed_test_range()));
   BOOST_CHECK(!details::match_all
-	      (fix.kdtree.rank(), _w_, closed_test_range()));
+              (fix.kdtree.rank(), _w_, closed_test_range()));
 }
 
 BOOST_AUTO_TEST_CASE( test_details_match_any )
@@ -240,19 +240,19 @@ BOOST_AUTO_TEST_CASE( test_details_match_any )
   point2d y_ = { { 2, 0 } };
   point2d _w_ = { { 2, 2 } };
   BOOST_CHECK(details::match_any
-	      (fix.kdtree.rank(), x, closed_test_range()));
+              (fix.kdtree.rank(), x, closed_test_range()));
   BOOST_CHECK(details::match_any
-	      (fix.kdtree.rank(), y, closed_test_range()));
+              (fix.kdtree.rank(), y, closed_test_range()));
   BOOST_CHECK(details::match_any
-	      (fix.kdtree.rank(), z, closed_test_range()));
+              (fix.kdtree.rank(), z, closed_test_range()));
   BOOST_CHECK(details::match_any
-	      (fix.kdtree.rank(), w, closed_test_range()));
+              (fix.kdtree.rank(), w, closed_test_range()));
   BOOST_CHECK(details::match_any
-	      (fix.kdtree.rank(), _x, closed_test_range()));
+              (fix.kdtree.rank(), _x, closed_test_range()));
   BOOST_CHECK(details::match_any
-	      (fix.kdtree.rank(), y_, closed_test_range()));
+              (fix.kdtree.rank(), y_, closed_test_range()));
   BOOST_CHECK(!details::match_any
-	      (fix.kdtree.rank(), _w_, closed_test_range()));
+              (fix.kdtree.rank(), _w_, closed_test_range()));
 }
 
 BOOST_AUTO_TEST_CASE( test_details_match_most )
@@ -266,25 +266,25 @@ BOOST_AUTO_TEST_CASE( test_details_match_most )
   point2d y_ = { { 2, 0 } };
   point2d _w_ = { { 2, 2 } };
   BOOST_CHECK(details::match_most
-	      (fix.kdtree.rank(), 0, x, closed_test_range()));
+              (fix.kdtree.rank(), 0, x, closed_test_range()));
   BOOST_CHECK(details::match_most
-	      (fix.kdtree.rank(), 1, y, closed_test_range()));
+              (fix.kdtree.rank(), 1, y, closed_test_range()));
   BOOST_CHECK(details::match_most
-	      (fix.kdtree.rank(), 1, z, closed_test_range()));
+              (fix.kdtree.rank(), 1, z, closed_test_range()));
   BOOST_CHECK(details::match_most
-	      (fix.kdtree.rank(), 0, w, closed_test_range()));
+              (fix.kdtree.rank(), 0, w, closed_test_range()));
   BOOST_CHECK(!details::match_most
-	      (fix.kdtree.rank(), 0, _x, closed_test_range()));
+              (fix.kdtree.rank(), 0, _x, closed_test_range()));
   BOOST_CHECK(details::match_most
-	      (fix.kdtree.rank(), 1, _x, closed_test_range()));
+              (fix.kdtree.rank(), 1, _x, closed_test_range()));
   BOOST_CHECK(details::match_most
-	      (fix.kdtree.rank(), 0, y_, closed_test_range()));
+              (fix.kdtree.rank(), 0, y_, closed_test_range()));
   BOOST_CHECK(!details::match_most
-	      (fix.kdtree.rank(), 1, y_, closed_test_range()));
+              (fix.kdtree.rank(), 1, y_, closed_test_range()));
   BOOST_CHECK(!details::match_most
-	      (fix.kdtree.rank(), 0, _w_, closed_test_range()));
+              (fix.kdtree.rank(), 0, _w_, closed_test_range()));
   BOOST_CHECK(!details::match_most
-	      (fix.kdtree.rank(), 1, _w_, closed_test_range()));
+              (fix.kdtree.rank(), 1, _w_, closed_test_range()));
 }
 
 /////////////////////////////  spatial_node.hpp  ///////////////////////////////
@@ -308,11 +308,11 @@ struct Five_Node_base_fixture
 {
   /*         H
              |
-	     Root
-	     /   \
-	     L     R
-	     /  \
-	     LL    LR       */
+             Root
+             /   \
+             L     R
+             /  \
+             LL    LR       */
   Node_base header;
   Node_base node_root;
   Node_base node_left;
@@ -346,11 +346,11 @@ struct Five_Kdtree_node_fixture
 {
   /*         H
              |
-	     (2,2)
-	     /   \
-	     (1,1)   (3,3)
-	     /  \
-	     (0,0)  (1,1)   */
+             (2,2)
+             /   \
+             (1,1)   (3,3)
+             /  \
+             (0,0)  (1,1)   */
   Node_base header;
   Node_base::Base_ptr leftmost;
   Kdtree_node<point2d> node_root;
@@ -391,8 +391,8 @@ struct Five_Relaxed_kdtree_node_fixture
 {
   /*         H
              |
-	   (2,2)5
-	   /   \
+           (2,2)5
+           /   \
       (1,1)3  (3,3)1
        /  \
   (0,0)1  (1,1)1       */
@@ -467,15 +467,15 @@ BOOST_AUTO_TEST_CASE( test_5_node )
   BOOST_REQUIRE((node = Node_base::decrement(node)) == &fix.node_left_left);
   Node_base::Const_Base_ptr cnode = &fix.node_root;
   BOOST_REQUIRE((cnode = Node_base::preorder_increment(cnode))
-		== &fix.node_left);
+                == &fix.node_left);
   BOOST_REQUIRE((cnode = Node_base::preorder_increment(cnode))
-		== &fix.node_left_left);
+                == &fix.node_left_left);
   BOOST_REQUIRE((cnode = Node_base::preorder_increment(cnode))
-		== &fix.node_left_right);
+                == &fix.node_left_right);
   BOOST_REQUIRE((cnode = Node_base::preorder_increment(cnode))
-		== &fix.node_right);
+                == &fix.node_right);
   BOOST_REQUIRE((cnode = Node_base::preorder_increment(cnode))
-		== &fix.header);
+                == &fix.header);
 }
 
 BOOST_AUTO_TEST_CASE( test_swap_node )
@@ -881,7 +881,7 @@ BOOST_AUTO_TEST_CASE( text_except_check_dimension )
   Empty_base_2D_fixture fix;
   BOOST_CHECK_NO_THROW(except::check_dimension_argument(fix.kdtree.dimension(), 0));
   BOOST_CHECK_THROW(except::check_dimension_argument(fix.kdtree.dimension(), 2),
-		    invalid_dimension_argument);
+                    invalid_dimension_argument);
 }
 
 BOOST_AUTO_TEST_CASE( text_except_check_node )
@@ -889,13 +889,13 @@ BOOST_AUTO_TEST_CASE( text_except_check_node )
   {
     Node_base::Base_ptr ptr = 0;
     BOOST_CHECK_THROW(except::check_node_argument(ptr),
-		      invalid_node_argument);
+                      invalid_node_argument);
   }
   {
     Five_Node_base_fixture fix;
     BOOST_CHECK_NO_THROW(except::check_node_argument(&fix.node_root));
     BOOST_CHECK_THROW(except::check_node_argument(&fix.header),
-		      invalid_node_argument);
+                      invalid_node_argument);
   }
 }
 
@@ -904,7 +904,7 @@ BOOST_AUTO_TEST_CASE( text_except_check_iterator )
   {
     details::Node_iterator<point2d, Kdtree_node<point2d> > i(0);
     BOOST_CHECK_THROW(except::check_iterator_argument(i.node),
-		      invalid_iterator_argument);
+                      invalid_iterator_argument);
   }
   {
     Five_Kdtree_node_fixture fix;
@@ -912,10 +912,10 @@ BOOST_AUTO_TEST_CASE( text_except_check_iterator )
       i(&fix.node_root);
     details::Node_iterator<point2d, Kdtree_node<point2d> >
       j(static_cast<Kdtree_node<point2d>*>
-	(static_cast<Node_base*>(&fix.header)));
+        (static_cast<Node_base*>(&fix.header)));
     BOOST_CHECK_NO_THROW(except::check_iterator_argument(i.node));
     BOOST_CHECK_THROW(except::check_iterator_argument(j.node),
-		      invalid_iterator_argument);
+                      invalid_iterator_argument);
   }
 }
 
@@ -923,7 +923,7 @@ BOOST_AUTO_TEST_CASE( text_except_check_empty_tree )
 {
   Empty_base_2D_fixture fix;
   BOOST_CHECK_THROW(except::check_empty_container_argument(fix.kdtree),
-		    invalid_empty_container_argument);
+                    invalid_empty_container_argument);
 }
 
 BOOST_AUTO_TEST_CASE( text_except_check_range )
@@ -933,11 +933,11 @@ BOOST_AUTO_TEST_CASE( text_except_check_range )
   BOOST_CHECK_NO_THROW(except::check_range_bounds(fix.kdtree, zeros, ones));
   BOOST_CHECK_NO_THROW(except::check_closed_range_bounds(fix.kdtree, zeros, zeros));
   BOOST_CHECK_THROW(except::check_open_range_bounds(fix.kdtree, zeros, zeros),
-		    invalid_open_range_bounds);
+                    invalid_open_range_bounds);
   BOOST_CHECK_THROW(except::check_range_bounds(fix.kdtree, zeros, zeros),
-		    invalid_range_bounds);
+                    invalid_range_bounds);
   BOOST_CHECK_THROW(except::check_closed_range_bounds(fix.kdtree, ones, zeros),
-		    invalid_closed_range_bounds);
+                    invalid_closed_range_bounds);
 }
 
 BOOST_AUTO_TEST_CASE( text_except_check_rank )
@@ -946,7 +946,7 @@ BOOST_AUTO_TEST_CASE( text_except_check_rank )
   BOOST_CHECK_NO_THROW(except::check_rank_argument(fix.kdtree.dimension(), 1));
   BOOST_CHECK_NO_THROW(except::check_rank_argument(fix.kdtree.dimension(), 2));
   BOOST_CHECK_THROW(except::check_rank_argument(fix.kdtree.dimension(), 3),
-		    invalid_rank_argument);
+                    invalid_rank_argument);
 }
 
 /////////////////////////////  spatial_function.hpp  ///////////////////////////
@@ -1187,8 +1187,8 @@ using details::Kdtree;
 struct Empty_Kdtree_2D_fixture
 {
   typedef Kdtree<details::Dynamic_rank, point2d,
-		 bracket_less<point2d>,
-		 std::allocator<point2d>, false> kdtree_type;
+                 bracket_less<point2d>,
+                 std::allocator<point2d>, false> kdtree_type;
   kdtree_type kdtree;
   Empty_Kdtree_2D_fixture() : kdtree(details::Dynamic_rank(2)) { }
 };
@@ -1278,7 +1278,7 @@ BOOST_AUTO_TEST_CASE( test_Kdtree_insert_100_iterate_forward )
   Empty_Kdtree_2D_fixture fix;
   std::tr1::array<point2d, 100> points;
   for(std::tr1::array<point2d, 100>::iterator i
-	= points.begin(); i != points.end(); ++i)
+        = points.begin(); i != points.end(); ++i)
     {
       (*i)[0] = rand() % 20; // to increase chances of collisions
       (*i)[1] = rand() % 20;
@@ -1290,11 +1290,11 @@ BOOST_AUTO_TEST_CASE( test_Kdtree_insert_100_iterate_forward )
   BOOST_CHECK_EQUAL(fix.kdtree.count(), 100);
   int count = 0;
   for(Empty_Kdtree_2D_fixture::kdtree_type::iterator i
-	= fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
+        = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
     {
       std::tr1::array<point2d, 100>::iterator match;
       BOOST_REQUIRE((match = std::find(points.begin(), points.end(), *i))
-		  != points.end());
+                  != points.end());
       (*match)[0] = -1; // Prevent the same point from being found twice.
       (*match)[1] = -1;
       BOOST_TEST_CHECKPOINT("Finding element " << count);
@@ -1309,7 +1309,7 @@ BOOST_AUTO_TEST_CASE( test_Kdtree_insert_100_iterate_backward )
   Empty_Kdtree_2D_fixture fix;
   std::tr1::array<point2d, 100> points;
   for(std::tr1::array<point2d, 100>::iterator i
-	= points.begin(); i != points.end(); ++i)
+        = points.begin(); i != points.end(); ++i)
     {
       (*i)[0] = rand() % 20;
       (*i)[1] = rand() % 20;
@@ -1324,11 +1324,11 @@ BOOST_AUTO_TEST_CASE( test_Kdtree_insert_100_iterate_backward )
   BOOST_CHECK_EQUAL(fix.kdtree.count(), 100);
   int count = 0;
   for(Empty_Kdtree_2D_fixture::kdtree_type::reverse_iterator i
-	= fix.kdtree.rbegin(); i != fix.kdtree.rend(); ++i)
+        = fix.kdtree.rbegin(); i != fix.kdtree.rend(); ++i)
     {
       std::tr1::array<point2d, 100>::iterator match;
       BOOST_REQUIRE((match = std::find(points.begin(), points.end(), *i))
-		  != points.end());
+                  != points.end());
       (*match)[0] = -1; // Prevent the same point from being found twice.
       (*match)[1] = -1;
       BOOST_TEST_CHECKPOINT("Finding element " << count);
@@ -1356,7 +1356,7 @@ struct pair_less
 struct Pair_Kdtree_fixture
 {
   typedef Kdtree<details::Dynamic_rank, pair_type,
-		 pair_less, std::allocator<pair_type>, false> kdtree_type;
+                 pair_less, std::allocator<pair_type>, false> kdtree_type;
   kdtree_type kdtree;
   Pair_Kdtree_fixture() : kdtree(details::Dynamic_rank(2))
   {
@@ -1368,7 +1368,7 @@ struct Pair_Kdtree_fixture
 struct Unbalanced_right_Kdtree_fixture
 {
   typedef Kdtree<details::Dynamic_rank, pair_type,
-		 pair_less, std::allocator<pair_type>, false> kdtree_type;
+                 pair_less, std::allocator<pair_type>, false> kdtree_type;
   kdtree_type kdtree;
   Unbalanced_right_Kdtree_fixture()
   : kdtree(details::Dynamic_rank(2))
@@ -1383,7 +1383,7 @@ struct Unbalanced_right_Kdtree_fixture
 struct Unbalanced_left_Kdtree_fixture
 {
   typedef Kdtree<details::Dynamic_rank, pair_type,
-		 pair_less, std::allocator<pair_type>, false> kdtree_type;
+                 pair_less, std::allocator<pair_type>, false> kdtree_type;
   kdtree_type kdtree;
   Unbalanced_left_Kdtree_fixture()
   : kdtree(details::Dynamic_rank(2))
@@ -1398,8 +1398,8 @@ struct Unbalanced_left_Kdtree_fixture
 struct Hundred_Kdtree_2D_fixture
 {
   typedef Kdtree<details::Dynamic_rank, point2d,
-		 bracket_less<point2d>,
-		 std::allocator<point2d>, false> kdtree_type;
+                 bracket_less<point2d>,
+                 std::allocator<point2d>, false> kdtree_type;
   kdtree_type kdtree;
   Hundred_Kdtree_2D_fixture() : kdtree(details::Dynamic_rank(2))
   {
@@ -1417,7 +1417,7 @@ struct triple
 {
   int x; int y; int z;
   triple() { }
-  triple(int x, int y, int z) : x(x), y(y), z(z) { }
+  triple(int a, int b, int c) : x(a), y(b), z(c) { }
 };
 
 inline bool operator== (const triple& a, const triple& b)
@@ -1448,7 +1448,7 @@ struct triple_less
 struct Twenty_Kdtree_3D_fixture
 {
   typedef Kdtree<details::Dynamic_rank, triple,
-		 triple_less, std::allocator<triple>, false> kdtree_type;
+                 triple_less, std::allocator<triple>, false> kdtree_type;
   kdtree_type kdtree;
   Twenty_Kdtree_3D_fixture() : kdtree(details::Dynamic_rank(3))
   {
@@ -1581,18 +1581,18 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_minimum )
     int count = 0;
     int min_value = (*fix.kdtree.begin())[mapping_dim];
     for(Hundred_Kdtree_2D_fixture::kdtree_type::iterator i
-	  = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
+          = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
       {
-	int tmp = (*i)[mapping_dim];
-	if (tmp < min_value) { min_value = tmp; }
-	++count;
+        int tmp = (*i)[mapping_dim];
+        if (tmp < min_value) { min_value = tmp; }
+        ++count;
       }
     BOOST_CHECK_EQUAL(count, 100);
     BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent)));
     BOOST_REQUIRE_EQUAL((*iter)[mapping_dim], min_value);
   }
   {
@@ -1604,18 +1604,18 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_minimum )
     int count = 0;
     int min_value = (*fix.kdtree.begin())[mapping_dim];
     for(Hundred_Kdtree_2D_fixture::kdtree_type::iterator i
-	  = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
+          = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
       {
-	int tmp = (*i)[mapping_dim];
-	if (tmp < min_value) { min_value = tmp; }
-	++count;
+        int tmp = (*i)[mapping_dim];
+        if (tmp < min_value) { min_value = tmp; }
+        ++count;
       }
     BOOST_CHECK_EQUAL(count, 100);
     BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent)));
     BOOST_REQUIRE_EQUAL((*iter)[mapping_dim], min_value);
   }
   { // test at the limit: an unbalanced tree!
@@ -1625,10 +1625,10 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_minimum )
       Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
+                            (fix.kdtree.end().node->parent)));
     BOOST_CHECK_EQUAL(iter->first, 1); // should be (1, 2);
     BOOST_CHECK_EQUAL(iter->second, 2); // should be (1, 2);
   }
@@ -1639,10 +1639,10 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_minimum )
       Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
+                            (fix.kdtree.end().node->parent)));
     BOOST_CHECK_EQUAL(iter->first, 1); // should be (1, 2);
     BOOST_CHECK_EQUAL(iter->second, 2); // should be (1, 2);
   }
@@ -1659,18 +1659,18 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_maximum )
     int count = 0;
     int max_value = (*fix.kdtree.begin())[mapping_dim];
     for(Hundred_Kdtree_2D_fixture::kdtree_type::iterator i
-	  = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
+          = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
       {
-	int tmp = (*i)[mapping_dim];
-	if (tmp > max_value) { max_value = tmp; }
-	++count;
+        int tmp = (*i)[mapping_dim];
+        if (tmp > max_value) { max_value = tmp; }
+        ++count;
       }
     BOOST_CHECK_EQUAL(count, 100);
     BOOST_REQUIRE_NO_THROW(iter = iter_type::maximum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent)));
     BOOST_REQUIRE_EQUAL((*iter)[mapping_dim], max_value);
   }
   {
@@ -1682,18 +1682,18 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_maximum )
     int count = 0;
     int max_value = (*fix.kdtree.begin())[mapping_dim];
     for(Hundred_Kdtree_2D_fixture::kdtree_type::iterator i
-	  = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
+          = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
       {
-	int tmp = (*i)[mapping_dim];
-	if (tmp > max_value) { max_value = tmp; }
-	++count;
+        int tmp = (*i)[mapping_dim];
+        if (tmp > max_value) { max_value = tmp; }
+        ++count;
       }
     BOOST_CHECK_EQUAL(count, 100);
     BOOST_REQUIRE_NO_THROW(iter = iter_type::maximum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent)));
     BOOST_REQUIRE_EQUAL((*iter)[mapping_dim], max_value);
   }
   { // test at the limit: an unbalanced tree!
@@ -1703,10 +1703,10 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_maximum )
       Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::maximum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
+                            (fix.kdtree.end().node->parent)));
     BOOST_CHECK_EQUAL(iter->first, 7); // should be (1, 2);
     BOOST_CHECK_EQUAL(iter->second, 8); // should be (1, 2);
   }
@@ -1717,10 +1717,10 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_maximum )
       Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::maximum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
+                            (fix.kdtree.end().node->parent)));
     BOOST_CHECK_EQUAL(iter->first, 7); // should be (1, 2);
     BOOST_CHECK_EQUAL(iter->second, 8); // should be (1, 2);
   }
@@ -1735,18 +1735,18 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_increment )
       Kdtree_node<point2d>, bracket_less<point2d> > iter_type;
     iter_type iter;
     BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent)));
     iter_type end;
     BOOST_REQUIRE_NO_THROW(end = iter_type
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, details::decr_dim
-			    (fix.kdtree.rank(), 0),
-			    static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, details::decr_dim
+                            (fix.kdtree.rank(), 0),
+                            static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node)));
     int count = 0;
     int tmp = (*iter)[mapping_dim];
     for (; iter != end; ++iter)
@@ -1764,18 +1764,18 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_increment )
       Kdtree_node<point2d>, bracket_less<point2d> > iter_type;
     iter_type iter;
     BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent)));
     iter_type end;
     BOOST_REQUIRE_NO_THROW(end = iter_type
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, details::decr_dim
-			    (fix.kdtree.rank(), 0),
-			    static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, details::decr_dim
+                            (fix.kdtree.rank(), 0),
+                            static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node)));
     int count = 0;
     int tmp = (*iter)[mapping_dim];
     for (; iter != end; ++iter)
@@ -1793,10 +1793,10 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_increment )
       Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
+                            (fix.kdtree.end().node->parent)));
     BOOST_CHECK_EQUAL(iter->first, 1);
     BOOST_CHECK_EQUAL(iter->second, 2);
     ++iter;
@@ -1809,7 +1809,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_increment )
     BOOST_CHECK_EQUAL(iter->first, 7);
     BOOST_CHECK_EQUAL(iter->second, 8);
     ++iter;
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
   }
   { // test at the limit: an unbalanced tree
     dimension_type mapping_dim = 1;
@@ -1818,10 +1818,10 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_increment )
       Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
+                            (fix.kdtree.end().node->parent)));
     BOOST_CHECK_EQUAL(iter->first, 1);
     BOOST_CHECK_EQUAL(iter->second, 2);
     ++iter;
@@ -1834,7 +1834,7 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_increment )
     BOOST_CHECK_EQUAL(iter->first, 7);
     BOOST_CHECK_EQUAL(iter->second, 8);
     ++iter;
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
   }
 }
 
@@ -1878,18 +1878,18 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_decrement )
       Kdtree_node<point2d>, bracket_less<point2d> > iter_type;
     iter_type iter;
     BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent)));
     iter_type end;
     BOOST_REQUIRE_NO_THROW(end = iter_type
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, details::decr_dim
-			    (fix.kdtree.rank(), 0),
-			    static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, details::decr_dim
+                            (fix.kdtree.rank(), 0),
+                            static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node)));
     typedef std::reverse_iterator<iter_type> reverse_iter_type;
     reverse_iter_type rend(iter);
     reverse_iter_type riter(end);
@@ -1910,18 +1910,18 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_decrement )
       Kdtree_node<point2d>, bracket_less<point2d> > iter_type;
     iter_type iter;
     BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent)));
     iter_type end;
     BOOST_REQUIRE_NO_THROW(end = iter_type
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, details::decr_dim
-			    (fix.kdtree.rank(), 0),
-			    static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, details::decr_dim
+                            (fix.kdtree.rank(), 0),
+                            static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node)));
     typedef std::reverse_iterator<iter_type> reverse_iter_type;
     reverse_iter_type rend(iter);
     reverse_iter_type riter(end);
@@ -1942,10 +1942,10 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_decrement )
       Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::maximum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
+                            (fix.kdtree.end().node->parent)));
     BOOST_CHECK_EQUAL(iter->first, 7);
     BOOST_CHECK_EQUAL(iter->second, 8);
     --iter;
@@ -1958,7 +1958,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_decrement )
     BOOST_CHECK_EQUAL(iter->first, 1);
     BOOST_CHECK_EQUAL(iter->second, 2);
     --iter;
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
   }
   { // test at the limit: an unbalanced tree
     dimension_type mapping_dim = 1;
@@ -1967,10 +1967,10 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_decrement )
       Kdtree_node<pair_type>, pair_less> iterator;
     iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = iterator::maximum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
+                            (fix.kdtree.end().node->parent)));
     BOOST_CHECK_EQUAL(iter->first, 7);
     BOOST_CHECK_EQUAL(iter->second, 8);
     --iter;
@@ -1983,7 +1983,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_decrement )
     BOOST_CHECK_EQUAL(iter->first, 1);
     BOOST_CHECK_EQUAL(iter->second, 2);
     --iter;
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
   }
 }
 
@@ -2032,45 +2032,45 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_lower_bound )
     point2d high_flag = { { 30, 30 } };
     iter_type iter;
     BOOST_REQUIRE_NO_THROW(iter = iter_type::lower_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent), flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent), flag));
     iter_type low_iter;
     BOOST_REQUIRE_NO_THROW(low_iter = iter_type::lower_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent), low_flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent), low_flag));
     iter_type high_iter;
     BOOST_REQUIRE_NO_THROW(high_iter = iter_type::lower_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent), high_flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent), high_flag));
     iter_type begin;
     BOOST_REQUIRE_NO_THROW(begin = iter_type::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent)));
     iter_type end;
     BOOST_REQUIRE_NO_THROW(end = iter_type
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, details::decr_dim
-			    (fix.kdtree.rank(), 0),
-			    static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, details::decr_dim
+                            (fix.kdtree.rank(), 0),
+                            static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node)));
     if (iter != end) // chances that this is false are extremely low 1/(2^100)
       {
-	BOOST_CHECK_GE((*iter)[mapping_dim], flag[mapping_dim]);
-	if (iter != begin) // same as above
-	  {
-	    iter_type tmp = iter;
-	    BOOST_CHECK_LT((*(--tmp))[mapping_dim], (*iter)[mapping_dim]);
-	    BOOST_CHECK_LT((*tmp)[mapping_dim], flag[mapping_dim]);
-	  }
+        BOOST_CHECK_GE((*iter)[mapping_dim], flag[mapping_dim]);
+        if (iter != begin) // same as above
+          {
+            iter_type tmp = iter;
+            BOOST_CHECK_LT((*(--tmp))[mapping_dim], (*iter)[mapping_dim]);
+            BOOST_CHECK_LT((*tmp)[mapping_dim], flag[mapping_dim]);
+          }
       }
     BOOST_CHECK(low_iter == begin);
     BOOST_CHECK(high_iter == end);
@@ -2084,33 +2084,33 @@ BOOST_AUTO_TEST_CASE( test_Mapping_iterator_lower_bound )
     triple flag; flag.x = 0; flag.y = 0; flag.z = 0;
     iter_type iter;
     BOOST_REQUIRE_NO_THROW(iter = iter_type::lower_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<triple>*>
-			    (fix.kdtree.end().node->parent), flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<triple>*>
+                            (fix.kdtree.end().node->parent), flag));
     iter_type begin;
     BOOST_REQUIRE_NO_THROW(begin = iter_type::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<triple>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<triple>*>
+                            (fix.kdtree.end().node->parent)));
     iter_type end;
     BOOST_REQUIRE_NO_THROW(end = iter_type
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, details::decr_dim
-			    (fix.kdtree.rank(), 0),
-			    static_cast<Kdtree_node<triple>*>
-			    (fix.kdtree.end().node)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, details::decr_dim
+                            (fix.kdtree.rank(), 0),
+                            static_cast<Kdtree_node<triple>*>
+                            (fix.kdtree.end().node)));
     if (iter != end) // chances that this is false are low 1/(2^20)
       {
-	BOOST_CHECK_GE(iter->z, flag.z);
-	if (iter != begin) // same as above
-	  {
-	    iter_type tmp = iter;
-	    BOOST_CHECK_LT((--tmp)->z, iter->z);
-	    BOOST_CHECK_LT(tmp->z, flag.z);
-	  }
+        BOOST_CHECK_GE(iter->z, flag.z);
+        if (iter != begin) // same as above
+          {
+            iter_type tmp = iter;
+            BOOST_CHECK_LT((--tmp)->z, iter->z);
+            BOOST_CHECK_LT(tmp->z, flag.z);
+          }
       }
   }
 }
@@ -2132,45 +2132,45 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_upper_bound )
     point2d high_flag = { { 30, 30 } };
     mapping_iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = mapping_iterator::upper_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent), flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent), flag));
     mapping_iterator low_iter;
     BOOST_REQUIRE_NO_THROW(low_iter = mapping_iterator::upper_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent), low_flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent), low_flag));
     mapping_iterator high_iter;
     BOOST_REQUIRE_NO_THROW(high_iter = mapping_iterator::upper_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent), high_flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent), high_flag));
     mapping_iterator begin;
     BOOST_REQUIRE_NO_THROW(begin = mapping_iterator::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent)));
     mapping_iterator end;
     BOOST_REQUIRE_NO_THROW(end = mapping_iterator
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, details::decr_dim
-			    (fix.kdtree.rank(), 0),
-			    static_cast<Kdtree_node<point2d>*>
-			    (fix.kdtree.end().node)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, details::decr_dim
+                            (fix.kdtree.rank(), 0),
+                            static_cast<Kdtree_node<point2d>*>
+                            (fix.kdtree.end().node)));
     if (iter != end) // chances that this is false are extremely low 1/(2^100)
       {
-	BOOST_CHECK_GT((*iter)[mapping_dim], flag[mapping_dim]);
-	if (iter != begin) // same as above
-	  {
-	    mapping_iterator tmp = iter;
-	    BOOST_CHECK_LT((*(--tmp))[mapping_dim], (*iter)[mapping_dim]);
-	    BOOST_CHECK_LE((*tmp)[mapping_dim], flag[mapping_dim]);
-	  }
+        BOOST_CHECK_GT((*iter)[mapping_dim], flag[mapping_dim]);
+        if (iter != begin) // same as above
+          {
+            mapping_iterator tmp = iter;
+            BOOST_CHECK_LT((*(--tmp))[mapping_dim], (*iter)[mapping_dim]);
+            BOOST_CHECK_LE((*tmp)[mapping_dim], flag[mapping_dim]);
+          }
       }
     BOOST_CHECK(low_iter == begin);
     BOOST_CHECK(high_iter == end);
@@ -2187,33 +2187,33 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_upper_bound )
     triple flag; flag.x = 0; flag.y = 0; flag.z = 0;
     mapping_iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = mapping_iterator::upper_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<triple>*>
-			    (fix.kdtree.end().node->parent), flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<triple>*>
+                            (fix.kdtree.end().node->parent), flag));
     mapping_iterator begin;
     BOOST_REQUIRE_NO_THROW(begin = mapping_iterator::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Kdtree_node<triple>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Kdtree_node<triple>*>
+                            (fix.kdtree.end().node->parent)));
     mapping_iterator end;
     BOOST_REQUIRE_NO_THROW(end = mapping_iterator
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, details::decr_dim
-			    (fix.kdtree.rank(), 0),
-			    static_cast<Kdtree_node<triple>*>
-			    (fix.kdtree.end().node)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, details::decr_dim
+                            (fix.kdtree.rank(), 0),
+                            static_cast<Kdtree_node<triple>*>
+                            (fix.kdtree.end().node)));
     if (iter != end) // chances that this is false are low 1/(2^20)
       {
-	BOOST_CHECK_GT(iter->z, flag.z);
-	if (iter != begin) // same as above
-	  {
-	    mapping_iterator tmp = iter;
-	    BOOST_CHECK_LT((--tmp)->z, iter->z);
-	    BOOST_CHECK_LE(tmp->z, flag.z);
-	  }
+        BOOST_CHECK_GT(iter->z, flag.z);
+        if (iter != begin) // same as above
+          {
+            mapping_iterator tmp = iter;
+            BOOST_CHECK_LT((--tmp)->z, iter->z);
+            BOOST_CHECK_LE(tmp->z, flag.z);
+          }
       }
   }
 }
@@ -2227,17 +2227,17 @@ BOOST_AUTO_TEST_CASE( test_kdtree_erase_iter )
     Twenty_Kdtree_3D_fixture fix;
     typedef Twenty_Kdtree_3D_fixture::kdtree_type
       ::iterator iter_type;
-    int track_size = fix.kdtree.size();
+    std::size_t track_size = fix.kdtree.size();
     while (fix.kdtree.size() != 0)
       {
-	iter_type iter = fix.kdtree.begin();
-	BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(iter));
-	BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
-	BOOST_CHECK(iter != fix.kdtree.begin());
-	int count = 0;
-	for(iter_type i = fix.kdtree.begin();
-	    i != fix.kdtree.end(); ++i, ++count);
-	BOOST_CHECK_EQUAL(count, track_size);
+        iter_type iter = fix.kdtree.begin();
+        BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(iter));
+        BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
+        BOOST_CHECK(iter != fix.kdtree.begin());
+        int count = 0;
+        for(iter_type i = fix.kdtree.begin();
+            i != fix.kdtree.end(); ++i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
       }
   }
   {
@@ -2246,17 +2246,17 @@ BOOST_AUTO_TEST_CASE( test_kdtree_erase_iter )
       ::const_iterator iter_type;
     typedef Twenty_Kdtree_3D_fixture::kdtree_type
       ::const_reverse_iterator riter_type;
-    int track_size = fix.kdtree.size();
+    std::size_t track_size = fix.kdtree.size();
     while (fix.kdtree.size() != 0)
       {
-	iter_type iter = --fix.kdtree.end();
-	BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(iter));
-	BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
-	BOOST_CHECK(iter != (--fix.kdtree.end()));
-	int count = 0;
-	for(riter_type i = fix.kdtree.rbegin();
-	    i != fix.kdtree.rend(); ++i, ++count);
-	BOOST_CHECK_EQUAL(count, track_size);
+        iter_type iter = --fix.kdtree.end();
+        BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(iter));
+        BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
+        BOOST_CHECK(iter != (--fix.kdtree.end()));
+        int count = 0;
+        for(riter_type i = fix.kdtree.rbegin();
+            i != fix.kdtree.rend(); ++i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
       }
   }
   // erase all and check that total ordering is preserved.
@@ -2269,57 +2269,58 @@ BOOST_AUTO_TEST_CASE( test_kdtree_erase_iter )
       Hundred_Kdtree_2D_fixture::kdtree_type::node_type,
       bracket_less<point2d> > mapping_iterator;
     Hundred_Kdtree_2D_fixture fix;
-    int track_size = fix.kdtree.size();
+    std::size_t track_size = fix.kdtree.size();
     while (fix.kdtree.size() != 0)
       {
-	iterator eraser = fix.kdtree.begin();
-	std::advance(eraser, rand() % fix.kdtree.size());
-	mapping_iterator begin_0;
-	BOOST_REQUIRE_NO_THROW(begin_0 = mapping_iterator::minimum
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				0, 0,
-				static_cast<Kdtree_node<point2d>*>
-				(fix.kdtree.end().node->parent)));
-	mapping_iterator end_0;
-	BOOST_REQUIRE_NO_THROW(end_0 = mapping_iterator
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				0, details::decr_dim
-				(fix.kdtree.rank(), 0),
-				static_cast<Kdtree_node<point2d>*>
-				(fix.kdtree.end().node)));
-	mapping_iterator begin_1;
-	BOOST_REQUIRE_NO_THROW(begin_1 = mapping_iterator::minimum
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				1, 0,
-				static_cast<Kdtree_node<point2d>*>
-				(fix.kdtree.end().node->parent)));
-	mapping_iterator end_1;
-	BOOST_REQUIRE_NO_THROW(end_1 = mapping_iterator
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				1, details::decr_dim
-				(fix.kdtree.rank(), 0),
-				static_cast<Kdtree_node<point2d>*>
-				(fix.kdtree.end().node)));
-	int count = 0;
-	for(mapping_iterator i = begin_0; i != end_0; ++i, ++count);
-	BOOST_CHECK_EQUAL(count, track_size);
-	if (count != track_size && count < 12) abort();
-	count = 0;
-	for(mapping_iterator i = begin_1; i != end_1; ++i, ++count);
-	BOOST_CHECK_EQUAL(count, track_size);
-	if (count != track_size && count < 12) abort();
-	count = 0;
-	for(mapping_iterator i = end_0; i != begin_0; --i, ++count);
-	BOOST_CHECK_EQUAL(count, track_size);
-	count = 0;
-	for(mapping_iterator i = end_1; i != begin_1; --i, ++count);
-	BOOST_CHECK_EQUAL(count, track_size);
-	BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(eraser));
-	BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
+        iterator eraser = fix.kdtree.begin();
+        std::advance(eraser, static_cast<std::size_t>(rand())
+                     % fix.kdtree.size());
+        mapping_iterator begin_0;
+        BOOST_REQUIRE_NO_THROW(begin_0 = mapping_iterator::minimum
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                0, 0,
+                                static_cast<Kdtree_node<point2d>*>
+                                (fix.kdtree.end().node->parent)));
+        mapping_iterator end_0;
+        BOOST_REQUIRE_NO_THROW(end_0 = mapping_iterator
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                0, details::decr_dim
+                                (fix.kdtree.rank(), 0),
+                                static_cast<Kdtree_node<point2d>*>
+                                (fix.kdtree.end().node)));
+        mapping_iterator begin_1;
+        BOOST_REQUIRE_NO_THROW(begin_1 = mapping_iterator::minimum
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                1, 0,
+                                static_cast<Kdtree_node<point2d>*>
+                                (fix.kdtree.end().node->parent)));
+        mapping_iterator end_1;
+        BOOST_REQUIRE_NO_THROW(end_1 = mapping_iterator
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                1, details::decr_dim
+                                (fix.kdtree.rank(), 0),
+                                static_cast<Kdtree_node<point2d>*>
+                                (fix.kdtree.end().node)));
+        std::size_t count = 0;
+        for(mapping_iterator i = begin_0; i != end_0; ++i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
+        if (count != track_size && count < 12) abort();
+        count = 0;
+        for(mapping_iterator i = begin_1; i != end_1; ++i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
+        if (count != track_size && count < 12) abort();
+        count = 0;
+        for(mapping_iterator i = end_0; i != begin_0; --i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
+        count = 0;
+        for(mapping_iterator i = end_1; i != begin_1; --i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
+        BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(eraser));
+        BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
       }
   }
 }
@@ -2340,7 +2341,7 @@ BOOST_AUTO_TEST_CASE( test_kdtree_bulk_insert )
   Empty_Kdtree_2D_fixture fix;
   std::tr1::array<point2d, 100> points;
   for(std::tr1::array<point2d, 100>::iterator i
-	= points.begin(); i != points.end(); ++i)
+        = points.begin(); i != points.end(); ++i)
     {
       (*i)[0] = rand() % 20;
       (*i)[1] = rand() % 20;
@@ -2351,11 +2352,11 @@ BOOST_AUTO_TEST_CASE( test_kdtree_bulk_insert )
   BOOST_CHECK_EQUAL(fix.kdtree.count(), 100);
   int count = 0;
   for(Empty_Kdtree_2D_fixture::kdtree_type::iterator i
-	= fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
+        = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
     {
       std::tr1::array<point2d, 100>::iterator match;
       BOOST_REQUIRE((match = std::find(points.begin(), points.end(), *i))
-		  != points.end());
+                  != points.end());
       (*match)[0] = -1; // Prevent the same point from being found twice.
       (*match)[1] = -1;
       BOOST_REQUIRE_LE(++count, 100);
@@ -2452,14 +2453,14 @@ BOOST_AUTO_TEST_CASE( test_kdtree_swap )
   std::vector<point2d> point_fix1; point_fix1.reserve(100);
   std::vector<point2d> point_fix2; point_fix2.reserve(100);
   std::copy(fix1.kdtree.cbegin(), fix1.kdtree.cend(),
-	    std::back_inserter(point_fix1));
+            std::back_inserter(point_fix1));
   std::copy(fix2.kdtree.cbegin(), fix2.kdtree.cend(),
-	    std::back_inserter(point_fix2));
+            std::back_inserter(point_fix2));
   using std::swap; // it should still resolve into spatial::swap
   // swap once
   swap(fix1.kdtree, fix2.kdtree);
   typedef Hundred_Kdtree_2D_fixture::kdtree_type::iterator iterator;
-  int count = 0;
+  std::size_t count = 0;
   for(iterator i = fix1.kdtree.begin();
       i != fix1.kdtree.end(); ++i, ++count)
     {
@@ -2502,12 +2503,12 @@ BOOST_AUTO_TEST_CASE( test_kdtree_swap_empty )
   Empty_Kdtree_2D_fixture fix2;
   std::vector<point2d> point_fix1; point_fix1.reserve(100);
   std::copy(fix1.kdtree.cbegin(), fix1.kdtree.cend(),
-	    std::back_inserter(point_fix1));
+            std::back_inserter(point_fix1));
   using std::swap; // it should still resolve into spatial::swap
   // swap once
   swap(fix1.kdtree, fix2.kdtree);
   typedef Empty_Kdtree_2D_fixture::kdtree_type::iterator iterator;
-  int count = 0;
+  std::size_t count = 0;
   for(iterator i = fix2.kdtree.begin();
       i != fix2.kdtree.end(); ++i, ++count)
     {
@@ -2546,64 +2547,64 @@ BOOST_AUTO_TEST_CASE( test_kdtree_rebalance )
   BOOST_REQUIRE_NO_THROW(copy.rebalance());
   mapping_iterator orig_begin_0;
   BOOST_REQUIRE_NO_THROW(orig_begin_0 = mapping_iterator::minimum
-			 (fix.kdtree.rank(),
-			  fix.kdtree.compare(),
-			  0, 0,
-			  static_cast<Kdtree_node<point2d>*>
-			  (fix.kdtree.end().node->parent)));
+                         (fix.kdtree.rank(),
+                          fix.kdtree.compare(),
+                          0, 0,
+                          static_cast<Kdtree_node<point2d>*>
+                          (fix.kdtree.end().node->parent)));
   mapping_iterator orig_end_0;
   BOOST_REQUIRE_NO_THROW(orig_end_0 = mapping_iterator
-			 (fix.kdtree.rank(),
-			  fix.kdtree.compare(),
-			  0, details::decr_dim
-			  (fix.kdtree.rank(), 0),
-			  static_cast<Kdtree_node<point2d>*>
-			  (fix.kdtree.end().node)));
+                         (fix.kdtree.rank(),
+                          fix.kdtree.compare(),
+                          0, details::decr_dim
+                          (fix.kdtree.rank(), 0),
+                          static_cast<Kdtree_node<point2d>*>
+                          (fix.kdtree.end().node)));
   mapping_iterator orig_begin_1;
   BOOST_REQUIRE_NO_THROW(orig_begin_1 = mapping_iterator::minimum
-			 (fix.kdtree.rank(),
-			  fix.kdtree.compare(),
-			  1, 0,
-			  static_cast<Kdtree_node<point2d>*>
-			  (fix.kdtree.end().node->parent)));
+                         (fix.kdtree.rank(),
+                          fix.kdtree.compare(),
+                          1, 0,
+                          static_cast<Kdtree_node<point2d>*>
+                          (fix.kdtree.end().node->parent)));
   mapping_iterator orig_end_1;
   BOOST_REQUIRE_NO_THROW(orig_end_1 = mapping_iterator
-			 (fix.kdtree.rank(),
-			  fix.kdtree.compare(),
-			  1, details::decr_dim
-			  (fix.kdtree.rank(), 0),
-			  static_cast<Kdtree_node<point2d>*>
-			  (fix.kdtree.end().node)));
+                         (fix.kdtree.rank(),
+                          fix.kdtree.compare(),
+                          1, details::decr_dim
+                          (fix.kdtree.rank(), 0),
+                          static_cast<Kdtree_node<point2d>*>
+                          (fix.kdtree.end().node)));
   mapping_iterator copy_begin_0;
   BOOST_REQUIRE_NO_THROW(copy_begin_0 = mapping_iterator::minimum
-			 (copy.rank(),
-			  copy.compare(),
-			  0, 0,
-			  static_cast<Kdtree_node<point2d>*>
-			  (copy.end().node->parent)));
+                         (copy.rank(),
+                          copy.compare(),
+                          0, 0,
+                          static_cast<Kdtree_node<point2d>*>
+                          (copy.end().node->parent)));
   mapping_iterator copy_end_0;
   BOOST_REQUIRE_NO_THROW(copy_end_0 = mapping_iterator
-			 (copy.rank(),
-			  copy.compare(),
-			  0, details::decr_dim
-			  (copy.rank(), 0),
-			  static_cast<Kdtree_node<point2d>*>
-			  (copy.end().node)));
+                         (copy.rank(),
+                          copy.compare(),
+                          0, details::decr_dim
+                          (copy.rank(), 0),
+                          static_cast<Kdtree_node<point2d>*>
+                          (copy.end().node)));
   mapping_iterator copy_begin_1;
   BOOST_REQUIRE_NO_THROW(copy_begin_1 = mapping_iterator::minimum
-			 (copy.rank(),
-			  copy.compare(),
-			  1, 0,
-			  static_cast<Kdtree_node<point2d>*>
-			  (copy.end().node->parent)));
+                         (copy.rank(),
+                          copy.compare(),
+                          1, 0,
+                          static_cast<Kdtree_node<point2d>*>
+                          (copy.end().node->parent)));
   mapping_iterator copy_end_1;
   BOOST_REQUIRE_NO_THROW(copy_end_1 = mapping_iterator
-			 (copy.rank(),
-			  copy.compare(),
-			  1, details::decr_dim
-			  (copy.rank(), 0),
-			  static_cast<Kdtree_node<point2d>*>
-			  (copy.end().node)));
+                         (copy.rank(),
+                          copy.compare(),
+                          1, details::decr_dim
+                          (copy.rank(), 0),
+                          static_cast<Kdtree_node<point2d>*>
+                          (copy.end().node)));
   int count = 0;
   mapping_iterator i = orig_begin_0, j = copy_begin_0;
   for(; i != orig_end_0 && j != copy_end_0; ++i, ++j, ++count);
@@ -2644,64 +2645,64 @@ BOOST_AUTO_TEST_CASE( test_kdtree_copy_and_rebalance )
   Hundred_Kdtree_2D_fixture::kdtree_type copy(fix.kdtree, true);
   mapping_iterator orig_begin_0;
   BOOST_REQUIRE_NO_THROW(orig_begin_0 = mapping_iterator::minimum
-			 (fix.kdtree.rank(),
-			  fix.kdtree.compare(),
-			  0, 0,
-			  static_cast<Kdtree_node<point2d>*>
-			  (fix.kdtree.end().node->parent)));
+                         (fix.kdtree.rank(),
+                          fix.kdtree.compare(),
+                          0, 0,
+                          static_cast<Kdtree_node<point2d>*>
+                          (fix.kdtree.end().node->parent)));
   mapping_iterator orig_end_0;
   BOOST_REQUIRE_NO_THROW(orig_end_0 = mapping_iterator
-			 (fix.kdtree.rank(),
-			  fix.kdtree.compare(),
-			  0, details::decr_dim
-			  (fix.kdtree.rank(), 0),
-			  static_cast<Kdtree_node<point2d>*>
-			  (fix.kdtree.end().node)));
+                         (fix.kdtree.rank(),
+                          fix.kdtree.compare(),
+                          0, details::decr_dim
+                          (fix.kdtree.rank(), 0),
+                          static_cast<Kdtree_node<point2d>*>
+                          (fix.kdtree.end().node)));
   mapping_iterator orig_begin_1;
   BOOST_REQUIRE_NO_THROW(orig_begin_1 = mapping_iterator::minimum
-			 (fix.kdtree.rank(),
-			  fix.kdtree.compare(),
-			  1, 0,
-			  static_cast<Kdtree_node<point2d>*>
-			  (fix.kdtree.end().node->parent)));
+                         (fix.kdtree.rank(),
+                          fix.kdtree.compare(),
+                          1, 0,
+                          static_cast<Kdtree_node<point2d>*>
+                          (fix.kdtree.end().node->parent)));
   mapping_iterator orig_end_1;
   BOOST_REQUIRE_NO_THROW(orig_end_1 = mapping_iterator
-			 (fix.kdtree.rank(),
-			  fix.kdtree.compare(),
-			  1, details::decr_dim
-			  (fix.kdtree.rank(), 0),
-			  static_cast<Kdtree_node<point2d>*>
-			  (fix.kdtree.end().node)));
+                         (fix.kdtree.rank(),
+                          fix.kdtree.compare(),
+                          1, details::decr_dim
+                          (fix.kdtree.rank(), 0),
+                          static_cast<Kdtree_node<point2d>*>
+                          (fix.kdtree.end().node)));
   mapping_iterator copy_begin_0;
   BOOST_REQUIRE_NO_THROW(copy_begin_0 = mapping_iterator::minimum
-			 (copy.rank(),
-			  copy.compare(),
-			  0, 0,
-			  static_cast<Kdtree_node<point2d>*>
-			  (copy.end().node->parent)));
+                         (copy.rank(),
+                          copy.compare(),
+                          0, 0,
+                          static_cast<Kdtree_node<point2d>*>
+                          (copy.end().node->parent)));
   mapping_iterator copy_end_0;
   BOOST_REQUIRE_NO_THROW(copy_end_0 = mapping_iterator
-			 (copy.rank(),
-			  copy.compare(),
-			  0, details::decr_dim
-			  (copy.rank(), 0),
-			  static_cast<Kdtree_node<point2d>*>
-			  (copy.end().node)));
+                         (copy.rank(),
+                          copy.compare(),
+                          0, details::decr_dim
+                          (copy.rank(), 0),
+                          static_cast<Kdtree_node<point2d>*>
+                          (copy.end().node)));
   mapping_iterator copy_begin_1;
   BOOST_REQUIRE_NO_THROW(copy_begin_1 = mapping_iterator::minimum
-			 (copy.rank(),
-			  copy.compare(),
-			  1, 0,
-			  static_cast<Kdtree_node<point2d>*>
-			  (copy.end().node->parent)));
+                         (copy.rank(),
+                          copy.compare(),
+                          1, 0,
+                          static_cast<Kdtree_node<point2d>*>
+                          (copy.end().node->parent)));
   mapping_iterator copy_end_1;
   BOOST_REQUIRE_NO_THROW(copy_end_1 = mapping_iterator
-			 (copy.rank(),
-			  copy.compare(),
-			  1, details::decr_dim
-			  (copy.rank(), 0),
-			  static_cast<Kdtree_node<point2d>*>
-			  (copy.end().node)));
+                         (copy.rank(),
+                          copy.compare(),
+                          1, details::decr_dim
+                          (copy.rank(), 0),
+                          static_cast<Kdtree_node<point2d>*>
+                          (copy.end().node)));
   int count = 0;
   mapping_iterator i = orig_begin_0, j = copy_begin_0;
   for(; i != orig_end_0 && j != copy_end_0; ++i, ++j, ++count);
@@ -2779,17 +2780,17 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_value_ctor_equal )
   const_range_iterator_false_type cj
     (details::Dynamic_rank(2), bounds, 1, 0);
   BOOST_CHECK_EQUAL(i.rank()(), 2);
-  BOOST_CHECK(i.impl.node == 0);
-  BOOST_CHECK_EQUAL(i.impl.node_dim(), 1);
+  BOOST_CHECK(i.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(i.impl_.node_dim_(), 1);
   BOOST_CHECK_EQUAL(j.rank()(), 2);
-  BOOST_CHECK(j.impl.node == 0);
-  BOOST_CHECK_EQUAL(j.impl.node_dim(), 1);
+  BOOST_CHECK(j.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(j.impl_.node_dim_(), 1);
   BOOST_CHECK_EQUAL(ci.rank()(), 2);
-  BOOST_CHECK(ci.impl.node == 0);
-  BOOST_CHECK_EQUAL(ci.impl.node_dim(), 1);
+  BOOST_CHECK(ci.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(ci.impl_.node_dim_(), 1);
   BOOST_CHECK_EQUAL(cj.rank()(), 2);
-  BOOST_CHECK(cj.impl.node == 0);
-  BOOST_CHECK_EQUAL(cj.impl.node_dim(), 1);
+  BOOST_CHECK(cj.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(cj.impl_.node_dim_(), 1);
 }
 
 BOOST_AUTO_TEST_CASE( test_range_iterator_copy_ctor )
@@ -2820,23 +2821,23 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_copy_ctor )
   const_range_iterator_true_type const_copy_k(k);
   const_range_iterator_false_type const_copy_l(l);
   BOOST_CHECK_EQUAL(copy_k.rank()(), 2);
-  BOOST_CHECK(copy_k.impl.node == 0);
-  BOOST_CHECK_EQUAL(copy_k.impl.node_dim(), 1);
+  BOOST_CHECK(copy_k.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(copy_k.impl_.node_dim_(), 1);
   BOOST_CHECK_EQUAL(copy_l.rank()(), 2);
-  BOOST_CHECK(copy_l.impl.node == 0);
-  BOOST_CHECK_EQUAL(copy_l.impl.node_dim(), 1);
+  BOOST_CHECK(copy_l.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(copy_l.impl_.node_dim_(), 1);
   BOOST_CHECK_EQUAL(copy_ck.rank()(), 2);
-  BOOST_CHECK(copy_ck.impl.node == 0);
-  BOOST_CHECK_EQUAL(copy_ck.impl.node_dim(), 1);
+  BOOST_CHECK(copy_ck.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(copy_ck.impl_.node_dim_(), 1);
   BOOST_CHECK_EQUAL(copy_cl.rank()(), 2);
-  BOOST_CHECK(copy_cl.impl.node == 0);
-  BOOST_CHECK_EQUAL(copy_cl.impl.node_dim(), 1);
+  BOOST_CHECK(copy_cl.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(copy_cl.impl_.node_dim_(), 1);
   BOOST_CHECK_EQUAL(const_copy_k.rank()(), 2);
-  BOOST_CHECK(const_copy_k.impl.node == 0);
-  BOOST_CHECK_EQUAL(const_copy_k.impl.node_dim(), 1);
+  BOOST_CHECK(const_copy_k.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(const_copy_k.impl_.node_dim_(), 1);
   BOOST_CHECK_EQUAL(const_copy_l.rank()(), 2);
-  BOOST_CHECK(const_copy_l.impl.node == 0);
-  BOOST_CHECK_EQUAL(const_copy_l.impl.node_dim(), 1);
+  BOOST_CHECK(const_copy_l.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(const_copy_l.impl_.node_dim_(), 1);
 }
 
 BOOST_AUTO_TEST_CASE( test_range_iterator_assignment )
@@ -2867,23 +2868,23 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_assignment )
   const_range_iterator_true_type const_assign_k = k;
   const_range_iterator_false_type const_assign_l = l;
   BOOST_CHECK_EQUAL(assign_k.rank()(), 2);
-  BOOST_CHECK(assign_k.impl.node == 0);
-  BOOST_CHECK_EQUAL(assign_k.impl.node_dim(), 1);
+  BOOST_CHECK(assign_k.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(assign_k.impl_.node_dim_(), 1);
   BOOST_CHECK_EQUAL(assign_l.rank()(), 2);
-  BOOST_CHECK(assign_l.impl.node == 0);
-  BOOST_CHECK_EQUAL(assign_l.impl.node_dim(), 1);
+  BOOST_CHECK(assign_l.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(assign_l.impl_.node_dim_(), 1);
   BOOST_CHECK_EQUAL(assign_ck.rank()(), 2);
-  BOOST_CHECK(assign_ck.impl.node == 0);
-  BOOST_CHECK_EQUAL(assign_ck.impl.node_dim(), 1);
+  BOOST_CHECK(assign_ck.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(assign_ck.impl_.node_dim_(), 1);
   BOOST_CHECK_EQUAL(assign_cl.rank()(), 2);
-  BOOST_CHECK(assign_cl.impl.node == 0);
-  BOOST_CHECK_EQUAL(assign_cl.impl.node_dim(), 1);
+  BOOST_CHECK(assign_cl.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(assign_cl.impl_.node_dim_(), 1);
   BOOST_CHECK_EQUAL(const_assign_k.rank()(), 2);
-  BOOST_CHECK(const_assign_k.impl.node == 0);
-  BOOST_CHECK_EQUAL(const_assign_k.impl.node_dim(), 1);
+  BOOST_CHECK(const_assign_k.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(const_assign_k.impl_.node_dim_(), 1);
   BOOST_CHECK_EQUAL(const_assign_l.rank()(), 2);
-  BOOST_CHECK(const_assign_l.impl.node == 0);
-  BOOST_CHECK_EQUAL(const_assign_l.impl.node_dim(), 1);
+  BOOST_CHECK(const_assign_l.impl_.node_ == 0);
+  BOOST_CHECK_EQUAL(const_assign_l.impl_.node_dim_(), 1);
 }
 
 BOOST_AUTO_TEST_CASE( test_range_iterator_equal )
@@ -2954,7 +2955,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_minimum )
     range_iterator it = range_iterator::minimum
       (fix.kdtree.rank(), whole_tree_box, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.begin().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.begin().node);
   }
   {
     Hundred_Kdtree_2D_fixture fix;
@@ -2976,7 +2977,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_minimum )
     // In this case, the minimum of the interval must be equal to max.
     range_iterator it = range_iterator::minimum
       (fix.kdtree.rank(), equal, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == max.node);
+    BOOST_CHECK(it.impl_.node_ == max.node);
   }
 }
 
@@ -2999,7 +3000,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_minimum_empty )
     range_iterator it = range_iterator::minimum
       (fix.kdtree.rank(), empty_bounds, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
   {
     // These bounds do not intersect with the tree bounding box
@@ -3020,7 +3021,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_minimum_empty )
     range_iterator it = range_iterator::minimum
       (fix.kdtree.rank(), empty_bounds, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
   {
     // These bounds do not intersect with the tree bounding box
@@ -3041,7 +3042,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_minimum_empty )
     range_iterator it = range_iterator::minimum
       (fix.kdtree.rank(), empty_bounds, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
   {
     Hundred_Kdtree_2D_fixture fix;
@@ -3056,18 +3057,18 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_minimum_empty )
     // reverse in-order iteration until we hit a different key
     for (int shrink = 0; shrink != 20; ++shrink)
       {
-	point2d low = { { shrink, shrink } };
-	point2d high = { { 20, 20} };
-	bounds_type shrinking_bounds(fix.kdtree.compare(), low, high);
-	// In this case, the minimum of the interval must be equal to min.
-	range_iterator it = range_iterator::minimum
-	  (fix.kdtree.rank(), shrinking_bounds,
-	   0, fix.kdtree.end().node->parent);
-	Hundred_Kdtree_2D_fixture::kdtree_type::iterator
-	  min = fix.kdtree.begin(), end = fix.kdtree.end();
-	for (; min != end && !spatial::details::match_all
-	       (fix.kdtree.rank(), *min, shrinking_bounds); ++min);
-	BOOST_CHECK(it.impl.node == min.node);
+        point2d low = { { shrink, shrink } };
+        point2d high = { { 20, 20} };
+        bounds_type shrinking_bounds(fix.kdtree.compare(), low, high);
+        // In this case, the minimum of the interval must be equal to min.
+        range_iterator it = range_iterator::minimum
+          (fix.kdtree.rank(), shrinking_bounds,
+           0, fix.kdtree.end().node->parent);
+        Hundred_Kdtree_2D_fixture::kdtree_type::iterator
+          min = fix.kdtree.begin(), end = fix.kdtree.end();
+        for (; min != end && !spatial::details::match_all
+               (fix.kdtree.rank(), *min, shrinking_bounds); ++min);
+        BOOST_CHECK(it.impl_.node_ == min.node);
       }
   }
 }
@@ -3092,7 +3093,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_maximum )
     range_iterator it = range_iterator::maximum
       (fix.kdtree.rank(), whole_tree_box, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == (--fix.kdtree.end()).node);
+    BOOST_CHECK(it.impl_.node_ == (--fix.kdtree.end()).node);
   }
   {
     Hundred_Kdtree_2D_fixture fix;
@@ -3113,7 +3114,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_maximum )
     // In this case, the minimum of the interval must be equal to max.
     range_iterator it = range_iterator::maximum
       (fix.kdtree.rank(), equal, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == min.node);
+    BOOST_CHECK(it.impl_.node_ == min.node);
   }
   {
     Hundred_Kdtree_2D_fixture fix;
@@ -3128,22 +3129,22 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_maximum )
     // reverse in-order iteration until we hit a different key
     for (int shrink = 20; shrink != 0; --shrink)
       {
-	point2d low = { { 0, 0} };
-	point2d high = { { shrink, shrink } };
-	bounds_type shrinking_bounds(fix.kdtree.compare(), low, high);
-	// In this case, the minimum of the interval must be equal to max.
-	range_iterator it = range_iterator::maximum
-	  (fix.kdtree.rank(), shrinking_bounds,
-	   0, fix.kdtree.end().node->parent);
-	Hundred_Kdtree_2D_fixture::kdtree_type::iterator
-	  max = fix.kdtree.end(), begin = fix.kdtree.begin();
-	for (; max != begin && !spatial::details::match_all
-	       (fix.kdtree.rank(), *(--max), shrinking_bounds););
-	if (spatial::details::match_all
-	    (fix.kdtree.rank(), *max, shrinking_bounds))
-	  { BOOST_CHECK(it.impl.node == max.node); }
-	else
-	  { BOOST_CHECK(it.impl.node == fix.kdtree.end().node); }
+        point2d low = { { 0, 0} };
+        point2d high = { { shrink, shrink } };
+        bounds_type shrinking_bounds(fix.kdtree.compare(), low, high);
+        // In this case, the minimum of the interval must be equal to max.
+        range_iterator it = range_iterator::maximum
+          (fix.kdtree.rank(), shrinking_bounds,
+           0, fix.kdtree.end().node->parent);
+        Hundred_Kdtree_2D_fixture::kdtree_type::iterator
+          max = fix.kdtree.end(), begin = fix.kdtree.begin();
+        for (; max != begin && !spatial::details::match_all
+               (fix.kdtree.rank(), *(--max), shrinking_bounds););
+        if (spatial::details::match_all
+            (fix.kdtree.rank(), *max, shrinking_bounds))
+          { BOOST_CHECK(it.impl_.node_ == max.node); }
+        else
+          { BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node); }
       }
   }
 }
@@ -3167,7 +3168,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_maximum_empty )
     range_iterator it = range_iterator::maximum
       (fix.kdtree.rank(), empty_bounds, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
   {
     // These bounds do not intersect with the tree bounding box
@@ -3188,7 +3189,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_maximum_empty )
     range_iterator it = range_iterator::maximum
       (fix.kdtree.rank(), empty_bounds, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
   {
     // These bounds do not intersect with the tree bounding box
@@ -3209,7 +3210,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_maximum_empty )
     range_iterator it = range_iterator::maximum
       (fix.kdtree.rank(), empty_bounds, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
 }
 
@@ -3236,18 +3237,18 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_pre_increment )
     range_iterator range_min = range_iterator::minimum
       (fix.kdtree.rank(), whole_tree_box, 0,
        fix.kdtree.end().node->parent);
-    const_iterator min; min.node = range_min.impl.node;
+    const_iterator min; min.node = range_min.impl_.node_;
     const_iterator end(fix.kdtree.end());
     for(; min != end; ++min)
       {
-	if (spatial::details::match_all
-	    (fix.kdtree.rank(), *min, whole_tree_box))
-	  {
-	    BOOST_CHECK(range_min.impl.node == min.node);
-	    ++range_min;
-	  }
+        if (spatial::details::match_all
+            (fix.kdtree.rank(), *min, whole_tree_box))
+          {
+            BOOST_CHECK(range_min.impl_.node_ == min.node);
+            ++range_min;
+          }
       }
-    BOOST_CHECK(range_min.impl.node == min.node); // at end!
+    BOOST_CHECK(range_min.impl_.node_ == min.node); // at end!
   }
   {
     typedef open_range_bounds
@@ -3270,18 +3271,18 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_pre_increment )
     range_iterator range_min = range_iterator::minimum
       (fix.kdtree.rank(), small_box, 0,
        fix.kdtree.end().node->parent);
-    const_iterator min; min.node = range_min.impl.node;
+    const_iterator min; min.node = range_min.impl_.node_;
     const_iterator end(fix.kdtree.end());
     for(; min != end; ++min)
       {
-	if (spatial::details::match_all
-	    (fix.kdtree.rank(), *min, small_box))
-	  {
-	    BOOST_CHECK(range_min.impl.node == min.node);
-	    ++range_min;
-	  }
+        if (spatial::details::match_all
+            (fix.kdtree.rank(), *min, small_box))
+          {
+            BOOST_CHECK(range_min.impl_.node_ == min.node);
+            ++range_min;
+          }
       }
-    BOOST_CHECK(range_min.impl.node == min.node); // at end!
+    BOOST_CHECK(range_min.impl_.node_ == min.node); // at end!
   }
 }
 
@@ -3309,16 +3310,16 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_pre_decrement )
       (fix.kdtree.rank(), whole_tree_box, 1,
        static_cast<Hundred_Kdtree_2D_fixture::kdtree_type::node_type *>
        (fix.kdtree.end().node));
-    const_iterator max; max.node = range_max.impl.node;
+    const_iterator max; max.node = range_max.impl_.node_;
     const_iterator begin(fix.kdtree.begin());
     for(; max != begin; --max)
       {
-	if (spatial::details::match_all
-	    (fix.kdtree.rank(), *max, whole_tree_box))
-	  {
-	    --range_max;
-	    BOOST_CHECK(range_max.impl.node == max.node);
-	  }
+        if (spatial::details::match_all
+            (fix.kdtree.rank(), *max, whole_tree_box))
+          {
+            --range_max;
+            BOOST_CHECK(range_max.impl_.node_ == max.node);
+          }
       }
   }
   {
@@ -3343,16 +3344,16 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_pre_decrement )
       (fix.kdtree.rank(), small_box, 1,
        static_cast<Hundred_Kdtree_2D_fixture::kdtree_type::node_type *>
        (fix.kdtree.end().node));
-    const_iterator max; max.node = range_max.impl.node;
+    const_iterator max; max.node = range_max.impl_.node_;
     const_iterator begin(fix.kdtree.begin());
     for(; max != begin; --max)
       {
-	if (spatial::details::match_all
-	    (fix.kdtree.rank(), *max, small_box))
-	  {
-	    --range_max;
-	    BOOST_CHECK(range_max.impl.node == max.node);
-	  }
+        if (spatial::details::match_all
+            (fix.kdtree.rank(), *max, small_box))
+          {
+            --range_max;
+            BOOST_CHECK(range_max.impl_.node_ == max.node);
+          }
       }
   }
 }
@@ -3482,50 +3483,50 @@ BOOST_AUTO_TEST_CASE( test_kdtree_find )
     Hundred_Kdtree_2D_fixture fix;
     {
       Hundred_Kdtree_2D_fixture::kdtree_type::iterator iter
-	= fix.kdtree.begin();
+        = fix.kdtree.begin();
       Hundred_Kdtree_2D_fixture::kdtree_type::iterator end
-	= fix.kdtree.end();
+        = fix.kdtree.end();
       for(; iter != end; ++iter)
-	{
-	  Hundred_Kdtree_2D_fixture::kdtree_type::iterator it
-	    = fix.kdtree.find(*iter);
-	  BOOST_REQUIRE(it != end);
-	  BOOST_CHECK(*it == *iter);
-	}
+        {
+          Hundred_Kdtree_2D_fixture::kdtree_type::iterator it
+            = fix.kdtree.find(*iter);
+          BOOST_REQUIRE(it != end);
+          BOOST_CHECK(*it == *iter);
+        }
     }
     {
       Hundred_Kdtree_2D_fixture::kdtree_type::const_iterator iter
-	= fix.kdtree.cbegin();
+        = fix.kdtree.cbegin();
       Hundred_Kdtree_2D_fixture::kdtree_type::const_iterator end
-	= fix.kdtree.cend();
+        = fix.kdtree.cend();
       for(; iter != end; ++iter)
-	{
-	  Hundred_Kdtree_2D_fixture::kdtree_type::const_iterator it
-	    = const_cast<const Hundred_Kdtree_2D_fixture::kdtree_type*>
-	    (&fix.kdtree)->find(*iter);
-	  BOOST_REQUIRE(it != end);
-	  BOOST_CHECK(*it == *iter);
-	}
+        {
+          Hundred_Kdtree_2D_fixture::kdtree_type::const_iterator it
+            = const_cast<const Hundred_Kdtree_2D_fixture::kdtree_type*>
+            (&fix.kdtree)->find(*iter);
+          BOOST_REQUIRE(it != end);
+          BOOST_CHECK(*it == *iter);
+        }
     }
     // But it should not find a point that is not in the tree!
     {
       point2d some_value = { { 30, 30 } };
       Hundred_Kdtree_2D_fixture::kdtree_type::iterator iter
-	= fix.kdtree.find(some_value);
+        = fix.kdtree.find(some_value);
       BOOST_CHECK(iter == fix.kdtree.end());
     }
     {
       point2d some_value = { { 30, 30 } };
       Hundred_Kdtree_2D_fixture::kdtree_type::const_iterator iter
-	= const_cast<const Hundred_Kdtree_2D_fixture::kdtree_type*>
-	(&fix.kdtree)->find(some_value);
+        = const_cast<const Hundred_Kdtree_2D_fixture::kdtree_type*>
+        (&fix.kdtree)->find(some_value);
       BOOST_CHECK(iter == fix.kdtree.end());
     }
     // Verify that the equal operator is indeed used in place of the rest
     {
       typedef Kdtree<details::Dynamic_rank, point2d,
-		     bracket_less<point2d>, std::allocator<point2d>, false>
-	kdtree_type;
+                     bracket_less<point2d>, std::allocator<point2d>, false>
+        kdtree_type;
       // 1D tree where we store 2d objects...
       kdtree_type tree(details::Dynamic_rank(1));
       point2d one   = { { 0, 1 } };
@@ -3597,7 +3598,7 @@ BOOST_AUTO_TEST_CASE ( test_kdtree_erase_key )
   {
     // Should be able to erase multiple values
     typedef Kdtree<details::Dynamic_rank, point2d,
-		   bracket_less<point2d>, std::allocator<point2d>, false>
+                   bracket_less<point2d>, std::allocator<point2d>, false>
       kdtree_type;
     // 1D tree where we store 2d objects...
     kdtree_type tree(details::Dynamic_rank(1));
@@ -3743,21 +3744,21 @@ BOOST_AUTO_TEST_CASE( test_accessor_rebind )
   using namespace spatial::details::geometry;
   {
     rebind<point2d, double,
-		    accessor_less<at_accessor<point2d,
-					      int>, point2d> >::type
+                    accessor_less<at_accessor<point2d,
+                                              int>, point2d> >::type
       must_compile;
   }
   {
     rebind<point2d, double,
-		    bracket_less<point2d> >::type must_compile;
+                    bracket_less<point2d> >::type must_compile;
   }
   {
     rebind<point2d, double,
-		    paren_less<point2d> >::type must_compile;
+                    paren_less<point2d> >::type must_compile;
   }
   {
     rebind<point2d, double,
-		    iterator_less<point2d> >::type must_compile;
+                    iterator_less<point2d> >::type must_compile;
   }
 }
 
@@ -3799,21 +3800,21 @@ BOOST_AUTO_TEST_CASE( test_euclidian_distance_to_key )
     // Distance between 2 points at different positions in 3D
     for (int i=0; i<100; ++i)
       {
-	triple p, q;
-	p.x = rand() % 80 - 40;
-	p.y = rand() % 80 - 40;
-	p.z = rand() % 80 - 40;
-	q.x = rand() % 80 - 40;
-	q.y = rand() % 80 - 40;
-	q.z = rand() % 80 - 40;
-	double dist = math::euclidian_distance_to_key
-	  <triple, cast_accessor<triple, double, triple_access>, double>
-	  (3, p, q, cast_accessor<triple, double, triple_access>());
-	using namespace ::std;
-	double other_dist = sqrt(static_cast<double>((p.x-q.x)*(p.x-q.x)
-				 +(p.y-q.y)*(p.y-q.y)
-				 +(p.z-q.z)*(p.z-q.z)));
-	BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
+        triple p, q;
+        p.x = rand() % 80 - 40;
+        p.y = rand() % 80 - 40;
+        p.z = rand() % 80 - 40;
+        q.x = rand() % 80 - 40;
+        q.y = rand() % 80 - 40;
+        q.z = rand() % 80 - 40;
+        double dist = math::euclidian_distance_to_key
+          <triple, cast_accessor<triple, double, triple_access>, double>
+          (3, p, q, cast_accessor<triple, double, triple_access>());
+        using namespace ::std;
+        double other_dist = sqrt(static_cast<double>((p.x-q.x)*(p.x-q.x)
+                                 +(p.y-q.y)*(p.y-q.y)
+                                 +(p.z-q.z)*(p.z-q.z)));
+        BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
       }
   }
 }
@@ -3844,35 +3845,35 @@ BOOST_AUTO_TEST_CASE( test_euclidian_distance_to_box_edge )
     // Distance between 2 points at different positions in 3D
     for (int i=0; i<100; ++i)
       {
-	triple p, l, h;
-	p.x = rand() % 80 - 40;
-	p.y = rand() % 80 - 40;
-	p.z = rand() % 80 - 40;
-	l.x = rand() % 80 - 40;
-	l.y = rand() % 80 - 40;
-	l.z = rand() % 80 - 40;
-	h.x = rand() % 80 - 40;
-	h.y = rand() % 80 - 40;
-	h.z = rand() % 80 - 40;
-	if (h.x < l.x) std::swap(h.x, l.x);
-	if (h.y < l.y) std::swap(h.y, l.y);
-	if (h.z < l.z) std::swap(h.z, l.z);
-	double dist = math::euclidian_distance_to_box_edge
-	  <triple, cast_accessor<triple, double, triple_access>, double>
-	  (3, p, l, h, cast_accessor<triple, double, triple_access>());
-	using namespace ::std;
-	double dist_x
-	  = abs(static_cast<double>(p.x)-(static_cast<double>(l.x+h.x)/2.0))
-	  + (static_cast<double>(h.x-l.x)/2.0);
-	double dist_y
-	  = abs(static_cast<double>(p.y)-(static_cast<double>(l.y+h.y)/2.0))
-	  + (static_cast<double>(h.y-l.y)/2.0);
-	double dist_z
-	  = abs(static_cast<double>(p.z)-(static_cast<double>(l.z+h.z)/2.0))
-	  + (static_cast<double>(h.z-l.z)/2.0);
-	double other_dist
-	  = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
-	BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
+        triple p, l, h;
+        p.x = rand() % 80 - 40;
+        p.y = rand() % 80 - 40;
+        p.z = rand() % 80 - 40;
+        l.x = rand() % 80 - 40;
+        l.y = rand() % 80 - 40;
+        l.z = rand() % 80 - 40;
+        h.x = rand() % 80 - 40;
+        h.y = rand() % 80 - 40;
+        h.z = rand() % 80 - 40;
+        if (h.x < l.x) std::swap(h.x, l.x);
+        if (h.y < l.y) std::swap(h.y, l.y);
+        if (h.z < l.z) std::swap(h.z, l.z);
+        double dist = math::euclidian_distance_to_box_edge
+          <triple, cast_accessor<triple, double, triple_access>, double>
+          (3, p, l, h, cast_accessor<triple, double, triple_access>());
+        using namespace ::std;
+        double dist_x
+          = abs(static_cast<double>(p.x)-(static_cast<double>(l.x+h.x)/2.0))
+          + (static_cast<double>(h.x-l.x)/2.0);
+        double dist_y
+          = abs(static_cast<double>(p.y)-(static_cast<double>(l.y+h.y)/2.0))
+          + (static_cast<double>(h.y-l.y)/2.0);
+        double dist_z
+          = abs(static_cast<double>(p.z)-(static_cast<double>(l.z+h.z)/2.0))
+          + (static_cast<double>(h.z-l.z)/2.0);
+        double other_dist
+          = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
+        BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
       }
   }
 }
@@ -3907,21 +3908,21 @@ BOOST_AUTO_TEST_CASE( test_euclidian_distance_to_plane )
     // Distance between points and plane at different positions in 3D
     for (int i=0; i<100; ++i)
       {
-	triple p, q;
-	p.x = rand() % 80 - 40;
-	p.y = rand() % 80 - 40;
-	p.z = rand() % 80 - 40;
-	q.x = rand() % 80 - 40;
-	q.y = rand() % 80 - 40;
-	q.z = rand() % 80 - 40;
-	dimension_type dim = rand() % 3;
-	float dist = math::euclidian_distance_to_plane
-	  <triple, cast_accessor<triple, double, triple_access>, float>
-	  (dim, p, q, cast_accessor<triple, double, triple_access>());
-	using namespace ::std;
-	triple_access access;
-	float other_dist = abs(static_cast<float>(access(dim, p) - access(dim, q)));
-	BOOST_CHECK_CLOSE(dist, other_dist, .0000001f);
+        triple p, q;
+        p.x = rand() % 80 - 40;
+        p.y = rand() % 80 - 40;
+        p.z = rand() % 80 - 40;
+        q.x = rand() % 80 - 40;
+        q.y = rand() % 80 - 40;
+        q.z = rand() % 80 - 40;
+        dimension_type dim = static_cast<dimension_type>(rand()) % 3;
+        float dist = math::euclidian_distance_to_plane
+          <triple, cast_accessor<triple, double, triple_access>, float>
+          (dim, p, q, cast_accessor<triple, double, triple_access>());
+        using namespace ::std;
+        triple_access access;
+        float other_dist = abs(static_cast<float>(access(dim, p) - access(dim, q)));
+        BOOST_CHECK_CLOSE(dist, other_dist, .0000001f);
       }
   }
 }
@@ -3963,19 +3964,19 @@ BOOST_AUTO_TEST_CASE( test_euclidian_square_distance_to_key )
     // Distance between 2 points at different positions in 3D
     for (int i=0; i<100; ++i)
       {
-	triple p, q;
-	p.x = rand() % 80 - 40;
-	p.y = rand() % 80 - 40;
-	p.z = rand() % 80 - 40;
-	q.x = rand() % 80 - 40;
-	q.y = rand() % 80 - 40;
-	q.z = rand() % 80 - 40;
-	double dist = math::euclidian_square_distance_to_key
-	  <triple, cast_accessor<triple, double, triple_access>, double>
-	  (3, p, q, cast_accessor<triple, double, triple_access>());
-	double other_dist = (p.x-q.x)*(p.x-q.x) + (p.y-q.y)*(p.y-q.y)
-	  + (p.z-q.z)*(p.z-q.z);
-	BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
+        triple p, q;
+        p.x = rand() % 80 - 40;
+        p.y = rand() % 80 - 40;
+        p.z = rand() % 80 - 40;
+        q.x = rand() % 80 - 40;
+        q.y = rand() % 80 - 40;
+        q.z = rand() % 80 - 40;
+        double dist = math::euclidian_square_distance_to_key
+          <triple, cast_accessor<triple, double, triple_access>, double>
+          (3, p, q, cast_accessor<triple, double, triple_access>());
+        double other_dist = (p.x-q.x)*(p.x-q.x) + (p.y-q.y)*(p.y-q.y)
+          + (p.z-q.z)*(p.z-q.z);
+        BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
       }
   }
 }
@@ -4005,35 +4006,35 @@ BOOST_AUTO_TEST_CASE( test_euclidian_square_distance_to_box_edge )
     // Distance between 2 points at different positions in 3D
     for (int i=0; i<100; ++i)
       {
-	triple p, l, h;
-	p.x = rand() % 80 - 40;
-	p.y = rand() % 80 - 40;
-	p.z = rand() % 80 - 40;
-	l.x = rand() % 80 - 40;
-	l.y = rand() % 80 - 40;
-	l.z = rand() % 80 - 40;
-	h.x = rand() % 80 - 40;
-	h.y = rand() % 80 - 40;
-	h.z = rand() % 80 - 40;
-	if (h.x < l.x) std::swap(h.x, l.x);
-	if (h.y < l.y) std::swap(h.y, l.y);
-	if (h.z < l.z) std::swap(h.z, l.z);
-	double dist = math::euclidian_square_distance_to_box_edge
-	  <triple, cast_accessor<triple, double, triple_access>, double>
-	  (3, p, l, h, cast_accessor<triple, double, triple_access>());
-	using namespace ::std;
-	double dist_x
-	  = abs(static_cast<double>(p.x)-(static_cast<double>(l.x+h.x)/2.0))
-	  + (static_cast<double>(h.x-l.x)/2.0);
-	double dist_y
-	  = abs(static_cast<double>(p.y)-(static_cast<double>(l.y+h.y)/2.0))
-	  + (static_cast<double>(h.y-l.y)/2.0);
-	double dist_z
-	  = abs(static_cast<double>(p.z)-(static_cast<double>(l.z+h.z)/2.0))
-	  + (static_cast<double>(h.z-l.z)/2.0);
-	double other_dist
-	  = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
-	BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
+        triple p, l, h;
+        p.x = rand() % 80 - 40;
+        p.y = rand() % 80 - 40;
+        p.z = rand() % 80 - 40;
+        l.x = rand() % 80 - 40;
+        l.y = rand() % 80 - 40;
+        l.z = rand() % 80 - 40;
+        h.x = rand() % 80 - 40;
+        h.y = rand() % 80 - 40;
+        h.z = rand() % 80 - 40;
+        if (h.x < l.x) std::swap(h.x, l.x);
+        if (h.y < l.y) std::swap(h.y, l.y);
+        if (h.z < l.z) std::swap(h.z, l.z);
+        double dist = math::euclidian_square_distance_to_box_edge
+          <triple, cast_accessor<triple, double, triple_access>, double>
+          (3, p, l, h, cast_accessor<triple, double, triple_access>());
+        using namespace ::std;
+        double dist_x
+          = abs(static_cast<double>(p.x)-(static_cast<double>(l.x+h.x)/2.0))
+          + (static_cast<double>(h.x-l.x)/2.0);
+        double dist_y
+          = abs(static_cast<double>(p.y)-(static_cast<double>(l.y+h.y)/2.0))
+          + (static_cast<double>(h.y-l.y)/2.0);
+        double dist_z
+          = abs(static_cast<double>(p.z)-(static_cast<double>(l.z+h.z)/2.0))
+          + (static_cast<double>(h.z-l.z)/2.0);
+        double other_dist
+          = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
+        BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
       }
   }
 }
@@ -4068,22 +4069,23 @@ BOOST_AUTO_TEST_CASE( test_euclidian_square_distance_to_plane )
     // Distance between points and plane at different positions in 3D
     for (int i=0; i<100; ++i)
       {
-	triple p, q;
-	p.x = rand() % 80 - 40;
-	p.y = rand() % 80 - 40;
-	p.z = rand() % 80 - 40;
-	q.x = rand() % 80 - 40;
-	q.y = rand() % 80 - 40;
-	q.z = rand() % 80 - 40;
-	dimension_type dim = rand() % 3;
-	float dist = math::euclidian_square_distance_to_plane
-	  <triple, cast_accessor<triple, double, triple_access>, float>
-	  (dim, p, q, cast_accessor<triple, double, triple_access>());
-	using namespace ::std;
-	triple_access access;
-	float other_dist = static_cast<float>(access(dim, p) - access(dim, q))
-	  * (access(dim, p) - access(dim, q));
-	BOOST_CHECK_CLOSE(dist, other_dist, .0000001f);
+        triple p, q;
+        p.x = rand() % 80 - 40;
+        p.y = rand() % 80 - 40;
+        p.z = rand() % 80 - 40;
+        q.x = rand() % 80 - 40;
+        q.y = rand() % 80 - 40;
+        q.z = rand() % 80 - 40;
+        dimension_type dim = static_cast<dimension_type>(rand()) % 3;
+        float dist = math::euclidian_square_distance_to_plane
+          <triple, cast_accessor<triple, double, triple_access>, float>
+          (dim, p, q, cast_accessor<triple, double, triple_access>());
+        using namespace ::std;
+        triple_access access;
+        float other_dist
+          = static_cast<float>((access(dim, p) - access(dim, q))
+                               * (access(dim, p) - access(dim, q)));
+        BOOST_CHECK_CLOSE(dist, other_dist, .0000001f);
       }
   }
 }
@@ -4125,19 +4127,19 @@ BOOST_AUTO_TEST_CASE( test_manhattan_distance_to_key )
     // Distance between 2 points at different positions in 3D
     for (int i=0; i<100; ++i)
       {
-	triple p, q;
-	p.x = rand() % 80 - 40;
-	p.y = rand() % 80 - 40;
-	p.z = rand() % 80 - 40;
-	q.x = rand() % 80 - 40;
-	q.y = rand() % 80 - 40;
-	q.z = rand() % 80 - 40;
-	double dist = math::manhattan_distance_to_key
-	  <triple, cast_accessor<triple, double, triple_access>, double>
-	  (3, p, q, cast_accessor<triple, double, triple_access>());
-	using namespace ::std;
-	double other_dist = abs(p.x-q.x) + abs(p.y-q.y) + abs(p.z-q.z);
-	BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
+        triple p, q;
+        p.x = rand() % 80 - 40;
+        p.y = rand() % 80 - 40;
+        p.z = rand() % 80 - 40;
+        q.x = rand() % 80 - 40;
+        q.y = rand() % 80 - 40;
+        q.z = rand() % 80 - 40;
+        double dist = math::manhattan_distance_to_key
+          <triple, cast_accessor<triple, double, triple_access>, double>
+          (3, p, q, cast_accessor<triple, double, triple_access>());
+        using namespace ::std;
+        double other_dist = abs(p.x-q.x) + abs(p.y-q.y) + abs(p.z-q.z);
+        BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
       }
   }
 }
@@ -4167,31 +4169,31 @@ BOOST_AUTO_TEST_CASE( test_manhattan_distance_to_box_edge )
     // Distance between 2 points at different positions in 3D
     for (int i=0; i<100; ++i)
       {
-	triple p, l, h;
-	p.x = rand() % 80 - 40;
-	p.y = rand() % 80 - 40;
-	p.z = rand() % 80 - 40;
-	l.x = rand() % 80 - 40;
-	l.y = rand() % 80 - 40;
-	l.z = rand() % 80 - 40;
-	h.x = rand() % 80 - 40;
-	h.y = rand() % 80 - 40;
-	h.z = rand() % 80 - 40;
-	if (h.x < l.x) std::swap(h.x, l.x);
-	if (h.y < l.y) std::swap(h.y, l.y);
-	if (h.z < l.z) std::swap(h.z, l.z);
-	double dist = math::manhattan_distance_to_box_edge
-	  <triple, cast_accessor<triple, double, triple_access>, double>
-	  (3, p, l, h, cast_accessor<triple, double, triple_access>());
-	using namespace ::std;
-	double other_dist
-	  = abs(static_cast<double>(p.x)-(static_cast<double>(l.x+h.x)/2.0))
-	  + abs(static_cast<double>(h.x-l.x)/2.0)
-	  + abs(static_cast<double>(p.y)-(static_cast<double>(l.y+h.y)/2.0))
-	  + abs(static_cast<double>(h.y-l.y)/2.0)
-	  + abs(static_cast<double>(p.z)-(static_cast<double>(l.z+h.z)/2.0))
-	  + abs(static_cast<double>(h.z-l.z)/2.0);
-	BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
+        triple p, l, h;
+        p.x = rand() % 80 - 40;
+        p.y = rand() % 80 - 40;
+        p.z = rand() % 80 - 40;
+        l.x = rand() % 80 - 40;
+        l.y = rand() % 80 - 40;
+        l.z = rand() % 80 - 40;
+        h.x = rand() % 80 - 40;
+        h.y = rand() % 80 - 40;
+        h.z = rand() % 80 - 40;
+        if (h.x < l.x) std::swap(h.x, l.x);
+        if (h.y < l.y) std::swap(h.y, l.y);
+        if (h.z < l.z) std::swap(h.z, l.z);
+        double dist = math::manhattan_distance_to_box_edge
+          <triple, cast_accessor<triple, double, triple_access>, double>
+          (3, p, l, h, cast_accessor<triple, double, triple_access>());
+        using namespace ::std;
+        double other_dist
+          = abs(static_cast<double>(p.x)-(static_cast<double>(l.x+h.x)/2.0))
+          + abs(static_cast<double>(h.x-l.x)/2.0)
+          + abs(static_cast<double>(p.y)-(static_cast<double>(l.y+h.y)/2.0))
+          + abs(static_cast<double>(h.y-l.y)/2.0)
+          + abs(static_cast<double>(p.z)-(static_cast<double>(l.z+h.z)/2.0))
+          + abs(static_cast<double>(h.z-l.z)/2.0);
+        BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
       }
   }
 }
@@ -4226,21 +4228,21 @@ BOOST_AUTO_TEST_CASE( test_manhattan_distance_to_plane )
     // Distance between points and plane at different positions in 3D
     for (int i=0; i<100; ++i)
       {
-	triple p, q;
-	p.x = rand() % 80 - 40;
-	p.y = rand() % 80 - 40;
-	p.z = rand() % 80 - 40;
-	q.x = rand() % 80 - 40;
-	q.y = rand() % 80 - 40;
-	q.z = rand() % 80 - 40;
-	dimension_type dim = rand() % 3;
-	float dist = math::manhattan_distance_to_plane
-	  <triple, cast_accessor<triple, double, triple_access>, float>
-	  (dim, p, q, cast_accessor<triple, double, triple_access>());
-	using namespace ::std;
-	triple_access access;
-	float other_dist = abs(static_cast<float>(access(dim, p) - access(dim, q)));
-	BOOST_CHECK_CLOSE(dist, other_dist, .0000001);
+        triple p, q;
+        p.x = rand() % 80 - 40;
+        p.y = rand() % 80 - 40;
+        p.z = rand() % 80 - 40;
+        q.x = rand() % 80 - 40;
+        q.y = rand() % 80 - 40;
+        q.z = rand() % 80 - 40;
+        dimension_type dim = static_cast<dimension_type>(rand()) % 3;
+        float dist = math::manhattan_distance_to_plane
+          <triple, cast_accessor<triple, double, triple_access>, float>
+          (dim, p, q, cast_accessor<triple, double, triple_access>());
+        using namespace ::std;
+        triple_access access;
+        float other_dist = abs(static_cast<float>(access(dim, p) - access(dim, q)));
+        BOOST_CHECK_CLOSE(dist, other_dist, .0000001);
       }
   }
 }
@@ -4253,27 +4255,29 @@ BOOST_AUTO_TEST_CASE( test_geometry_euclidian_double )
   // distance_type should be declared
   typedef euclidian_double<triple, triple_access>
     ::distance_type distance_type;
-  triple p, q;
-  p.x = rand() % 80 - 40;
-  p.y = rand() % 80 - 40;
-  p.z = rand() % 80 - 40;
-  q.x = rand() % 80 - 40;
-  q.y = rand() % 80 - 40;
-  q.z = rand() % 80 - 40;
   {
-    distance_type r = geometry.distance_to_key(3, p, q);
-    distance_type s = math::euclidian_distance_to_key
-      <triple, triple_access, distance_type>(3, p, q, access);
-    BOOST_CHECK_CLOSE(r, s, .000000000001);
-  }
-  {
-    dimension_type dim = rand() % 3;
-    distance_type r = geometry.distance_to_plane(3, dim, p, q);
-    distance_type s = math::euclidian_distance_to_plane
-      <triple, cast_accessor<triple, distance_type, triple_access>,
-       distance_type>(dim, p, q,
-		      cast_accessor<triple, distance_type, triple_access>());
-    BOOST_CHECK_CLOSE(r, s, .000000000001);
+    triple p, q;
+    p.x = rand() % 80 - 40;
+    p.y = rand() % 80 - 40;
+    p.z = rand() % 80 - 40;
+    q.x = rand() % 80 - 40;
+    q.y = rand() % 80 - 40;
+    q.z = rand() % 80 - 40;
+    {
+      distance_type r = geometry.distance_to_key(3, p, q);
+      distance_type s = math::euclidian_distance_to_key
+        <triple, triple_access, distance_type>(3, p, q, access);
+      BOOST_CHECK_CLOSE(r, s, .000000000001);
+    }
+    {
+      dimension_type dim = static_cast<dimension_type>(rand()) % 3;
+      distance_type r = geometry.distance_to_plane(3, dim, p, q);
+      distance_type s = math::euclidian_distance_to_plane
+        <triple, cast_accessor<triple, distance_type, triple_access>,
+         distance_type>(dim, p, q,
+                        cast_accessor<triple, distance_type, triple_access>());
+      BOOST_CHECK_CLOSE(r, s, .000000000001);
+    }
   }
   {
     bracket_cast_accessor<point5d, double> access_double;
@@ -4283,24 +4287,24 @@ BOOST_AUTO_TEST_CASE( test_geometry_euclidian_double )
     // distance_to_plane is always less or equal to distance to key
     {
       for(int i=0; i<10000; ++i)
-	{
-	  point5d p, q;
-	  p[0] = rand_double();
-	  p[1] = rand_double();
-	  p[2] = rand_double();
-	  p[3] = rand_double();
-	  p[4] = rand_double();
-	  q[0] = p[0];
-	  q[1] = p[1];
-	  q[2] = -rand_double();
-	  q[3] = p[3];
-	  q[4] = p[4];
-	  distance_type r = geometry_double.distance_to_key(5, p, q);
-	  distance_type s = geometry_double.distance_to_plane(5, 2, p, q);
-	  BOOST_REQUIRE_MESSAGE
-	    (s <= r, std::setprecision(std::numeric_limits<double>::digits10)
-	     << r << " > " << s);
-	}
+        {
+          point5d p, q;
+          p[0] = rand_double();
+          p[1] = rand_double();
+          p[2] = rand_double();
+          p[3] = rand_double();
+          p[4] = rand_double();
+          q[0] = p[0];
+          q[1] = p[1];
+          q[2] = -rand_double();
+          q[3] = p[3];
+          q[4] = p[4];
+          distance_type r = geometry_double.distance_to_key(5, p, q);
+          distance_type s = geometry_double.distance_to_plane(5, 2, p, q);
+          BOOST_REQUIRE_MESSAGE
+            (s <= r, std::setprecision(std::numeric_limits<double>::digits10)
+             << r << " > " << s);
+        }
     }
   }
 }
@@ -4313,25 +4317,27 @@ BOOST_AUTO_TEST_CASE( test_geometry_euclidian_float )
   // distance_type should be declared
   typedef euclidian_float<triple, triple_access>
     ::distance_type distance_type;
-  triple p, q;
-  p.x = rand() % 80 - 40;
-  p.y = rand() % 80 - 40;
-  p.z = rand() % 80 - 40;
-  q.x = rand() % 80 - 40;
-  q.y = rand() % 80 - 40;
-  q.z = rand() % 80 - 40;
   {
-    distance_type r = geometry.distance_to_key(3, p, q);
-    distance_type s = math::euclidian_distance_to_key
-      <triple, triple_access, distance_type>(3, p, q, access);
-    BOOST_CHECK_CLOSE(r, s, .0000001);
-  }
-  {
-    dimension_type dim = rand() % 3;
-    distance_type r = geometry.distance_to_plane(3, dim, p, q);
-    distance_type s = math::euclidian_distance_to_plane
-      <triple, triple_access, distance_type>(dim, p, q, access);
-    BOOST_CHECK_CLOSE(r, s, .0000001);
+    triple p, q;
+    p.x = rand() % 80 - 40;
+    p.y = rand() % 80 - 40;
+    p.z = rand() % 80 - 40;
+    q.x = rand() % 80 - 40;
+    q.y = rand() % 80 - 40;
+    q.z = rand() % 80 - 40;
+    {
+      distance_type r = geometry.distance_to_key(3, p, q);
+      distance_type s = math::euclidian_distance_to_key
+        <triple, triple_access, distance_type>(3, p, q, access);
+      BOOST_CHECK_CLOSE(r, s, .0000001);
+    }
+    {
+      dimension_type dim = static_cast<dimension_type>(rand()) % 3;
+      distance_type r = geometry.distance_to_plane(3, dim, p, q);
+      distance_type s = math::euclidian_distance_to_plane
+        <triple, triple_access, distance_type>(dim, p, q, access);
+      BOOST_CHECK_CLOSE(r, s, .0000001);
+    }
   }
   {
     bracket_cast_accessor<fpoint5d, float> access_float;
@@ -4342,24 +4348,24 @@ BOOST_AUTO_TEST_CASE( test_geometry_euclidian_float )
     // distance_to_plane is always less or equal to distance to key
     {
       for(int i=0; i<10000; ++i)
-	{
-	  fpoint5d p, q;
-	  p[0] = rand_float();
-	  p[1] = rand_float();
-	  p[2] = rand_float();
-	  p[3] = rand_float();
-	  p[4] = rand_float();
-	  q[0] = p[0];
-	  q[1] = p[1];
-	  q[2] = -rand_float();
-	  q[3] = p[3];
-	  q[4] = p[4];
-	  distance_type r = geometry_float.distance_to_key(5, p, q);
-	  distance_type s = geometry_float.distance_to_plane(5, 2, p, q);
-	  BOOST_REQUIRE_MESSAGE
-	    (s <= r, std::setprecision(std::numeric_limits<float>::digits10)
-	     << r << " > " << s);
-	}
+        {
+          fpoint5d p, q;
+          p[0] = rand_float();
+          p[1] = rand_float();
+          p[2] = rand_float();
+          p[3] = rand_float();
+          p[4] = rand_float();
+          q[0] = p[0];
+          q[1] = p[1];
+          q[2] = -rand_float();
+          q[3] = p[3];
+          q[4] = p[4];
+          distance_type r = geometry_float.distance_to_key(5, p, q);
+          distance_type s = geometry_float.distance_to_plane(5, 2, p, q);
+          BOOST_REQUIRE_MESSAGE
+            (s <= r, std::setprecision(std::numeric_limits<float>::digits10)
+             << r << " > " << s);
+        }
     }
   }
 }
@@ -4372,25 +4378,27 @@ BOOST_AUTO_TEST_CASE( test_geometry_euclidian_square_double )
   // distance_type should be declared
   typedef euclidian_square_double<triple, triple_access>
     ::distance_type distance_type;
-  triple p, q;
-  p.x = rand() % 80 - 40;
-  p.y = rand() % 80 - 40;
-  p.z = rand() % 80 - 40;
-  q.x = rand() % 80 - 40;
-  q.y = rand() % 80 - 40;
-  q.z = rand() % 80 - 40;
   {
-    distance_type r = geometry.distance_to_key(3, p, q);
-    distance_type s = math::euclidian_square_distance_to_key
-      <triple, triple_access, distance_type>(3, p, q, access);
-    BOOST_CHECK_CLOSE(r, s, .000000000001);
-  }
-  {
-    dimension_type dim = rand() % 3;
-    distance_type r = geometry.distance_to_plane(3, dim, p, q);
-    distance_type s = math::euclidian_square_distance_to_plane
-      <triple, triple_access, distance_type>(dim, p, q, access);
-    BOOST_CHECK_CLOSE(r, s, .000000000001);
+    triple p, q;
+    p.x = rand() % 80 - 40;
+    p.y = rand() % 80 - 40;
+    p.z = rand() % 80 - 40;
+    q.x = rand() % 80 - 40;
+    q.y = rand() % 80 - 40;
+    q.z = rand() % 80 - 40;
+    {
+      distance_type r = geometry.distance_to_key(3, p, q);
+      distance_type s = math::euclidian_square_distance_to_key
+        <triple, triple_access, distance_type>(3, p, q, access);
+      BOOST_CHECK_CLOSE(r, s, .000000000001);
+    }
+    {
+      dimension_type dim = static_cast<dimension_type>(rand()) % 3;
+      distance_type r = geometry.distance_to_plane(3, dim, p, q);
+      distance_type s = math::euclidian_square_distance_to_plane
+        <triple, triple_access, distance_type>(dim, p, q, access);
+      BOOST_CHECK_CLOSE(r, s, .000000000001);
+    }
   }
   {
     bracket_cast_accessor<point5d, double> access_double;
@@ -4400,24 +4408,24 @@ BOOST_AUTO_TEST_CASE( test_geometry_euclidian_square_double )
     // distance_to_plane is always less or equal to distance to key
     {
       for(int i=0; i<10000; ++i)
-	{
-	  point5d p, q;
-	  p[0] = rand_double();
-	  p[1] = rand_double();
-	  p[2] = rand_double();
-	  p[3] = rand_double();
-	  p[4] = rand_double();
-	  q[0] = p[0];
-	  q[1] = p[1];
-	  q[2] = -rand_double();
-	  q[3] = p[3];
-	  q[4] = p[4];
-	  distance_type r = geometry_double.distance_to_key(5, p, q);
-	  distance_type s = geometry_double.distance_to_plane(5, 2, p, q);
-	  BOOST_REQUIRE_MESSAGE
-	    (s <= r, std::setprecision(std::numeric_limits<double>::digits10)
-	     << r << " > " << s);
-	}
+        {
+          point5d p, q;
+          p[0] = rand_double();
+          p[1] = rand_double();
+          p[2] = rand_double();
+          p[3] = rand_double();
+          p[4] = rand_double();
+          q[0] = p[0];
+          q[1] = p[1];
+          q[2] = -rand_double();
+          q[3] = p[3];
+          q[4] = p[4];
+          distance_type r = geometry_double.distance_to_key(5, p, q);
+          distance_type s = geometry_double.distance_to_plane(5, 2, p, q);
+          BOOST_REQUIRE_MESSAGE
+            (s <= r, std::setprecision(std::numeric_limits<double>::digits10)
+             << r << " > " << s);
+        }
     }
   }
 }
@@ -4430,25 +4438,27 @@ BOOST_AUTO_TEST_CASE( test_geometry_euclidian_square_float )
   // distance_type should be declared
   typedef euclidian_square_float<triple, triple_access>
     ::distance_type distance_type;
-  triple p, q;
-  p.x = rand() % 80 - 40;
-  p.y = rand() % 80 - 40;
-  p.z = rand() % 80 - 40;
-  q.x = rand() % 80 - 40;
-  q.y = rand() % 80 - 40;
-  q.z = rand() % 80 - 40;
   {
-    distance_type r = geometry.distance_to_key(3, p, q);
-    distance_type s = math::euclidian_square_distance_to_key
-      <triple, triple_access, distance_type>(3, p, q, access);
-    BOOST_CHECK_CLOSE(r, s, .0000001);
-  }
-  {
-    dimension_type dim = rand() % 3;
-    distance_type r = geometry.distance_to_plane(3, dim, p, q);
-    distance_type s = math::euclidian_square_distance_to_plane
-      <triple, triple_access, distance_type>(dim, p, q, access);
-    BOOST_CHECK_CLOSE(r, s, .0000001);
+    triple p, q;
+    p.x = rand() % 80 - 40;
+    p.y = rand() % 80 - 40;
+    p.z = rand() % 80 - 40;
+    q.x = rand() % 80 - 40;
+    q.y = rand() % 80 - 40;
+    q.z = rand() % 80 - 40;
+    {
+      distance_type r = geometry.distance_to_key(3, p, q);
+      distance_type s = math::euclidian_square_distance_to_key
+        <triple, triple_access, distance_type>(3, p, q, access);
+      BOOST_CHECK_CLOSE(r, s, .0000001);
+    }
+    {
+      dimension_type dim = static_cast<dimension_type>(rand()) % 3;
+      distance_type r = geometry.distance_to_plane(3, dim, p, q);
+      distance_type s = math::euclidian_square_distance_to_plane
+        <triple, triple_access, distance_type>(dim, p, q, access);
+      BOOST_CHECK_CLOSE(r, s, .0000001);
+    }
   }
   {
     bracket_cast_accessor<fpoint5d, float> access_float;
@@ -4458,24 +4468,24 @@ BOOST_AUTO_TEST_CASE( test_geometry_euclidian_square_float )
     // distance_to_plane is always less or equal to distance to key
     {
       for(int i=0; i<10000; ++i)
-	{
-	  fpoint5d p, q;
-	  p[0] = rand_float();
-	  p[1] = rand_float();
-	  p[2] = rand_float();
-	  p[3] = rand_float();
-	  p[4] = rand_float();
-	  q[0] = p[0];
-	  q[1] = p[1];
-	  q[2] = -rand_float();
-	  q[3] = p[3];
-	  q[4] = p[4];
-	  distance_type r = geometry_float.distance_to_key(5, p, q);
-	  distance_type s = geometry_float.distance_to_plane(5, 2, p, q);
-	  BOOST_REQUIRE_MESSAGE
-	    (s <= r, std::setprecision(std::numeric_limits<float>::digits10)
-	     << r << " > " << s);
-	}
+        {
+          fpoint5d p, q;
+          p[0] = rand_float();
+          p[1] = rand_float();
+          p[2] = rand_float();
+          p[3] = rand_float();
+          p[4] = rand_float();
+          q[0] = p[0];
+          q[1] = p[1];
+          q[2] = -rand_float();
+          q[3] = p[3];
+          q[4] = p[4];
+          distance_type r = geometry_float.distance_to_key(5, p, q);
+          distance_type s = geometry_float.distance_to_plane(5, 2, p, q);
+          BOOST_REQUIRE_MESSAGE
+            (s <= r, std::setprecision(std::numeric_limits<float>::digits10)
+             << r << " > " << s);
+        }
     }
   }
 }
@@ -4488,54 +4498,56 @@ BOOST_AUTO_TEST_CASE( test_geometry_manhattan )
   // distance_type should be declared
   typedef manhattan<triple, triple_access, int>
     ::distance_type distance_type;
-  triple p, q;
-  p.x = rand() % 80 - 40;
-  p.y = rand() % 80 - 40;
-  p.z = rand() % 80 - 40;
-  q.x = rand() % 80 - 40;
-  q.y = rand() % 80 - 40;
-  q.z = rand() % 80 - 40;
   {
-    distance_type r = geometry.distance_to_key(3, p, q);
-    distance_type s = math::manhattan_distance_to_key
-      <triple, triple_access, distance_type>(3, p, q, access);
-    BOOST_CHECK_EQUAL(r, s);
-  }
-  {
-    dimension_type dim = rand() % 3;
-    distance_type r = geometry.distance_to_plane(3, dim, p, q);
-    distance_type s = math::manhattan_distance_to_plane
-      <triple, triple_access, distance_type>(dim, p, q, access);
-    BOOST_CHECK_EQUAL(r, s);
+    triple p, q;
+    p.x = rand() % 80 - 40;
+    p.y = rand() % 80 - 40;
+    p.z = rand() % 80 - 40;
+    q.x = rand() % 80 - 40;
+    q.y = rand() % 80 - 40;
+    q.z = rand() % 80 - 40;
+    {
+      distance_type r = geometry.distance_to_key(3, p, q);
+      distance_type s = math::manhattan_distance_to_key
+        <triple, triple_access, distance_type>(3, p, q, access);
+      BOOST_CHECK_EQUAL(r, s);
+    }
+    {
+      dimension_type dim = static_cast<dimension_type>(rand() % 3);
+      distance_type r = geometry.distance_to_plane(3, dim, p, q);
+      distance_type s = math::manhattan_distance_to_plane
+        <triple, triple_access, distance_type>(dim, p, q, access);
+      BOOST_CHECK_EQUAL(r, s);
+    }
   }
   {
     bracket_cast_accessor<point5d, double> access_double;
     manhattan<point5d, bracket_cast_accessor<point5d, double>, double>
       geometry_double(access_double);
-	typedef manhattan<point5d, bracket_cast_accessor<point5d, double>, double>
+        typedef manhattan<point5d, bracket_cast_accessor<point5d, double>, double>
       ::distance_type distance_type;
     // Bad attempt to test that given any 2 points, the result of
     // distance_to_plane is always less or equal to distance to key
     {
       for(int i=0; i<10000; ++i)
-	{
-	  point5d p, q;
-	  p[0] = rand_double();
-	  p[1] = rand_double();
-	  p[2] = rand_double();
-	  p[3] = rand_double();
-	  p[4] = rand_double();
-	  q[0] = p[0];
-	  q[1] = p[1];
-	  q[2] = -rand_double();
-	  q[3] = p[3];
-	  q[4] = p[4];
-	  distance_type r = geometry_double.distance_to_key(5, p, q);
-	  distance_type s = geometry_double.distance_to_plane(5, 2, p, q);
-	  BOOST_REQUIRE_MESSAGE
-	    (s <= r, std::setprecision(std::numeric_limits<double>::digits10)
-	     << r << " > " << s);
-	}
+        {
+          point5d p, q;
+          p[0] = rand_double();
+          p[1] = rand_double();
+          p[2] = rand_double();
+          p[3] = rand_double();
+          p[4] = rand_double();
+          q[0] = p[0];
+          q[1] = p[1];
+          q[2] = -rand_double();
+          q[3] = p[3];
+          q[4] = p[4];
+          distance_type r = geometry_double.distance_to_key(5, p, q);
+          distance_type s = geometry_double.distance_to_plane(5, 2, p, q);
+          BOOST_REQUIRE_MESSAGE
+            (s <= r, std::setprecision(std::numeric_limits<double>::digits10)
+             << r << " > " << s);
+        }
     }
   }
 }
@@ -4545,8 +4557,8 @@ BOOST_AUTO_TEST_CASE( test_geometry_manhattan )
 struct Hundred_Kdtree_5D_fixture
 {
   typedef Kdtree<details::Static_rank<5>, point5d,
-		 bracket_less<point5d>,
-		 std::allocator<point5d>, false> kdtree_type;
+                 bracket_less<point5d>,
+                 std::allocator<point5d>, false> kdtree_type;
   kdtree_type kdtree;
   Hundred_Kdtree_5D_fixture()
   {
@@ -4567,17 +4579,17 @@ BOOST_AUTO_TEST_CASE( test_neighbor_equal )
 {
   using namespace spatial::details::geometry;
   details::Neighbor_iterator<details::Static_rank<2>, point2d,
-		    Kdtree_node<point2d>, bracket_less<point2d>,
-		    euclidian_double<point2d,
-				     bracket_cast_accessor<point2d, double> > >
+                    Kdtree_node<point2d>, bracket_less<point2d>,
+                    euclidian_double<point2d,
+                                     bracket_cast_accessor<point2d, double> > >
     iter;
   details::Const_Neighbor_iterator<details::Static_rank<2>, point2d,
-			  Kdtree_node<point2d>, bracket_less<point2d>,
-			  euclidian_double<point2d,
-					   bracket_cast_accessor<point2d, double> > >
+                          Kdtree_node<point2d>, bracket_less<point2d>,
+                          euclidian_double<point2d,
+                                           bracket_cast_accessor<point2d, double> > >
     citer;
-  iter.impl.node = 0;
-  citer.impl.node = 0;
+  iter.impl_.node_ = 0;
+  citer.impl_.node_ = 0;
   BOOST_CHECK(iter == citer);
   BOOST_CHECK(!(iter != citer));
 }
@@ -4586,11 +4598,11 @@ BOOST_AUTO_TEST_CASE( test_neighbor_distance )
 {
   using namespace spatial::details::geometry;
   details::Neighbor_iterator<details::Static_rank<2>, point2d,
-		    Kdtree_node<point2d>, bracket_less<point2d>,
-		    euclidian_double<point2d,
-				     bracket_cast_accessor<point2d, double> > >
+                    Kdtree_node<point2d>, bracket_less<point2d>,
+                    euclidian_double<point2d,
+                                     bracket_cast_accessor<point2d, double> > >
     iter;
-  iter.impl.distance = .1;
+  iter.impl_.distance_ = .1;
   BOOST_CHECK_EQUAL(iter.distance(), .1);
 }
 
@@ -4598,20 +4610,20 @@ BOOST_AUTO_TEST_CASE( test_neighbor_deference )
 {
   using namespace spatial::details::geometry;
   details::Neighbor_iterator<details::Static_rank<2>, point2d,
-		    Kdtree_node<point2d>, bracket_less<point2d>,
-		    euclidian_double<point2d,
-				     bracket_cast_accessor<point2d, double> > >
+                    Kdtree_node<point2d>, bracket_less<point2d>,
+                    euclidian_double<point2d,
+                                     bracket_cast_accessor<point2d, double> > >
     iter;
   details::Const_Neighbor_iterator<details::Static_rank<2>, point2d,
-			  Kdtree_node<point2d>, bracket_less<point2d>,
-			  euclidian_double<point2d,
-					   bracket_cast_accessor<point2d, double> > >
+                          Kdtree_node<point2d>, bracket_less<point2d>,
+                          euclidian_double<point2d,
+                                           bracket_cast_accessor<point2d, double> > >
     citer;
   Kdtree_node<point2d> node;
-  iter.impl.node = &node;
+  iter.impl_.node_ = &node;
   node.key_field = ones;
   BOOST_CHECK(*iter == ones);
-  citer.impl.node = &node;
+  citer.impl_.node_ = &node;
   node.key_field = twos;
   BOOST_CHECK(*citer == twos);
   *iter = threes;
@@ -4636,11 +4648,11 @@ BOOST_AUTO_TEST_CASE( test_neighbor_minimum )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, ones, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(iter.impl.node == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl.node_dim == 0);
-    BOOST_CHECK_CLOSE(iter.impl.distance(), std::sqrt(2.0), .000000000001);
-    BOOST_CHECK(iter.impl.origin() == ones);
+                             geometry, ones, 0, fix.kdtree.end().node->parent);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 0);
+    BOOST_CHECK_CLOSE(iter.impl_.distance_(), std::sqrt(2.0), .000000000001);
+    BOOST_CHECK(iter.impl_.target_() == ones);
   }
   {
     // Find the expected closest at on a left-unblanced tree
@@ -4652,10 +4664,10 @@ BOOST_AUTO_TEST_CASE( test_neighbor_minimum )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, ones, 0, fix.kdtree.end().node->parent);
+                             geometry, ones, 0, fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == ones);
     BOOST_CHECK_EQUAL(iter.distance(), .0);
-    BOOST_CHECK(iter.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
   }
   {
     // Find the expected closest at on a right-unblanced tree
@@ -4667,10 +4679,10 @@ BOOST_AUTO_TEST_CASE( test_neighbor_minimum )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, fours, 0, fix.kdtree.end().node->parent);
+                             geometry, fours, 0, fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == threes);
     BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(2.0), .000000000001);
-    BOOST_CHECK(iter.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
   }
   {
     // Find the closest in a tree with a lot of positions, cross-check
@@ -4685,33 +4697,33 @@ BOOST_AUTO_TEST_CASE( test_neighbor_minimum )
     geometry_type geometry;
     for(int i=0; i<20; ++i)
       {
-	point5d target; // A bit out of the tree interval of points
-	target[0] = static_cast<double>(rand() % 22 - 1);
-	target[1] = static_cast<double>(rand() % 22 - 1);
-	target[2] = static_cast<double>(rand() % 22 - 1);
-	target[3] = static_cast<double>(rand() % 22 - 1);
-	target[4] = static_cast<double>(rand() % 22 - 1);
-	iterator_type min =
-	  iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-				 geometry, target, 0,
-				 fix.kdtree.end().node->parent);
-	BOOST_REQUIRE(min.impl.node != fix.kdtree.end().node);
-	// Need to collect the results independantly to cross-check
-	kdtree_type::const_iterator iter = fix.kdtree.begin();
-	kdtree_type::const_iterator end = fix.kdtree.end();
-	point5d best = *iter;
-	double best_distance = geometry.distance_to_key(5, target, *iter);
-	++iter;
-	for (; iter != end; ++iter)
-	  {
-	    double tmp_distance = geometry.distance_to_key(5, target, *iter);
-	    if (tmp_distance < best_distance)
-	      {
-		best = *iter;
-		best_distance = tmp_distance;
-	      }
-	  }
-	BOOST_CHECK_CLOSE(min.distance(), best_distance, .000000000001);
+        point5d target; // A bit out of the tree interval of points
+        target[0] = static_cast<double>(rand() % 22 - 1);
+        target[1] = static_cast<double>(rand() % 22 - 1);
+        target[2] = static_cast<double>(rand() % 22 - 1);
+        target[3] = static_cast<double>(rand() % 22 - 1);
+        target[4] = static_cast<double>(rand() % 22 - 1);
+        iterator_type min =
+          iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                                 geometry, target, 0,
+                                 fix.kdtree.end().node->parent);
+        BOOST_REQUIRE(min.impl_.node_ != fix.kdtree.end().node);
+        // Need to collect the results independantly to cross-check
+        kdtree_type::const_iterator iter = fix.kdtree.begin();
+        kdtree_type::const_iterator end = fix.kdtree.end();
+        point5d best = *iter;
+        double best_distance = geometry.distance_to_key(5, target, *iter);
+        ++iter;
+        for (; iter != end; ++iter)
+          {
+            double tmp_distance = geometry.distance_to_key(5, target, *iter);
+            if (tmp_distance < best_distance)
+              {
+                best = *iter;
+                best_distance = tmp_distance;
+              }
+          }
+        BOOST_CHECK_CLOSE(min.distance(), best_distance, .000000000001);
       }
   }
 }
@@ -4732,11 +4744,11 @@ BOOST_AUTO_TEST_CASE( test_neighbor_maximum )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, ones, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(iter.impl.node == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl.node_dim == 0);
-    BOOST_CHECK_CLOSE(iter.impl.distance(), std::sqrt(2.0), .000000000001);
-    BOOST_CHECK(iter.impl.origin() == ones);
+                             geometry, ones, 0, fix.kdtree.end().node->parent);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 0);
+    BOOST_CHECK_CLOSE(iter.impl_.distance_(), std::sqrt(2.0), .000000000001);
+    BOOST_CHECK(iter.impl_.target_() == ones);
   }
   {
     // Find the expected furthest on a left-unblanced tree
@@ -4748,10 +4760,10 @@ BOOST_AUTO_TEST_CASE( test_neighbor_maximum )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, ones, 0, fix.kdtree.end().node->parent);
+                             geometry, ones, 0, fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == threes);
     BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(8.0), .000000000001);
-    BOOST_CHECK(iter.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
   }
   {
     // Find the expected furthest on a right-unblanced tree
@@ -4763,10 +4775,10 @@ BOOST_AUTO_TEST_CASE( test_neighbor_maximum )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, fours, 0, fix.kdtree.end().node->parent);
+                             geometry, fours, 0, fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == zeros);
     BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(32.0), .000000000001);
-    BOOST_CHECK(iter.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
   }
   {
     // Find the furthest in a tree with a lot of positions, cross-check
@@ -4781,33 +4793,33 @@ BOOST_AUTO_TEST_CASE( test_neighbor_maximum )
     geometry_type geometry;
     for(int i=0; i<20; ++i)
       {
-	point5d target; // A bit out of the tree interval of points
-	target[0] = static_cast<double>(rand() % 22 - 1);
-	target[1] = static_cast<double>(rand() % 22 - 1);
-	target[2] = static_cast<double>(rand() % 22 - 1);
-	target[3] = static_cast<double>(rand() % 22 - 1);
-	target[4] = static_cast<double>(rand() % 22 - 1);
-	iterator_type max =
-	  iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-				 geometry, target, 0,
-				 fix.kdtree.end().node->parent);
-	BOOST_REQUIRE(max.impl.node != fix.kdtree.end().node);
-	// Need to collect the results independantly to cross-check
-	kdtree_type::const_iterator iter = fix.kdtree.begin();
-	kdtree_type::const_iterator end = fix.kdtree.end();
-	point5d best = *iter;
-	double best_distance = geometry.distance_to_key(5, target, *iter);
-	++iter;
-	for (; iter != end; ++iter)
-	  {
-	    double tmp_distance = geometry.distance_to_key(5, target, *iter);
-	    if (tmp_distance > best_distance)
-	      {
-		best = *iter;
-		best_distance = tmp_distance;
-	      }
-	  }
-	BOOST_CHECK_CLOSE(max.distance(), best_distance, .000000000001);
+        point5d target; // A bit out of the tree interval of points
+        target[0] = static_cast<double>(rand() % 22 - 1);
+        target[1] = static_cast<double>(rand() % 22 - 1);
+        target[2] = static_cast<double>(rand() % 22 - 1);
+        target[3] = static_cast<double>(rand() % 22 - 1);
+        target[4] = static_cast<double>(rand() % 22 - 1);
+        iterator_type max =
+          iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                                 geometry, target, 0,
+                                 fix.kdtree.end().node->parent);
+        BOOST_REQUIRE(max.impl_.node_ != fix.kdtree.end().node);
+        // Need to collect the results independantly to cross-check
+        kdtree_type::const_iterator iter = fix.kdtree.begin();
+        kdtree_type::const_iterator end = fix.kdtree.end();
+        point5d best = *iter;
+        double best_distance = geometry.distance_to_key(5, target, *iter);
+        ++iter;
+        for (; iter != end; ++iter)
+          {
+            double tmp_distance = geometry.distance_to_key(5, target, *iter);
+            if (tmp_distance > best_distance)
+              {
+                best = *iter;
+                best_distance = tmp_distance;
+              }
+          }
+        BOOST_CHECK_CLOSE(max.distance(), best_distance, .000000000001);
       }
   }
 }
@@ -4828,15 +4840,15 @@ BOOST_AUTO_TEST_CASE( test_neighbor_increment )
     geometry_type geometry;
     iterator_type iter =
       iterator_type(fix.kdtree.rank(), fix.kdtree.compare(), geometry, zeros,
-		    0, static_cast<kdtree_type::node_type*>
-		    (fix.kdtree.end().node->parent), 0.0);
-    BOOST_CHECK(iter.impl.node == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl.node_dim == 0);
-    BOOST_CHECK(iter.impl.origin() == zeros);
+                    0, static_cast<kdtree_type::node_type*>
+                    (fix.kdtree.end().node->parent), 0.0);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 0);
+    BOOST_CHECK(iter.impl_.target_() == zeros);
     BOOST_CHECK_NO_THROW(++iter);
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl.node_dim == 1);
-    BOOST_CHECK(iter.impl.origin() == zeros);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 1);
+    BOOST_CHECK(iter.impl_.target_() == zeros);
   }
   {
     // Find the expected nodes on a left-unblanced tree
@@ -4848,8 +4860,8 @@ BOOST_AUTO_TEST_CASE( test_neighbor_increment )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, threes, 0,
-			     fix.kdtree.end().node->parent);
+                             geometry, threes, 0,
+                             fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == threes);
     ++iter;
     BOOST_CHECK(*iter == twos);
@@ -4861,9 +4873,9 @@ BOOST_AUTO_TEST_CASE( test_neighbor_increment )
     BOOST_CHECK(*iter == zeros);
     BOOST_CHECK(iter.distance() == 18);
     ++iter;
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl.node_dim == 1);
-    BOOST_CHECK(iter.impl.origin() == threes);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 1);
+    BOOST_CHECK(iter.impl_.target_() == threes);
   }
   {
     // Find the expected furthest on a right-unblanced tree
@@ -4875,8 +4887,8 @@ BOOST_AUTO_TEST_CASE( test_neighbor_increment )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, zeros, 0,
-			     fix.kdtree.end().node->parent);
+                             geometry, zeros, 0,
+                             fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == zeros);
     ++iter;
     BOOST_CHECK(*iter == ones);
@@ -4888,9 +4900,9 @@ BOOST_AUTO_TEST_CASE( test_neighbor_increment )
     BOOST_CHECK(*iter == threes);
     BOOST_CHECK(iter.distance() == 18);
     ++iter;
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl.node_dim == 1);
-    BOOST_CHECK(iter.impl.origin() == zeros);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 1);
+    BOOST_CHECK(iter.impl_.target_() == zeros);
   }
   {
     typedef Hundred_Kdtree_5D_fixture::kdtree_type kdtree_type;
@@ -4904,34 +4916,34 @@ BOOST_AUTO_TEST_CASE( test_neighbor_increment )
     geometry_type geometry;
     for(int i=0; i<20; ++i)
       {
-  	point5d target; // A bit out of the tree interval of points
-  	target[0] = static_cast<double>(rand() % 22 - 1);
-  	target[1] = static_cast<double>(rand() % 22 - 1);
-  	target[2] = static_cast<double>(rand() % 22 - 1);
-  	target[3] = static_cast<double>(rand() % 22 - 1);
-  	target[4] = static_cast<double>(rand() % 22 - 1);
-  	iterator_type iter =
-  	  iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-  				 geometry, target, 0,
-  				 fix.kdtree.end().node->parent);
-  	iterator_type end =
-  	  iterator_type(fix.kdtree.rank(), fix.kdtree.compare(),
-  			geometry, target, 4,
-  			static_cast<kdtree_type::node_type*>
-  			(fix.kdtree.end().node));
-  	BOOST_REQUIRE(iter.impl.node != fix.kdtree.end().node);
-  	double old_distance = geometry.distance_to_key(5, target, *iter);
-  	BOOST_CHECK_EQUAL(iter.distance(), old_distance);
-  	++iter;
-  	int count = 1;
-  	for (; iter != end; ++iter, ++count)
-  	  {
-  	    double distance = geometry.distance_to_key(5, target, *iter);
-  	    BOOST_CHECK_EQUAL(iter.distance(), distance);
-  	    BOOST_CHECK(distance >= old_distance);
-  	    old_distance = distance;
-  	  }
-  	BOOST_CHECK_EQUAL(count, 100);
+        point5d target; // A bit out of the tree interval of points
+        target[0] = static_cast<double>(rand() % 22 - 1);
+        target[1] = static_cast<double>(rand() % 22 - 1);
+        target[2] = static_cast<double>(rand() % 22 - 1);
+        target[3] = static_cast<double>(rand() % 22 - 1);
+        target[4] = static_cast<double>(rand() % 22 - 1);
+        iterator_type iter =
+          iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                                 geometry, target, 0,
+                                 fix.kdtree.end().node->parent);
+        iterator_type end =
+          iterator_type(fix.kdtree.rank(), fix.kdtree.compare(),
+                        geometry, target, 4,
+                        static_cast<kdtree_type::node_type*>
+                        (fix.kdtree.end().node));
+        BOOST_REQUIRE(iter.impl_.node_ != fix.kdtree.end().node);
+        double old_distance = geometry.distance_to_key(5, target, *iter);
+        BOOST_CHECK_EQUAL(iter.distance(), old_distance);
+        ++iter;
+        int count = 1;
+        for (; iter != end; ++iter, ++count)
+          {
+            double distance = geometry.distance_to_key(5, target, *iter);
+            BOOST_CHECK_EQUAL(iter.distance(), distance);
+            BOOST_CHECK(distance >= old_distance);
+            old_distance = distance;
+          }
+        BOOST_CHECK_EQUAL(count, 100);
       }
   }
 }
@@ -4952,15 +4964,15 @@ BOOST_AUTO_TEST_CASE( test_neighbor_decrement )
     geometry_type geometry;
     iterator_type iter =
       iterator_type(fix.kdtree.rank(), fix.kdtree.compare(), geometry, zeros,
-		    0, static_cast<kdtree_type::node_type*>
-		    (fix.kdtree.end().node->parent), 0.0);
-    BOOST_CHECK(iter.impl.node == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl.node_dim == 0);
-    BOOST_CHECK(iter.impl.origin() == zeros);
+                    0, static_cast<kdtree_type::node_type*>
+                    (fix.kdtree.end().node->parent), 0.0);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 0);
+    BOOST_CHECK(iter.impl_.target_() == zeros);
     BOOST_CHECK_NO_THROW(--iter);
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl.node_dim == 1);
-    BOOST_CHECK(iter.impl.origin() == zeros);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 1);
+    BOOST_CHECK(iter.impl_.target_() == zeros);
   }
   {
     // Find the expected nodes on a left-unblanced tree
@@ -4972,7 +4984,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_decrement )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, threes, 0, fix.kdtree.end().node->parent);
+                             geometry, threes, 0, fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == zeros);
     --iter;
     BOOST_CHECK(*iter == ones);
@@ -4984,9 +4996,9 @@ BOOST_AUTO_TEST_CASE( test_neighbor_decrement )
     BOOST_CHECK(*iter == threes);
     BOOST_CHECK(iter.distance() == 0);
     --iter;
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl.node_dim == 1);
-    BOOST_CHECK(iter.impl.origin() == threes);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 1);
+    BOOST_CHECK(iter.impl_.target_() == threes);
     --iter;
     BOOST_CHECK(*iter == zeros);
     BOOST_CHECK(iter.distance() == 18);
@@ -5001,7 +5013,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_decrement )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, threes, 0, fix.kdtree.end().node->parent);
+                             geometry, threes, 0, fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == zeros);
     --iter;
     BOOST_CHECK(*iter == ones);
@@ -5013,9 +5025,9 @@ BOOST_AUTO_TEST_CASE( test_neighbor_decrement )
     BOOST_CHECK(*iter == threes);
     BOOST_CHECK(iter.distance() == 0);
     --iter;
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl.node_dim == 1);
-    BOOST_CHECK(iter.impl.origin() == threes);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 1);
+    BOOST_CHECK(iter.impl_.target_() == threes);
     --iter;
     BOOST_CHECK(*iter == zeros);
     BOOST_CHECK(iter.distance() == 18);
@@ -5032,33 +5044,33 @@ BOOST_AUTO_TEST_CASE( test_neighbor_decrement )
     geometry_type geometry;
     for(int i=0; i<20; ++i)
       {
-  	point5d target; // A bit out of the tree interval of points
-  	target[0] = static_cast<double>(rand() % 22 - 1);
-  	target[1] = static_cast<double>(rand() % 22 - 1);
-  	target[2] = static_cast<double>(rand() % 22 - 1);
-  	target[3] = static_cast<double>(rand() % 22 - 1);
-  	target[4] = static_cast<double>(rand() % 22 - 1);
-  	iterator_type iter =
-  	  iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-  				 geometry, target, 0,
-  				 fix.kdtree.end().node->parent);
-  	iterator_type end =
-  	  iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-  				 geometry, target, 0,
-  				 fix.kdtree.end().node->parent);
-  	BOOST_REQUIRE(iter.impl.node != fix.kdtree.end().node);
-  	double old_distance = geometry.distance_to_key(5, target, *iter);
-  	BOOST_CHECK_EQUAL(iter.distance(), old_distance);
-  	--iter;
-  	int count = 1;
-  	for (; iter != end; --iter, ++count)
-  	  {
-  	    double distance = geometry.distance_to_key(5, target, *iter);
-  	    BOOST_CHECK_EQUAL(iter.distance(), distance);
-  	    BOOST_CHECK(distance <= old_distance);
-  	    old_distance = distance;
-  	  }
-  	BOOST_CHECK_EQUAL(count, 99);
+        point5d target; // A bit out of the tree interval of points
+        target[0] = static_cast<double>(rand() % 22 - 1);
+        target[1] = static_cast<double>(rand() % 22 - 1);
+        target[2] = static_cast<double>(rand() % 22 - 1);
+        target[3] = static_cast<double>(rand() % 22 - 1);
+        target[4] = static_cast<double>(rand() % 22 - 1);
+        iterator_type iter =
+          iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                                 geometry, target, 0,
+                                 fix.kdtree.end().node->parent);
+        iterator_type end =
+          iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                                 geometry, target, 0,
+                                 fix.kdtree.end().node->parent);
+        BOOST_REQUIRE(iter.impl_.node_ != fix.kdtree.end().node);
+        double old_distance = geometry.distance_to_key(5, target, *iter);
+        BOOST_CHECK_EQUAL(iter.distance(), old_distance);
+        --iter;
+        int count = 1;
+        for (; iter != end; --iter, ++count)
+          {
+            double distance = geometry.distance_to_key(5, target, *iter);
+            BOOST_CHECK_EQUAL(iter.distance(), distance);
+            BOOST_CHECK(distance <= old_distance);
+            old_distance = distance;
+          }
+        BOOST_CHECK_EQUAL(count, 99);
       }
   }
 }
@@ -5082,13 +5094,13 @@ BOOST_AUTO_TEST_CASE( test_neighbor_lower_bound )
     iterator_type it = iterator_type::lower_bound
       (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
        zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
     // Check that there is no failure in limits.
     fix.kdtree.insert(ones);
     it = iterator_type::lower_bound
       (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
        zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
     BOOST_CHECK(*it == ones);
   }
   {
@@ -5099,7 +5111,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_lower_bound )
     iterator_type it = iterator_type::lower_bound
       (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
        zeros, 0.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
     BOOST_CHECK(*it == zeros);
   }
   {
@@ -5115,24 +5127,24 @@ BOOST_AUTO_TEST_CASE( test_neighbor_lower_bound )
     geometry_type geometry;
     for (int i = 0; i < 100; ++i)
       {
-	// manathan distance should not exceed 20.f+20.f
-	float limit = (float)(rand() % 42 - 1);
-	point5d origin;
-	origin[0] = rand() % 22 - 1;
-	origin[1] = rand() % 22 - 1;
-	origin[2] = rand() % 22 - 1;
-	origin[3] = rand() % 22 - 1;
-	origin[4] = rand() % 22 - 1;
-	iterator_type it = iterator_type::lower_bound
-	  (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-	   origin, limit, 0, fix.kdtree.end().node->parent);
-	// dist to value found should be greater or equal to limit or end
-	if (it.impl.node != fix.kdtree.end().node)
-	  { BOOST_CHECK_LE(limit, it.distance()); }
-	--it;
-	// dist to previous value should be stricly less than limit or end
-	if (it.impl.node != fix.kdtree.end().node)
-	  { BOOST_CHECK_LT(it.distance(), limit); }
+        // manathan distance should not exceed 20.f+20.f
+        float limit = (float)(rand() % 42 - 1);
+        point5d origin;
+        origin[0] = rand() % 22 - 1;
+        origin[1] = rand() % 22 - 1;
+        origin[2] = rand() % 22 - 1;
+        origin[3] = rand() % 22 - 1;
+        origin[4] = rand() % 22 - 1;
+        iterator_type it = iterator_type::lower_bound
+          (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+           origin, limit, 0, fix.kdtree.end().node->parent);
+        // dist to value found should be greater or equal to limit or end
+        if (it.impl_.node_ != fix.kdtree.end().node)
+          { BOOST_CHECK_LE(limit, it.distance()); }
+        --it;
+        // dist to previous value should be stricly less than limit or end
+        if (it.impl_.node_ != fix.kdtree.end().node)
+          { BOOST_CHECK_LT(it.distance(), limit); }
       }
   }
 }
@@ -5156,13 +5168,13 @@ BOOST_AUTO_TEST_CASE( test_neighbor_upper_bound )
     iterator_type it = iterator_type::upper_bound
       (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
        zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
     // Check that there is no failure in limits.
     fix.kdtree.insert(ones);
     it = iterator_type::upper_bound
       (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
        zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
     BOOST_CHECK(*it == ones);
   }
   {
@@ -5173,7 +5185,7 @@ BOOST_AUTO_TEST_CASE( test_neighbor_upper_bound )
     iterator_type it = iterator_type::upper_bound
       (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
        zeros, 0.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
   {
     // On random sets, check that the appropriate nodes are found.
@@ -5188,24 +5200,24 @@ BOOST_AUTO_TEST_CASE( test_neighbor_upper_bound )
     geometry_type geometry;
     for (int i = 0; i < 100; ++i)
       {
-	// manathan distance should not exceed 20.f+20.f
-	float limit = (float)(rand() % 42 - 1);
-	point5d origin;
-	origin[0] = rand() % 22 - 1;
-	origin[1] = rand() % 22 - 1;
-	origin[2] = rand() % 22 - 1;
-	origin[3] = rand() % 22 - 1;
-	origin[4] = rand() % 22 - 1;
-	iterator_type it = iterator_type::upper_bound
-	  (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-	   origin, limit, 0, fix.kdtree.end().node->parent);
-	// dist to value found should be strictly greater than limit or end
-	if (it.impl.node != fix.kdtree.end().node)
-	  { BOOST_CHECK_LT(limit, it.distance()); }
-	--it;
-	// dist to previous value should be lower or equal limit or end
-	if (it.impl.node != fix.kdtree.end().node)
-	  { BOOST_CHECK_LE(it.distance(), limit); }
+        // manathan distance should not exceed 20.f+20.f
+        float limit = (float)(rand() % 42 - 1);
+        point5d origin;
+        origin[0] = rand() % 22 - 1;
+        origin[1] = rand() % 22 - 1;
+        origin[2] = rand() % 22 - 1;
+        origin[3] = rand() % 22 - 1;
+        origin[4] = rand() % 22 - 1;
+        iterator_type it = iterator_type::upper_bound
+          (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+           origin, limit, 0, fix.kdtree.end().node->parent);
+        // dist to value found should be strictly greater than limit or end
+        if (it.impl_.node_ != fix.kdtree.end().node)
+          { BOOST_CHECK_LT(limit, it.distance()); }
+        --it;
+        // dist to previous value should be lower or equal limit or end
+        if (it.impl_.node_ != fix.kdtree.end().node)
+          { BOOST_CHECK_LE(it.distance(), limit); }
       }
   }
 }
@@ -5381,25 +5393,25 @@ BOOST_AUTO_TEST_CASE( test_pointset_range )
   points.insert(fives);
   range_predicate_view<pointset<2, point2d>,
     range_bounds<typename spatial::container_traits<pointset<2, point2d> >::key_type,
-		 typename spatial::container_traits<pointset<2, point2d> >::compare_type> >
+                 typename spatial::container_traits<pointset<2, point2d> >::compare_type> >
     range1(points, make_range_bounds(points, ones, threes));
   BOOST_CHECK(range1.begin() != range1.end());
   BOOST_CHECK(range1.cbegin() != range1.cend());
   range_predicate_view<pointset<2, point2d>,
     range_bounds<typename spatial::container_traits<pointset<2, point2d> >::key_type,
-		 typename spatial::container_traits<pointset<2, point2d> >::compare_type> >
+                 typename spatial::container_traits<pointset<2, point2d> >::compare_type> >
     range2(points, make_range_bounds(points, threes, fours));
   BOOST_CHECK(range2.begin() == range2.end());
   BOOST_CHECK(range2.cbegin() == range2.cend());
   range_predicate_view<const pointset<2, point2d>,
     range_bounds<typename spatial::container_traits<pointset<2, point2d> >::key_type,
-		 typename spatial::container_traits<pointset<2, point2d> >::compare_type> >
+                 typename spatial::container_traits<pointset<2, point2d> >::compare_type> >
     range3(points, make_range_bounds(points, threes, fours));
   BOOST_CHECK(range3.begin() == range3.end());
   BOOST_CHECK(range3.cbegin() == range3.cend());
   range_predicate_view<const pointset<2, point2d>,
     range_bounds<typename spatial::container_traits<pointset<2, point2d> >::key_type,
-		 typename spatial::container_traits<pointset<2, point2d> >::compare_type> >
+                 typename spatial::container_traits<pointset<2, point2d> >::compare_type> >
     range4(points, make_range_bounds(points, ones, threes));
   BOOST_CHECK(range4.begin() != range4.end());
   BOOST_CHECK(range4.cbegin() != range4.cend());
@@ -5482,9 +5494,9 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_ctor )
   kdtree_type instance_two(details::Dynamic_rank(2));
   kdtree_type instance_three(details::Dynamic_rank(2), bracket_less<point2d>());
   kdtree_type instance_four(details::Dynamic_rank(2), bracket_less<point2d>(),
-			    tight_balancing());
+                            tight_balancing());
   kdtree_type instance_five(details::Dynamic_rank(2), bracket_less<point2d>(),
-			    tight_balancing(), std::allocator<point2d>());
+                            tight_balancing(), std::allocator<point2d>());
   // Trees should be empty.
   BOOST_CHECK(instance_one.empty());
   BOOST_CHECK(instance_two.empty());
@@ -5665,7 +5677,7 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_growing )
   // values, iteration should be ordered as well.
   int i = 0;
   for (Grow_Relaxed_Kdtree_2D_fixture::kdtree_type::iterator it
-	 = fix.kdtree.begin(); it != fix.kdtree.end(); ++it, ++i)
+         = fix.kdtree.begin(); it != fix.kdtree.end(); ++it, ++i)
     {
       BOOST_CHECK_EQUAL((*it)[0], i);
       BOOST_CHECK_EQUAL((*it)[1], i);
@@ -5679,7 +5691,7 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_reduce )
   // values, iteration should be ordered as well.
   int i = 1; // Values inserted in [1:20], not [0:19]
   for (Reduce_Relaxed_Kdtree_2D_fixture::kdtree_type::iterator it
-	 = fix.kdtree.begin(); it != fix.kdtree.end(); ++it, ++i)
+         = fix.kdtree.begin(); it != fix.kdtree.end(); ++it, ++i)
     {
       BOOST_CHECK_EQUAL((*it)[0], i);
       BOOST_CHECK_EQUAL((*it)[1], i);
@@ -5693,16 +5705,16 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_lots )
     // This tree has multiple similar node, by construction
     for (int i=0; i<100; ++i)
       {
-	Twenty_Relaxed_kdtree_2D_fixture fix;
-	int count = 0;
-	for (Twenty_Relaxed_kdtree_2D_fixture::kdtree_type
-	       ::iterator it = fix.kdtree.begin(); it != fix.kdtree.end(); ++it)
-	  {
-	    BOOST_CHECK(std::find(fix.mem.begin(), fix.mem.end(), *it)
-			!= fix.mem.end());
-	    ++count;
-	  }
-	BOOST_CHECK_EQUAL(count, 20);
+        Twenty_Relaxed_kdtree_2D_fixture fix;
+        int count = 0;
+        for (Twenty_Relaxed_kdtree_2D_fixture::kdtree_type
+               ::iterator it = fix.kdtree.begin(); it != fix.kdtree.end(); ++it)
+          {
+            BOOST_CHECK(std::find(fix.mem.begin(), fix.mem.end(), *it)
+                        != fix.mem.end());
+            ++count;
+          }
+        BOOST_CHECK_EQUAL(count, 20);
       }
   }
 }
@@ -5758,7 +5770,7 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_bulk_insert )
   kdtree_type kdtree;
   std::tr1::array<point2d, 100> points;
   for(std::tr1::array<point2d, 100>::iterator i
-	= points.begin(); i != points.end(); ++i)
+        = points.begin(); i != points.end(); ++i)
     {
       (*i)[0] = rand() % 20;
       (*i)[1] = rand() % 20;
@@ -5772,7 +5784,7 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_bulk_insert )
     {
       std::tr1::array<point2d, 100>::iterator match;
       BOOST_REQUIRE((match = std::find(points.begin(), points.end(), *i))
-		  != points.end());
+                  != points.end());
       (*match)[0] = -1; // Prevent the same point from being found twice.
       (*match)[1] = -1;
       BOOST_REQUIRE_LE(++count, 100);
@@ -5880,17 +5892,17 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_erase_iterator )
     Twenty_Relaxed_kdtree_3D_fixture fix;
     typedef Twenty_Relaxed_kdtree_3D_fixture::kdtree_type
       ::iterator iter_type;
-    int track_size = fix.kdtree.size();
+    size_type track_size = fix.kdtree.size();
     while (fix.kdtree.size() != 0)
       {
-	iter_type iter = fix.kdtree.begin();
-	BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(iter));
-	BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
-	BOOST_CHECK(iter != fix.kdtree.begin());
-	int count = 0;
-	for(iter_type i = fix.kdtree.begin();
-	    i != fix.kdtree.end(); ++i, ++count);
-	BOOST_CHECK_EQUAL(count, track_size);
+        iter_type iter = fix.kdtree.begin();
+        BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(iter));
+        BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
+        BOOST_CHECK(iter != fix.kdtree.begin());
+        int count = 0;
+        for(iter_type i = fix.kdtree.begin();
+            i != fix.kdtree.end(); ++i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
       }
   }
   {
@@ -5899,17 +5911,17 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_erase_iterator )
       ::const_iterator iter_type;
     typedef Twenty_Relaxed_kdtree_3D_fixture::kdtree_type
       ::const_reverse_iterator riter_type;
-    int track_size = fix.kdtree.size();
+    size_type track_size = fix.kdtree.size();
     while (fix.kdtree.size() != 0)
       {
-	iter_type iter = --fix.kdtree.end();
-	BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(iter));
-	BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
-	BOOST_CHECK(iter != (--fix.kdtree.end()));
-	int count = 0;
-	for(riter_type i = fix.kdtree.rbegin();
-	    i != fix.kdtree.rend(); ++i, ++count);
-	BOOST_CHECK_EQUAL(count, track_size);
+        iter_type iter = --fix.kdtree.end();
+        BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(iter));
+        BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
+        BOOST_CHECK(iter != (--fix.kdtree.end()));
+        int count = 0;
+        for(riter_type i = fix.kdtree.rbegin();
+            i != fix.kdtree.rend(); ++i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
       }
   }
   // erase all and check that total ordering is preserved.
@@ -5922,57 +5934,57 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_erase_iterator )
       Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::node_type,
       bracket_less<point5d> > mapping_iterator;
     Hundred_Relaxed_kdtree_5D_fixture fix;
-    int track_size = fix.kdtree.size();
+    size_type track_size = fix.kdtree.size();
     while (fix.kdtree.size() != 0)
       {
-	iterator eraser = fix.kdtree.begin();
-	std::advance(eraser, rand() % fix.kdtree.size());
-	mapping_iterator begin_0;
-	BOOST_REQUIRE_NO_THROW(begin_0 = mapping_iterator::minimum
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				0, 0,
-				static_cast<Relaxed_kdtree_node<point5d>*>
-				(fix.kdtree.end().node->parent)));
-	mapping_iterator end_0;
-	BOOST_REQUIRE_NO_THROW(end_0 = mapping_iterator
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				0, details::decr_dim
-				(fix.kdtree.rank(), 0),
-				static_cast<Relaxed_kdtree_node<point5d>*>
-				(fix.kdtree.end().node)));
-	mapping_iterator begin_1;
-	BOOST_REQUIRE_NO_THROW(begin_1 = mapping_iterator::minimum
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				1, 0,
-				static_cast<Relaxed_kdtree_node<point5d>*>
-				(fix.kdtree.end().node->parent)));
-	mapping_iterator end_1;
-	BOOST_REQUIRE_NO_THROW(end_1 = mapping_iterator
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				1, details::decr_dim
-				(fix.kdtree.rank(), 0),
-				static_cast<Relaxed_kdtree_node<point5d>*>
-				(fix.kdtree.end().node)));
-	int count = 0;
-	for(mapping_iterator i = begin_0; i != end_0; ++i, ++count);
-	BOOST_CHECK_EQUAL(count, track_size);
-	if (count != track_size && count < 23) abort(); // for inspection of tree
-	count = 0;
-	for(mapping_iterator i = begin_1; i != end_1; ++i, ++count);
-	BOOST_CHECK_EQUAL(count, track_size);
-	if (count != track_size && count < 23) abort(); // for inspection of tree
-	count = 0;
-	for(mapping_iterator i = end_0; i != begin_0; --i, ++count);
-	BOOST_CHECK_EQUAL(count, track_size);
-	count = 0;
-	for(mapping_iterator i = end_1; i != begin_1; --i, ++count);
-	BOOST_CHECK_EQUAL(count, track_size);
-	BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(eraser));
-	BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
+        iterator eraser = fix.kdtree.begin();
+        std::advance(eraser, static_cast<size_type>(rand()) % fix.kdtree.size());
+        mapping_iterator begin_0;
+        BOOST_REQUIRE_NO_THROW(begin_0 = mapping_iterator::minimum
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                0, 0,
+                                static_cast<Relaxed_kdtree_node<point5d>*>
+                                (fix.kdtree.end().node->parent)));
+        mapping_iterator end_0;
+        BOOST_REQUIRE_NO_THROW(end_0 = mapping_iterator
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                0, details::decr_dim
+                                (fix.kdtree.rank(), 0),
+                                static_cast<Relaxed_kdtree_node<point5d>*>
+                                (fix.kdtree.end().node)));
+        mapping_iterator begin_1;
+        BOOST_REQUIRE_NO_THROW(begin_1 = mapping_iterator::minimum
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                1, 0,
+                                static_cast<Relaxed_kdtree_node<point5d>*>
+                                (fix.kdtree.end().node->parent)));
+        mapping_iterator end_1;
+        BOOST_REQUIRE_NO_THROW(end_1 = mapping_iterator
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                1, details::decr_dim
+                                (fix.kdtree.rank(), 0),
+                                static_cast<Relaxed_kdtree_node<point5d>*>
+                                (fix.kdtree.end().node)));
+        size_type count = 0;
+        for(mapping_iterator i = begin_0; i != end_0; ++i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
+        if (count != track_size && count < 23) abort(); // for inspection of tree
+        count = 0;
+        for(mapping_iterator i = begin_1; i != end_1; ++i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
+        if (count != track_size && count < 23) abort(); // for inspection of tree
+        count = 0;
+        for(mapping_iterator i = end_0; i != begin_0; --i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
+        count = 0;
+        for(mapping_iterator i = end_1; i != begin_1; --i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
+        BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(eraser));
+        BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
       }
   }
 }
@@ -5993,8 +6005,8 @@ struct Seven_Relaxed_kdtree_node_fixture
 {
   /*              H
                   |
-	       (2,2)7
-	    /          \
+               (2,2)7
+            /          \
       (1,1)3           (3,3)3
        /  \             /
   (0,0)1  (1,1)1     (3,3)2
@@ -6062,28 +6074,28 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_increment )
       <details::Static_rank<2>, point2d,
        Relaxed_kdtree_node<point2d>, bracket_less<point2d> > iterator_type;
     iterator_type it(details::Static_rank<2>(), bracket_less<point2d>(), 0, 0,
-		     &fix.node_left_left);
+                     &fix.node_left_left);
     BOOST_CHECK(*it == zeros);
     ++it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == ones);
     ++it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == ones);
     ++it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == twos);
     ++it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == threes);
     ++it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == threes);
     ++it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == threes);
     ++it;
-    BOOST_CHECK(it.impl.node == &fix.header);
+    BOOST_CHECK(it.impl_.node_ == &fix.header);
   }
   {
     Grow_Relaxed_Kdtree_2D_fixture fix;
@@ -6095,10 +6107,10 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_increment )
     int count = 0;
     for(; count != 20; ++begin, ++count)
       {
-	BOOST_CHECK((*begin)[0] >= old);
-	BOOST_CHECK(begin != end);
-	if (begin == end) break;
-	old = (*begin)[0];
+        BOOST_CHECK((*begin)[0] >= old);
+        BOOST_CHECK(begin != end);
+        if (begin == end) break;
+        old = (*begin)[0];
       }
     BOOST_CHECK(begin == end);
     BOOST_CHECK_EQUAL(count, 20);
@@ -6107,10 +6119,10 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_increment )
     old = (*begin)[1];
     for(count = 0; count != 20; ++begin, ++count)
       {
-	BOOST_CHECK((*begin)[1] >= old);
-	BOOST_CHECK(begin != end);
-	if (begin == end) break;
-	old = (*begin)[1];
+        BOOST_CHECK((*begin)[1] >= old);
+        BOOST_CHECK(begin != end);
+        if (begin == end) break;
+        old = (*begin)[1];
       }
     BOOST_CHECK(begin == end);
     BOOST_CHECK_EQUAL(count, 20);
@@ -6125,10 +6137,10 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_increment )
     int count = 0;
     for(; count != 20; ++begin, ++count)
       {
-	BOOST_CHECK((*begin)[0] >= old);
-	BOOST_CHECK(begin != end);
-	if (begin == end) break;
-	old = (*begin)[0];
+        BOOST_CHECK((*begin)[0] >= old);
+        BOOST_CHECK(begin != end);
+        if (begin == end) break;
+        old = (*begin)[0];
       }
     BOOST_CHECK(begin == end);
     BOOST_CHECK_EQUAL(count, 20);
@@ -6137,10 +6149,10 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_increment )
     old = (*begin)[1];
     for(count = 0; count != 20; ++begin, ++count)
       {
-	BOOST_CHECK((*begin)[1] >= old);
-	BOOST_CHECK(begin != end);
-	if (begin == end) break;
-	old = (*begin)[1];
+        BOOST_CHECK((*begin)[1] >= old);
+        BOOST_CHECK(begin != end);
+        if (begin == end) break;
+        old = (*begin)[1];
       }
     BOOST_CHECK(begin == end);
     BOOST_CHECK_EQUAL(count, 20);
@@ -6158,28 +6170,28 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_maxium )
     iterator_type it = iterator_type::maximum
       (details::Static_rank<2>(), bracket_less<point2d>(), 0, 0,
        static_cast<Node_base*>(&fix.node_root));
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == threes);
     --it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == threes);
     --it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == threes);
     --it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == twos);
     --it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == ones);
     --it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == ones);
     --it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == zeros);
     --it;
-    BOOST_REQUIRE(it.impl.node == &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ == &fix.header);
   }
   // erase and check that max value found match returned
   {
@@ -6191,76 +6203,77 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_maxium )
       Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::node_type,
       bracket_less<point5d> > mapping_iterator;
     Hundred_Relaxed_kdtree_5D_fixture fix;
-    int track_size = fix.kdtree.size();
+    size_type track_size = fix.kdtree.size();
     while (fix.kdtree.size() != 0)
       {
-	iterator eraser = fix.kdtree.begin();
-	std::advance(eraser, rand() % fix.kdtree.size());
-	mapping_iterator max_0;
-	BOOST_REQUIRE_NO_THROW(max_0 = mapping_iterator::maximum
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				0, 0,
-				static_cast<Relaxed_kdtree_node<point5d>*>
-				(fix.kdtree.end().node->parent)));
-	mapping_iterator max_1;
-	BOOST_REQUIRE_NO_THROW(max_1 = mapping_iterator::maximum
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				1, 0,
-				static_cast<Relaxed_kdtree_node<point5d>*>
-				(fix.kdtree.end().node->parent)));
-	mapping_iterator max_2;
-	BOOST_REQUIRE_NO_THROW(max_2 = mapping_iterator::maximum
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				2, 0,
-				static_cast<Relaxed_kdtree_node<point5d>*>
-				(fix.kdtree.end().node->parent)));
-	double found_max_0 = -11.0; // absolute lower
-	Node_base* found_max_0_address = 0;
-	double found_max_1 = -11.0;
-	Node_base* found_max_1_address = 0;
-	double found_max_2 = -11.0;
-	Node_base* found_max_2_address = 0;
-	for(iterator i = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
-	  {
-	    if ((*i)[0] > found_max_0)
-	      {
-		found_max_0 = (*i)[0];
-		found_max_0_address = i.node;
-	      }
-	    if ((*i)[0] == found_max_0 && found_max_0_address < i.node)
-	      {
-		found_max_0_address = i.node;
-	      }
-	    if ((*i)[1] > found_max_1)
-	      {
-		found_max_1 = (*i)[1];
-		found_max_1_address = i.node;
-	      }
-	    if ((*i)[1] == found_max_1 && found_max_1_address < i.node)
-	      {
-		found_max_1_address = i.node;
-	      }
-	    if ((*i)[2] > found_max_2)
-	      {
-		found_max_2 = (*i)[2];
-		found_max_2_address = i.node;
-	      }
-	    if ((*i)[2] == found_max_2 && found_max_2_address < i.node)
-	      {
-		found_max_2_address = i.node;
-	      }
-	  }
-	BOOST_CHECK_EQUAL((*max_0)[0], found_max_0);
-	BOOST_CHECK_EQUAL(max_0.impl.node, found_max_0_address);
-	BOOST_CHECK_EQUAL((*max_1)[1], found_max_1);
-	BOOST_CHECK_EQUAL(max_1.impl.node, found_max_1_address);
-	BOOST_CHECK_EQUAL((*max_2)[2], found_max_2);
-	BOOST_CHECK_EQUAL(max_2.impl.node, found_max_2_address);
-	BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(eraser));
-	BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
+        iterator eraser = fix.kdtree.begin();
+        std::advance(eraser,
+                     static_cast<size_type>(rand()) % fix.kdtree.size());
+        mapping_iterator max_0;
+        BOOST_REQUIRE_NO_THROW(max_0 = mapping_iterator::maximum
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                0, 0,
+                                static_cast<Relaxed_kdtree_node<point5d>*>
+                                (fix.kdtree.end().node->parent)));
+        mapping_iterator max_1;
+        BOOST_REQUIRE_NO_THROW(max_1 = mapping_iterator::maximum
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                1, 0,
+                                static_cast<Relaxed_kdtree_node<point5d>*>
+                                (fix.kdtree.end().node->parent)));
+        mapping_iterator max_2;
+        BOOST_REQUIRE_NO_THROW(max_2 = mapping_iterator::maximum
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                2, 0,
+                                static_cast<Relaxed_kdtree_node<point5d>*>
+                                (fix.kdtree.end().node->parent)));
+        double found_max_0 = -11.0; // absolute lower
+        Node_base* found_max_0_address = 0;
+        double found_max_1 = -11.0;
+        Node_base* found_max_1_address = 0;
+        double found_max_2 = -11.0;
+        Node_base* found_max_2_address = 0;
+        for(iterator i = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
+          {
+            if ((*i)[0] > found_max_0)
+              {
+                found_max_0 = (*i)[0];
+                found_max_0_address = i.node;
+              }
+            if ((*i)[0] == found_max_0 && found_max_0_address < i.node)
+              {
+                found_max_0_address = i.node;
+              }
+            if ((*i)[1] > found_max_1)
+              {
+                found_max_1 = (*i)[1];
+                found_max_1_address = i.node;
+              }
+            if ((*i)[1] == found_max_1 && found_max_1_address < i.node)
+              {
+                found_max_1_address = i.node;
+              }
+            if ((*i)[2] > found_max_2)
+              {
+                found_max_2 = (*i)[2];
+                found_max_2_address = i.node;
+              }
+            if ((*i)[2] == found_max_2 && found_max_2_address < i.node)
+              {
+                found_max_2_address = i.node;
+              }
+          }
+        BOOST_CHECK_EQUAL((*max_0)[0], found_max_0);
+        BOOST_CHECK_EQUAL(max_0.impl_.node_, found_max_0_address);
+        BOOST_CHECK_EQUAL((*max_1)[1], found_max_1);
+        BOOST_CHECK_EQUAL(max_1.impl_.node_, found_max_1_address);
+        BOOST_CHECK_EQUAL((*max_2)[2], found_max_2);
+        BOOST_CHECK_EQUAL(max_2.impl_.node_, found_max_2_address);
+        BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(eraser));
+        BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
       }
   }
 }
@@ -6276,28 +6289,28 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_minimum )
     iterator_type it = iterator_type::minimum
       (details::Static_rank<2>(), bracket_less<point2d>(), 0, 0,
        static_cast<Node_base*>(&fix.node_root));
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == zeros);
     ++it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == ones);
     ++it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == ones);
     ++it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == twos);
     ++it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == threes);
     ++it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == threes);
     ++it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == threes);
     ++it;
-    BOOST_CHECK(it.impl.node == &fix.header);
+    BOOST_CHECK(it.impl_.node_ == &fix.header);
   }
   {
     typedef Hundred_Relaxed_kdtree_5D_fixture::kdtree_type
@@ -6308,76 +6321,77 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_minimum )
       Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::node_type,
       bracket_less<point5d> > mapping_iterator;
     Hundred_Relaxed_kdtree_5D_fixture fix;
-    int track_size = fix.kdtree.size();
+    size_type track_size = fix.kdtree.size();
     while (fix.kdtree.size() != 0)
       {
-	iterator eraser = fix.kdtree.begin();
-	std::advance(eraser, rand() % fix.kdtree.size());
-	mapping_iterator min_0;
-	BOOST_REQUIRE_NO_THROW(min_0 = mapping_iterator::minimum
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				0, 0,
-				static_cast<Relaxed_kdtree_node<point5d>*>
-				(fix.kdtree.end().node->parent)));
-	mapping_iterator min_1;
-	BOOST_REQUIRE_NO_THROW(min_1 = mapping_iterator::minimum
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				1, 0,
-				static_cast<Relaxed_kdtree_node<point5d>*>
-				(fix.kdtree.end().node->parent)));
-	mapping_iterator min_2;
-	BOOST_REQUIRE_NO_THROW(min_2 = mapping_iterator::minimum
-			       (fix.kdtree.rank(),
-				fix.kdtree.compare(),
-				2, 0,
-				static_cast<Relaxed_kdtree_node<point5d>*>
-				(fix.kdtree.end().node->parent)));
-	double found_min_0 = 11.0; // absolute upper
-	Node_base* found_min_0_address = 0;
-	double found_min_1 = 11.0;
-	Node_base* found_min_1_address = 0;
-	double found_min_2 = 11.0;
-	Node_base* found_min_2_address = 0;
-	for(iterator i = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
-	  {
-	    if ((*i)[0] < found_min_0)
-	      {
-		found_min_0 = (*i)[0];
-		found_min_0_address = i.node;
-	      }
-	    if ((*i)[0] == found_min_0 && found_min_0_address > i.node)
-	      {
-		found_min_0_address = i.node;
-	      }
-	    if ((*i)[1] < found_min_1)
-	      {
-		found_min_1 = (*i)[1];
-		found_min_1_address = i.node;
-	      }
-	    if ((*i)[1] == found_min_1 && found_min_1_address > i.node)
-	      {
-		found_min_1_address = i.node;
-	      }
-	    if ((*i)[2] < found_min_2)
-	      {
-		found_min_2 = (*i)[2];
-		found_min_2_address = i.node;
-	      }
-	    if ((*i)[2] == found_min_2 && found_min_2_address > i.node)
-	      {
-		found_min_2_address = i.node;
-	      }
-	  }
-	BOOST_CHECK_EQUAL((*min_0)[0], found_min_0);
-	BOOST_CHECK_EQUAL(min_0.impl.node, found_min_0_address);
-	BOOST_CHECK_EQUAL((*min_1)[1], found_min_1);
-	BOOST_CHECK_EQUAL(min_1.impl.node, found_min_1_address);
-	BOOST_CHECK_EQUAL((*min_2)[2], found_min_2);
-	BOOST_CHECK_EQUAL(min_2.impl.node, found_min_2_address);
-	BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(eraser));
-	BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
+        iterator eraser = fix.kdtree.begin();
+        std::advance(eraser,
+                     static_cast<size_type>(rand()) % fix.kdtree.size());
+        mapping_iterator min_0;
+        BOOST_REQUIRE_NO_THROW(min_0 = mapping_iterator::minimum
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                0, 0,
+                                static_cast<Relaxed_kdtree_node<point5d>*>
+                                (fix.kdtree.end().node->parent)));
+        mapping_iterator min_1;
+        BOOST_REQUIRE_NO_THROW(min_1 = mapping_iterator::minimum
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                1, 0,
+                                static_cast<Relaxed_kdtree_node<point5d>*>
+                                (fix.kdtree.end().node->parent)));
+        mapping_iterator min_2;
+        BOOST_REQUIRE_NO_THROW(min_2 = mapping_iterator::minimum
+                               (fix.kdtree.rank(),
+                                fix.kdtree.compare(),
+                                2, 0,
+                                static_cast<Relaxed_kdtree_node<point5d>*>
+                                (fix.kdtree.end().node->parent)));
+        double found_min_0 = 11.0; // absolute upper
+        Node_base* found_min_0_address = 0;
+        double found_min_1 = 11.0;
+        Node_base* found_min_1_address = 0;
+        double found_min_2 = 11.0;
+        Node_base* found_min_2_address = 0;
+        for(iterator i = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
+          {
+            if ((*i)[0] < found_min_0)
+              {
+                found_min_0 = (*i)[0];
+                found_min_0_address = i.node;
+              }
+            if ((*i)[0] == found_min_0 && found_min_0_address > i.node)
+              {
+                found_min_0_address = i.node;
+              }
+            if ((*i)[1] < found_min_1)
+              {
+                found_min_1 = (*i)[1];
+                found_min_1_address = i.node;
+              }
+            if ((*i)[1] == found_min_1 && found_min_1_address > i.node)
+              {
+                found_min_1_address = i.node;
+              }
+            if ((*i)[2] < found_min_2)
+              {
+                found_min_2 = (*i)[2];
+                found_min_2_address = i.node;
+              }
+            if ((*i)[2] == found_min_2 && found_min_2_address > i.node)
+              {
+                found_min_2_address = i.node;
+              }
+          }
+        BOOST_CHECK_EQUAL((*min_0)[0], found_min_0);
+        BOOST_CHECK_EQUAL(min_0.impl_.node_, found_min_0_address);
+        BOOST_CHECK_EQUAL((*min_1)[1], found_min_1);
+        BOOST_CHECK_EQUAL(min_1.impl_.node_, found_min_1_address);
+        BOOST_CHECK_EQUAL((*min_2)[2], found_min_2);
+        BOOST_CHECK_EQUAL(min_2.impl_.node_, found_min_2_address);
+        BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(eraser));
+        BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
       }
   }
 }
@@ -6391,30 +6405,30 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_decrement )
       <details::Static_rank<2>, point2d,
        Relaxed_kdtree_node<point2d>, bracket_less<point2d> > iterator_type;
     iterator_type it(details::Static_rank<2>(), bracket_less<point2d>(), 0, 1,
-		     static_cast<Relaxed_kdtree_node<point2d>*>(&fix.header));
+                     static_cast<Relaxed_kdtree_node<point2d>*>(&fix.header));
     --it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == threes);
     --it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == threes);
     --it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == threes);
     --it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == twos);
     --it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == ones);
     --it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == ones);
     --it;
-    BOOST_REQUIRE(it.impl.node != &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ != &fix.header);
     BOOST_CHECK(*it == zeros);
     --it;
-    BOOST_REQUIRE(it.impl.node == &fix.header);
+    BOOST_REQUIRE(it.impl_.node_ == &fix.header);
   }
   {
     Grow_Relaxed_Kdtree_2D_fixture fix;
@@ -6427,11 +6441,11 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_decrement )
     int count = 0;
     for(; count != 20; --end, ++count)
       {
-	BOOST_CHECK(old >= (*before_end)[0]);
-	BOOST_CHECK(begin != end);
-	if (begin == end) break;
-	old = (*before_end)[0];
-	if (before_end != begin) --before_end;
+        BOOST_CHECK(old >= (*before_end)[0]);
+        BOOST_CHECK(begin != end);
+        if (begin == end) break;
+        old = (*before_end)[0];
+        if (before_end != begin) --before_end;
       }
     BOOST_CHECK(begin == end);
     BOOST_CHECK_EQUAL(count, 20);
@@ -6441,11 +6455,11 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_decrement )
     old = (*before_end)[1];
     for(count = 0; count != 20; --end, ++count)
       {
-	BOOST_CHECK((*before_end)[1] <= old);
-	BOOST_CHECK(begin != end);
-	if (begin == end) break;
-	old = (*before_end)[1];
-	if (before_end != begin) --before_end;
+        BOOST_CHECK((*before_end)[1] <= old);
+        BOOST_CHECK(begin != end);
+        if (begin == end) break;
+        old = (*before_end)[1];
+        if (before_end != begin) --before_end;
       }
     BOOST_CHECK(begin == end);
     BOOST_CHECK_EQUAL(count, 20);
@@ -6461,11 +6475,11 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_decrement )
     int count = 0;
     for(; count != 20; --end, ++count)
       {
-	BOOST_CHECK(old >= (*before_end)[0]);
-	BOOST_CHECK(begin != end);
-	if (begin == end) break;
-	old = (*before_end)[0];
-	if (before_end != begin) --before_end;
+        BOOST_CHECK(old >= (*before_end)[0]);
+        BOOST_CHECK(begin != end);
+        if (begin == end) break;
+        old = (*before_end)[0];
+        if (before_end != begin) --before_end;
       }
     BOOST_CHECK(begin == end);
     BOOST_CHECK_EQUAL(count, 20);
@@ -6475,11 +6489,11 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_decrement )
     old = (*before_end)[1];
     for(count = 0; count != 20; --end, ++count)
       {
-	BOOST_CHECK((*before_end)[1] <= old);
-	BOOST_CHECK(begin != end);
-	if (begin == end) break;
-	old = (*before_end)[1];
-	if (before_end != begin) --before_end;
+        BOOST_CHECK((*before_end)[1] <= old);
+        BOOST_CHECK(begin != end);
+        if (begin == end) break;
+        old = (*before_end)[1];
+        if (before_end != begin) --before_end;
       }
     BOOST_CHECK(begin == end);
     BOOST_CHECK_EQUAL(count, 20);
@@ -6537,60 +6551,60 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_Mapping_lower_bound )
        Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
        Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
        Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::compare_type>
-	iter_type;
+        iter_type;
     point2d flag = { { 10, 10 } };
     point2d low_flag = { { -10, -10 } };
     point2d high_flag = { { 30, 30 } };
     iter_type iter;
     BOOST_REQUIRE_NO_THROW(iter = iter_type::lower_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0,
-			    static_cast<Hundred_Relaxed_kdtree_2D_fixture
-			    ::kdtree_type::node_type*>
-			    (fix.kdtree.end().node->parent), flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0,
+                            static_cast<Hundred_Relaxed_kdtree_2D_fixture
+                            ::kdtree_type::node_type*>
+                            (fix.kdtree.end().node->parent), flag));
     iter_type low_iter;
     BOOST_REQUIRE_NO_THROW(low_iter = iter_type::lower_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0,
-			    static_cast<Hundred_Relaxed_kdtree_2D_fixture
-			    ::kdtree_type::node_type*>
-			    (fix.kdtree.end().node->parent), low_flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0,
+                            static_cast<Hundred_Relaxed_kdtree_2D_fixture
+                            ::kdtree_type::node_type*>
+                            (fix.kdtree.end().node->parent), low_flag));
     iter_type high_iter;
     BOOST_REQUIRE_NO_THROW(high_iter = iter_type::lower_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0,
-			    static_cast<Hundred_Relaxed_kdtree_2D_fixture
-			    ::kdtree_type::node_type*>
-			    (fix.kdtree.end().node->parent), high_flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0,
+                            static_cast<Hundred_Relaxed_kdtree_2D_fixture
+                            ::kdtree_type::node_type*>
+                            (fix.kdtree.end().node->parent), high_flag));
     iter_type begin;
     BOOST_REQUIRE_NO_THROW(begin = iter_type::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0,
-			    static_cast<Hundred_Relaxed_kdtree_2D_fixture
-			    ::kdtree_type::node_type*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0,
+                            static_cast<Hundred_Relaxed_kdtree_2D_fixture
+                            ::kdtree_type::node_type*>
+                            (fix.kdtree.end().node->parent)));
     iter_type end;
     BOOST_REQUIRE_NO_THROW(end = iter_type
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, details::decr_dim
-			    (fix.kdtree.rank(), 0),
-			    static_cast<Hundred_Relaxed_kdtree_2D_fixture
-			    ::kdtree_type::node_type*>
-			    (fix.kdtree.end().node)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, details::decr_dim
+                            (fix.kdtree.rank(), 0),
+                            static_cast<Hundred_Relaxed_kdtree_2D_fixture
+                            ::kdtree_type::node_type*>
+                            (fix.kdtree.end().node)));
     if (iter != end) // chances that this is false are extremely low 1/(2^100)
       {
-	BOOST_CHECK_GE((*iter)[mapping_dim], flag[mapping_dim]);
-	if (iter != begin) // same as above
-	  {
-	    iter_type tmp = iter;
-	    BOOST_CHECK_LT((*(--tmp))[mapping_dim], (*iter)[mapping_dim]);
-	    BOOST_CHECK_LT((*tmp)[mapping_dim], flag[mapping_dim]);
-	  }
+        BOOST_CHECK_GE((*iter)[mapping_dim], flag[mapping_dim]);
+        if (iter != begin) // same as above
+          {
+            iter_type tmp = iter;
+            BOOST_CHECK_LT((*(--tmp))[mapping_dim], (*iter)[mapping_dim]);
+            BOOST_CHECK_LT((*tmp)[mapping_dim], flag[mapping_dim]);
+          }
       }
     BOOST_CHECK(low_iter == begin);
     BOOST_CHECK(high_iter == end);
@@ -6608,38 +6622,38 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_Mapping_lower_bound )
     triple flag; flag.x = 0; flag.y = 0; flag.z = 0;
     iter_type iter;
     BOOST_REQUIRE_NO_THROW(iter = iter_type::lower_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0,
-			    static_cast<Dispersed_Relaxed_kdtree_3D_fixture
-			    ::kdtree_type::node_type*>
-			    (fix.kdtree.end().node->parent), flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0,
+                            static_cast<Dispersed_Relaxed_kdtree_3D_fixture
+                            ::kdtree_type::node_type*>
+                            (fix.kdtree.end().node->parent), flag));
     iter_type begin;
     BOOST_REQUIRE_NO_THROW(begin = iter_type::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0,
-			    static_cast<Dispersed_Relaxed_kdtree_3D_fixture
-			    ::kdtree_type::node_type*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0,
+                            static_cast<Dispersed_Relaxed_kdtree_3D_fixture
+                            ::kdtree_type::node_type*>
+                            (fix.kdtree.end().node->parent)));
     iter_type end;
     BOOST_REQUIRE_NO_THROW(end = iter_type
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, details::decr_dim
-			    (fix.kdtree.rank(), 0),
-			    static_cast<Dispersed_Relaxed_kdtree_3D_fixture
-			    ::kdtree_type::node_type*>
-			    (fix.kdtree.end().node)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, details::decr_dim
+                            (fix.kdtree.rank(), 0),
+                            static_cast<Dispersed_Relaxed_kdtree_3D_fixture
+                            ::kdtree_type::node_type*>
+                            (fix.kdtree.end().node)));
     if (iter != end) // chances that this is false are low 1/(2^20)
       {
-	BOOST_CHECK_GE(iter->z, flag.z);
-	if (iter != begin) // same as above
-	  {
-	    iter_type tmp = iter;
-	    BOOST_CHECK_LT((--tmp)->z, iter->z);
-	    BOOST_CHECK_LT(tmp->z, flag.z);
-	  }
+        BOOST_CHECK_GE(iter->z, flag.z);
+        if (iter != begin) // same as above
+          {
+            iter_type tmp = iter;
+            BOOST_CHECK_LT((--tmp)->z, iter->z);
+            BOOST_CHECK_LT(tmp->z, flag.z);
+          }
       }
   }
 }
@@ -6661,45 +6675,45 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_Mapping_upper_bound )
     point2d high_flag = { { 30, 30 } };
     mapping_iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = mapping_iterator::upper_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Relaxed_kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent), flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Relaxed_kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent), flag));
     mapping_iterator low_iter;
     BOOST_REQUIRE_NO_THROW(low_iter = mapping_iterator::upper_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Relaxed_kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent), low_flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Relaxed_kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent), low_flag));
     mapping_iterator high_iter;
     BOOST_REQUIRE_NO_THROW(high_iter = mapping_iterator::upper_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Relaxed_kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent), high_flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Relaxed_kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent), high_flag));
     mapping_iterator begin;
     BOOST_REQUIRE_NO_THROW(begin = mapping_iterator::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Relaxed_kdtree_node<point2d>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Relaxed_kdtree_node<point2d>*>
+                            (fix.kdtree.end().node->parent)));
     mapping_iterator end;
     BOOST_REQUIRE_NO_THROW(end = mapping_iterator
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, details::decr_dim
-			    (fix.kdtree.rank(), 0),
-			    static_cast<Relaxed_kdtree_node<point2d>*>
-			    (fix.kdtree.end().node)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, details::decr_dim
+                            (fix.kdtree.rank(), 0),
+                            static_cast<Relaxed_kdtree_node<point2d>*>
+                            (fix.kdtree.end().node)));
     if (iter != end) // chances that this is false are extremely low 1/(2^100)
       {
-	BOOST_CHECK_GT((*iter)[mapping_dim], flag[mapping_dim]);
-	if (iter != begin) // same as above
-	  {
-	    mapping_iterator tmp = iter;
-	    BOOST_CHECK_LT((*(--tmp))[mapping_dim], (*iter)[mapping_dim]);
-	    BOOST_CHECK_LE((*tmp)[mapping_dim], flag[mapping_dim]);
-	  }
+        BOOST_CHECK_GT((*iter)[mapping_dim], flag[mapping_dim]);
+        if (iter != begin) // same as above
+          {
+            mapping_iterator tmp = iter;
+            BOOST_CHECK_LT((*(--tmp))[mapping_dim], (*iter)[mapping_dim]);
+            BOOST_CHECK_LE((*tmp)[mapping_dim], flag[mapping_dim]);
+          }
       }
     BOOST_CHECK(low_iter == begin);
     BOOST_CHECK(high_iter == end);
@@ -6716,33 +6730,33 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_Mapping_upper_bound )
     triple flag; flag.x = 0; flag.y = 0; flag.z = 0;
     mapping_iterator iter;
     BOOST_REQUIRE_NO_THROW(iter = mapping_iterator::upper_bound
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Relaxed_kdtree_node<triple>*>
-			    (fix.kdtree.end().node->parent), flag));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Relaxed_kdtree_node<triple>*>
+                            (fix.kdtree.end().node->parent), flag));
     mapping_iterator begin;
     BOOST_REQUIRE_NO_THROW(begin = mapping_iterator::minimum
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, 0, static_cast<Relaxed_kdtree_node<triple>*>
-			    (fix.kdtree.end().node->parent)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, 0, static_cast<Relaxed_kdtree_node<triple>*>
+                            (fix.kdtree.end().node->parent)));
     mapping_iterator end;
     BOOST_REQUIRE_NO_THROW(end = mapping_iterator
-			   (fix.kdtree.rank(),
-			    fix.kdtree.compare(),
-			    mapping_dim, details::decr_dim
-			    (fix.kdtree.rank(), 0),
-			    static_cast<Relaxed_kdtree_node<triple>*>
-			    (fix.kdtree.end().node)));
+                           (fix.kdtree.rank(),
+                            fix.kdtree.compare(),
+                            mapping_dim, details::decr_dim
+                            (fix.kdtree.rank(), 0),
+                            static_cast<Relaxed_kdtree_node<triple>*>
+                            (fix.kdtree.end().node)));
     if (iter != end) // chances that this is false are low 1/(2^20)
       {
-	BOOST_CHECK_GT(iter->z, flag.z);
-	if (iter != begin) // same as above
-	  {
-	    mapping_iterator tmp = iter;
-	    BOOST_CHECK_LT((--tmp)->z, iter->z);
-	    BOOST_CHECK_LE(tmp->z, flag.z);
-	  }
+        BOOST_CHECK_GT(iter->z, flag.z);
+        if (iter != begin) // same as above
+          {
+            mapping_iterator tmp = iter;
+            BOOST_CHECK_LT((--tmp)->z, iter->z);
+            BOOST_CHECK_LE(tmp->z, flag.z);
+          }
       }
   }
 }
@@ -6769,7 +6783,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_minimum )
     range_iterator it = range_iterator::minimum
       (fix.kdtree.rank(), whole_tree_box, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.begin().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.begin().node);
   }
   {
     Hundred_Relaxed_kdtree_2D_fixture fix;
@@ -6791,7 +6805,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_minimum )
     // In this case, the minimum of the interval must be equal to max.
     range_iterator it = range_iterator::minimum
       (fix.kdtree.rank(), equal, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == max.node);
+    BOOST_CHECK(it.impl_.node_ == max.node);
   }
 }
 
@@ -6814,7 +6828,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_minimum_empty )
     range_iterator it = range_iterator::minimum
       (fix.kdtree.rank(), empty_bounds, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
   {
     // These bounds do not intersect with the tree bounding box
@@ -6835,7 +6849,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_minimum_empty )
     range_iterator it = range_iterator::minimum
       (fix.kdtree.rank(), empty_bounds, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
   {
     // These bounds do not intersect with the tree bounding box
@@ -6856,7 +6870,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_minimum_empty )
     range_iterator it = range_iterator::minimum
       (fix.kdtree.rank(), empty_bounds, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
   {
     Hundred_Relaxed_kdtree_2D_fixture fix;
@@ -6871,18 +6885,18 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_minimum_empty )
     // reverse in-order iteration until we hit a different key
     for (int shrink = 0; shrink != 20; ++shrink)
       {
-	point2d low = { { shrink, shrink } };
-	point2d high = { { 20, 20} };
-	bounds_type shrinking_bounds(fix.kdtree.compare(), low, high);
-	// In this case, the minimum of the interval must be equal to min.
-	range_iterator it = range_iterator::minimum
-	  (fix.kdtree.rank(), shrinking_bounds,
-	   0, fix.kdtree.end().node->parent);
-	Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::iterator
-	  min = fix.kdtree.begin(), end = fix.kdtree.end();
-	for (; min != end && !spatial::details::match_all
-	       (fix.kdtree.rank(), *min, shrinking_bounds); ++min);
-	BOOST_CHECK(it.impl.node == min.node);
+        point2d low = { { shrink, shrink } };
+        point2d high = { { 20, 20} };
+        bounds_type shrinking_bounds(fix.kdtree.compare(), low, high);
+        // In this case, the minimum of the interval must be equal to min.
+        range_iterator it = range_iterator::minimum
+          (fix.kdtree.rank(), shrinking_bounds,
+           0, fix.kdtree.end().node->parent);
+        Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::iterator
+          min = fix.kdtree.begin(), end = fix.kdtree.end();
+        for (; min != end && !spatial::details::match_all
+               (fix.kdtree.rank(), *min, shrinking_bounds); ++min);
+        BOOST_CHECK(it.impl_.node_ == min.node);
       }
   }
 }
@@ -6907,7 +6921,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_maximum )
     range_iterator it = range_iterator::maximum
       (fix.kdtree.rank(), whole_tree_box, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == (--fix.kdtree.end()).node);
+    BOOST_CHECK(it.impl_.node_ == (--fix.kdtree.end()).node);
   }
   {
     Hundred_Relaxed_kdtree_2D_fixture fix;
@@ -6928,7 +6942,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_maximum )
     // In this case, the minimum of the interval must be equal to max.
     range_iterator it = range_iterator::maximum
       (fix.kdtree.rank(), equal, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == min.node);
+    BOOST_CHECK(it.impl_.node_ == min.node);
   }
   {
     Hundred_Relaxed_kdtree_2D_fixture fix;
@@ -6943,22 +6957,22 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_maximum )
     // reverse in-order iteration until we hit a different key
     for (int shrink = 20; shrink != 0; --shrink)
       {
-	point2d low = { { 0, 0} };
-	point2d high = { { shrink, shrink } };
-	bounds_type shrinking_bounds(fix.kdtree.compare(), low, high);
-	// In this case, the minimum of the interval must be equal to max.
-	range_iterator it = range_iterator::maximum
-	  (fix.kdtree.rank(), shrinking_bounds,
-	   0, fix.kdtree.end().node->parent);
-	Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::iterator
-	  max = fix.kdtree.end(), begin = fix.kdtree.begin();
-	for (; max != begin && !spatial::details::match_all
-	       (fix.kdtree.rank(), *(--max), shrinking_bounds););
-	if (spatial::details::match_all
-	    (fix.kdtree.rank(), *max, shrinking_bounds))
-	  { BOOST_CHECK(it.impl.node == max.node); }
-	else
-	  { BOOST_CHECK(it.impl.node == fix.kdtree.end().node); }
+        point2d low = { { 0, 0} };
+        point2d high = { { shrink, shrink } };
+        bounds_type shrinking_bounds(fix.kdtree.compare(), low, high);
+        // In this case, the minimum of the interval must be equal to max.
+        range_iterator it = range_iterator::maximum
+          (fix.kdtree.rank(), shrinking_bounds,
+           0, fix.kdtree.end().node->parent);
+        Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::iterator
+          max = fix.kdtree.end(), begin = fix.kdtree.begin();
+        for (; max != begin && !spatial::details::match_all
+               (fix.kdtree.rank(), *(--max), shrinking_bounds););
+        if (spatial::details::match_all
+            (fix.kdtree.rank(), *max, shrinking_bounds))
+          { BOOST_CHECK(it.impl_.node_ == max.node); }
+        else
+          { BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node); }
       }
   }
 }
@@ -6982,7 +6996,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_maximum_empty )
     range_iterator it = range_iterator::maximum
       (fix.kdtree.rank(), empty_bounds, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
   {
     // These bounds do not intersect with the tree bounding box
@@ -7003,7 +7017,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_maximum_empty )
     range_iterator it = range_iterator::maximum
       (fix.kdtree.rank(), empty_bounds, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
   {
     // These bounds do not intersect with the tree bounding box
@@ -7024,7 +7038,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_maximum_empty )
     range_iterator it = range_iterator::maximum
       (fix.kdtree.rank(), empty_bounds, 0,
        fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
 }
 
@@ -7051,18 +7065,18 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_pre_increment )
     range_iterator range_min = range_iterator::minimum
       (fix.kdtree.rank(), whole_tree_box, 0,
        fix.kdtree.end().node->parent);
-    const_iterator min; min.node = range_min.impl.node;
+    const_iterator min; min.node = range_min.impl_.node_;
     const_iterator end(fix.kdtree.end());
     for(; min != end; ++min)
       {
-	if (spatial::details::match_all
-	    (fix.kdtree.rank(), *min, whole_tree_box))
-	  {
-	    BOOST_CHECK(range_min.impl.node == min.node);
-	    ++range_min;
-	  }
+        if (spatial::details::match_all
+            (fix.kdtree.rank(), *min, whole_tree_box))
+          {
+            BOOST_CHECK(range_min.impl_.node_ == min.node);
+            ++range_min;
+          }
       }
-    BOOST_CHECK(range_min.impl.node == min.node); // at end!
+    BOOST_CHECK(range_min.impl_.node_ == min.node); // at end!
   }
   {
     typedef open_range_bounds
@@ -7085,18 +7099,18 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_pre_increment )
     range_iterator range_min = range_iterator::minimum
       (fix.kdtree.rank(), small_box, 0,
        fix.kdtree.end().node->parent);
-    const_iterator min; min.node = range_min.impl.node;
+    const_iterator min; min.node = range_min.impl_.node_;
     const_iterator end(fix.kdtree.end());
     for(; min != end; ++min)
       {
-	if (spatial::details::match_all
-	    (fix.kdtree.rank(), *min, small_box))
-	  {
-	    BOOST_CHECK(range_min.impl.node == min.node);
-	    ++range_min;
-	  }
+        if (spatial::details::match_all
+            (fix.kdtree.rank(), *min, small_box))
+          {
+            BOOST_CHECK(range_min.impl_.node_ == min.node);
+            ++range_min;
+          }
       }
-    BOOST_CHECK(range_min.impl.node == min.node); // at end!
+    BOOST_CHECK(range_min.impl_.node_ == min.node); // at end!
   }
 }
 
@@ -7124,16 +7138,16 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_pre_decrement )
       (fix.kdtree.rank(), whole_tree_box, 1,
        static_cast<Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type *>
        (fix.kdtree.end().node));
-    const_iterator max; max.node = range_max.impl.node;
+    const_iterator max; max.node = range_max.impl_.node_;
     const_iterator begin(fix.kdtree.begin());
     for(; max != begin; --max)
       {
-	if (spatial::details::match_all
-	    (fix.kdtree.rank(), *max, whole_tree_box))
-	  {
-	    --range_max;
-	    BOOST_CHECK(range_max.impl.node == max.node);
-	  }
+        if (spatial::details::match_all
+            (fix.kdtree.rank(), *max, whole_tree_box))
+          {
+            --range_max;
+            BOOST_CHECK(range_max.impl_.node_ == max.node);
+          }
       }
   }
   {
@@ -7158,16 +7172,16 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_pre_decrement )
       (fix.kdtree.rank(), small_box, 1,
        static_cast<Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type *>
        (fix.kdtree.end().node));
-    const_iterator max; max.node = range_max.impl.node;
+    const_iterator max; max.node = range_max.impl_.node_;
     const_iterator begin(fix.kdtree.begin());
     for(; max != begin; --max)
       {
-	if (spatial::details::match_all
-	    (fix.kdtree.rank(), *max, small_box))
-	  {
-	    --range_max;
-	    BOOST_CHECK(range_max.impl.node == max.node);
-	  }
+        if (spatial::details::match_all
+            (fix.kdtree.rank(), *max, small_box))
+          {
+            --range_max;
+            BOOST_CHECK(range_max.impl_.node_ == max.node);
+          }
       }
   }
 }
@@ -7251,11 +7265,11 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_minimum )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, ones, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(iter.impl.node == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl.node_dim == 0);
-    BOOST_CHECK_CLOSE(iter.impl.distance(), std::sqrt(2.0), .000000000001);
-    BOOST_CHECK(iter.impl.origin() == ones);
+                             geometry, ones, 0, fix.kdtree.end().node->parent);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 0);
+    BOOST_CHECK_CLOSE(iter.impl_.distance_(), std::sqrt(2.0), .000000000001);
+    BOOST_CHECK(iter.impl_.target_() == ones);
   }
   {
     // Find the expected closest at on a left-unblanced tree
@@ -7267,10 +7281,10 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_minimum )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, ones, 0, fix.kdtree.end().node->parent);
+                             geometry, ones, 0, fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == ones);
     BOOST_CHECK_EQUAL(iter.distance(), .0);
-    BOOST_CHECK(iter.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
   }
   {
     // Find the expected closest at on a right-unblanced tree
@@ -7282,10 +7296,10 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_minimum )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, fours, 0, fix.kdtree.end().node->parent);
+                             geometry, fours, 0, fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == threes);
     BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(2.0), .000000000001);
-    BOOST_CHECK(iter.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
   }
   {
     // Find the closest in a tree with a lot of positions, cross-check
@@ -7300,33 +7314,33 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_minimum )
     geometry_type geometry;
     for(int i=0; i<20; ++i)
       {
-	point5d target; // A bit out of the tree interval of points
-	target[0] = static_cast<double>(rand() % 22 - 1);
-	target[1] = static_cast<double>(rand() % 22 - 1);
-	target[2] = static_cast<double>(rand() % 22 - 1);
-	target[3] = static_cast<double>(rand() % 22 - 1);
-	target[4] = static_cast<double>(rand() % 22 - 1);
-	iterator_type min =
-	  iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-				 geometry, target, 0,
-				 fix.kdtree.end().node->parent);
-	BOOST_REQUIRE(min.impl.node != fix.kdtree.end().node);
-	// Need to collect the results independantly to cross-check
-	kdtree_type::const_iterator iter = fix.kdtree.begin();
-	kdtree_type::const_iterator end = fix.kdtree.end();
-	point5d best = *iter;
-	double best_distance = geometry.distance_to_key(5, target, *iter);
-	++iter;
-	for (; iter != end; ++iter)
-	  {
-	    double tmp_distance = geometry.distance_to_key(5, target, *iter);
-	    if (tmp_distance < best_distance)
-	      {
-		best = *iter;
-		best_distance = tmp_distance;
-	      }
-	  }
-	BOOST_CHECK_CLOSE(min.distance(), best_distance, .000000000001);
+        point5d target; // A bit out of the tree interval of points
+        target[0] = static_cast<double>(rand() % 22 - 1);
+        target[1] = static_cast<double>(rand() % 22 - 1);
+        target[2] = static_cast<double>(rand() % 22 - 1);
+        target[3] = static_cast<double>(rand() % 22 - 1);
+        target[4] = static_cast<double>(rand() % 22 - 1);
+        iterator_type min =
+          iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                                 geometry, target, 0,
+                                 fix.kdtree.end().node->parent);
+        BOOST_REQUIRE(min.impl_.node_ != fix.kdtree.end().node);
+        // Need to collect the results independantly to cross-check
+        kdtree_type::const_iterator iter = fix.kdtree.begin();
+        kdtree_type::const_iterator end = fix.kdtree.end();
+        point5d best = *iter;
+        double best_distance = geometry.distance_to_key(5, target, *iter);
+        ++iter;
+        for (; iter != end; ++iter)
+          {
+            double tmp_distance = geometry.distance_to_key(5, target, *iter);
+            if (tmp_distance < best_distance)
+              {
+                best = *iter;
+                best_distance = tmp_distance;
+              }
+          }
+        BOOST_CHECK_CLOSE(min.distance(), best_distance, .000000000001);
       }
   }
 }
@@ -7347,11 +7361,11 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_maximum )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, ones, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(iter.impl.node == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl.node_dim == 0);
-    BOOST_CHECK_CLOSE(iter.impl.distance(), std::sqrt(2.0), .000000000001);
-    BOOST_CHECK(iter.impl.origin() == ones);
+                             geometry, ones, 0, fix.kdtree.end().node->parent);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 0);
+    BOOST_CHECK_CLOSE(iter.impl_.distance_(), std::sqrt(2.0), .000000000001);
+    BOOST_CHECK(iter.impl_.target_() == ones);
   }
   {
     // Find the expected furthest on a left-unblanced tree
@@ -7363,10 +7377,10 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_maximum )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, ones, 0, fix.kdtree.end().node->parent);
+                             geometry, ones, 0, fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == threes);
     BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(8.0), .000000000001);
-    BOOST_CHECK(iter.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
   }
   {
     // Find the expected furthest on a right-unblanced tree
@@ -7378,10 +7392,10 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_maximum )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, fours, 0, fix.kdtree.end().node->parent);
+                             geometry, fours, 0, fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == zeros);
     BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(32.0), .000000000001);
-    BOOST_CHECK(iter.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
   }
   {
     // Find the furthest in a tree with a lot of positions, cross-check
@@ -7396,33 +7410,33 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_maximum )
     geometry_type geometry;
     for(int i=0; i<20; ++i)
       {
-	point5d target; // A bit out of the tree interval of points
-	target[0] = static_cast<double>(rand() % 22 - 1);
-	target[1] = static_cast<double>(rand() % 22 - 1);
-	target[2] = static_cast<double>(rand() % 22 - 1);
-	target[3] = static_cast<double>(rand() % 22 - 1);
-	target[4] = static_cast<double>(rand() % 22 - 1);
-	iterator_type max =
-	  iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-				 geometry, target, 0,
-				 fix.kdtree.end().node->parent);
-	BOOST_REQUIRE(max.impl.node != fix.kdtree.end().node);
-	// Need to collect the results independantly to cross-check
-	kdtree_type::const_iterator iter = fix.kdtree.begin();
-	kdtree_type::const_iterator end = fix.kdtree.end();
-	point5d best = *iter;
-	double best_distance = geometry.distance_to_key(5, target, *iter);
-	++iter;
-	for (; iter != end; ++iter)
-	  {
-	    double tmp_distance = geometry.distance_to_key(5, target, *iter);
-	    if (tmp_distance > best_distance)
-	      {
-		best = *iter;
-		best_distance = tmp_distance;
-	      }
-	  }
-	BOOST_CHECK_CLOSE(max.distance(), best_distance, .000000000001);
+        point5d target; // A bit out of the tree interval of points
+        target[0] = static_cast<double>(rand() % 22 - 1);
+        target[1] = static_cast<double>(rand() % 22 - 1);
+        target[2] = static_cast<double>(rand() % 22 - 1);
+        target[3] = static_cast<double>(rand() % 22 - 1);
+        target[4] = static_cast<double>(rand() % 22 - 1);
+        iterator_type max =
+          iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                                 geometry, target, 0,
+                                 fix.kdtree.end().node->parent);
+        BOOST_REQUIRE(max.impl_.node_ != fix.kdtree.end().node);
+        // Need to collect the results independantly to cross-check
+        kdtree_type::const_iterator iter = fix.kdtree.begin();
+        kdtree_type::const_iterator end = fix.kdtree.end();
+        point5d best = *iter;
+        double best_distance = geometry.distance_to_key(5, target, *iter);
+        ++iter;
+        for (; iter != end; ++iter)
+          {
+            double tmp_distance = geometry.distance_to_key(5, target, *iter);
+            if (tmp_distance > best_distance)
+              {
+                best = *iter;
+                best_distance = tmp_distance;
+              }
+          }
+        BOOST_CHECK_CLOSE(max.distance(), best_distance, .000000000001);
       }
   }
 }
@@ -7443,15 +7457,15 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_increment )
     geometry_type geometry;
     iterator_type iter =
       iterator_type(fix.kdtree.rank(), fix.kdtree.compare(), geometry, zeros,
-		    0, static_cast<kdtree_type::node_type*>
-		    (fix.kdtree.end().node->parent), 0.0);
-    BOOST_CHECK(iter.impl.node == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl.node_dim == 0);
-    BOOST_CHECK(iter.impl.origin() == zeros);
+                    0, static_cast<kdtree_type::node_type*>
+                    (fix.kdtree.end().node->parent), 0.0);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 0);
+    BOOST_CHECK(iter.impl_.target_() == zeros);
     BOOST_CHECK_NO_THROW(++iter);
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl.node_dim == 1);
-    BOOST_CHECK(iter.impl.origin() == zeros);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 1);
+    BOOST_CHECK(iter.impl_.target_() == zeros);
   }
   {
     // Find the expected nodes on a left-unblanced tree
@@ -7463,8 +7477,8 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_increment )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, threes, 0,
-			     fix.kdtree.end().node->parent);
+                             geometry, threes, 0,
+                             fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == threes);
     ++iter;
     BOOST_CHECK(*iter == twos);
@@ -7476,9 +7490,9 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_increment )
     BOOST_CHECK(*iter == zeros);
     BOOST_CHECK(iter.distance() == 18);
     ++iter;
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl.node_dim == 1);
-    BOOST_CHECK(iter.impl.origin() == threes);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 1);
+    BOOST_CHECK(iter.impl_.target_() == threes);
   }
   {
     // Find the expected furthest on a right-unblanced tree
@@ -7490,8 +7504,8 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_increment )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, zeros, 0,
-			     fix.kdtree.end().node->parent);
+                             geometry, zeros, 0,
+                             fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == zeros);
     ++iter;
     BOOST_CHECK(*iter == ones);
@@ -7503,9 +7517,9 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_increment )
     BOOST_CHECK(*iter == threes);
     BOOST_CHECK(iter.distance() == 18);
     ++iter;
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl.node_dim == 1);
-    BOOST_CHECK(iter.impl.origin() == zeros);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 1);
+    BOOST_CHECK(iter.impl_.target_() == zeros);
   }
   {
     typedef Hundred_Relaxed_kdtree_5D_fixture::kdtree_type kdtree_type;
@@ -7519,34 +7533,34 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_increment )
     geometry_type geometry;
     for(int i=0; i<20; ++i)
       {
-  	point5d target; // A bit out of the tree interval of points
-  	target[0] = static_cast<double>(rand() % 22 - 1);
-  	target[1] = static_cast<double>(rand() % 22 - 1);
-  	target[2] = static_cast<double>(rand() % 22 - 1);
-  	target[3] = static_cast<double>(rand() % 22 - 1);
-  	target[4] = static_cast<double>(rand() % 22 - 1);
-  	iterator_type iter =
-  	  iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-  				 geometry, target, 0,
-  				 fix.kdtree.end().node->parent);
-  	iterator_type end =
-  	  iterator_type(fix.kdtree.rank(), fix.kdtree.compare(),
-  			geometry, target, 4,
-  			static_cast<kdtree_type::node_type*>
-  			(fix.kdtree.end().node));
-  	BOOST_REQUIRE(iter.impl.node != fix.kdtree.end().node);
-  	double old_distance = geometry.distance_to_key(5, target, *iter);
-  	BOOST_CHECK_EQUAL(iter.distance(), old_distance);
-  	++iter;
-  	int count = 1;
-  	for (; iter != end; ++iter, ++count)
-  	  {
-  	    double distance = geometry.distance_to_key(5, target, *iter);
-  	    BOOST_CHECK_EQUAL(iter.distance(), distance);
-  	    BOOST_CHECK(distance >= old_distance);
-  	    old_distance = distance;
-  	  }
-  	BOOST_CHECK_EQUAL(count, 100);
+        point5d target; // A bit out of the tree interval of points
+        target[0] = static_cast<double>(rand() % 22 - 1);
+        target[1] = static_cast<double>(rand() % 22 - 1);
+        target[2] = static_cast<double>(rand() % 22 - 1);
+        target[3] = static_cast<double>(rand() % 22 - 1);
+        target[4] = static_cast<double>(rand() % 22 - 1);
+        iterator_type iter =
+          iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                                 geometry, target, 0,
+                                 fix.kdtree.end().node->parent);
+        iterator_type end =
+          iterator_type(fix.kdtree.rank(), fix.kdtree.compare(),
+                        geometry, target, 4,
+                        static_cast<kdtree_type::node_type*>
+                        (fix.kdtree.end().node));
+        BOOST_REQUIRE(iter.impl_.node_ != fix.kdtree.end().node);
+        double old_distance = geometry.distance_to_key(5, target, *iter);
+        BOOST_CHECK_EQUAL(iter.distance(), old_distance);
+        ++iter;
+        int count = 1;
+        for (; iter != end; ++iter, ++count)
+          {
+            double distance = geometry.distance_to_key(5, target, *iter);
+            BOOST_CHECK_EQUAL(iter.distance(), distance);
+            BOOST_CHECK(distance >= old_distance);
+            old_distance = distance;
+          }
+        BOOST_CHECK_EQUAL(count, 100);
       }
   }
 }
@@ -7567,15 +7581,15 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_decrement )
     geometry_type geometry;
     iterator_type iter =
       iterator_type(fix.kdtree.rank(), fix.kdtree.compare(), geometry, zeros,
-		    0, static_cast<kdtree_type::node_type*>
-		    (fix.kdtree.end().node->parent), 0.0);
-    BOOST_CHECK(iter.impl.node == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl.node_dim == 0);
-    BOOST_CHECK(iter.impl.origin() == zeros);
+                    0, static_cast<kdtree_type::node_type*>
+                    (fix.kdtree.end().node->parent), 0.0);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 0);
+    BOOST_CHECK(iter.impl_.target_() == zeros);
     BOOST_CHECK_NO_THROW(--iter);
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl.node_dim == 1);
-    BOOST_CHECK(iter.impl.origin() == zeros);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 1);
+    BOOST_CHECK(iter.impl_.target_() == zeros);
   }
   {
     // Find the expected nodes on a left-unblanced tree
@@ -7587,7 +7601,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_decrement )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, threes, 0, fix.kdtree.end().node->parent);
+                             geometry, threes, 0, fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == zeros);
     --iter;
     BOOST_CHECK(*iter == ones);
@@ -7599,9 +7613,9 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_decrement )
     BOOST_CHECK(*iter == threes);
     BOOST_CHECK(iter.distance() == 0);
     --iter;
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl.node_dim == 1);
-    BOOST_CHECK(iter.impl.origin() == threes);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 1);
+    BOOST_CHECK(iter.impl_.target_() == threes);
     --iter;
     BOOST_CHECK(*iter == zeros);
     BOOST_CHECK(iter.distance() == 18);
@@ -7616,7 +7630,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_decrement )
     geometry_type geometry;
     iterator_type iter =
       iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-			     geometry, threes, 0, fix.kdtree.end().node->parent);
+                             geometry, threes, 0, fix.kdtree.end().node->parent);
     BOOST_CHECK(*iter == zeros);
     --iter;
     BOOST_CHECK(*iter == ones);
@@ -7628,9 +7642,9 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_decrement )
     BOOST_CHECK(*iter == threes);
     BOOST_CHECK(iter.distance() == 0);
     --iter;
-    BOOST_CHECK(iter.impl.node == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl.node_dim == 1);
-    BOOST_CHECK(iter.impl.origin() == threes);
+    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+    BOOST_CHECK(iter.impl_.node_dim_ == 1);
+    BOOST_CHECK(iter.impl_.target_() == threes);
     --iter;
     BOOST_CHECK(*iter == zeros);
     BOOST_CHECK(iter.distance() == 18);
@@ -7647,33 +7661,33 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_decrement )
     geometry_type geometry;
     for(int i=0; i<20; ++i)
       {
-  	point5d target; // A bit out of the tree interval of points
-  	target[0] = static_cast<double>(rand() % 22 - 1);
-  	target[1] = static_cast<double>(rand() % 22 - 1);
-  	target[2] = static_cast<double>(rand() % 22 - 1);
-  	target[3] = static_cast<double>(rand() % 22 - 1);
-  	target[4] = static_cast<double>(rand() % 22 - 1);
-  	iterator_type iter =
-  	  iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-  				 geometry, target, 0,
-  				 fix.kdtree.end().node->parent);
-  	iterator_type end =
-  	  iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-  				 geometry, target, 0,
-  				 fix.kdtree.end().node->parent);
-  	BOOST_REQUIRE(iter.impl.node != fix.kdtree.end().node);
-  	double old_distance = geometry.distance_to_key(5, target, *iter);
-  	BOOST_CHECK_EQUAL(iter.distance(), old_distance);
-  	--iter;
-  	int count = 1;
-  	for (; iter != end; --iter, ++count)
-  	  {
-  	    double distance = geometry.distance_to_key(5, target, *iter);
-  	    BOOST_CHECK_EQUAL(iter.distance(), distance);
-  	    BOOST_CHECK(distance <= old_distance);
-  	    old_distance = distance;
-  	  }
-  	BOOST_CHECK_EQUAL(count, 99);
+        point5d target; // A bit out of the tree interval of points
+        target[0] = static_cast<double>(rand() % 22 - 1);
+        target[1] = static_cast<double>(rand() % 22 - 1);
+        target[2] = static_cast<double>(rand() % 22 - 1);
+        target[3] = static_cast<double>(rand() % 22 - 1);
+        target[4] = static_cast<double>(rand() % 22 - 1);
+        iterator_type iter =
+          iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                                 geometry, target, 0,
+                                 fix.kdtree.end().node->parent);
+        iterator_type end =
+          iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                                 geometry, target, 0,
+                                 fix.kdtree.end().node->parent);
+        BOOST_REQUIRE(iter.impl_.node_ != fix.kdtree.end().node);
+        double old_distance = geometry.distance_to_key(5, target, *iter);
+        BOOST_CHECK_EQUAL(iter.distance(), old_distance);
+        --iter;
+        int count = 1;
+        for (; iter != end; --iter, ++count)
+          {
+            double distance = geometry.distance_to_key(5, target, *iter);
+            BOOST_CHECK_EQUAL(iter.distance(), distance);
+            BOOST_CHECK(distance <= old_distance);
+            old_distance = distance;
+          }
+        BOOST_CHECK_EQUAL(count, 99);
       }
   }
 }
@@ -7697,13 +7711,13 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_lower_bound )
     iterator_type it = iterator_type::lower_bound
       (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
        zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
     // Check that there is no failure in limits.
     fix.kdtree.insert(ones);
     it = iterator_type::lower_bound
       (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
        zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
     BOOST_CHECK(*it == ones);
   }
   {
@@ -7714,7 +7728,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_lower_bound )
     iterator_type it = iterator_type::lower_bound
       (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
        zeros, 0.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
     BOOST_CHECK(*it == zeros);
   }
   {
@@ -7730,24 +7744,24 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_lower_bound )
     geometry_type geometry;
     for (int i = 0; i < 100; ++i)
       {
-	// manathan distance should not exceed 20.f+20.f
-	float limit = (float)(rand() % 42 - 1);
-	point5d origin;
-	origin[0] = rand() % 22 - 1;
-	origin[1] = rand() % 22 - 1;
-	origin[2] = rand() % 22 - 1;
-	origin[3] = rand() % 22 - 1;
-	origin[4] = rand() % 22 - 1;
-	iterator_type it = iterator_type::lower_bound
-	  (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-	   origin, limit, 0, fix.kdtree.end().node->parent);
-	// dist to value found should be greater or equal to limit or end
-	if (it.impl.node != fix.kdtree.end().node)
-	  { BOOST_CHECK_LE(limit, it.distance()); }
-	--it;
-	// dist to previous value should be stricly less than limit or end
-	if (it.impl.node != fix.kdtree.end().node)
-	  { BOOST_CHECK_LT(it.distance(), limit); }
+        // manathan distance should not exceed 20.f+20.f
+        float limit = (float)(rand() % 42 - 1);
+        point5d origin;
+        origin[0] = rand() % 22 - 1;
+        origin[1] = rand() % 22 - 1;
+        origin[2] = rand() % 22 - 1;
+        origin[3] = rand() % 22 - 1;
+        origin[4] = rand() % 22 - 1;
+        iterator_type it = iterator_type::lower_bound
+          (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+           origin, limit, 0, fix.kdtree.end().node->parent);
+        // dist to value found should be greater or equal to limit or end
+        if (it.impl_.node_ != fix.kdtree.end().node)
+          { BOOST_CHECK_LE(limit, it.distance()); }
+        --it;
+        // dist to previous value should be stricly less than limit or end
+        if (it.impl_.node_ != fix.kdtree.end().node)
+          { BOOST_CHECK_LT(it.distance(), limit); }
       }
   }
 }
@@ -7771,13 +7785,13 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_upper_bound )
     iterator_type it = iterator_type::upper_bound
       (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
        zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
     // Check that there is no failure in limits.
     fix.kdtree.insert(ones);
     it = iterator_type::upper_bound
       (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
        zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node != fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
     BOOST_CHECK(*it == ones);
   }
   {
@@ -7788,7 +7802,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_upper_bound )
     iterator_type it = iterator_type::upper_bound
       (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
        zeros, 0.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl.node == fix.kdtree.end().node);
+    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
   }
   {
     // On random sets, check that the appropriate nodes are found.
@@ -7803,24 +7817,24 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_upper_bound )
     geometry_type geometry;
     for (int i = 0; i < 100; ++i)
       {
-	// manathan distance should not exceed 20.f+20.f
-	float limit = (float)(rand() % 42 - 1);
-	point5d origin;
-	origin[0] = rand() % 22 - 1;
-	origin[1] = rand() % 22 - 1;
-	origin[2] = rand() % 22 - 1;
-	origin[3] = rand() % 22 - 1;
-	origin[4] = rand() % 22 - 1;
-	iterator_type it = iterator_type::upper_bound
-	  (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-	   origin, limit, 0, fix.kdtree.end().node->parent);
-	// dist to value found should be strictly greater than limit or end
-	if (it.impl.node != fix.kdtree.end().node)
-	  { BOOST_CHECK_LT(limit, it.distance()); }
-	--it;
-	// dist to previous value should be lower or equal limit or end
-	if (it.impl.node != fix.kdtree.end().node)
-	  { BOOST_CHECK_LE(it.distance(), limit); }
+        // manathan distance should not exceed 20.f+20.f
+        float limit = (float)(rand() % 42 - 1);
+        point5d origin;
+        origin[0] = rand() % 22 - 1;
+        origin[1] = rand() % 22 - 1;
+        origin[2] = rand() % 22 - 1;
+        origin[3] = rand() % 22 - 1;
+        origin[4] = rand() % 22 - 1;
+        iterator_type it = iterator_type::upper_bound
+          (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+           origin, limit, 0, fix.kdtree.end().node->parent);
+        // dist to value found should be strictly greater than limit or end
+        if (it.impl_.node_ != fix.kdtree.end().node)
+          { BOOST_CHECK_LT(limit, it.distance()); }
+        --it;
+        // dist to previous value should be lower or equal limit or end
+        if (it.impl_.node_ != fix.kdtree.end().node)
+          { BOOST_CHECK_LE(it.distance(), limit); }
       }
   }
 }

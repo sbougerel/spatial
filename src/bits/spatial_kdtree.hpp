@@ -2,7 +2,7 @@
 
 /**
  *  @file   spatial_kdtree.hpp
- *  @brief  
+ *  @brief
  *
  *  Change Log:
  *
@@ -27,15 +27,15 @@ namespace spatial
   {
 
     template <typename Rank, typename Key,
-	      typename Compare, typename Alloc, bool ConstantIterator>
+              typename Compare, typename Alloc, bool ConstantIterator>
     class Kdtree
       : public Kdtree_base<Rank, Key, Kdtree_node<Key>, Compare, Alloc,
-			   ConstantIterator>
+                           ConstantIterator>
     {
       typedef Kdtree<Rank, Key, Compare,
-		     Alloc, ConstantIterator>    Self;
+                     Alloc, ConstantIterator>    Self;
       typedef Kdtree_base<Rank, Key, Kdtree_node<Key>, Compare, Alloc,
-			  ConstantIterator>      Base;
+                          ConstantIterator>      Base;
 
       typedef typename Base::Base_ptr            Base_ptr;
       typedef typename Base::Const_Base_ptr      Const_Base_ptr;
@@ -79,8 +79,8 @@ namespace spatial
        *  nodes and recurse when walking down right nodes.
        */
       void rebalance_node_insert
-        (std::vector<Base_ptr>::iterator first,
-		 std::vector<Base_ptr>::iterator last, dimension_type dim);
+      (typename std::vector<Base_ptr>::iterator first,
+       typename std::vector<Base_ptr>::iterator last, dimension_type dim);
 
       /**
        *  @brief  Copy the exact sturcture of the sub-tree pointed to by @c
@@ -106,24 +106,23 @@ namespace spatial
 
     public:
       Kdtree()
-	: Base(Rank(), Compare(), allocator_type()), m_count(0)
+        : Base(Rank(), Compare(), allocator_type()), m_count(0)
       { }
 
-      explicit Kdtree(const Rank& rank)
-	: Base(rank, Compare(), allocator_type()), m_count(0)
+      explicit Kdtree(const Rank& r)
+        : Base(r, Compare(), allocator_type()), m_count(0)
       { }
 
-      explicit Kdtree(const compare_type& compare)
-	: Base(Rank(), compare, allocator_type()), m_count(0)
+      explicit Kdtree(const compare_type& c)
+        : Base(Rank(), c, allocator_type()), m_count(0)
       { }
 
-      Kdtree(const Rank& rank, const compare_type& compare)
-	: Base(rank, compare, allocator_type()), m_count(0)
+      Kdtree(const Rank& r, const compare_type& c)
+        : Base(r, c, allocator_type()), m_count(0)
       { }
 
-      Kdtree(const Rank& rank, const compare_type& compare,
-	     const allocator_type& alloc)
-	: Base(rank, compare, alloc), m_count(0)
+      Kdtree(const Rank& r, const compare_type& c, const allocator_type& a)
+        : Base(r, c, a), m_count(0)
       { }
 
       /**
@@ -138,13 +137,13 @@ namespace spatial
        *  on most search functions.
        */
       Kdtree(const Self& other, bool balancing = false)
-	: Base(other), m_count(0)
+        : Base(other), m_count(0)
       {
-	if (!other.empty())
-	  {
-	    if (balancing) { copy_rebalance(other); }
-	    else { copy_structure(other); }
-	  }
+        if (!other.empty())
+          {
+            if (balancing) { copy_rebalance(other); }
+            else { copy_structure(other); }
+          }
       }
 
       /**
@@ -158,13 +157,13 @@ namespace spatial
       Self&
       operator=(const Self& other)
       {
-	if (&other != this)
-	  {
-	    clear();
-	    Base::operator=(other);
-	    if (!other.empty()) { copy_structure(other); }
-	  }
-	return *this;
+        if (&other != this)
+          {
+            clear();
+            Base::operator=(other);
+            if (!other.empty()) { copy_structure(other); }
+          }
+        return *this;
       }
 
     public:
@@ -189,8 +188,8 @@ namespace spatial
       void
       clear()
       {
-	Base::clear();
-	m_count = 0;
+        Base::clear();
+        m_count = 0;
       }
 
       /**
@@ -216,8 +215,8 @@ namespace spatial
        */
       void swap(Kdtree& other)
       {
-	Base::swap(*static_cast<Base*>(&other));
-	std::swap(m_count, other.m_count);
+        Base::swap(*static_cast<Base*>(&other));
+        std::swap(m_count, other.m_count);
       }
 
       /**
@@ -226,8 +225,8 @@ namespace spatial
       iterator
       insert(const key_type& key)
       {
-	Link_type tmp = Base::create_node(key); // may throw
-	return insert_node(tmp);
+        Link_type tmp = Base::create_node(key); // may throw
+        return insert_node(tmp);
       }
 
       /**
@@ -271,7 +270,7 @@ namespace spatial
      *  @brief  Swap the content of the tree @p left and @p right.
      */
     template <typename Rank, typename Key, typename Compare,
-	      typename Alloc, bool ConstantIterator>
+              typename Alloc, bool ConstantIterator>
     inline void swap
     (Kdtree<Rank, Key, Compare, Alloc, ConstantIterator>& left,
      Kdtree<Rank, Key, Compare, Alloc, ConstantIterator>& right)
