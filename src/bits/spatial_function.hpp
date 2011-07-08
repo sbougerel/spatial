@@ -24,11 +24,13 @@
 
 namespace spatial
 {
+
   /**
    *  @brief  A comparator that simplifies using the spatial containers with a
    *  Key type that has coordinate that are not accessible via the bracket,
    *  parenthesis operator or iterator deference.
-   *  @test   test_accessor_less
+   *  @concept accessor_less is a model of BoxComparison to accomodate both
+   *  pointset and boxset family of container.
    *
    *  Generally, the spatial containers are used with one of bracket_less,
    *  paren_less, or iterator_less. However, when the Key to the spatial
@@ -48,12 +50,19 @@ namespace spatial
     {
       return (Accessor::operator()(n, x) < Accessor::operator()(n, y));
     }
+
+    bool operator()
+    (dimension_type a, const Tp& x, dimension_type b, const Tp& y) const
+    {
+      return (Accessor::operator()(a, x) < Accessor::operator()(b, y));
+    }
   };
 
   /**
    *  @brief  A comparator that simplifies using the spatial containers with a
    *  Key type that has coordiates accessible via the bracket operator.
-   *  @test   test_bracket_less
+   *  @concept accessor_less is a model of BoxComparison to accomodate both
+   *  pointset and boxset family of container.
    */
   template <typename Tp>
   struct bracket_less
@@ -63,12 +72,19 @@ namespace spatial
     {
       return (x[n] < y[n]);
     }
+
+    bool operator()
+    (dimension_type a, const Tp& x, dimension_type b, const Tp& y) const
+    {
+      return (x[a] < y[b]);
+    }
   };
 
   /**
    *  @brief  A comparator that simplifies using the spatial containers with a
    *  Key type that has coordiates accessible via the parenthesis operator.
-   *  @test   test_paren_less
+   *  @concept accessor_less is a model of BoxComparison to accomodate both
+   *  pointset and boxset family of container.
    */
   template <typename Tp>
   struct paren_less
@@ -78,12 +94,19 @@ namespace spatial
     {
       return (x(n) < y(n));
     }
+
+    bool operator()
+    (dimension_type a, const Tp& x, dimension_type b, const Tp& y) const
+    {
+      return (x(a) < y(b));
+    }
   };
 
   /**
    *  @brief  A comparator that simplifies using the spatial containers with a
    *  Key type that has coordiates accessible via iterator deference.
-   *  @test   test_iterator_less
+   *  @concept accessor_less is a model of BoxComparison to accomodate both
+   *  pointset and boxset family of container.
    */
   template <typename Tp>
   struct iterator_less
@@ -95,6 +118,17 @@ namespace spatial
       typename Tp::const_iterator iy = y.begin();
       {
 	using namespace ::std; advance(ix, n); advance(iy, n);
+      }
+      return (*ix < *iy);
+    }
+
+    bool operator()
+    (dimension_type a, const Tp& x, dimension_type b, const Tp& y) const
+    {
+      typename Tp::const_iterator ix = x.begin();
+      typename Tp::const_iterator iy = y.begin();
+      {
+	using namespace ::std; advance(ix, a); advance(iy, b);
       }
       return (*ix < *iy);
     }

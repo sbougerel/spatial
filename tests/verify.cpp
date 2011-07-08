@@ -981,10 +981,17 @@ BOOST_AUTO_TEST_CASE( test_access_less )
   point2d y = { { 1, 0 } };
   accessor_less<at_accessor<point2d, int>, point2d> compare;
   BOOST_CHECK(compare(0, x, y));
+  BOOST_CHECK(compare(0, x, 0, y));
   BOOST_CHECK(!compare(0, y, x));
+  BOOST_CHECK(!compare(0, y, 0, x));
   BOOST_CHECK(!compare(1, x, y));
+  BOOST_CHECK(!compare(1, x, 1, y));
   BOOST_CHECK(compare(1, y, x));
+  BOOST_CHECK(compare(1, y, 1, x));
   BOOST_CHECK(!compare(0, x, x));
+  BOOST_CHECK(!compare(0, x, 0, x));
+  BOOST_CHECK(compare(0, x, 1, x));
+  BOOST_CHECK(!compare(0, x, 1, y));
 }
 
 BOOST_AUTO_TEST_CASE( test_bracket_less )
@@ -995,10 +1002,17 @@ BOOST_AUTO_TEST_CASE( test_bracket_less )
   point2d y = { { 1, 0 } };
   bracket_less<point2d> compare;
   BOOST_CHECK(compare(0, x, y));
+  BOOST_CHECK(compare(0, x, 0, y));
   BOOST_CHECK(!compare(0, y, x));
+  BOOST_CHECK(!compare(0, y, 0, x));
   BOOST_CHECK(!compare(1, x, y));
+  BOOST_CHECK(!compare(1, x, 1, y));
   BOOST_CHECK(compare(1, y, x));
+  BOOST_CHECK(compare(1, y, 1, x));
   BOOST_CHECK(!compare(0, x, x));
+  BOOST_CHECK(!compare(0, x, 0, x));
+  BOOST_CHECK(compare(0, x, 1, x));
+  BOOST_CHECK(!compare(0, x, 1, y));
 }
 
 BOOST_AUTO_TEST_CASE( test_iterator_less )
@@ -1007,10 +1021,17 @@ BOOST_AUTO_TEST_CASE( test_iterator_less )
   point2d y = { { 1, 0 } };
   iterator_less<point2d> compare;
   BOOST_CHECK(compare(0, x, y));
+  BOOST_CHECK(compare(0, x, 0, y));
   BOOST_CHECK(!compare(0, y, x));
+  BOOST_CHECK(!compare(0, y, 0, x));
   BOOST_CHECK(!compare(1, x, y));
+  BOOST_CHECK(!compare(1, x, 1, y));
   BOOST_CHECK(compare(1, y, x));
+  BOOST_CHECK(compare(1, y, 1, x));
   BOOST_CHECK(!compare(0, x, x));
+  BOOST_CHECK(!compare(0, x, 0, x));
+  BOOST_CHECK(compare(0, x, 1, x));
+  BOOST_CHECK(!compare(0, x, 1, y));
 }
 
 BOOST_AUTO_TEST_CASE( test_paren_less )
@@ -1019,10 +1040,17 @@ BOOST_AUTO_TEST_CASE( test_paren_less )
   point2d_paren y; y[0] = 1; y[1] = 0;
   paren_less<point2d_paren> compare;
   BOOST_CHECK(compare(0, x, y));
+  BOOST_CHECK(compare(0, x, 0, y));
   BOOST_CHECK(!compare(0, y, x));
+  BOOST_CHECK(!compare(0, y, 0, x));
   BOOST_CHECK(!compare(1, x, y));
+  BOOST_CHECK(!compare(1, x, 1, y));
   BOOST_CHECK(compare(1, y, x));
+  BOOST_CHECK(compare(1, y, 1, x));
   BOOST_CHECK(!compare(0, x, x));
+  BOOST_CHECK(!compare(0, x, 0, x));
+  BOOST_CHECK(compare(0, x, 1, x));
+  BOOST_CHECK(!compare(0, x, 1, y));
 }
 
 BOOST_AUTO_TEST_CASE( test_equal_bounds )
@@ -4329,14 +4357,14 @@ BOOST_AUTO_TEST_CASE( test_geometry_euclidian_float )
       distance_type r = geometry.distance_to_key(3, p, q);
       distance_type s = math::euclidian_distance_to_key
         <triple, triple_access, distance_type>(3, p, q, access);
-      BOOST_CHECK_CLOSE(r, s, .0000001);
+      BOOST_CHECK_CLOSE(r, s, .0000001f);
     }
     {
       dimension_type dim = static_cast<dimension_type>(rand()) % 3;
       distance_type r = geometry.distance_to_plane(3, dim, p, q);
       distance_type s = math::euclidian_distance_to_plane
         <triple, triple_access, distance_type>(dim, p, q, access);
-      BOOST_CHECK_CLOSE(r, s, .0000001);
+      BOOST_CHECK_CLOSE(r, s, .0000001f);
     }
   }
   {
@@ -4450,14 +4478,14 @@ BOOST_AUTO_TEST_CASE( test_geometry_euclidian_square_float )
       distance_type r = geometry.distance_to_key(3, p, q);
       distance_type s = math::euclidian_square_distance_to_key
         <triple, triple_access, distance_type>(3, p, q, access);
-      BOOST_CHECK_CLOSE(r, s, .0000001);
+      BOOST_CHECK_CLOSE(r, s, .0000001f);
     }
     {
       dimension_type dim = static_cast<dimension_type>(rand()) % 3;
       distance_type r = geometry.distance_to_plane(3, dim, p, q);
       distance_type s = math::euclidian_square_distance_to_plane
         <triple, triple_access, distance_type>(dim, p, q, access);
-      BOOST_CHECK_CLOSE(r, s, .0000001);
+      BOOST_CHECK_CLOSE(r, s, .0000001f);
     }
   }
   {
@@ -5428,9 +5456,16 @@ BOOST_AUTO_TEST_CASE( test_pointset_other_range_view )
   open_range_view<const pointset<2, point2d> > view6(points, zeros, ones);
 }
 
-BOOST_AUTO_TEST_CASE( test_pointset_neighborhood )
+BOOST_AUTO_TEST_CASE( test_pointset_neighborhood_view )
 {
   // Now add some points to pointset and iterate throught these points.
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  pointset<2, point2d> points;
+    
+}
+
+BOOST_AUTO_TEST_CASE( test_pointset_neighborhood_other_view )
+{
   BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 

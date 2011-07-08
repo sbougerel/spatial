@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (kdtree_verify) 
+project (spatial_verify) 
 if (CMAKE_COMPILER_IS_GNUCXX)
 # set(CMAKE_CXX_FLAGS "-O4 -Wall -pedantic -Wextra -ansi")
 # Make G++ very pedantic so that code compiled with it will be very portable

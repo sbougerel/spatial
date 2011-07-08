@@ -1,3 +1,8 @@
+2011-07-08  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * Overlap_bound is done. Need to redesign Range_iterators a little bit
+        to accomodate the new iterface for the bounds.
+
 2011-07-07  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * Started working on overlap and enclose iterator. It seems overlap are

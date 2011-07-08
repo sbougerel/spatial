@@ -382,9 +382,9 @@ namespace spatial
      *  @brief  The operator that tells wheather the point is in range or not.
      */
     relative_order
-    operator()(dimension_type dim, const Key& key) const
+    operator()(dimension_type rank, dimension_type dim, const Key& key) const
     {
-      return overlap_bounds_impl(dim, key, Layout());
+      return overlap_bounds_impl(rank, dim, key, Layout());
     }
 
   private:
@@ -393,11 +393,28 @@ namespace spatial
      */
     Key target_;
 
+    /**
+     *  Perform overlap tests for coordinates with llhh layout.
+     */
     relative_order overlap_bounds_impl
-    (dimension_type dim, const Key& key, llhh_layout_tag)
+    (dimension_type rank, dimension_type dim, const Key& key, llhh_layout_tag)
     {
-      const Compare& cmp = *static_cast<const Compare*>(this);
-      return matching;
+      return (dim < (rank >> 1))
+	? (Compare::operator()(dim + (rank >> 1), target_, dim, key)
+	   ? above : matching)
+	: (Compare::operator()(dim, key, dim - (rank >> 1), target_)
+	   ? below : matching);
+    }
+
+    /**
+     *  Perform overlap tests for coordinates with lhlh layout.
+     */
+    relative_order overlap_bounds_impl
+    (dimension_type, dimension_type dim, const Key& key, lhlh_layout_tag)
+    {
+      return ((dim % 2) == 0)
+	? (Compare::operator()(dim + 1, target_, dim, key) ? above : matching)
+	: (Compare::operator()(dim, key, dim - 1, target_) ? below : matching);
     }
   };
 
