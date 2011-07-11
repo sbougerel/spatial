@@ -30,24 +30,23 @@ namespace spatial
     Range_iterator_base<Rank, Key, Node, Predicate, Constant, Derived>
     ::increment()
     {
-      const Predicate& pred = this->predicate();
-      const Rank& rk = this->rank();
       SPATIAL_ASSERT_CHECK(!Node_base::header(impl_.node_));
       SPATIAL_ASSERT_CHECK(impl_.node_ != 0);
-      SPATIAL_ASSERT_CHECK(impl_.node_dim_() < rk());
+      SPATIAL_ASSERT_CHECK(impl_.node_dim_() < rank()());
       do
         {
           if (impl_.node_->right != 0
-              && pred(impl_.node_dim_(), SPATIAL_KEY(impl_.node_)) != above)
+              && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_))
+              != above)
             {
               impl_.node_ = impl_.node_->right;
-              impl_.node_dim_() = incr_dim(rk, impl_.node_dim_());
+              impl_.node_dim_() = incr_dim(rank(), impl_.node_dim_());
               while (impl_.node_->left != 0
-                     && pred(impl_.node_dim_(), SPATIAL_KEY(impl_.node_))
+                     && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_))
                      != below)
                 {
                   impl_.node_ = impl_.node_->left;
-                  impl_.node_dim_() = incr_dim(rk, impl_.node_dim_());
+                  impl_.node_dim_() = incr_dim(rank(), impl_.node_dim_());
                 }
             }
           else
@@ -56,16 +55,16 @@ namespace spatial
               while (!Node_base::header(p) && impl_.node_ == p->right)
                 {
                   impl_.node_ = p;
-                  impl_.node_dim_() = decr_dim(rk, impl_.node_dim_());
+                  impl_.node_dim_() = decr_dim(rank(), impl_.node_dim_());
                   p = impl_.node_->parent;
                 }
               impl_.node_ = p;
-              impl_.node_dim_() = decr_dim(rk, impl_.node_dim_());
+              impl_.node_dim_() = decr_dim(rank(), impl_.node_dim_());
             }
         }
       while (!Node_base::header(impl_.node_)
-             && match_all(rk, SPATIAL_KEY(impl_.node_), pred) == false);
-      SPATIAL_ASSERT_CHECK(impl_.node_dim_() < rk());
+             && match_all(rank(), SPATIAL_KEY(impl_.node_), predicate()) == false);
+      SPATIAL_ASSERT_CHECK(impl_.node_dim_() < rank()());
       SPATIAL_ASSERT_CHECK(impl_.node_ != 0);
     }
 
@@ -75,28 +74,27 @@ namespace spatial
     Range_iterator_base<Rank, Key, Node, Predicate, Constant, Derived>
     ::decrement()
     {
-      const Predicate& pred = this->predicate();
-      const Rank& rk = this->rank();
       SPATIAL_ASSERT_CHECK(impl_.node_ != 0);
-      SPATIAL_ASSERT_CHECK(impl_.node_dim_() < rk());
+      SPATIAL_ASSERT_CHECK(impl_.node_dim_() < rank()());
       if (Node_base::header(impl_.node_))
         {
-          operator=(maximum(rk, pred, 0, impl_.node_->parent));
+          operator=(maximum(rank(), predicate(), 0, impl_.node_->parent));
           return;
         }
       do
         {
           if (impl_.node_->left != 0
-              && pred(impl_.node_dim_(), SPATIAL_KEY(impl_.node_)) != below)
+              && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_))
+              != below)
             {
               impl_.node_ = impl_.node_->left;
-              impl_.node_dim_() = incr_dim(rk, impl_.node_dim_());
+              impl_.node_dim_() = incr_dim(rank(), impl_.node_dim_());
               while (impl_.node_->right != 0
-                     && pred(impl_.node_dim_(), SPATIAL_KEY(impl_.node_))
+                     && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_))
                      != above)
                 {
                   impl_.node_ = impl_.node_->right;
-                  impl_.node_dim_() = incr_dim(rk, impl_.node_dim_());
+                  impl_.node_dim_() = incr_dim(rank(), impl_.node_dim_());
                 }
             }
           else
@@ -105,16 +103,17 @@ namespace spatial
               while (!Node_base::header(p) && impl_.node_ == p->left)
                 {
                   impl_.node_ = p;
-                  impl_.node_dim_() = decr_dim(rk, impl_.node_dim_());
+                  impl_.node_dim_() = decr_dim(rank(), impl_.node_dim_());
                   p = impl_.node_->parent;
                 }
               impl_.node_ = p;
-              impl_.node_dim_() = decr_dim(rk, impl_.node_dim_());
+              impl_.node_dim_() = decr_dim(rank(), impl_.node_dim_());
             }
         }
       while (!Node_base::header(impl_.node_)
-             && match_all(rk, SPATIAL_KEY(impl_.node_), pred) == false);
-      SPATIAL_ASSERT_CHECK(impl_.node_dim_() < rk());
+             && match_all(rank(), SPATIAL_KEY(impl_.node_), predicate())
+             == false);
+      SPATIAL_ASSERT_CHECK(impl_.node_dim_() < rank()());
       SPATIAL_ASSERT_CHECK(impl_.node_ != 0);
     }
 

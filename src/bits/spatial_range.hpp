@@ -330,43 +330,85 @@ namespace spatial
   /**
    *  Represents a coordinate layout for the box. llhh stands for low, low,
    *  high, high. This layout means that the lower coordinates of the box are
-   *  expressed first, and the higher coordinates are expressed later.
+   *  expressed first, and the higher coordinates are expressed after.
    *
    *  For a box of dimension 2, the llhh layout means that for each box,
    *  delmited by 2 points x and y, the coordinate are ordered as follow:
    *
    *      B = { x0, x1, y0, y1 }
    *
+   *  With <tt>x0 <= y0</tt> and <tt>x1 <= y1</tt>.
    */
   struct llhh_layout_tag { };
 
   /**
    *  Represents a coordinate layout for the box. lhlh stands for low, high,
    *  low, high. This layout means that the lower coordinates of the box are
-   *  expressed first, and the higher coordinates are expressed later.
+   *  expressed first, and the higher coordinates are expressed second,
+   *  alternatively for each dimension.
    *
    *  For a box of dimension 2, the lhlh layout means that for each box,
    *  delmited by 2 points x and y, the coordinate are ordered as follow:
    *
    *      B = { x0, y0, x1, y1 }
    *
+   *  With <tt>x0 <= y0</tt> and <tt>x1 <= y1</tt>.
    */
   struct lhlh_layout_tag { };
 
   /**
-   *  Overlap bounds match boxes that overlaps. These bounds are only
-   *  used for boxes, not points.
+   *  Represents a coordinate layout for the box. hhll stands for high, high,
+   *  low, low. This layout means that the upper coordinates of the box are
+   *  expressed first, and the lower coordinates are expressed after.
+   *
+   *  For a box of dimension 2, the hhll layout means that for each box,
+   *  delmited by 2 points x and y, the coordinate are ordered as follow:
+   *
+   *      B = { x0, x1, y0, y1 }
+   *
+   *  With <tt>x0 >= y0</tt> and <tt>x1 >= y1</tt>.
    */
-  template <typename Key, typename Compare, typename Layout = llhh_layout_tag>
-  struct overlap_bounds
-    : private Compare
-  {
-    typedef Layout layout_category;
+  struct hhll_layout_tag { };
 
+  /**
+   *  Represents a coordinate layout for the box. lhlh stands for high, low
+   *  high, low. This layout means that the upper coordinates of the box are
+   *  expressed first, and the lower coordinates are expressed second,
+   *  alternatively for each dimension.
+   *
+   *  For a box of dimension 2, the hlhl layout means that for each box,
+   *  delmited by 2 points x and y, the coordinate are ordered as follow:
+   *
+   *      B = { x0, y0, x1, y1 }
+   *
+   *  With <tt>x0 >= y0</tt> and <tt>x1 >= y1</tt>.
+   */
+  struct hlhl_layout_tag { };
+
+  /**
+   *  This predicate match boxes that overlaps. These bounds are only
+   *  used for boxes, not points.
+   *  @concept overlap_bounds is a model of RangePredicate
+   *
+   *  In order to interpret the box coordinates appropriately, overlap_bounds
+   *  expects a Layout template argument. Layout is one of:
+   *  - llhh_layout_tag,
+   *  - lhlh_layout_tag,
+   *  - hhll_layout_tag,
+   *  - hlhl_layout_tag.
+   *
+   *  Each layout provides information of how to interpret the coordinates
+   *  returned for each dimension of the boxes values.
+   */
+  template <typename Rank, typename Key, typename Compare,
+            typename Layout = llhh_layout_tag>
+  struct overlap_bounds
+    : private Rank
+  {
     /**
      *  @brief  The default constructor leaves everything un-initialized
      */
-    overlap_bounds() : Compare(), target_() { }
+    overlap_bounds() : Rank(), target_() { }
 
     /**
      *  @brief  Set the target box and the comparator to the appropriate value.
@@ -374,53 +416,148 @@ namespace spatial
      *  @throws a std::out_of_range if an element of lower is strictly greater
      *  than the corresponding element of upper with respect to their dimension.
      */
-    overlap_bounds(const Compare& compare, const Key& target)
-      : Compare(compare), target_(target)
+    overlap_bounds(const Rank& rank, const Compare& compare, const Key& target)
+      : Rank(rank), target_(compare, target)
     { }
 
     /**
      *  @brief  The operator that tells wheather the point is in range or not.
      */
     relative_order
-    operator()(dimension_type rank, dimension_type dim, const Key& key) const
+    operator()(dimension_type dim, const Key& key) const
     {
-      return overlap_bounds_impl(rank, dim, key, Layout());
+      return overlap_bounds_impl(Rank::operator(), dim, key, Layout());
     }
 
   private:
     /**
      *  @brief  The lower bound for the orthogonal range iterator.
      */
-    Key target_;
+    details::Compress<Compare, Key> target_;
 
-    /**
-     *  Perform overlap tests for coordinates with llhh layout.
-     */
     relative_order overlap_bounds_impl
     (dimension_type rank, dimension_type dim, const Key& key, llhh_layout_tag)
     {
       return (dim < (rank >> 1))
-	? (Compare::operator()(dim + (rank >> 1), target_, dim, key)
-	   ? above : matching)
-	: (Compare::operator()(dim, key, dim - (rank >> 1), target_)
-	   ? below : matching);
+        ? (target_.base()(dim + (rank >> 1), target_(), dim, key)
+           ? above : matching)
+        : (target_.base()(dim, key, dim - (rank >> 1), target_())
+           ? below : matching);
     }
 
-    /**
-     *  Perform overlap tests for coordinates with lhlh layout.
-     */
     relative_order overlap_bounds_impl
     (dimension_type, dimension_type dim, const Key& key, lhlh_layout_tag)
     {
       return ((dim % 2) == 0)
-	? (Compare::operator()(dim + 1, target_, dim, key) ? above : matching)
-	: (Compare::operator()(dim, key, dim - 1, target_) ? below : matching);
+        ? (target_.base()(dim + 1, target_(), dim, key) ? above : matching)
+        : (target_.base()(dim, key, dim - 1, target_()) ? below : matching);
+    }
+
+    relative_order overlap_bounds_impl
+    (dimension_type rank, dimension_type dim, const Key& key, hhll_layout_tag)
+    {
+      return (dim < (rank >> 1))
+        ? (target_.base()(dim, key, dim + (rank >> 1), target_())
+           ? below : matching)
+        : (target_.base()(dim - (rank >> 1), target_(), dim, key)
+           ? above : matching);
+    }
+
+    relative_order overlap_bounds_impl
+    (dimension_type, dimension_type dim, const Key& key, hlhl_layout_tag)
+    {
+      return ((dim % 2) == 0)
+        ? (target_.base()(dim, key, dim + 1, target_()) ? below : matching)
+        : (target_.base()(dim - 1, target_(), dim, key) ? above : matching);
     }
   };
 
-  template <typename Key, typename Compare, typename Layout = llhh_layout_tag>
+  /**
+   *  This predicate match boxes that are enclosed in another box. These bounds
+   *  are only used for boxes, not points.
+   *
+   *  @concept enclose_bounds is a model of RangePredicate
+   *
+   *  In order to interpret the box coordinates appropriately, overlap_bounds
+   *  expects a Layout template argument. Layout is one of:
+   *  - llhh_layout_tag,
+   *  - lhlh_layout_tag,
+   *  - hhll_layout_tag,
+   *  - hlhl_layout_tag.
+   *
+   *  Each layout provides information of how to interpret the coordinates
+   *  returned for each dimension of the boxes values.
+   */
+  template <typename Rank, typename Key, typename Compare,
+            typename Layout = llhh_layout_tag>
   struct enclose_bounds
+    : private Rank
   {
+    /**
+     *  @brief  The default constructor leaves everything un-initialized
+     */
+    enclose_bounds() : Rank(), target_() { }
+
+    /**
+     *  @brief  Set the target box and the comparator to the appropriate value.
+     *
+     *  @throws a std::out_of_range if an element of lower is strictly greater
+     *  than the corresponding element of upper with respect to their dimension.
+     */
+    enclose_bounds(const Rank& rank, const Compare& compare, const Key& target)
+      : Rank(rank), target_(compare, target)
+    { }
+
+    /**
+     *  @brief  The operator that tells wheather the point is in range or not.
+     */
+    relative_order
+    operator()(dimension_type dim, const Key& key) const
+    {
+      return enclose_bounds_impl(Rank::operator(), dim, key, Layout());
+    }
+
+  private:
+    /**
+     *  @brief  The lower bound for the orthogonal range iterator.
+     */
+    details::Compress<Compare, Key> target_;
+
+    relative_order enclose_bounds_impl
+    (dimension_type rank, dimension_type dim, const Key& key, llhh_layout_tag)
+    {
+      return (dim < (rank >> 1))
+        ? (target_.base()(dim + (rank >> 1), target_(), dim, key)
+           ? above : matching)
+        : (target_.base()(dim, key, dim - (rank >> 1), target_())
+           ? below : matching);
+    }
+
+    relative_order enclose_bounds_impl
+    (dimension_type, dimension_type dim, const Key& key, lhlh_layout_tag)
+    {
+      return ((dim % 2) == 0)
+        ? (target_.base()(dim + 1, target_(), dim, key) ? above : matching)
+        : (target_.base()(dim, key, dim - 1, target_()) ? below : matching);
+    }
+
+    relative_order enclose_bounds_impl
+    (dimension_type rank, dimension_type dim, const Key& key, hhll_layout_tag)
+    {
+      return (dim < (rank >> 1))
+        ? (target_.base()(dim, key, dim + (rank >> 1), target_())
+           ? below : matching)
+        : (target_.base()(dim - (rank >> 1), target_(), dim, key)
+           ? above : matching);
+    }
+
+    relative_order enclose_bounds_impl
+    (dimension_type, dimension_type dim, const Key& key, hlhl_layout_tag)
+    {
+      return ((dim % 2) == 0)
+        ? (target_.base()(dim, key, dim + 1, target_()) ? below : matching)
+        : (target_.base()(dim - 1, target_(), dim, key) ? above : matching);
+    }
   };
 
   namespace details

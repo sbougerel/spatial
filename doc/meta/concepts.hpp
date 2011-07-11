@@ -1,30 +1,31 @@
 /**
- * TrivialComparison concept defines the model for a functor class used to
- * perform strict comparison between two values of a spatial container,
- * over a single dimension. The functor shall return a boolean value equal
- * true if the first value is strictly lower than the second value over that
- * dimension.
- * @concept Definition of the TrivialComparison concept.
+ *  TrivialComparison concept defines the model for a functor class used to
+ *  perform strict comparison between two values of a spatial container,
+ *  over a single dimension. The functor shall return a boolean value equal
+ *  true if the first value is strictly lower than the second value over that
+ *  dimension.
+ *  @concept Definition of the TrivialComparison concept.
  *
- * The models of TrivialComparison shall publicly provides the following
- * signatures:
+ *  The models of TrivialComparison shall publicly provides the following
+ *  signatures:
  *
- * <table>
- * <tr><td>Signature/Type</td><td>Description</td></tr>
- * <tr><td>\c T</td><td>A model of TrivialComparison.</td></tr>
- * <tr><td>\c V</td><td>The value type of a spatial container. E.g. in
- * \c spatial::pointset<3, point>, \c point is the value type.
- * </td></tr>
- * <tr><td><tt>bool T::operator()(dimension_type d, const V& a, const V&b) const
- * </tt></td><td>Returns true if <tt> a < b </tt> over dimension \c d.</td></tr>
- * </table>
+ *  <table>
+ *  <tr><td></td><td>Signature/Type</td><td>Description</td></tr>
+ *  <tr><td>Legend</td><td>\c T</td><td>A model of TrivialComparison.</td></tr>
+ *  <tr><td>Legend</td><td>\c V</td><td>The value type of a spatial container.
+ *  E.g. in \c spatial::pointset<3, point>, \c point is the value type.
+ *  </td></tr>
+ *  <tr><td>Requirement</td>
+ *  <td><tt>bool T::operator()(dimension_type d, const V& a, const V&b) const
+ *  </tt></td><td>Returns true if <tt> a < b </tt> over dimension \c d.</td>
+ *  </tr></table>
  *
- * Models of this concept are required for comparison functors in pointset,
- * dynamic_pointset and similar containers. Comparison functors in boxset,
- * dynamic_boxset, and similar containers are required to be models of
- * BoxComparison.
+ *  Models of this concept are required for comparison functors in pointset,
+ *  dynamic_pointset and similar containers. Comparison functors in boxset,
+ *  dynamic_boxset, and similar containers are required to be models of
+ *  BoxComparison.
  */
-struct TrivialComparison;
+struct TrivialComparison { };
 
 /**
  *  BoxComparison concept defines the model for a functor used to perform a
@@ -58,4 +59,4 @@ struct TrivialComparison;
  *  As you can guess, models of this concept are required for comparison functors
  *  in boxset, dynamic_boxset, and similar containers.
  */
-struct SingleDimensionCompare : TrivialComparison;
+struct BoxComparison : TrivialComparison { };

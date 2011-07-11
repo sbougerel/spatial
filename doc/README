@@ -1,0 +1,58 @@
+Spatial Documentation
+=====================
+
+Generating the documentation
+----------------------------
+
+From this directory, execute Doxygen:
+
+$ doxygen
+
+Could it be harder?
+
+
+Dependancies the documentation
+------------------------------
+
+To generate the bare documentation only Doxygen is required. You can download
+Doxygen from its official website:
+
+http://www.stack.nl/~dimitri/doxygen/index.html
+
+
+However, Doxygen will not be able to generate the output for the formulas all by
+itself. You also require pdfTex. pdfTex is part of most TeX distributions. On
+Linux and BSDs it is generally not an issue to get pdfTex, but on Windows, it
+may be a little more complicated. The following TeX distributions both provide
+pdfTex:
+
+http://www.miktex.org/
+http://w32tex.org/
+
+You may require to add the path to the pdfTex binary to your Windows PATH
+enivronment variable.
+
+If you do not have pdfTex, Doxygen will still include the formulas in the
+documentation, however they will appear as LaTeX sources.
+
+
+Writing the documentation
+-------------------------
+
+If you are not documenting a source files from the ../src directory, then you
+need to add a file to the meta directory. The meta directory contains all the
+files that are not directly linked to the sources, such as the tutorial and the
+library description.
+
+
+License
+-------
+
+The static documentation files and images are all provided under the terms of
+the Boost license. See COPYING.
+
+The generated files are yours and you can do whatever you please with them. Just
+please respect the library and their authors, should you publish or provide any
+commercial work based on the library.
+
+Enjoy.
