@@ -1,11 +1,14 @@
 2011-07-12  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
+        * src/bits/spatial_range.hpp (spatial): fix compilation issues detected
+        with g++4.5, that went through with MSVC9.0.
+
         * doc/Doxygen added new documentation variables and documentation
         aliases to generate concepts lists.
 
         * src/bits/spatial_range.hpp design of overlap and enclose bounds
         finalized. Also added new explanation for RangePredicated concept.
-	
+
         * test/verify.cpp Added tests for the bounds factory and the bounds
         themselves. The last part must still be implemented.
 

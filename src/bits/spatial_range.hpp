@@ -393,9 +393,9 @@ namespace spatial
     (dimension_type rank, dimension_type dim, const Key& key, llhh_layout_tag)
     {
       return (dim < (rank >> 1))
-	? (Compare::operator()(dim + (rank >> 1), target_, dim, key)
+        ? (Compare::operator()(dim + (rank >> 1), target_, dim, key)
            ? above : matching)
-	: (Compare::operator()(dim, key, dim - (rank >> 1), target_)
+        : (Compare::operator()(dim, key, dim - (rank >> 1), target_)
            ? below : matching);
     }
 
@@ -437,13 +437,13 @@ namespace spatial
   template <typename Tp, typename Layout>
   overlap_bounds<typename container_traits<Tp>::key_type,
                  typename container_traits<Tp>::compare_type,
-		 Layout>
+                 Layout>
   make_overlap_bounds
   (const Tp& container,
    const typename container_traits<Tp>::key_type& target,
    Layout tag)
   {
-    except::check_overlap_bounds(container, target, tag);
+    except::check_box_argument(container, target, tag);
     return overlap_bounds
       <typename container_traits<Tp>::key_type,
       typename container_traits<Tp>::compare_type, Layout>
@@ -456,7 +456,7 @@ namespace spatial
   make_overlap_bounds
   (const Tp& container,
    const typename container_traits<Tp>::key_type& target)
-  { return overlap_bounds(container, target, llhh_layout_tag()); }
+  { return make_overlap_bounds(container, target, llhh_layout_tag()); }
   //@}
 
   /**
@@ -520,48 +520,48 @@ namespace spatial
     (dimension_type rank, dimension_type dim, const Key& key, llhh_layout_tag)
     {
       return (dim < (rank >> 1))
-        ? (Compare::operator()(dim , key, _target)
-	   ? below : (Compare::operator()(dim + (rank >> 1), target_, dim, key)
-	              ? above : matching))
+        ? (Compare::operator()(dim , key, target_)
+           ? below : (Compare::operator()(dim + (rank >> 1), target_, dim, key)
+                      ? above : matching))
         : (Compare::operator()(dim, key, dim - (rank >> 1), target_)
-	   ? below : (Compare::operator()(dim, target_, key)
-	              ? above : matching));
+           ? below : (Compare::operator()(dim, target_, key)
+                      ? above : matching));
     }
 
     relative_order enclose_bounds_impl
     (dimension_type, dimension_type dim, const Key& key, lhlh_layout_tag)
     {
       return ((dim % 2) == 0)
-        ? (Compare::operator()(dim , key, _target)
-	   ? below : (Compare::operator()(dim + 1, target_, dim, key)
-	              ? above : matching))
+        ? (Compare::operator()(dim , key, target_)
+           ? below : (Compare::operator()(dim + 1, target_, dim, key)
+                      ? above : matching))
         : (Compare::operator()(dim, key, dim - 1, target_)
-	   ? below : (Compare::operator()(dim, target_, key)
-	              ? above : matching));
+           ? below : (Compare::operator()(dim, target_, key)
+                      ? above : matching));
     }
 
     relative_order enclose_bounds_impl
     (dimension_type rank, dimension_type dim, const Key& key, hhll_layout_tag)
     {
       return (dim < (rank >> 1))
-        ? (Compare::operator()(dim , _target, key)
-	   ? above : (Compare::operator()(dim, key, dim + (rank >> 1), target_)
-	              ? below : matching))
+        ? (Compare::operator()(dim , target_, key)
+           ? above : (Compare::operator()(dim, key, dim + (rank >> 1), target_)
+                      ? below : matching))
         : (Compare::operator()(dim - (rank >> 1), target_, dim, key)
-	   ? above : (Compare::operator()(dim, key, _target)
-	              ? below : matching));
+           ? above : (Compare::operator()(dim, key, target_)
+                      ? below : matching));
     }
 
     relative_order enclose_bounds_impl
     (dimension_type, dimension_type dim, const Key& key, hlhl_layout_tag)
     {
       return ((dim % 2) == 0)
-        ? (Compare::operator()(dim , _target, key)
-	   ? above : (Compare::operator()(dim, key, dim + 1, target_)
-	              ? below : matching))
+        ? (Compare::operator()(dim , target_, key)
+           ? above : (Compare::operator()(dim, key, dim + 1, target_)
+                      ? below : matching))
         : (Compare::operator()(dim - 1, target_, dim, key)
-	   ? above : (Compare::operator()(dim, key, _target)
-	              ? below : matching));
+           ? above : (Compare::operator()(dim, key, target_)
+                      ? below : matching));
     }
   };
 
@@ -576,13 +576,13 @@ namespace spatial
   template <typename Tp, typename Layout>
   enclose_bounds<typename container_traits<Tp>::key_type,
                  typename container_traits<Tp>::compare_type,
-		 Layout>
+                 Layout>
   make_enclose_bounds
   (const Tp& container,
    const typename container_traits<Tp>::key_type& target,
    Layout tag)
   {
-    except::check_enclose_bounds(container, target, tag);
+    except::check_box_argument(container, target, tag);
     return enclose_bounds
       <typename container_traits<Tp>::key_type,
       typename container_traits<Tp>::compare_type, Layout>
@@ -595,7 +595,7 @@ namespace spatial
   make_enclose_bounds
   (const Tp& container,
    const typename container_traits<Tp>::key_type& target)
-  { return enclose_bounds(container, target, llhh_layout_tag()); }
+  { return make_enclose_bounds(container, target, llhh_layout_tag()); }
   //@}
 
   namespace details
