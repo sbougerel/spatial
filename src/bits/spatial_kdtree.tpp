@@ -339,7 +339,7 @@ namespace spatial
     Kdtree<Rank, Key, Compare, Alloc, ConstantIterator>::erase
     (const_iterator target)
     {
-      except::check_iterator_argument(target.node);
+      except::check_node_iterator_argument(target.node);
       dimension_type node_dim = Base::rank()() - 1;
       Const_Base_ptr node = target.node;
       while (!Node_base::header(node))
@@ -347,7 +347,7 @@ namespace spatial
           node = node->parent;
           node_dim = incr_dim(Base::rank(), node_dim);
         }
-      except::check_invalid_iterator(node, Base::get_header());
+      except::check_iterator_argument(node, Base::get_header());
       erase_node(node_dim, const_cast<Base_ptr>(target.node));
     }
 

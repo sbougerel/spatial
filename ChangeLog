@@ -1,3 +1,17 @@
+2011-07-12  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * doc/Doxygen added new documentation variables and documentation
+        aliases to generate concepts lists.
+
+        * src/bits/spatial_range.hpp design of overlap and enclose bounds
+        finalized. Also added new explanation for RangePredicated concept.
+	
+        * test/verify.cpp Added tests for the bounds factory and the bounds
+        themselves. The last part must still be implemented.
+
+        * src/bits/spatial_exception.hpp remapped conflicting names in
+        exceptions and added new exceptions for overlap and enclose bounds.
+
 2011-07-08  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * Overlap_bound is done. Need to redesign Range_iterators a little bit

@@ -36,14 +36,14 @@ namespace spatial
       do
         {
           if (impl_.node_->right != 0
-              && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_))
-              != above)
+              && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_),
+                             rank()()) != above)
             {
               impl_.node_ = impl_.node_->right;
               impl_.node_dim_() = incr_dim(rank(), impl_.node_dim_());
               while (impl_.node_->left != 0
-                     && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_))
-                     != below)
+                     && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_),
+                                    rank()()) != below)
                 {
                   impl_.node_ = impl_.node_->left;
                   impl_.node_dim_() = incr_dim(rank(), impl_.node_dim_());
@@ -63,7 +63,8 @@ namespace spatial
             }
         }
       while (!Node_base::header(impl_.node_)
-             && match_all(rank(), SPATIAL_KEY(impl_.node_), predicate()) == false);
+             && match_all(rank(), SPATIAL_KEY(impl_.node_), predicate())
+             == false);
       SPATIAL_ASSERT_CHECK(impl_.node_dim_() < rank()());
       SPATIAL_ASSERT_CHECK(impl_.node_ != 0);
     }
@@ -84,14 +85,14 @@ namespace spatial
       do
         {
           if (impl_.node_->left != 0
-              && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_))
-              != below)
+              && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_),
+                             rank()()) != below)
             {
               impl_.node_ = impl_.node_->left;
               impl_.node_dim_() = incr_dim(rank(), impl_.node_dim_());
               while (impl_.node_->right != 0
-                     && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_))
-                     != above)
+                     && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_),
+                                    rank()()) != above)
                 {
                   impl_.node_ = impl_.node_->right;
                   impl_.node_dim_() = incr_dim(rank(), impl_.node_dim_());
@@ -131,13 +132,13 @@ namespace spatial
       Base_ptr end = node->parent;
       // Quick positioning according to in-order transversal.
       while (node->right != 0
-             && predicate(node_dim, SPATIAL_KEY(node)) == below)
+             && predicate(node_dim, SPATIAL_KEY(node), rank()) == below)
         {
           node = node->right;
           node_dim = incr_dim(rank, node_dim);
         }
       while (node->left != 0
-             && predicate(node_dim, SPATIAL_KEY(node)) != below)
+             && predicate(node_dim, SPATIAL_KEY(node), rank()) != below)
         {
           node = node->left;
           node_dim = incr_dim(rank, node_dim);
@@ -148,12 +149,12 @@ namespace spatial
           if (match_all(rank, SPATIAL_KEY(node), predicate) == true)
             { break; }
           if (node->right != 0
-              && predicate(node_dim, SPATIAL_KEY(node)) != above)
+              && predicate(node_dim, SPATIAL_KEY(node), rank()) != above)
             {
               node = node->right;
               node_dim = incr_dim(rank, node_dim);
               while (node->left != 0
-                     && predicate(node_dim, SPATIAL_KEY(node)) != below)
+                     && predicate(node_dim, SPATIAL_KEY(node), rank()) != below)
                 {
                   node = node->left;
                   node_dim = incr_dim(rank, node_dim);
@@ -192,13 +193,13 @@ namespace spatial
       Base_ptr end = node->parent;
       // Quick positioning according to in-order transversal.
       while (node->left != 0
-             && predicate(node_dim, SPATIAL_KEY(node)) == above)
+             && predicate(node_dim, SPATIAL_KEY(node), rank()) == above)
         {
           node = node->left;
           node_dim = incr_dim(rank, node_dim);
         }
       while (node->right != 0
-             && predicate(node_dim, SPATIAL_KEY(node)) != above)
+             && predicate(node_dim, SPATIAL_KEY(node), rank()) != above)
         {
           node = node->right;
           node_dim = incr_dim(rank, node_dim);
@@ -209,12 +210,12 @@ namespace spatial
           if (match_all(rank, SPATIAL_KEY(node), predicate) == true)
             { break; }
           if (node->left != 0
-              && predicate(node_dim, SPATIAL_KEY(node)) != below)
+              && predicate(node_dim, SPATIAL_KEY(node), rank()) != below)
             {
               node = node->left;
               node_dim = incr_dim(rank, node_dim);
               while (node->right != 0
-                     && predicate(node_dim, SPATIAL_KEY(node)) != above)
+                     && predicate(node_dim, SPATIAL_KEY(node), rank()) != above)
                 {
                   node = node->right;
                   node_dim = incr_dim(rank, node_dim);

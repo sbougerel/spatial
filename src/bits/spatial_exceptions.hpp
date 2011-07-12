@@ -62,10 +62,10 @@ namespace spatial
    *  @brief  Thrown to report that an invalid range bound has been given as
    *  argument.
    *  @see check_invalid_range_bounds()
-   *  @see range_bounds<Compare, Key>
+   *  @see range_bounds
    *
-   *  Generally, this means that the lower bound has a greater value than the
-   *  upper bound over one dimension, at least.
+   *  Generally, this means that the lower bound has a value that overlaps with
+   *  the upper bound over one dimension, at least.
    */
   struct invalid_range_bounds : std::logic_error
   {
@@ -74,61 +74,22 @@ namespace spatial
   };
 
   /**
-   *  @brief  Thrown to report that an invalid range bound has been given as
-   *  argument.
-   *  @see check_invalid_range_bounds()
-   *  @see range_bounds<Compare, Key>
-   *
-   *  Generally, this means that the lower bound has a greater value than the
-   *  upper bound over one dimension, at least.
+   *  Thrown to report that a box has incorrect coordinates with regards to
+   *  its layout.
+   *  @see check_invalid_box()
    */
-  struct invalid_open_range_bounds : std::logic_error
+  struct invalid_box_argument : std::logic_error
   {
-    explicit invalid_open_range_bounds(const std::string& arg)
-      : logic_error(arg) { }
-  };
-
-  /**
-   *  @brief  Thrown to report that an invalid range bound has been given as
-   *  argument.
-   *  @see check_invalid_range_bounds()
-   *  @see range_bounds<Compare, Key>
-   *
-   *  Generally, this means that the lower bound has a greater value than the
-   *  upper bound over one dimension, at least.
-   */
-  struct invalid_closed_range_bounds : std::logic_error
-  {
-    explicit invalid_closed_range_bounds(const std::string& arg)
-      : logic_error(arg) { }
-  };
-
-  /**
-   *  @brief  Thrown to report that the rank being used is too large for
-   *  operation that is requested.
-   *
-   *  This is the case for iterations over nearest neighbor: very large number
-   *  of dimension are not supported, and simply, one should use brute force
-   *  instead as it would probably give better results.
-   */
-  struct invalid_rank_argument : std::logic_error
-  {
-    explicit invalid_rank_argument(const std::string& arg)
-      : logic_error(arg) { }
-  };
-
-  /**
-   *  @brief  Thrown to report that the iterator used is not a valid one or not
-   *  an iterator belonging to the container in use.
-   */
-  struct invalid_iterator : std::logic_error
-  {
-    explicit invalid_iterator(const std::string& arg)
+    explicit invalid_box_argument(const std::string& arg)
       : logic_error(arg) { }
   };
 
   namespace except
   {
+    /**
+     *  Checks that @c dimension is not greater or equal to @c rank.
+     *  @exception invalid_dimension_argument is thrown if checks fails.
+     */
     inline void check_dimension_argument
     (dimension_type rank, dimension_type dimension)
     {
@@ -137,6 +98,12 @@ namespace spatial
 	  ("dimension is out of range");
     }
 
+    /**
+     *  Checks that the node's pointer given as an argument to a function is not
+     *  null or does not point to a header node.
+     *  @exception invalid_node_argument is thrown if checks fails.
+     *  @param node the node pointer to check.
+     */
     template<typename Node>
     inline void check_node_argument(Node* node)
     {
@@ -145,14 +112,42 @@ namespace spatial
 	  ("node points to null or header node");
     }
 
+    /**
+     *  Checks that the node pointed to by an iterator and given as an argument
+     *  to a function is not null or does not point to a header node.
+     *  @exception invalid_iterator_argument is thrown if checks fails.
+     */
     template<typename Node>
-    inline void check_iterator_argument(Node* node)
+    inline void check_node_iterator_argument(Node* node)
     {
       if (node == 0 || node->left == node)
 	throw invalid_iterator_argument
 	  ("iterator is points to null or header node");
     }
 
+    /**
+     *  Checks if two iterators are of equal values, if not raises the @ref
+     *  invalid_iterator exception.
+     *  @exception invalid_iterator is raised when the nodes specified are not
+     *  matching.
+     *
+     *  For this test to be useful, one of the iterator must be sure to belong
+     *  to a container.
+     */
+    template <typename Ptr1, typename Ptr2>
+    inline void check_iterator_argument(Ptr1 ptr1, Ptr2 ptr2)
+    {
+      if (ptr1 != ptr2)
+	throw invalid_iterator_argument
+	  ("iterator is invalid or does not belong to the container used");
+    }
+
+    /**
+     *  Checks that the container given as an argument to a function is not
+     *  empty.
+     *  @exception invalid_empty_container_argument is thrown if checks fails.
+     *  @param cont the container that must not be empty.
+     */
     template<typename Tp>
     inline void check_empty_container_argument(const Tp& cont)
     {
@@ -160,6 +155,18 @@ namespace spatial
 	throw invalid_empty_container_argument("container is empty");
     }
 
+    /**
+     *  Checks if all coordinates of @c lower are strictly less than these of
+     *  @c higher along the same dimensions. The number of dimensions is limited
+     *  by the rank of @c container.
+     *  @exception invalid_range_bounds is thrown if the check fails.
+     *  @param container providing type information, comparison and rank.
+     *  @param lower the lower bound of the interval considered.
+     *  @param upper the upper bound of the interval considered.
+     *
+     *  This check is performed mainly upon creation of a @ref open_range_bounds
+     *  predicate.
+     */
     template<typename Tp>
     inline void check_open_range_bounds
     (const Tp& container,
@@ -168,22 +175,37 @@ namespace spatial
     {
       for (dimension_type dim = 0; dim < container.dimension(); ++dim)
 	if (!container.compare()(dim, lower, upper))
-	  throw invalid_open_range_bounds
-	    ("lower is greater or equal to upper over one dimension at least");
-    }
-
-    template<typename Tp>
-    inline void check_range_bounds
-    (const Tp& tree,
-     const typename container_traits<Tp>::key_type& lower,
-     const typename container_traits<Tp>::key_type& upper)
-    {
-      for (dimension_type dim = 0; dim < tree.dimension(); ++dim)
-	if (!tree.compare()(dim, lower, upper))
 	  throw invalid_range_bounds
 	    ("lower is greater or equal to upper over one dimension at least");
     }
 
+    /**
+     *  Checks if all coordinates of @c lower are strictly less than these of
+     *  @c higher along the same dimensions. The number of dimensions is limited
+     *  by the rank of @c container.
+     *  @exception invalid_range_bounds is thrown if the check fails.
+     *
+     *  This check is performed mainly upon creation of a @ref range_bounds
+     *  predicate.
+     */
+    template<typename Tp>
+    inline void check_range_bounds
+    (const Tp& container,
+     const typename container_traits<Tp>::key_type& lower,
+     const typename container_traits<Tp>::key_type& upper)
+    {
+	return check_open_range_bounds(container, lower, upper);
+    }
+
+    /**
+     *  Checks if all coordinates of @c lower are less or equal to these of
+     *  @c higher along the same dimensions. The number of dimensions is limited
+     *  by the rank of @c container.
+     *  @exception invalid_closed_range_bounds is thrown if the check fails.
+     *
+     *  This check is performed mainly upon creation of a @ref
+     *  closed_range_bounds predicate.
+     */
     template<typename Tp>
     inline void check_closed_range_bounds
     (const Tp& container,
@@ -192,26 +214,67 @@ namespace spatial
     {
       for (dimension_type dim = 0; dim < container.dimension(); ++dim)
 	if (container.compare()(dim, upper, lower))
-	  throw invalid_closed_range_bounds
+	  throw invalid_range_bounds
 	    ("upper is stricly less than lower over one dimension at least");
     }
 
-    inline void check_rank_argument
-    (dimension_type max_rank, dimension_type rank_arg)
+    //@{
+    /**
+     *  Checks that all coordinates of a box are matching with the layout
+     *  specified or else, raise an @ref invalid_box exception.
+     *  @exception invalid_box is raised when one of @p{box}'s lower coordinates
+     *  have a greater values than their corresponding higher coordinates, it
+     *  could mean that box is invalid or does not match the specified layout.
+     *  @param container that could be used to store the box
+     *  @param box the box that must be checked.
+     */
+    template <typename Tp>
+    inline void check_box_argument
+    (const Tp& container,
+     const typename container_traits<Tp>::key_type& box,
+     llhh_layout_tag)
     {
-      if (rank_arg > max_rank)
-	throw invalid_rank_argument
-	  ("rank is too large, brute force would yield better results");
+      dimension_type rank = container.dimension() >> 1;
+      for (dimension_type i = 0; i < rank; ++i)
+	if (container.compare()(i + rank, box, i, box))
+	  throw invalid_box_argument
+	    ("box does not follow specified layout or coordinates are invalid");
     }
-
-    template <typename Node1, typename Node2>
-    inline void check_invalid_iterator
-    (const Node1& node1, const Node2& node2)
+    template <typename Tp>
+    inline void check_box_argument
+    (const Tp& container,
+     const typename container_traits<Tp>::key_type& box,
+     hhll_layout_tag)
     {
-      if (node1 != node2)
-	throw invalid_iterator
-	  ("iterator is invalid or does not belong to the container used");
+      dimension_type rank = container.dimension() >> 1;
+      for (dimension_type i = 0; i < rank; ++i)
+	if (container.compare()(i, box, i + rank, box))
+	  throw invalid_box_argument
+	    ("box does not follow specified layout or coordinates are invalid");
     }
+    template <typename Tp>
+    inline void check_box_argument
+    (const Tp& container,
+     const typename container_traits<Tp>::key_type& box,
+     lhlh_layout_tag)
+    {
+      for (dimension_type i = 0; i < container.dimension(); i += 2)
+	if (container.compare()(i + 1, box, i, box))
+	  throw invalid_box_argument
+	    ("box does not follow specified layout or coordinates are invalid");
+    }
+    template <typename Tp>
+    inline void check_box_argument
+    (const Tp& container,
+     const typename container_traits<Tp>::key_type& box,
+     hlhl_layout_tag)
+    {
+      for (dimension_type i = 0; i < container.dimension(); i += 2)
+	if (container.compare()(i, box, i + 1, box))
+	  throw invalid_box_argument
+	    ("box does not follow specified layout or coordinates are invalid");
+    }
+    //@}
 
   } // namespace except
 

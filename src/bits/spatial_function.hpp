@@ -29,7 +29,7 @@ namespace spatial
    *  @brief  A comparator that simplifies using the spatial containers with a
    *  Key type that has coordinate that are not accessible via the bracket,
    *  parenthesis operator or iterator deference.
-   *  @concept accessor_less is a model of BoxComparison to accomodate both
+   *  @concept accessor_less is a model of RegularComparison to accomodate both
    *  pointset and boxset family of container.
    *
    *  Generally, the spatial containers are used with one of bracket_less,
@@ -61,7 +61,7 @@ namespace spatial
   /**
    *  @brief  A comparator that simplifies using the spatial containers with a
    *  Key type that has coordiates accessible via the bracket operator.
-   *  @concept accessor_less is a model of BoxComparison to accomodate both
+   *  @concept accessor_less is a model of RegularComparison to accomodate both
    *  pointset and boxset family of container.
    */
   template <typename Tp>
@@ -83,7 +83,7 @@ namespace spatial
   /**
    *  @brief  A comparator that simplifies using the spatial containers with a
    *  Key type that has coordiates accessible via the parenthesis operator.
-   *  @concept accessor_less is a model of BoxComparison to accomodate both
+   *  @concept accessor_less is a model of RegularComparison to accomodate both
    *  pointset and boxset family of container.
    */
   template <typename Tp>
@@ -105,7 +105,7 @@ namespace spatial
   /**
    *  @brief  A comparator that simplifies using the spatial containers with a
    *  Key type that has coordiates accessible via iterator deference.
-   *  @concept accessor_less is a model of BoxComparison to accomodate both
+   *  @concept accessor_less is a model of RegularComparison to accomodate both
    *  pointset and boxset family of container.
    */
   template <typename Tp>

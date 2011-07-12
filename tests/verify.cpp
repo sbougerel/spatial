@@ -130,8 +130,9 @@ struct Empty_base_2D_fixture
 struct closed_test_range
 {
   relative_order
-  operator()(dimension_type dim, const point2d& point) const
+  operator()(dimension_type dim, const point2d& point, dimension_type rank) const
   {
+    if (dim >= rank) throw std::out_of_range("'dim' must be lower than 'rank'");
     return ((point[dim] < 0)
             ? below
             : ((point[dim] > 1)
@@ -192,15 +193,15 @@ BOOST_AUTO_TEST_CASE( test_details_less_by_ref )
 BOOST_AUTO_TEST_CASE( test_details_match )
 {
   // Rather than testing match, it's testing that closed_test_range is properly
-  // written, which important for subsequent tests.
+  // written, which is important for subsequent tests.
   point2d x = { { 0, 0 } };
   point2d y = { { 1, 1 } };
   point2d _x = { { -1, -1 } };
   point2d x_ = { { 2, 2 } };
-  BOOST_CHECK(closed_test_range()(0, x) == matching);
-  BOOST_CHECK(closed_test_range()(1, y) == matching);
-  BOOST_CHECK(closed_test_range()(0, _x) == below);
-  BOOST_CHECK(closed_test_range()(1, x_) == above);
+  BOOST_CHECK(closed_test_range()(0, x, 2) == matching);
+  BOOST_CHECK(closed_test_range()(1, y, 2) == matching);
+  BOOST_CHECK(closed_test_range()(0, _x, 2) == below);
+  BOOST_CHECK(closed_test_range()(1, x_, 2) == above);
 }
 
 BOOST_AUTO_TEST_CASE( test_details_match_all )
@@ -903,7 +904,7 @@ BOOST_AUTO_TEST_CASE( text_except_check_iterator )
 {
   {
     details::Node_iterator<point2d, Kdtree_node<point2d> > i(0);
-    BOOST_CHECK_THROW(except::check_iterator_argument(i.node),
+    BOOST_CHECK_THROW(except::check_node_iterator_argument(i.node),
                       invalid_iterator_argument);
   }
   {
@@ -913,8 +914,11 @@ BOOST_AUTO_TEST_CASE( text_except_check_iterator )
     details::Node_iterator<point2d, Kdtree_node<point2d> >
       j(static_cast<Kdtree_node<point2d>*>
         (static_cast<Node_base*>(&fix.header)));
-    BOOST_CHECK_NO_THROW(except::check_iterator_argument(i.node));
-    BOOST_CHECK_THROW(except::check_iterator_argument(j.node),
+    BOOST_CHECK_NO_THROW(except::check_node_iterator_argument(i.node));
+    BOOST_CHECK_THROW(except::check_node_iterator_argument(j.node),
+                      invalid_iterator_argument);
+    BOOST_CHECK_NO_THROW(except::check_iterator_argument(i, i));
+    BOOST_CHECK_THROW(except::check_iterator_argument(i, j),
                       invalid_iterator_argument);
   }
 }
@@ -933,20 +937,34 @@ BOOST_AUTO_TEST_CASE( text_except_check_range )
   BOOST_CHECK_NO_THROW(except::check_range_bounds(fix.kdtree, zeros, ones));
   BOOST_CHECK_NO_THROW(except::check_closed_range_bounds(fix.kdtree, zeros, zeros));
   BOOST_CHECK_THROW(except::check_open_range_bounds(fix.kdtree, zeros, zeros),
-                    invalid_open_range_bounds);
+                    invalid_range_bounds);
   BOOST_CHECK_THROW(except::check_range_bounds(fix.kdtree, zeros, zeros),
                     invalid_range_bounds);
   BOOST_CHECK_THROW(except::check_closed_range_bounds(fix.kdtree, ones, zeros),
-                    invalid_closed_range_bounds);
-}
-
-BOOST_AUTO_TEST_CASE( text_except_check_rank )
-{
-  Empty_base_2D_fixture fix;
-  BOOST_CHECK_NO_THROW(except::check_rank_argument(fix.kdtree.dimension(), 1));
-  BOOST_CHECK_NO_THROW(except::check_rank_argument(fix.kdtree.dimension(), 2));
-  BOOST_CHECK_THROW(except::check_rank_argument(fix.kdtree.dimension(), 3),
-                    invalid_rank_argument);
+                    invalid_range_bounds);
+  // For boxes, point2d are used as 1D boxes, or intervals.
+  point2d lh_box = { { 0, 1 } };
+  point2d hl_box = { { 1, 0 } };
+  BOOST_CHECK_NO_THROW
+    (except::check_box_argument(fix.kdtree, lh_box, llhh_layout_tag()));
+  BOOST_CHECK_THROW
+    (except::check_box_argument(fix.kdtree, hl_box, llhh_layout_tag()),
+     invalid_box_argument);
+  BOOST_CHECK_NO_THROW
+    (except::check_box_argument(fix.kdtree, lh_box, lhlh_layout_tag()));
+  BOOST_CHECK_THROW
+    (except::check_box_argument(fix.kdtree, hl_box, lhlh_layout_tag()),
+     invalid_box_argument);
+  BOOST_CHECK_NO_THROW
+    (except::check_box_argument(fix.kdtree, hl_box, hhll_layout_tag()));
+  BOOST_CHECK_THROW
+    (except::check_box_argument(fix.kdtree, lh_box, hhll_layout_tag()),
+     invalid_box_argument);
+  BOOST_CHECK_NO_THROW
+    (except::check_box_argument(fix.kdtree, hl_box, hlhl_layout_tag()));
+  BOOST_CHECK_THROW
+    (except::check_box_argument(fix.kdtree, lh_box, hlhl_layout_tag()),
+     invalid_box_argument);
 }
 
 /////////////////////////////  spatial_function.hpp  ///////////////////////////
@@ -1064,16 +1082,16 @@ BOOST_AUTO_TEST_CASE( test_equal_bounds )
   // Checking this compiles
   equal_bounds<point2d, bracket_less<point2d> > bounds
     = make_equal_bounds(fix.kdtree, t);
-  BOOST_CHECK(bounds(0, t) == matching);
-  BOOST_CHECK(bounds(1, t) == matching);
-  BOOST_CHECK(bounds(0, x) == below);
-  BOOST_CHECK(bounds(1, x) == matching);
-  BOOST_CHECK(bounds(0, y) == matching);
-  BOOST_CHECK(bounds(1, y) == below);
-  BOOST_CHECK(bounds(0, z) == below);
-  BOOST_CHECK(bounds(1, z) == above);
-  BOOST_CHECK(bounds(0, w) == above);
-  BOOST_CHECK(bounds(1, w) == below);
+  BOOST_CHECK(bounds(0, t, 2) == matching);
+  BOOST_CHECK(bounds(1, t, 2) == matching);
+  BOOST_CHECK(bounds(0, x, 2) == below);
+  BOOST_CHECK(bounds(1, x, 2) == matching);
+  BOOST_CHECK(bounds(0, y, 2) == matching);
+  BOOST_CHECK(bounds(1, y, 2) == below);
+  BOOST_CHECK(bounds(0, z, 2) == below);
+  BOOST_CHECK(bounds(1, z, 2) == above);
+  BOOST_CHECK(bounds(0, w, 2) == above);
+  BOOST_CHECK(bounds(1, w, 2) == below);
 }
 
 BOOST_AUTO_TEST_CASE( test_open_range_bounds )
@@ -1086,14 +1104,14 @@ BOOST_AUTO_TEST_CASE( test_open_range_bounds )
   // Checking this compiles
   open_range_bounds<point2d, bracket_less<point2d> > bounds
     = make_open_range_bounds(fix.kdtree, l, h);
-  BOOST_CHECK(bounds(0, l) == below);
-  BOOST_CHECK(bounds(1, l) == below);
-  BOOST_CHECK(bounds(0, h) == above);
-  BOOST_CHECK(bounds(1, h) == above);
-  BOOST_CHECK(bounds(0, x) == matching);
-  BOOST_CHECK(bounds(1, x) == below);
-  BOOST_CHECK(bounds(0, y) == above);
-  BOOST_CHECK(bounds(1, y) == matching);
+  BOOST_CHECK(bounds(0, l, 2) == below);
+  BOOST_CHECK(bounds(1, l, 2) == below);
+  BOOST_CHECK(bounds(0, h, 2) == above);
+  BOOST_CHECK(bounds(1, h, 2) == above);
+  BOOST_CHECK(bounds(0, x, 2) == matching);
+  BOOST_CHECK(bounds(1, x, 2) == below);
+  BOOST_CHECK(bounds(0, y, 2) == above);
+  BOOST_CHECK(bounds(1, y, 2) == matching);
 }
 
 BOOST_AUTO_TEST_CASE( test_range_bounds )
@@ -1107,16 +1125,16 @@ BOOST_AUTO_TEST_CASE( test_range_bounds )
   // Checking this compiles
   range_bounds<point2d, bracket_less<point2d> > bounds
     = make_range_bounds(fix.kdtree, l, h);
-  BOOST_CHECK(bounds(0, l) == matching);
-  BOOST_CHECK(bounds(1, l) == matching);
-  BOOST_CHECK(bounds(0, h) == above);
-  BOOST_CHECK(bounds(1, h) == above);
-  BOOST_CHECK(bounds(0, x) == matching);
-  BOOST_CHECK(bounds(1, x) == below);
-  BOOST_CHECK(bounds(0, y) == above);
-  BOOST_CHECK(bounds(1, y) == matching);
-  BOOST_CHECK(bounds(0, z) == below);
-  BOOST_CHECK(bounds(1, z) == below);
+  BOOST_CHECK(bounds(0, l, 2) == matching);
+  BOOST_CHECK(bounds(1, l, 2) == matching);
+  BOOST_CHECK(bounds(0, h, 2) == above);
+  BOOST_CHECK(bounds(1, h, 2) == above);
+  BOOST_CHECK(bounds(0, x, 2) == matching);
+  BOOST_CHECK(bounds(1, x, 2) == below);
+  BOOST_CHECK(bounds(0, y, 2) == above);
+  BOOST_CHECK(bounds(1, y, 2) == matching);
+  BOOST_CHECK(bounds(0, z, 2) == below);
+  BOOST_CHECK(bounds(1, z, 2) == below);
 }
 
 BOOST_AUTO_TEST_CASE( test_closed_range_bounds )
@@ -1131,18 +1149,28 @@ BOOST_AUTO_TEST_CASE( test_closed_range_bounds )
   // Checking this compiles
   closed_range_bounds<point2d, bracket_less<point2d> > bounds
     = make_closed_range_bounds(fix.kdtree, l, h);
-  BOOST_CHECK(bounds(0, l) == matching);
-  BOOST_CHECK(bounds(1, l) == matching);
-  BOOST_CHECK(bounds(0, h) == matching);
-  BOOST_CHECK(bounds(1, h) == matching);
-  BOOST_CHECK(bounds(0, x) == matching);
-  BOOST_CHECK(bounds(1, x) == below);
-  BOOST_CHECK(bounds(0, y) == above);
-  BOOST_CHECK(bounds(1, y) == matching);
-  BOOST_CHECK(bounds(0, z) == below);
-  BOOST_CHECK(bounds(1, z) == below);
-  BOOST_CHECK(bounds(0, w) == above);
-  BOOST_CHECK(bounds(1, w) == above);
+  BOOST_CHECK(bounds(0, l, 2) == matching);
+  BOOST_CHECK(bounds(1, l, 2) == matching);
+  BOOST_CHECK(bounds(0, h, 2) == matching);
+  BOOST_CHECK(bounds(1, h, 2) == matching);
+  BOOST_CHECK(bounds(0, x, 2) == matching);
+  BOOST_CHECK(bounds(1, x, 2) == below);
+  BOOST_CHECK(bounds(0, y, 2) == above);
+  BOOST_CHECK(bounds(1, y, 2) == matching);
+  BOOST_CHECK(bounds(0, z, 2) == below);
+  BOOST_CHECK(bounds(1, z, 2) == below);
+  BOOST_CHECK(bounds(0, w, 2) == above);
+  BOOST_CHECK(bounds(1, w, 2) == above);
+}
+
+BOOST_AUTO_TEST_CASE( test_overlap_range_bounds )
+{
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
+}
+
+BOOST_AUTO_TEST_CASE( test_enclosed_range_bounds )
+{
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
 ///////////////////////////  spatial_kdtree_base.hpp  //////////////////////////
@@ -4235,22 +4263,22 @@ BOOST_AUTO_TEST_CASE( test_manhattan_distance_to_plane )
     float r = math::manhattan_distance_to_plane
       <point2d, bracket_cast_accessor<point2d, float>, float>
       (0, x, x, bracket_cast_accessor<point2d, float>());
-    BOOST_CHECK_CLOSE(r, .0, .0000001);
+    BOOST_CHECK_CLOSE(r, .0f, .0000001f);
     x = ones;
     r = math::manhattan_distance_to_plane
       <point2d, bracket_cast_accessor<point2d, float>, float>
       (1, x, x, bracket_cast_accessor<point2d, float>());
-    BOOST_CHECK_CLOSE(r, .0, .0000001);
+    BOOST_CHECK_CLOSE(r, .0f, .0000001f);
     x = twos;
     r = math::manhattan_distance_to_plane
       <point2d, bracket_cast_accessor<point2d, float>, float>
       (0, x, x, bracket_cast_accessor<point2d, float>());
-    BOOST_CHECK_CLOSE(r, .0, .0000001);
+    BOOST_CHECK_CLOSE(r, .0f, .0000001f);
     x = threes;
     r = math::manhattan_distance_to_plane
       <point2d, bracket_cast_accessor<point2d, float>, float>
       (1, x, x, bracket_cast_accessor<point2d, float>());
-    BOOST_CHECK_CLOSE(r, .0, .0000001);
+    BOOST_CHECK_CLOSE(r, .0f, .0000001f);
   }
   {
     // Distance between points and plane at different positions in 3D
@@ -4270,7 +4298,7 @@ BOOST_AUTO_TEST_CASE( test_manhattan_distance_to_plane )
         using namespace ::std;
         triple_access access;
         float other_dist = abs(static_cast<float>(access(dim, p) - access(dim, q)));
-        BOOST_CHECK_CLOSE(dist, other_dist, .0000001);
+        BOOST_CHECK_CLOSE(dist, other_dist, .0000001f);
       }
   }
 }
@@ -5461,7 +5489,6 @@ BOOST_AUTO_TEST_CASE( test_pointset_neighborhood_view )
   // Now add some points to pointset and iterate throught these points.
   BOOST_CHECK_MESSAGE(false, "test not implemented");
   pointset<2, point2d> points;
-    
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_neighborhood_other_view )

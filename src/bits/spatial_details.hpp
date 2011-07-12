@@ -187,14 +187,13 @@ namespace spatial
      *  within range or not.
      *  @test   test_details_match_all
      */
-    template <typename KeyDimension, typename Key, typename Predicate>
+    template <typename Rank, typename Key, typename Predicate>
     inline bool
-    match_all(const KeyDimension& dim, const Key& key,
-	      const Predicate& predicate)
+    match_all(const Rank& rank, const Key& key, const Predicate& predicate)
     {
-      for (dimension_type i = 0; i < dim(); ++i)
+      for (dimension_type i = 0; i < rank(); ++i)
 	{
-	  if (predicate(i, key) != matching)
+	  if (predicate(i, key, rank()) != matching)
 	    { return false; }
 	}
       return true;
@@ -205,14 +204,13 @@ namespace spatial
      *  is within range or not.
      *  @test   test_details_match_any
      */
-    template <typename KeyDimension, typename Key, typename Predicate>
+    template <typename Rank, typename Key, typename Predicate>
     inline bool
-    match_any(const KeyDimension& dim, const Key& key,
-	      const Predicate& predicate)
+    match_any(const Rank& rank, const Key& key, const Predicate& predicate)
     {
-      for (dimension_type i = 0; i < dim(); ++i)
+      for (dimension_type i = 0; i < rank(); ++i)
 	{
-	  if (predicate(i, key) == matching)
+	  if (predicate(i, key, rank()) == matching)
 	    { return true; }
 	}
       return false;
@@ -223,14 +221,14 @@ namespace spatial
      *  within range or not, but without checking dimension @c exclude.
      *  @test   test_details_match_most
      */
-    template <typename KeyDimension, typename Key, typename Predicate>
+    template <typename Rank, typename Key, typename Predicate>
     inline bool
-    match_most(const KeyDimension& dim, dimension_type exclude_dim,
+    match_most(const Rank& rank, dimension_type exclude_dim,
 	       const Key& key, const Predicate& predicate)
     {
-      for (dimension_type i = 0; i < dim(); ++i)
+      for (dimension_type i = 0; i < rank(); ++i)
 	{
-	  if (i != exclude_dim && predicate(i, key) != matching)
+	  if (i != exclude_dim && predicate(i, key, rank()) != matching)
 	    { return false; }
 	}
       return true;

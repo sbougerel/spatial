@@ -16,7 +16,7 @@
 #define SPATIAL_HPP
 
 // For compatibility with older environments
-#ifdef SPATIAL_MISSING_OR_OBSOLETE_CSTDDEF
+#ifdef SPATIAL_BAD_CSTDDEF
 #include <stddef.h>
 namespace std
 {
@@ -52,6 +52,65 @@ namespace spatial
   typedef
   enum { below = -1, matching = 0, above = 1 }
     relative_order;
+
+  /**
+   *  Represents a coordinate layout for the box. llhh stands for low, low,
+   *  high, high. This layout means that the lower coordinates of the box are
+   *  expressed first, and the higher coordinates are expressed after.
+   *
+   *  For a box of dimension 2, the llhh layout means that for each box,
+   *  delmited by 2 points x and y, the coordinate are ordered as follow:
+   *
+   *      B = { x0, x1, y0, y1 }
+   *
+   *  With <tt>x0 <= y0</tt> and <tt>x1 <= y1</tt>.
+   */
+  struct llhh_layout_tag { };
+
+  /**
+   *  Represents a coordinate layout for the box. lhlh stands for low, high,
+   *  low, high. This layout means that the lower coordinates of the box are
+   *  expressed first, and the higher coordinates are expressed second,
+   *  alternatively for each dimension.
+   *
+   *  For a box of dimension 2, the lhlh layout means that for each box,
+   *  delmited by 2 points x and y, the coordinate are ordered as follow:
+   *
+   *      B = { x0, y0, x1, y1 }
+   *
+   *  With <tt>x0 <= y0</tt> and <tt>x1 <= y1</tt>.
+   */
+  struct lhlh_layout_tag { };
+
+  /**
+   *  Represents a coordinate layout for the box. hhll stands for high, high,
+   *  low, low. This layout means that the upper coordinates of the box are
+   *  expressed first, and the lower coordinates are expressed after.
+   *
+   *  For a box of dimension 2, the hhll layout means that for each box,
+   *  delmited by 2 points x and y, the coordinate are ordered as follow:
+   *
+   *      B = { x0, x1, y0, y1 }
+   *
+   *  With <tt>x0 >= y0</tt> and <tt>x1 >= y1</tt>.
+   */
+  struct hhll_layout_tag { };
+
+  /**
+   *  Represents a coordinate layout for the box. lhlh stands for high, low
+   *  high, low. This layout means that the upper coordinates of the box are
+   *  expressed first, and the lower coordinates are expressed second,
+   *  alternatively for each dimension.
+   *
+   *  For a box of dimension 2, the hlhl layout means that for each box,
+   *  delmited by 2 points x and y, the coordinate are ordered as follow:
+   *
+   *      B = { x0, y0, x1, y1 }
+   *
+   *  With <tt>x0 >= y0</tt> and <tt>x1 >= y1</tt>.
+   */
+  struct hlhl_layout_tag { };
+
 }
 
 #endif // SPATIAL_HPP

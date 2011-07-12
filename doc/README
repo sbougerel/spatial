@@ -8,7 +8,7 @@ From this directory, execute Doxygen:
 
 $ doxygen
 
-Could it be harder?
+Could it be any harder?
 
 
 Dependancies the documentation
@@ -19,20 +19,25 @@ Doxygen from its official website:
 
 http://www.stack.nl/~dimitri/doxygen/index.html
 
+A recent version of Doxygen is needed since some of the features required in the
+configuration will only be available in the latest version of Doxygen. So it is
+best you upgrade your Doxygen version if it is a little old.
 
-However, Doxygen will not be able to generate the output for the formulas all by
-itself. You also require pdfTex. pdfTex is part of most TeX distributions. On
-Linux and BSDs it is generally not an issue to get pdfTex, but on Windows, it
-may be a little more complicated. The following TeX distributions both provide
-pdfTex:
+Note that Doxygen will not be able to generate the output for the formulas all
+by itself. You also require the following tools:
 
-http://www.miktex.org/
-http://w32tex.org/
+     * latex
+     * dvips
+     * gs
 
-You may require to add the path to the pdfTex binary to your Windows PATH
-enivronment variable.
+These tools are part of most TeX distributions. On Linux and BSDs it is
+generally not an issue to get these, but on Windows you will need pre-packaged
+TeX distributions, such as the one from:
 
-If you do not have pdfTex, Doxygen will still include the formulas in the
+     * http://www.miktex.org/
+     * http://w32tex.org/
+
+If you do not have these tools, Doxygen will still include the formulas in the
 documentation, however they will appear as LaTeX sources.
 
 

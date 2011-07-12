@@ -202,7 +202,12 @@ TAB_SIZE               = 4
 # will result in a user-defined paragraph with heading "Side Effects:".
 # You can put \n's in the value part of an alias to insert newlines.
 '
-ALIASES = "libkdtree=<a href=\"http://libkdtree.alioth.debian.org/\"><b>libkdtree++</b></a>" \
+ALIASES = "ul=<ul><li>" \
+	  "l=</li><li>" \
+	  "lu=</li></ul>" \
+	  "ol=<ol><li>" \
+	  "lo=</li></ol>" \
+	  "libkdtree=<a href=\"http://libkdtree.alioth.debian.org/\"><b>libkdtree++</b></a>" \
           "Boost=<a href=\"http://www.boost.org/\"><b>Boost</b></a>" \
           "quote=<div style=\"text-align:right\"><i>" \
           "endquote=</i></div>" \
@@ -218,7 +223,12 @@ ALIASES = "libkdtree=<a href=\"http://libkdtree.alioth.debian.org/\"><b>libkdtre
           "project_page=<a href=\"http://sourceforge.net/projects/spatial/\"><b>Project Page on Sourceforge</b></a>" \
           "project_download=<a href=\"http://sourceforge.net/projects/spatial/files/\"><b>Project Download Page on Sourceforge</b></a>" \
           "project_issue=<a href=\"http://sourceforge.net/projects/spatial/support\"><b>Project Issue Trackers on Sourceforge</b></a>" \
-          "concept=\xrefitem concept \"Concept\" \"Concepts\""
+          "concept=\xrefitem concept \"Concept\" \"Concepts\"" \
+          "concept_tab=<table><tr><td></td><td>Signature/Typedef</td><td>Description" \
+          "concept_leg=</td></tr><tr><td>Legend</td><td><tt>" \
+	  "concept_req=</td></tr><tr><td>Require</td><td><tt>" \
+	  "concept_des=</tt></td><td>" \
+	  "concept_end=</td></tr></table>"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C
 # sources only. Doxygen will then generate output that is more tailored for C.
@@ -1139,7 +1149,7 @@ EXT_LINKS_IN_WINDOW    = NO
 # to manually remove any form_*.png images from the HTML output directory
 # to force them to be regenerated.
 
-FORMULA_FONTSIZE       = 10
+FORMULA_FONTSIZE       = 12
 
 # Use the FORMULA_TRANPARENT tag to determine whether or not the images
 # generated for formulas are transparent PNGs. Transparent PNGs are
