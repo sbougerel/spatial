@@ -353,8 +353,8 @@ namespace spatial
    *  box @f$B_{(x, y)}@f$ in a space of rank @f$r@f$ such as:
    *
    *  @f[
-   *  \sum_{i=1}^{r} ( B_{x_i} \le P_{x_i} \le B_{y_i}
-   *                   \text{||} B_{x_i} \le P_{y_i} \le B_{y_i} )
+   *  \sum_{i=1}^{r} \left( B_{x_i} \le P_{x_i} \le B_{y_i}
+   *                        \; or \; B_{x_i} \le P_{y_i} \le B_{y_i} \right)
    *  @f]
    */
   template <typename Rank, typename Key, typename Compare,
@@ -481,7 +481,8 @@ namespace spatial
    *  box @f$B_{(x, y)}@f$ in a space of rank @f$r@f$ such as:
    *
    *  @f[
-   *  \sum_{i=1}^{r} ( P_{x_i} \le B_{x_i} \text{&&} B_{y_i} \le P_{y_i} )
+   *  \sum_{i=1}^{r} \left( P_{x_i} \le B_{x_i} \; and \;
+   *                        B_{y_i} \le P_{y_i} \right)
    *  @f]
    */
   template <typename Rank, typename Key, typename Compare,
