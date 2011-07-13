@@ -1,3 +1,12 @@
+2011-07-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * doc/Doxyfile Add grouped distribution of documentation so has to
+	save some documentation hassle.
+
+        * src/bits/spatial_node.hpp removed the @test list documentation
+        marker in this file and other. Test list will be rebuilt if it becomes
+        useful. It is not useful at the moment.
+
 2011-07-12  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * doc/Doxyfile Fixed some documentation issues over some LaTeX

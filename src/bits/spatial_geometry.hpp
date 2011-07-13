@@ -50,7 +50,6 @@ namespace spatial
        *  @brief  This functor accesses the coordinates of Tp via a bracket
        *  operator and casts them into Distance or assign the coordinate of one
        *  parameter to the other along the same dimension.
-       *  @test   test_bracket_cast_accessor
        */
       template <typename Tp, typename Distance, typename Compare = int>
       struct bracket_cast_accessor
@@ -71,7 +70,6 @@ namespace spatial
        *  @brief  This functor accesses the coordinates of Tp via a parenthesis
        *  operator and casts them into Distance or assign the coordinate of one
        *  parameter to the other along the same dimension.
-       *  @test   test_paren_cast_accessor
        */
       template <typename Tp, typename Distance, typename Compare = int>
       struct paren_cast_accessor
@@ -92,7 +90,6 @@ namespace spatial
        *  @brief  This functor accesses the coordinates of Tp via a iteration
        *  operator and casts them into Distance or assign the coordinate of one
        *  parameter to the other along the same dimension.
-       *  @test   test_iterator_accessor
        */
       template <typename Tp, typename Distance, typename Compare = int>
       struct iterator_cast_accessor
@@ -250,7 +247,6 @@ namespace spatial
      *  @brief  Compute the distance between the @p origin and the closest point
      *  to the plane orthogonal to the axis of dimension @c dim and passing by
      *  @c key.
-     *  @test   test_euclidian_distance_to_plane
      */
     template <typename Key, typename Accessor, typename Distance>
     inline Distance
@@ -265,7 +261,6 @@ namespace spatial
      *  @brief  Compute the distance between the @p origin and the closest point
      *  to the plane orthogonal to the axis of dimension @c dim and passing by
      *  @c key.
-     *  @test   test_euclidian_square_distance_to_plane
      */
     template <typename Key, typename Accessor, typename Distance>
     inline Distance
@@ -280,7 +275,6 @@ namespace spatial
     /**
      *  @brief  Compute the square value of the distance between @p origin and
      *  @p key.
-     *  @test   test_euclidian_square_distance_to_key
      *
      *  The computation of the square value is much faster than the computation
      *  of the distance, but it tends to overflow quickly if large values are
@@ -343,7 +337,6 @@ namespace spatial
      *  @brief  Compute the distance between the @p origin and the closest point
      *  to the plane orthogonal to the axis of dimension @c dim and passing by
      *  @c key.
-     *  @test   test_manhattan_distance_to_plane
      */
     template <typename Key, typename Accessor, typename Distance>
     inline Distance
@@ -426,7 +419,6 @@ namespace spatial
   /**
    *  @brief  Defines the geometry for the euclidian space where the distance can
    *  be computed from a double or a type that can be casted into a double.
-   *  @test   test_geometry_euclidian_double
    *
    *  The type @c Accessor type should provide read/write access on its
    *  components along each dimensions.
@@ -488,7 +480,6 @@ namespace spatial
   /**
    *  @brief  Defines the geometry for the euclidian space where the distance can
    *  be computed from a float or a type that can be casted into a float.
-   *  @test   test_geometry_euclidian_float
    *
    *  The type @c Accessor type should provide read/write access on its
    *  components along each dimensions.
@@ -545,7 +536,6 @@ namespace spatial
    *  @brief  Defines the geometry for the euclidian space where only the square
    *  of the distances are being computed into a scalar value expressed as a
    *  double.
-   *  @test   test_geometry_euclidian_square_double
    *
    *  The type @c Accessor type should provide read/write access on its
    *  components along each dimensions.
@@ -602,7 +592,6 @@ namespace spatial
    *  @brief  Defines the geometry for the euclidian space where only the square
    *  of the distances are being computed into a scalar value expressed as a
    *  double.
-   *  @test   test_geometry_euclidian_square_float
    *
    *  The type @c Accessor type should provide read/write access on its
    *  components along each dimensions.
@@ -658,7 +647,6 @@ namespace spatial
   /**
    *  @brief  Defines a geometry for the euclidian space where distances are the
    *  sum of all the elements of a vector. Also known as the taxicab geometry.
-   *  @test   test_geometry_manhattan
    *
    *  The type @c Accessor type should provide read/write access on its
    *  components along each dimensions.

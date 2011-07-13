@@ -43,7 +43,6 @@ namespace spatial
 
     /*
      *  A type trait that choses between 2 types
-     *  test:   test_traits_condition
      */
     template<bool, typename Tp1, typename Tp2>
     struct condition
@@ -63,7 +62,6 @@ namespace spatial
 
     /*
      *  The node traits of the trees in spatial.
-     *  test:   test_node_traits
      */
     template<typename>
     struct node_traits
@@ -75,7 +73,6 @@ namespace spatial
 
     /*
      *  Help to retrieve the invariant category for a node type.
-     *  test:   test_node_traits
      */
     template<typename Node>
     typename node_traits<Node>::invariant_category
@@ -162,8 +159,7 @@ namespace spatial
   struct geometry_traits
   {
     /**
-     *  @brief  @p distance_type is the type used by the geometry to represent
-     *  distances.
+     *  @brief  The type used by the geometry to represent distances.
      *
      *  Distance may be user defined in some geometry such as
      *  spatial::manhathan, but in this case, the type must follow specific

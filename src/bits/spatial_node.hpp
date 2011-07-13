@@ -42,7 +42,6 @@ namespace spatial
 
       /**
        *  @brief  Check if node is a header node.
-       *  @test   test_empty_header, test_5_node
        */
       static bool
       header(Const_Base_ptr x)
@@ -51,7 +50,6 @@ namespace spatial
       //@{
       /**
        *  @brief  Reach the left most node.
-       *  @test   test_5_node
        *
        *  Should not be used on empty trees.
        */
@@ -72,7 +70,6 @@ namespace spatial
       //@{
       /**
        *  @brief  Reach the left most node.
-       *  @test   test_5_node
        *
        *  Should not be used on empty trees.
        */
@@ -90,11 +87,9 @@ namespace spatial
       }
       //@}
 
-
       //@{
       /**
        *  @brief  Reach the next node in symetric transversal order.
-       *  @test   test_5_node
        *
        *  Should not be used on empty trees.
        */
@@ -108,11 +103,9 @@ namespace spatial
       }
       //@}
 
-
       //@{
       /**
        *  @brief  Reach the previous node in symetric transversal order.
-       *  @test   test_5_node
        *
        *  Should not be used on empty trees.
        */
@@ -128,7 +121,6 @@ namespace spatial
 
       /**
        *  @brief  Reach the next node in preorder transversal.
-       *  @test   test_5_node
        *
        *  Should not be used on empty trees.
        */
@@ -181,8 +173,7 @@ namespace spatial
     //@{
     /**
      *  @brief  Swaps nodes position in the tree.
-     *  @test   test_swap_node, test_swap_kdtree_node,
-     *          test_swap_relaxed_kdtree_node
+     *  @relates Node_base
      *
      *  This function does not updates the left-most and right-most pointers of
      *  the tree where the nodes belongs to. This is left to the responsibility of
@@ -358,7 +349,7 @@ namespace spatial
       typedef const Key&                    reference;
       typedef const Key*                    pointer;
       typedef std::ptrdiff_t                difference_type;
-      typedef std::input_iterator_tag       iterator_category;
+      typedef std::forward_iterator_tag     iterator_category;
 
     private:
       typedef Preorder_node_iterator<Key, Node>  Self;

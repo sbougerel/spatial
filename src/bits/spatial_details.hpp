@@ -58,9 +58,9 @@ namespace spatial
       Compress(const Base& compressed_base, const Member& member)
 	: Base(compressed_base), member_(member) { }
 
+      //@{
       /**
        *  @brief  Accessor to the base class.
-       *  @{
        */
       const Base&
       base() const
@@ -91,7 +91,6 @@ namespace spatial
     /**
      *  @brief  The dimension value is set by a template value, thus consuming
      *  no memory.
-     *  @test   test_details_incr_decr_dim_static
      */
     template <dimension_type Value>
     struct Static_rank
@@ -103,7 +102,6 @@ namespace spatial
     /**
      *  @brief  The dimension value is stored by a member of the object, but can
      *  be modified at run time.
-     *  @test   test_details_incr_decr_dim_dynamic
      */
     struct Dynamic_rank
     {
@@ -122,7 +120,6 @@ namespace spatial
     //@{
     /**
      *  @brief  Perform a specialized swap for empty classes.
-     *  @test   test_details_swap_provider
      */
     template<bool, typename Tp>
     struct template_member_swap_provider
@@ -146,8 +143,6 @@ namespace spatial
 
     /**
      *  @brief  Increment dimension @c node_dim, given @c key_dim.
-     *  @test   test_details_incr_decr_dim_static,
-     *          test_details_incr_decr_dim_dynamic
      */
     template<typename KeyDimension>
     inline dimension_type
@@ -156,8 +151,6 @@ namespace spatial
 
     /**
      *  @brief  Decrement dimension @c node_dim, given @c key_dim.
-     *  @test   test_details_incr_decr_dim_static,
-     *          test_details_incr_decr_dim_dynamic
      */
     template<typename KeyDimension>
     inline dimension_type
@@ -168,7 +161,6 @@ namespace spatial
      *  @brief  Return true if x coordinate is less than y coordinate over
      *  dimension @node_dim, given @compare. If both coordinate are equal,
      *  then return true if address of x is less than address of y.
-     *  @test   test_details_less_by_ref
      *
      *  This operator always discriminate x and y unless they are the same
      *  object.
@@ -185,7 +177,6 @@ namespace spatial
     /**
      *  @brief  Return a boolean indicating whether all @c key coordinates are
      *  within range or not.
-     *  @test   test_details_match_all
      */
     template <typename Rank, typename Key, typename Predicate>
     inline bool
@@ -202,7 +193,6 @@ namespace spatial
     /**
      *  @brief  Return a boolean indicating whether a single @c key coordinates
      *  is within range or not.
-     *  @test   test_details_match_any
      */
     template <typename Rank, typename Key, typename Predicate>
     inline bool
@@ -219,7 +209,6 @@ namespace spatial
     /**
      *  @brief  Return a boolean indicating whether all @c key coordinates are
      *  within range or not, but without checking dimension @c exclude.
-     *  @test   test_details_match_most
      */
     template <typename Rank, typename Key, typename Predicate>
     inline bool
