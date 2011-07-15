@@ -523,13 +523,6 @@ namespace spatial
     } // namespace neighbor
   } // namespace details
 
-  /**
-   *  @brief  Enforces the definition of the equal_iterable tag into a type.
-   */
-  template <typename Type>
-  struct neighbor_iterable_traits
-    : spatial::details::identity<typename Type::neighbor_iterable> { };
-
   //@{
   /**
    *  @brief  View of the Kdtree that provides standard iterator accessors for
@@ -637,8 +630,8 @@ namespace spatial
     cupper_bound(const distance_type& upper) const
     { return details::neighbor::const_upper_bound(*container_, geometry_, target_, upper); }
 
-    neighbor_view(typename neighbor_iterable_traits<Container>::type& iterable,
-                  const Geometry& geometry, const key_type& target)
+    neighbor_view(Container& iterable, const Geometry& geometry,
+	          const key_type& target)
       : target_(target), geometry_(geometry), container_(&iterable)
     { }
 
@@ -723,8 +716,8 @@ namespace spatial
     cupper_bound(const distance_type& upper) const
     { return details::neighbor::const_upper_bound(*container_, geometry_, target_, upper); }
 
-    neighbor_view(const typename neighbor_iterable_traits<Container>::type& iterable,
-                  const Geometry& geometry, const key_type& target)
+    neighbor_view(const Container& iterable, const Geometry& geometry,
+	          const key_type& target)
       : target_(target), geometry_(geometry), container_(&iterable)
     { }
 
@@ -743,7 +736,7 @@ namespace spatial
                      typename spatial::container_traits<Container>::compare_type> >
   {
     euclidian_neighbor_view
-    (typename neighbor_iterable_traits<Container>::type& iterable,
+    (Container& iterable,
      const typename container_traits<Container>::key_type& origin)
       : neighbor_view<Container, euclidian_double
                       <typename container_traits<Container>::key_type,
@@ -762,7 +755,7 @@ namespace spatial
                      typename spatial::container_traits<Container>::compare_type> >
   {
     euclidian_neighbor_view
-    (const typename neighbor_iterable_traits<Container>::type& iterable,
+    (const Container& iterable,
      const typename container_traits<Container>::key_type& origin)
       : neighbor_view<const Container, euclidian_double
                       <typename container_traits<Container>::key_type,
@@ -783,7 +776,7 @@ namespace spatial
                      typename spatial::container_traits<Container>::compare_type> >
   {
     euclidian_float_neighbor_view
-    (typename neighbor_iterable_traits<Container>::type& iterable,
+    (Container& iterable,
      const typename container_traits<Container>::key_type& origin)
       : neighbor_view<Container, euclidian_float
                       <typename container_traits<Container>::key_type,
@@ -802,7 +795,7 @@ namespace spatial
                      typename spatial::container_traits<Container>::compare_type> >
   {
     euclidian_float_neighbor_view
-    (const typename neighbor_iterable_traits<Container>::type& iterable,
+    (const Container& iterable,
      const typename container_traits<Container>::key_type& origin)
       : neighbor_view<const Container, euclidian_float
                       <typename container_traits<Container>::key_type,
@@ -823,7 +816,7 @@ namespace spatial
                      typename spatial::container_traits<Container>::compare_type> >
   {
     euclidian_square_neighbor_view
-    (typename neighbor_iterable_traits<Container>::type& iterable,
+    (Container& iterable,
      const typename container_traits<Container>::key_type& origin)
       : neighbor_view<Container, euclidian_square_double
                       <typename container_traits<Container>::key_type,
@@ -842,7 +835,7 @@ namespace spatial
                      typename spatial::container_traits<Container>::compare_type> >
   {
     euclidian_square_neighbor_view
-    (const typename neighbor_iterable_traits<Container>::type& iterable,
+    (const Container& iterable,
      const typename container_traits<Container>::key_type& origin)
       : neighbor_view<const Container, euclidian_square_double
                       <typename container_traits<Container>::key_type,
@@ -863,7 +856,7 @@ namespace spatial
                      typename spatial::container_traits<Container>::compare_type> >
   {
     euclidian_square_float_neighbor_view
-    (typename neighbor_iterable_traits<Container>::type& iterable,
+    (Container& iterable,
      const typename container_traits<Container>::key_type& origin)
       : neighbor_view<Container, euclidian_square_float
                       <typename container_traits<Container>::key_type,
@@ -882,7 +875,7 @@ namespace spatial
                      typename spatial::container_traits<Container>::compare_type> >
   {
     euclidian_square_float_neighbor_view
-    (const typename neighbor_iterable_traits<Container>::type& iterable,
+    (const Container& iterable,
      const typename container_traits<Container>::key_type& origin)
       : neighbor_view<const Container, euclidian_square_float
                       <typename container_traits<Container>::key_type,
@@ -904,7 +897,7 @@ namespace spatial
                      Distance> >
   {
     manhattan_neighbor_view
-    (typename neighbor_iterable_traits<Container>::type& iterable,
+    (Container& iterable,
      const typename container_traits<Container>::key_type& origin)
       : neighbor_view<Container, manhattan
                       <typename container_traits<Container>::key_type,
@@ -926,7 +919,7 @@ namespace spatial
                      Distance> >
   {
     manhattan_neighbor_view
-    (const typename neighbor_iterable_traits<Container>::type& iterable,
+    (const Container& iterable,
      const typename container_traits<Container>::key_type& origin)
       : neighbor_view<const Container, manhattan
                       <typename container_traits<Container>::key_type,

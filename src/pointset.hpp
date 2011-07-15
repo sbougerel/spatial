@@ -53,10 +53,6 @@ namespace spatial
     typedef pointset<Rank, Key, Compare, BalancingPolicy, Alloc>    Self;
 
   public:
-    typedef Self mapping_iterable;
-    typedef Self range_iterable;
-    typedef Self neighbor_iterable;
-
     pointset() { }
 
     explicit pointset(const Compare& compare)
@@ -100,10 +96,6 @@ namespace spatial
     typedef pointset<0, Key, Compare, BalancingPolicy, Alloc>     Self;
 
   public:
-    typedef Self mapping_iterable;
-    typedef Self range_iterable;
-    typedef Self neighbor_iterable;
-
     pointset() { }
 
     explicit pointset(dimension_type dim)
@@ -164,10 +156,6 @@ namespace spatial
     typedef runtime_pointset<Key, Compare, BalancingPolicy, Alloc> Self;
 
   public:
-    typedef Self mapping_iterable;
-    typedef Self range_iterable;
-    typedef Self neighbor_iterable;
-
     runtime_pointset() { }
 
     explicit runtime_pointset(dimension_type dim)
@@ -222,9 +210,6 @@ namespace spatial
     typedef frozen_pointset<Rank, Key, Compare, Alloc> Self;
 
   public:
-    typedef Self mapping_iterable;
-    typedef Self range_iterable;
-    typedef Self neighbor_iterable;
 
     frozen_pointset() { }
 
@@ -262,10 +247,6 @@ namespace spatial
     typedef frozen_pointset<0, Key, Compare, Alloc>    Self;
 
   public:
-    typedef Self mapping_iterable;
-    typedef Self range_iterable;
-    typedef Self neighbor_iterable;
-
     frozen_pointset() { }
 
     explicit frozen_pointset(dimension_type dim)
@@ -317,10 +298,6 @@ namespace spatial
     typedef frozen_runtime_pointset<Key, Compare, Alloc>   Self;
 
   public:
-    typedef Self mapping_iterable;
-    typedef Self range_iterable;
-    typedef Self neighbor_iterable;
-
     frozen_runtime_pointset() { }
 
     explicit frozen_runtime_pointset(dimension_type dim)

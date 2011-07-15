@@ -441,15 +441,6 @@ namespace spatial
     } // namespace mapping
   } // namespace details
 
-
-    /**
-     *  @brief  Enforces the definition of the mapping_iterable tag into a type
-     *  when used.
-     */
-  template <typename Type>
-  struct mapping_iterable_traits
-    : spatial::details::identity<typename Type::mapping_iterable> { };
-
   /**
    *  @brief  View of the Kdtree that provides standard iterator accessors for
    *  kdtree types that inherit from @c Mapping_iterable<KdtreeType>. Types
@@ -560,8 +551,7 @@ namespace spatial
     cupper_bound(const key_type& key) const
     { return details::mapping::const_upper_bound(*container_, mapping_dim_, key); }
 
-    mapping_view(typename mapping_iterable_traits<Container>
-                 ::type& iterable, dimension_type mapping_dim)
+    mapping_view(Container& iterable, dimension_type mapping_dim)
       : mapping_dim_(mapping_dim), container_(&iterable)
     { }
 
@@ -645,8 +635,7 @@ namespace spatial
     cupper_bound(const key_type& key) const
     { return details::mapping::const_upper_bound(*container_, mapping_dim_, key); }
 
-    mapping_view(const typename mapping_iterable_traits<Container>
-                 ::type& iterable, dimension_type mapping_dim)
+    mapping_view(const Container& iterable, dimension_type mapping_dim)
       : mapping_dim_(mapping_dim), container_(&iterable)
     { }
 

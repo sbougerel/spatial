@@ -391,6 +391,7 @@ namespace spatial
 
     relative_order overlap_bounds_impl
     (dimension_type rank, dimension_type dim, const Key& key, llhh_layout_tag)
+    const
     {
       return (dim < (rank >> 1))
         ? (Compare::operator()(dim + (rank >> 1), target_, dim, key)
@@ -400,7 +401,8 @@ namespace spatial
     }
 
     relative_order overlap_bounds_impl
-    (dimension_type, dimension_type dim, const Key& key, lhlh_layout_tag)
+    (dimension_type rank, dimension_type dim, const Key& key, lhlh_layout_tag)
+    const
     {
       return ((dim % 2) == 0)
         ? (Compare::operator()(dim + 1, target_, dim, key) ? above : matching)
@@ -409,6 +411,7 @@ namespace spatial
 
     relative_order overlap_bounds_impl
     (dimension_type rank, dimension_type dim, const Key& key, hhll_layout_tag)
+    const
     {
       return (dim < (rank >> 1))
         ? (Compare::operator()(dim, key, dim + (rank >> 1), target_)
@@ -418,7 +421,8 @@ namespace spatial
     }
 
     relative_order overlap_bounds_impl
-    (dimension_type, dimension_type dim, const Key& key, hlhl_layout_tag)
+    (dimension_type rank, dimension_type dim, const Key& key, hlhl_layout_tag)
+    const
     {
       return ((dim % 2) == 0)
         ? (Compare::operator()(dim, key, dim + 1, target_) ? below : matching)
@@ -449,6 +453,7 @@ namespace spatial
       typename container_traits<Tp>::compare_type, Layout>
       (container.compare(), target);
   }
+
   template <typename Tp>
   overlap_bounds<typename container_traits<Tp>::key_type,
                  typename container_traits<Tp>::compare_type,
@@ -519,6 +524,7 @@ namespace spatial
 
     relative_order enclose_bounds_impl
     (dimension_type rank, dimension_type dim, const Key& key, llhh_layout_tag)
+    const
     {
       return (dim < (rank >> 1))
         ? (Compare::operator()(dim , key, target_)
@@ -530,7 +536,8 @@ namespace spatial
     }
 
     relative_order enclose_bounds_impl
-    (dimension_type, dimension_type dim, const Key& key, lhlh_layout_tag)
+    (dimension_type rank, dimension_type dim, const Key& key, lhlh_layout_tag)
+    const
     {
       return ((dim % 2) == 0)
         ? (Compare::operator()(dim , key, target_)
@@ -543,6 +550,7 @@ namespace spatial
 
     relative_order enclose_bounds_impl
     (dimension_type rank, dimension_type dim, const Key& key, hhll_layout_tag)
+    const
     {
       return (dim < (rank >> 1))
         ? (Compare::operator()(dim , target_, key)
@@ -554,7 +562,8 @@ namespace spatial
     }
 
     relative_order enclose_bounds_impl
-    (dimension_type, dimension_type dim, const Key& key, hlhl_layout_tag)
+    (dimension_type rank, dimension_type dim, const Key& key, hlhl_layout_tag)
+    const
     {
       return ((dim % 2) == 0)
         ? (Compare::operator()(dim , target_, key)
@@ -589,6 +598,7 @@ namespace spatial
       typename container_traits<Tp>::compare_type, Layout>
       (container.compare(), target);
   }
+
   template <typename Tp>
   enclose_bounds<typename container_traits<Tp>::key_type,
                  typename container_traits<Tp>::compare_type,
@@ -927,36 +937,12 @@ namespace spatial
     } // namespace range
   } // namespace details
 
-  /**
-   *  @brief  Enforces the definition of the equal_iterable tag into a type.
-   */
-  template <typename Type>
-  struct range_iterable_traits
-    : spatial::details::identity<typename Type::range_iterable> { };
-
   //@{
   /**
-   *  @brief  View of the Container that uses a predicate to control the
+   *  @brief  View of the container that uses a predicate to control the
    *  orthogonal range search and provides standard iterator to access the
-   *  results of the search.
-   *
-   *  The definition of the predicate must match the following prototype:
-   *  @code
-   *  struct my_predicate
-   *  {
-   *    spatial::relative_order
-   *    operator()(spatial::dimension_type dim, const Key& key) const
-   *    {
-   *      // ...
-   *    }
-   *  };
-   *  @endcode
-   *
-   *  With the type @p Key matching the type of objects inserted in the
-   *  container. The type spatial::relative_order is an enumeration of 3
-   *  values: above, matching and below that represent the position of the @p
-   *  key with regard to the interval being considered on the dimension @p
-   *  dim.
+   *  results of the search. The predicate must be a model of @ref
+   *  RangePredicate.
    *
    *  The following example shows how to define a predicate for a type called
    *  point3d. The predicate shall satisfy the following conditions:
@@ -990,9 +976,8 @@ namespace spatial
    *  };
    *  @endcode
    *
-   *  As you can see, the enumeration of the type spatial::relative_order are
-   *  used to represent the position of the parameter @p x with regard to the
-   *  interval studied on the dimension @p dim.
+   *  More information on predicate are provided in the tutorial section and the
+   *  description of the RangePredicate concept.
    */
   template <typename Container, typename Predicate>
   class range_predicate_view
@@ -1038,9 +1023,12 @@ namespace spatial
     const_iterator cend() const
     { return details::range::const_end(*container_, predicate_); }
 
-    range_predicate_view(typename range_iterable_traits<Container>
-                         ::type& iterable, const Predicate& predicate)
-      : predicate_(predicate), container_(&iterable)
+    /**
+     *  Container must be a model of RangeIterable container.
+     *  @see RangeIterable
+     */
+    range_predicate_view(Container& container, const Predicate& predicate)
+      : predicate_(predicate), container_(&container)
     { }
 
   private:
@@ -1082,15 +1070,53 @@ namespace spatial
     const_iterator cend() const
     { return details::range::const_end(*container_, predicate_); }
 
-    range_predicate_view(const typename range_iterable_traits<Container>
-                         ::type& iterable, const Predicate& predicate)
-      : predicate_(predicate), container_(&iterable)
+    range_predicate_view(const Container& container, const Predicate& predicate)
+      : predicate_(predicate), container_(&container)
     { }
 
   private:
     const Predicate predicate_;
     const Container* container_;
   };
+  //@}
+
+  //@{
+  /**
+   *  A quick helper to return a range expressed through a pair of iterators.
+   *  Uses the iterator types from @ref range_predicate_view.
+   *
+   *  Container must be a model of @ref RangeIterable. Predicate must be a model
+   *  of @ref RangePredicate.
+   */
+  template <typename Container, typename Predicate>
+  inline
+  std::pair<typename range_predicate_view<Container, Predicate>::iterator,
+            typename range_predicate_view<Container, Predicate>::iterator>
+  range_predicate(Container& container, const Predicate& predicate)
+  {
+    return std::make_pair(details::range::begin(container, predicate),
+                          details::range::end(container, predicate));
+  }
+
+  template <typename Container, typename Predicate>
+  inline
+  std::pair<typename range_predicate_view<Container, Predicate>::const_iterator,
+            typename range_predicate_view<Container, Predicate>::const_iterator>
+  range_predicate(const Container& container, const Predicate& predicate)
+  {
+    return std::make_pair(details::range::const_begin(container, predicate),
+                          details::range::const_end(container, predicate));
+  }
+
+  template <typename Container, typename Predicate>
+  inline
+  std::pair<typename range_predicate_view<Container, Predicate>::const_iterator,
+            typename range_predicate_view<Container, Predicate>::const_iterator>
+  const_range_predicate(const Container& container, const Predicate& predicate)
+  {
+    return std::make_pair(details::range::const_begin(container, predicate),
+                          details::range::const_end(container, predicate));
+  }
   //@}
 
   //@{
@@ -1122,14 +1148,14 @@ namespace spatial
                 typename spatial::container_traits<Container>::compare_type> >
   {
     range_view
-    (typename range_iterable_traits<Container>::type& iterable,
+    (Container& container,
      const typename spatial::container_traits<Container>::key_type& lower,
      const typename spatial::container_traits<Container>::key_type& upper)
       : range_predicate_view
         <Container,
          range_bounds<typename spatial::container_traits<Container>::key_type,
                       typename spatial::container_traits<Container>::compare_type> >
-        (iterable, make_range_bounds(iterable, lower, upper))
+        (container, make_range_bounds(container, lower, upper))
     { }
   };
 
@@ -1142,16 +1168,69 @@ namespace spatial
                 typename spatial::container_traits<Container>::compare_type> >
   {
     range_view
-    (const typename range_iterable_traits<Container>::type& iterable,
+    (const Container& container,
      const typename spatial::container_traits<Container>::key_type& lower,
      const typename spatial::container_traits<Container>::key_type& upper)
       : range_predicate_view
         <const Container,
          range_bounds<typename spatial::container_traits<Container>::key_type,
                       typename spatial::container_traits<Container>::compare_type> >
-        (iterable, make_range_bounds(iterable, lower, upper))
+        (container, make_range_bounds(container, lower, upper))
     { }
   };
+  //@}
+
+  //@{
+  /**
+   *  A quick helper to return a range expressed through a pair of iterators.
+   *  Uses the iterator types from @ref range_view.
+   *
+   *  Container must be a model of @ref RangeIterable.
+   */
+  template <typename Container>
+  inline
+  std::pair<typename range_view<Container>::iterator,
+            typename range_view<Container>::iterator>
+  range(Container& container,
+        const typename spatial::container_traits<Container>::key_type& lower,
+        const typename spatial::container_traits<Container>::key_type& upper)
+  {
+    range_bounds<container_traits<Container>::key_type,
+	         container_traits<Container>::compare_type>
+    bounds = make_range_bounds(container, lower, upper);
+    return std::make_pair(details::range::begin(container, bounds),
+                          details::range::end(container, bounds));
+  }
+
+  template <typename Container>
+  inline
+  std::pair<typename range_view<Container>::const_iterator,
+            typename range_view<Container>::const_iterator>
+  range(const Container& container,
+        const typename spatial::container_traits<Container>::key_type& lower,
+        const typename spatial::container_traits<Container>::key_type& upper)
+  {
+    range_bounds<container_traits<Container>::key_type,
+	         container_traits<Container>::compare_type>
+    bounds = make_range_bounds(container, lower, upper);
+    return std::make_pair(details::range::const_begin(container, bounds),
+                          details::range::const_end(container, bounds));
+  }
+
+  template <typename Container>
+  inline
+  std::pair<typename range_view<Container>::const_iterator,
+            typename range_view<Container>::const_iterator>
+  const_range(const Container& container,
+              const typename spatial::container_traits<Container>::key_type& lower,
+              const typename spatial::container_traits<Container>::key_type& upper)
+  {
+    range_bounds<container_traits<Container>::key_type,
+	         container_traits<Container>::compare_type>
+    bounds = make_range_bounds(container, lower, upper);
+    return std::make_pair(details::range::const_begin(container, bounds),
+                          details::range::const_end(container, bounds));
+  }
   //@}
 
   //@{
@@ -1166,7 +1245,7 @@ namespace spatial
    *  multi-dimension equivalent of a closed interval.
    *
    *  @f[
-   *  \forall _{i = 0 \to n} , low _i \leq x _i \leq high _i
+   *  \forall_{i = 0 \to n} \left( low_i \le x_i \le high_i \right)
    *  @f]
    *
    *  The above invarient also implies that @p lower and @p upper bounds must
@@ -1182,7 +1261,7 @@ namespace spatial
     typename spatial::container_traits<Container>::compare_type> >
   {
     closed_range_view
-    (typename range_iterable_traits<Container>::type& iterable,
+    (Container& container,
      const typename spatial::container_traits<Container>::key_type& lower,
      const typename spatial::container_traits<Container>::key_type& upper)
       : range_predicate_view
@@ -1190,7 +1269,7 @@ namespace spatial
          closed_range_bounds
          <typename spatial::container_traits<Container>::key_type,
           typename spatial::container_traits<Container>::compare_type> >
-        (iterable, make_closed_range_bounds(iterable, lower, upper))
+        (container, make_closed_range_bounds(container, lower, upper))
     { }
   };
 
@@ -1204,7 +1283,7 @@ namespace spatial
     typename spatial::container_traits<Container>::compare_type> >
   {
     closed_range_view
-    (const typename range_iterable_traits<Container>::type& iterable,
+    (const Container& container,
      const typename spatial::container_traits<Container>::key_type& lower,
      const typename spatial::container_traits<Container>::key_type& upper)
       : range_predicate_view
@@ -1212,9 +1291,65 @@ namespace spatial
          closed_range_bounds
          <typename spatial::container_traits<Container>::key_type,
           typename spatial::container_traits<Container>::compare_type> >
-        (iterable, make_closed_range_bounds(iterable, lower, upper))
+        (container, make_closed_range_bounds(container, lower, upper))
     { }
   };
+  //@}
+
+  //@{
+  /**
+   *  A quick helper to return a closed_range expressed through a pair of
+   *  iterators. Uses the iterator types from @ref closed_range_view.
+   *
+   *  Container must be a model of @ref RangeIterable.
+   */
+  template <typename Container>
+  inline
+  std::pair<typename closed_range_view<Container>::iterator,
+            typename closed_range_view<Container>::iterator>
+  closed_range
+  (Container& container,
+   const typename spatial::container_traits<Container>::key_type& lower,
+   const typename spatial::container_traits<Container>::key_type& upper)
+  {
+    closed_range_bounds<container_traits<Container>::key_type,
+	                container_traits<Container>::compare_type>
+    bounds = make_closed_range_bounds(container, lower, upper);
+    return std::make_pair(details::closed_range::begin(container, bounds),
+                          details::closed_range::end(container, bounds));
+  }
+
+  template <typename Container>
+  inline
+  std::pair<typename closed_range_view<Container>::const_iterator,
+            typename closed_range_view<Container>::const_iterator>
+  closed_range
+  (const Container& container,
+   const typename spatial::container_traits<Container>::key_type& lower,
+   const typename spatial::container_traits<Container>::key_type& upper)
+  {
+    closed_range_bounds<container_traits<Container>::key_type,
+	                container_traits<Container>::compare_type>
+    bounds = make_closed_range_bounds(container, lower, upper);
+    return std::make_pair(details::closed_range::const_begin(container, bounds),
+                          details::closed_range::const_end(container, bounds));
+  }
+
+  template <typename Container>
+  inline
+  std::pair<typename closed_range_view<Container>::const_iterator,
+            typename closed_range_view<Container>::const_iterator>
+  const_closed_range
+  (const Container& container,
+   const typename spatial::container_traits<Container>::key_type& lower,
+   const typename spatial::container_traits<Container>::key_type& upper)
+  {
+    closed_range_bounds<container_traits<Container>::key_type,
+	                container_traits<Container>::compare_type>
+    bounds = make_closed_range_bounds(container, lower, upper);
+    return std::make_pair(details::closed_range::const_begin(container, bounds),
+                          details::closed_range::const_end(container, bounds));
+  }
   //@}
 
   //@{
@@ -1245,7 +1380,7 @@ namespace spatial
     typename spatial::container_traits<Container>::compare_type> >
   {
     open_range_view
-    (typename range_iterable_traits<Container>::type& iterable,
+    (Container& container,
      const typename spatial::container_traits<Container>::key_type& lower,
      const typename spatial::container_traits<Container>::key_type& upper)
       : range_predicate_view
@@ -1253,7 +1388,7 @@ namespace spatial
          open_range_bounds
          <typename spatial::container_traits<Container>::key_type,
           typename spatial::container_traits<Container>::compare_type> >
-        (iterable, make_open_range_bounds(iterable, lower, upper))
+        (container, make_open_range_bounds(container, lower, upper))
     { }
   };
 
@@ -1267,7 +1402,7 @@ namespace spatial
     typename spatial::container_traits<Container>::compare_type> >
   {
     open_range_view
-    (const typename range_iterable_traits<Container>::type& iterable,
+    (const Container& container,
      const typename spatial::container_traits<Container>::key_type& lower,
      const typename spatial::container_traits<Container>::key_type& upper)
       : range_predicate_view
@@ -1275,9 +1410,367 @@ namespace spatial
          open_range_bounds
          <typename spatial::container_traits<Container>::key_type,
           typename spatial::container_traits<Container>::compare_type> >
-        (iterable, make_open_range_bounds(iterable, lower, upper))
+        (container, make_open_range_bounds(container, lower, upper))
     { }
   };
+  //@}
+
+  //@{
+  /**
+   *  A quick helper to return an open_range expressed through a pair of
+   *  iterators. Uses the iterator types from @ref open_range_view.
+   *
+   *  Container must be a model of @ref RangeIterable.
+   */
+  template <typename Container>
+  inline
+  std::pair<typename open_range_view<Container>::iterator,
+            typename open_range_view<Container>::iterator>
+  open_range
+  (Container& container,
+   const typename spatial::container_traits<Container>::key_type& lower,
+   const typename spatial::container_traits<Container>::key_type& upper)
+  {
+    open_range_bounds<container_traits<Container>::key_type,
+	              container_traits<Container>::compare_type>
+    bounds = make_open_range_bounds(container, lower, upper);
+    return std::make_pair(details::open_range::begin(container, bounds),
+                          details::open_range::end(container, bounds));
+  }
+
+  template <typename Container>
+  inline
+  std::pair<typename open_range_view<Container>::const_iterator,
+            typename open_range_view<Container>::const_iterator>
+  open_range
+  (const Container& container,
+   const typename spatial::container_traits<Container>::key_type& lower,
+   const typename spatial::container_traits<Container>::key_type& upper)
+  {
+    open_range_bounds<container_traits<Container>::key_type,
+	              container_traits<Container>::compare_type>
+    bounds = make_open_range_bounds(container, lower, upper);
+    return std::make_pair(details::open_range::const_begin(container, bounds),
+                          details::open_range::const_end(container, bounds));
+  }
+
+  template <typename Container>
+  inline
+  std::pair<typename open_range_view<Container>::const_iterator,
+            typename open_range_view<Container>::const_iterator>
+  const_open_range
+  (const Container& container,
+   const typename spatial::container_traits<Container>::key_type& lower,
+   const typename spatial::container_traits<Container>::key_type& upper)
+  {
+    open_range_bounds<container_traits<Container>::key_type,
+	                container_traits<Container>::compare_type>
+    bounds = make_open_range_bounds(container, lower, upper);
+    return std::make_pair(details::open_range::const_begin(container, bounds),
+                          details::open_range::const_end(container, bounds));
+  }
+  //@}
+
+  //@{
+  /**
+   *  @brief  View of the Container that give access to all boxes whose
+   *  coordinates overlap with that of a target box. Provides iterators to get
+   *  all results of the search.
+   *
+   *  This view uses the @ref overlap_bounds predicate to perform the search.
+   */
+  template <typename Container, typename Layout = llhh_layout_tag>
+  struct overlap_view
+    : range_predicate_view
+  <Container,
+   overlap_bounds
+   <typename spatial::container_traits<Container>::key_type,
+    typename spatial::container_traits<Container>::compare_type, Layout> >
+  {
+    overlap_view
+    (Container& container,
+     const typename spatial::container_traits<Container>::key_type& target)
+      : range_predicate_view
+        <Container,
+         overlap_bounds
+         <typename spatial::container_traits<Container>::key_type,
+          typename spatial::container_traits<Container>::compare_type, Layout> >
+        (container, make_overlap_bounds(container, target, Layout()))
+    { }
+  };
+
+  // specialization for constant containers.
+  template <typename Container, typename Layout>
+  struct overlap_view<const Container, Layout>
+    : range_predicate_view
+  <const Container,
+   overlap_bounds
+   <typename spatial::container_traits<Container>::key_type,
+    typename spatial::container_traits<Container>::compare_type, Layout> >
+  {
+    overlap_view
+    (const Container& iterable,
+     const typename spatial::container_traits<Container>::key_type& target)
+      : range_predicate_view
+        <const Container,
+         overlap_bounds
+         <typename spatial::container_traits<Container>::key_type,
+          typename spatial::container_traits<Container>::compare_type, Layout> >
+        (container, make_overlap_bounds(container, target, Layout()))
+    { }
+  };
+  //@}
+
+  //@{
+  /**
+   *  A quick helper to return an overlap expressed through a pair of
+   *  iterators. Uses the iterator types from @ref overlap_view.
+   *
+   *  Container must be a model of @ref RangeIterable.
+   */
+  template <typename Container, typename Layout>
+  inline
+  std::pair<typename overlap_view<Container, Layout>::iterator,
+            typename overlap_view<Container, Layout>::iterator>
+  overlap
+  (Container& container,
+   const typename spatial::container_traits<Container>::key_type& target,
+   Layout)
+  {
+    overlap_bounds<container_traits<Container>::key_type,
+	           container_traits<Container>::compare_type, Layout>
+    bounds = make_overlap_bounds(container, target, Layout());
+    return std::make_pair(details::overlap::begin(container, bounds),
+                          details::overlap::end(container, bounds));
+  }
+
+  template <typename Container>
+  inline
+  std::pair<typename overlap_view<Container, llhh_layout_tag>::iterator,
+            typename overlap_view<Container, llhh_layout_tag>::iterator>
+  overlap
+  (Container& container,
+   const typename spatial::container_traits<Container>::key_type& target)
+  {
+    overlap_bounds<container_traits<Container>::key_type,
+	           container_traits<Container>::compare_type, Layout>
+    bounds = make_overlap_bounds(container, target, llhh_layout_tag);
+    return std::make_pair(details::overlap::begin(container, bounds),
+                          details::overlap::end(container, bounds));
+  }
+
+  template <typename Container, typename Layout>
+  inline
+  std::pair<typename overlap_view<Container, Layout>::const_iterator,
+            typename overlap_view<Container, Layout>::const_iterator>
+  overlap
+  (const Container& container,
+   const typename spatial::container_traits<Container>::key_type& target,
+   Layout)
+  {
+    overlap_bounds<container_traits<Container>::key_type,
+	           container_traits<Container>::compare_type>
+    bounds = make_overlap_bounds(container, target, Layout());
+    return std::make_pair(details::overlap::const_begin(container, bounds),
+                          details::overlap::const_end(container, bounds));
+  }
+
+  template <typename Container>
+  inline
+  std::pair<typename overlap_view<Container, llhh_layout_tag>::iterator,
+            typename overlap_view<Container, llhh_layout_tag>::iterator>
+  overlap
+  (const Container& container,
+   const typename spatial::container_traits<Container>::key_type& target)
+  {
+    overlap_bounds<container_traits<Container>::key_type,
+	           container_traits<Container>::compare_type, Layout>
+    bounds = make_overlap_bounds(container, target, llhh_layout_tag);
+    return std::make_pair(details::overlap::begin(container, bounds),
+                          details::overlap::end(container, bounds));
+  }
+
+  template <typename Container, typename Layout>
+  inline
+  std::pair<typename overlap_view<Container, Layout>::const_iterator,
+            typename overlap_view<Container, Layout>::const_iterator>
+  const_overlap
+  (const Container& container,
+   const typename spatial::container_traits<Container>::key_type& target,
+   Layout)
+  {
+    overlap_bounds<container_traits<Container>::key_type,
+	           container_traits<Container>::compare_type>
+    bounds = make_overlap_bounds(container, target, Layout());
+    return std::make_pair(details::overlap::const_begin(container, bounds),
+                          details::overlap::const_end(container, bounds));
+  }
+
+  template <typename Container>
+  inline
+  std::pair<typename overlap_view<Container, llhh_layout_tag>::iterator,
+            typename overlap_view<Container, llhh_layout_tag>::iterator>
+  const_overlap
+  (const Container& container,
+   const typename spatial::container_traits<Container>::key_type& target)
+  {
+    overlap_bounds<container_traits<Container>::key_type,
+	           container_traits<Container>::compare_type, Layout>
+    bounds = make_overlap_bounds(container, target, llhh_layout_tag);
+    return std::make_pair(details::overlap::begin(container, bounds),
+                          details::overlap::end(container, bounds));
+  }
+  //@}
+
+  //@{
+  /**
+   *  @brief  View of the Container that give access to all boxes whose
+   *  coordinates enclosed with that of a target box. Provides iterators to get
+   *  all results of the search.
+   *
+   *  This view uses the @ref enclose_bounds predicate to perform the search.
+   */
+  template <typename Container, typename Layout = llhh_layout_tag>
+  struct enclose_view
+    : range_predicate_view
+  <Container,
+   enclose_bounds
+   <typename spatial::container_traits<Container>::key_type,
+    typename spatial::container_traits<Container>::compare_type, Layout> >
+  {
+    enclose_view
+    (Container& iterable,
+     const typename spatial::container_traits<Container>::key_type& target)
+      : range_predicate_view
+        <Container,
+         enclose_bounds
+         <typename spatial::container_traits<Container>::key_type,
+          typename spatial::container_traits<Container>::compare_type, Layout> >
+        (container, make_enclose_bounds(iterable, target, Layout()))
+    { }
+  };
+
+  // specialization for constant containers.
+  template <typename Container, typename Layout>
+  struct enclose_view<const Container, Layout>
+    : range_predicate_view
+  <const Container,
+   enclose_bounds
+   <typename spatial::container_traits<Container>::key_type,
+    typename spatial::container_traits<Container>::compare_type, Layout> >
+  {
+    enclose_view
+    (const Container& iterable,
+     const typename spatial::container_traits<Container>::key_type& target)
+      : range_predicate_view
+        <const Container,
+         enclose_bounds
+         <typename spatial::container_traits<Container>::key_type,
+          typename spatial::container_traits<Container>::compare_type, Layout> >
+        (container, make_enclose_bounds(iterable, target, Layout()))
+    { }
+  };
+  //@}
+
+  //@{
+  /**
+   *  A quick helper to return an enclosed expressed through a pair of
+   *  iterators. Uses the iterator types from @ref enclose_view.
+   *
+   *  Container must be a model of @ref RangeIterable.
+   */
+  template <typename Container, typename Layout>
+  inline
+  std::pair<typename enclose_view<Container, Layout>::iterator,
+            typename enclose_view<Container, Layout>::iterator>
+  enclosed
+  (Container& container,
+   const typename spatial::container_traits<Container>::key_type& target,
+   Layout)
+  {
+    enclose_bounds<container_traits<Container>::key_type,
+	           container_traits<Container>::compare_type>
+    bounds = make_enclose_bounds(container, target, Layout());
+    return std::make_pair(details::enclosed::begin(container, bounds),
+                          details::enclosed::end(container, bounds));
+  }
+
+  template <typename Container>
+  inline
+  std::pair<typename enclose_view<Container, llhh_layout_tag>::iterator,
+            typename enclose_view<Container, llhh_layout_tag>::iterator>
+  enclosed
+  (Container& container,
+   const typename spatial::container_traits<Container>::key_type& target)
+  {
+    enclose_bounds<container_traits<Container>::key_type,
+	           container_traits<Container>::compare_type>
+    bounds = make_enclose_bounds(container, target, llhh_layout_tag());
+    return std::make_pair(details::enclosed::begin(container, bounds),
+                          details::enclosed::end(container, bounds));
+  }
+
+  template <typename Container, typename Layout>
+  inline
+  std::pair<typename enclose_view<Container, Layout>::const_iterator,
+            typename enclose_view<Container, Layout>::const_iterator>
+  enclosed
+  (const Container& container,
+   const typename spatial::container_traits<Container>::key_type& target,
+   Layout)
+  {
+    enclose_bounds<container_traits<Container>::key_type,
+	           container_traits<Container>::compare_type>
+    bounds = make_enclose_bounds(container, target, Layout());
+    return std::make_pair(details::enclosed::const_begin(container, bounds),
+                          details::enclosed::const_end(container, bounds));
+  }
+
+  template <typename Container>
+  inline
+  std::pair<typename enclose_view<Container, llhh_layout_tag>::const_iterator,
+            typename enclose_view<Container, llhh_layout_tag>::const_iterator>
+  enclosed
+  (const Container& container,
+   const typename spatial::container_traits<Container>::key_type& target)
+  {
+    enclose_bounds<container_traits<Container>::key_type,
+	           container_traits<Container>::compare_type>
+    bounds = make_enclose_bounds(container, target, llhh_layout_tag());
+    return std::make_pair(details::enclosed::const_begin(container, bounds),
+                          details::enclosed::const_end(container, bounds));
+  }
+
+  template <typename Container, typename Layout>
+  inline
+  std::pair<typename enclose_view<Container, Layout>::const_iterator,
+            typename enclose_view<Container, Layout>::const_iterator>
+  const_enclosed
+  (const Container& container,
+   const typename spatial::container_traits<Container>::key_type& target,
+   Layout)
+  {
+    enclose_bounds<container_traits<Container>::key_type,
+	           container_traits<Container>::compare_type>
+    bounds = make_enclose_bounds(container, target, Layout());
+    return std::make_pair(details::enclosed::const_begin(container, bounds),
+                          details::enclosed::const_end(container, bounds));
+  }
+
+  template <typename Container>
+  inline
+  std::pair<typename enclose_view<Container, llhh_layout_tag>::const_iterator,
+            typename enclose_view<Container, llhh_layout_tag>::const_iterator>
+  const_enclosed
+  (const Container& container,
+   const typename spatial::container_traits<Container>::key_type& target)
+  {
+    enclose_bounds<container_traits<Container>::key_type,
+	           container_traits<Container>::compare_type>
+    bounds = make_enclose_bounds(container, target, llhh_layout_tag());
+    return std::make_pair(details::enclosed::const_begin(container, bounds),
+                          details::enclosed::const_end(container, bounds));
+  }
   //@}
 
 } // namespace spatial

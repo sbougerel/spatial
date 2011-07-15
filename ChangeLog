@@ -1,5 +1,19 @@
 2011-07-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
+        * src/bits/spatial_range.hpp add the helper functions for ranges as
+        well as the view for overlap and enclose ranges.
+
+        * src/pointset.hpp After much of reflexion, I decided that it was
+        unnecessary to restrict use of pointset or boxset to a particular set
+        of range or neighbor iterator. There are some cases were you need such
+        functionality. It's better to allow this rather than have ppl complain
+        for the need of writing adaptors. Also it's true that basic users may
+        make mistakes, if the tutorial is probably written, they shouldn't
+        missuse this or that view. On top of that, it makes design easier.
+        Everybody wins.
+
+2011-07-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
         * doc/Doxyfile Add grouped distribution of documentation so has to
 	save some documentation hassle.
 
