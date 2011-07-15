@@ -76,8 +76,21 @@ namespace spatial
   };
 
   /**
-   *  @brief  This specialization allows one to specify the dimension for the
-   *  point set at run time.
+   *  Specialization for @ref frozen_boxset with runtime rank support. The
+   *  rank of the @ref frozen_boxset can be determined at run time and does not
+   *  need to be fixed at compile time. Using:
+   *  @code
+   *    struct box { \/* ... *\/ };
+   *    frozen_boxset<0, box> my_set;
+   *  @endcode
+   *  ...is therefore completely equivalent to:
+   *  @code
+   *    struct box { \/* ... *\/ };
+   *    runtime_frozen_boxset<box> my_set;
+   *  @endcode
+   *
+   *  @see runtime_frozen_boxset for more information about how to use this
+   *  container.
    */
   template<typename Key, typename Compare, typename Alloc>
   struct frozen_boxset<0, Key, Compare, Alloc>
@@ -131,47 +144,47 @@ namespace spatial
   template<typename Key,
 	   typename Compare = bracket_less<Key>,
 	   typename Alloc = std::allocator<Key> >
-  struct frozen_runtime_boxset
+  struct runtime_frozen_boxset
     : details::Kdtree<details::Dynamic_rank, Key, Compare, Alloc, true>
   {
   private:
     typedef details::Kdtree<details::Dynamic_rank,
 			    Key, Compare, Alloc, true>     base_type;
-    typedef frozen_runtime_boxset<Key, Compare, Alloc>   Self;
+    typedef runtime_frozen_boxset<Key, Compare, Alloc>   Self;
 
   public:
-    frozen_runtime_boxset() : base_type(details::Dynamic_rank(2)) { }
+    runtime_frozen_boxset() : base_type(details::Dynamic_rank(2)) { }
 
-    explicit frozen_runtime_boxset(dimension_type dim)
+    explicit runtime_frozen_boxset(dimension_type dim)
       : base_type(details::Dynamic_rank(dim << 1))
     { }
 
-    frozen_runtime_boxset(dimension_type dim, const Compare& compare)
+    runtime_frozen_boxset(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim << 1), compare)
     { }
 
-    explicit frozen_runtime_boxset(const Compare& compare)
+    explicit runtime_frozen_boxset(const Compare& compare)
       : base_type(details::Dynamic_rank(2), compare)
     { }
 
-    frozen_runtime_boxset(dimension_type dim, const Compare& compare,
+    runtime_frozen_boxset(dimension_type dim, const Compare& compare,
 			  const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim << 1), compare, alloc)
     { }
 
-    frozen_runtime_boxset(const Compare& compare, const Alloc& alloc)
+    runtime_frozen_boxset(const Compare& compare, const Alloc& alloc)
       : base_type(details::Dynamic_rank(2), compare, alloc)
     { }
 
-    frozen_runtime_boxset(const frozen_runtime_boxset& other,
+    runtime_frozen_boxset(const runtime_frozen_boxset& other,
 			  bool balancing = false)
       : base_type(other, balancing)
     { }
 
-    frozen_runtime_boxset&
-    operator=(const frozen_runtime_boxset& other)
+    runtime_frozen_boxset&
+    operator=(const runtime_frozen_boxset& other)
     {
-      return static_cast<frozen_runtime_boxset<Key, Compare, Alloc>&>
+      return static_cast<runtime_frozen_boxset<Key, Compare, Alloc>&>
 	(base_type::operator=(other));
     }
   };

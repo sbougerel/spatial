@@ -80,9 +80,21 @@ namespace spatial
   };
 
   /**
-   *  Specialization for boxset with runtime rank support. The rank of the
-   *  boxset can be determined at run time and does not need to be fixed at
-   *  compile time.
+   *  Specialization for @ref boxset with runtime rank support. The
+   *  rank of the @ref boxset can be determined at run time and does not need
+   *  to be fixed at compile time. Using:
+   *  @code
+   *    struct box { \/* ... *\/ };
+   *    boxset<0, box> my_set;
+   *  @endcode
+   *  ...is therefore completely equivalent to:
+   *  @code
+   *    struct box { \/* ... *\/ };
+   *    runtime_boxset<box> my_set;
+   *  @endcode
+   *
+   *  @see runtime_frozen_boxset for more information about how to use this
+   *  container.
    */
   template<typename Key,
 	   typename Compare,

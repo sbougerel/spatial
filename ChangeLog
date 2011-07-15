@@ -1,5 +1,9 @@
 2011-07-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
+        * src/frozen_pointset.hpp forzen_runtime_pointset is now
+        runtime_frozen_pointset, to tally with the include file name. Same for
+        runtime_frozen_boxset.
+
         * src/boxset.hpp Boxes can be stored in a container now!
 
         * src/frozen_pointset.hpp cut the pointset file in 2.
@@ -14,7 +18,6 @@
         for the need of writing adaptors. Also it's true that basic users may
         make mistakes, if the tutorial is probably written, they shouldn't
         missuse this or that view. On top of that, it makes design easier.
-        Everybody wins.
 
 2011-07-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 

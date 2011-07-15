@@ -76,8 +76,21 @@ namespace spatial
   };
 
   /**
-   *  @brief  This specialization allows one to specify the dimension for the
-   *  point set at run time.
+   *  Specialization for @ref frozen_pointset with runtime rank support. The
+   *  rank of the @ref frozen_pointset can be determined at run time and does
+   *  not need to be fixed at compile time. Using:
+   *  @code
+   *    struct point { \/* ... *\/ };
+   *    frozen_pointset<0, point> my_set;
+   *  @endcode
+   *  ...is therefore completely equivalent to:
+   *  @code
+   *    struct point { \/* ... *\/ };
+   *    runtime_frozen_pointset<point> my_set;
+   *  @endcode
+   *
+   *  @see runtime_frozen_pointset for more information about how to use this
+   *  container.
    */
   template<typename Key, typename Compare, typename Alloc>
   struct frozen_pointset<0, Key, Compare, Alloc>
@@ -131,47 +144,47 @@ namespace spatial
   template<typename Key,
 	   typename Compare = bracket_less<Key>,
 	   typename Alloc = std::allocator<Key> >
-  struct frozen_runtime_pointset
+  struct runtime_frozen_pointset
     : details::Kdtree<details::Dynamic_rank, Key, Compare, Alloc, true>
   {
   private:
     typedef details::Kdtree<details::Dynamic_rank,
 			    Key, Compare, Alloc, true>     base_type;
-    typedef frozen_runtime_pointset<Key, Compare, Alloc>   Self;
+    typedef runtime_frozen_pointset<Key, Compare, Alloc>   Self;
 
   public:
-    frozen_runtime_pointset() { }
+    runtime_frozen_pointset() { }
 
-    explicit frozen_runtime_pointset(dimension_type dim)
+    explicit runtime_frozen_pointset(dimension_type dim)
       : base_type(details::Dynamic_rank(dim))
     { }
 
-    frozen_runtime_pointset(dimension_type dim, const Compare& compare)
+    runtime_frozen_pointset(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim), compare)
     { }
 
-    explicit frozen_runtime_pointset(const Compare& compare)
+    explicit runtime_frozen_pointset(const Compare& compare)
       : base_type(compare)
     { }
 
-    frozen_runtime_pointset(dimension_type dim, const Compare& compare,
+    runtime_frozen_pointset(dimension_type dim, const Compare& compare,
 			    const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim), compare, alloc)
     { }
 
-    frozen_runtime_pointset(const Compare& compare, const Alloc& alloc)
+    runtime_frozen_pointset(const Compare& compare, const Alloc& alloc)
       : base_type(details::Dynamic_rank(), compare, alloc)
     { }
 
-    frozen_runtime_pointset(const frozen_runtime_pointset& other,
+    runtime_frozen_pointset(const runtime_frozen_pointset& other,
 			    bool balancing = false)
       : base_type(other, balancing)
     { }
 
-    frozen_runtime_pointset&
-    operator=(const frozen_runtime_pointset& other)
+    runtime_frozen_pointset&
+    operator=(const runtime_frozen_pointset& other)
     {
-      return static_cast<frozen_runtime_pointset<Key, Compare, Alloc>&>
+      return static_cast<runtime_frozen_pointset<Key, Compare, Alloc>&>
 	(base_type::operator=(other));
     }
   };

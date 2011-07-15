@@ -5294,7 +5294,7 @@ BOOST_AUTO_TEST_CASE( test_frozen_pointset_constructors )
 {
   frozen_pointset<2, point2d> points;
   frozen_pointset<0, point2d> runtime_points;
-  frozen_runtime_pointset<point2d> more_runtime_points;
+  runtime_frozen_pointset<point2d> more_runtime_points;
 }
 
 BOOST_AUTO_TEST_CASE( test_pointset_copy_assignment )
@@ -5369,11 +5369,11 @@ BOOST_AUTO_TEST_CASE( test_zero_frozen_pointset_copy_assignment )
 
 BOOST_AUTO_TEST_CASE( test_runtime_frozen_pointset_copy_assignment )
 {
-  frozen_runtime_pointset<point2d> points;
+  runtime_frozen_pointset<point2d> points;
   points.insert(zeros);
   points.insert(ones);
   points.insert(twos);
-  frozen_runtime_pointset<point2d> copy(points);
+  runtime_frozen_pointset<point2d> copy(points);
   BOOST_CHECK_EQUAL(points.size(), copy.size());
   BOOST_CHECK(*points.begin() == *copy.begin());
   points = copy;

@@ -79,13 +79,23 @@ namespace spatial
   };
 
   /**
-   *  Specialization for pointset with runtime rank support. The rank of the
-   *  pointset can be determined at run time and does not need to be fixed at
-   *  compile time.
+   *  Specialization for @ref pointset with runtime rank support. The rank of
+   *  the @ref pointset can be determined at run time and does not need to be
+   *  fixed at compile time. Using:
+   *  @code
+   *    struct point { \/* ... *\/ };
+   *    pointset<0, point> my_set;
+   *  @endcode
+   *  ...is therefore completely equivalent to:
+   *  @code
+   *    struct point { \/* ... *\/ };
+   *    runtime_pointset<point> my_set;
+   *  @endcode
+   *
+   *  @see runtime_pointset for more information about how to use this
+   *  container.
    */
-  template<typename Key,
-	   typename Compare,
-	   typename BalancingPolicy,
+  template<typename Key, typename Compare, typename BalancingPolicy,
 	   typename Alloc>
   struct pointset<0, Key, Compare, BalancingPolicy, Alloc>
     : details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
