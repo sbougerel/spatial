@@ -1,5 +1,9 @@
 2011-07-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
+        * src/boxset.hpp Boxes can be stored in a container now!
+
+        * src/frozen_pointset.hpp cut the pointset file in 2.
+
         * src/bits/spatial_range.hpp add the helper functions for ranges as
         well as the view for overlap and enclose ranges.
 

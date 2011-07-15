@@ -35,6 +35,9 @@
 
 #define SPATIAL_ENABLE_ASSERT // detect interal issues that should not occur
 #include "../src/pointset.hpp"
+#include "../src/frozen_pointset.hpp"
+#include "../src/boxset.hpp"
+#include "../src/frozen_boxset.hpp"
 
 using namespace spatial;
 

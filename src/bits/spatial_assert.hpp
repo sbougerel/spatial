@@ -26,6 +26,7 @@
 #endif
 
 #ifndef SPATIAL_ASSERT_HPP_DISPLAY
+#  define SPATIAL_ASSERT_HPP_DISPLAY
 #  include<cstdlib>
 #  include<iostream>
 namespace spatial
