@@ -21,6 +21,16 @@ namespace spatial
 {
 
   /**
+   *  @brief  Thrown to report that an invalid rank was passed as an argument.
+   *  Generally thrown because 0 was passed as an argument for the rank.
+   */
+  struct invalid_rank_argument : std::logic_error
+  {
+    explicit invalid_rank_argument(const std::string& arg)
+      : logic_error(arg) { }
+  };
+
+  /**
    *  @brief  Thrown to report that an invalid dimension was passed as an
    *  argument.
    */
@@ -87,6 +97,13 @@ namespace spatial
   namespace except
   {
     /**
+     *  Checks that @c rank is not null.
+     *  @exception invalid_rank_argument is thrown if checks fails.
+     */
+    inline void check_rank_argument(dimension_type rank)
+    { if (0 == rank) throw invalid_rank_argument("rank is null"); }
+
+    /**
      *  Checks that @c dimension is not greater or equal to @c rank.
      *  @exception invalid_dimension_argument is thrown if checks fails.
      */
@@ -94,8 +111,7 @@ namespace spatial
     (dimension_type rank, dimension_type dimension)
     {
       if (dimension >= rank)
-	throw invalid_dimension_argument
-	  ("dimension is out of range");
+	throw invalid_dimension_argument("dimension is out of range");
     }
 
     /**

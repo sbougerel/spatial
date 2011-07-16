@@ -1,4 +1,10 @@
-2011-07-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+2011-07-15  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * src/bits/spatial_exceptions.hpp added a new exception check in all
+        runtime containers to make sure that library users do not enter a 0
+        value for the dimension.
+
+2011-07-14  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * src/frozen_pointset.hpp forzen_runtime_pointset is now
         runtime_frozen_pointset, to tally with the include file name. Same for
