@@ -2,7 +2,7 @@
 
 /**
  *  @file   frozen_boxset.hpp
- *  @brief  
+ *  @brief
  *
  *  - 2009-02-26 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
  *    Creation of the file.
@@ -39,17 +39,17 @@
 
 namespace spatial
 {
-  
+
   template<dimension_type Rank, typename Key,
-	   typename Compare = bracket_less<Key>,
-	   typename Alloc = std::allocator<Key> >
+           typename Compare = bracket_less<Key>,
+           typename Alloc = std::allocator<Key> >
   struct frozen_boxset
     : details::Kdtree<details::Static_rank<Rank << 1>,
                       Key, Compare, Alloc, true>
   {
   private:
     typedef details::Kdtree<details::Static_rank<Rank << 1>, Key, Compare,
-			    Alloc, true>               base_type;
+                            Alloc, true>               base_type;
     typedef frozen_boxset<Rank, Key, Compare, Alloc> Self;
 
   public:
@@ -71,7 +71,7 @@ namespace spatial
     operator=(const frozen_boxset& other)
     {
       return static_cast<frozen_boxset<Rank, Key, Compare, Alloc>&>
-	(base_type::operator=(other));
+        (base_type::operator=(other));
     }
   };
 
@@ -80,12 +80,12 @@ namespace spatial
    *  rank of the @ref frozen_boxset can be determined at run time and does not
    *  need to be fixed at compile time. Using:
    *  @code
-   *    struct box { \/* ... *\/ };
+   *    struct box { ... };
    *    frozen_boxset<0, box> my_set;
    *  @endcode
    *  ...is therefore completely equivalent to:
    *  @code
-   *    struct box { \/* ... *\/ };
+   *    struct box { ... };
    *    runtime_frozen_boxset<box> my_set;
    *  @endcode
    *
@@ -98,7 +98,7 @@ namespace spatial
   {
   private:
     typedef details::Kdtree<details::Dynamic_rank,
-			    Key, Compare, Alloc, true> base_type;
+                            Key, Compare, Alloc, true> base_type;
     typedef frozen_boxset<0, Key, Compare, Alloc>    Self;
 
   public:
@@ -117,7 +117,7 @@ namespace spatial
     { }
 
     frozen_boxset(dimension_type dim, const Compare& compare,
-		  const Alloc& alloc)
+                  const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim << 1), compare, alloc)
     { except::check_rank_argument(dim); }
 
@@ -133,7 +133,7 @@ namespace spatial
     operator=(const frozen_boxset& other)
     {
       return static_cast<frozen_boxset<0, Key, Compare, Alloc>&>
-	(base_type::operator=(other));
+        (base_type::operator=(other));
     }
   };
 
@@ -142,14 +142,14 @@ namespace spatial
    *  be determined at run time and does not need to be fixed at compile time.
    */
   template<typename Key,
-	   typename Compare = bracket_less<Key>,
-	   typename Alloc = std::allocator<Key> >
+           typename Compare = bracket_less<Key>,
+           typename Alloc = std::allocator<Key> >
   struct runtime_frozen_boxset
     : details::Kdtree<details::Dynamic_rank, Key, Compare, Alloc, true>
   {
   private:
     typedef details::Kdtree<details::Dynamic_rank,
-			    Key, Compare, Alloc, true>     base_type;
+                            Key, Compare, Alloc, true>     base_type;
     typedef runtime_frozen_boxset<Key, Compare, Alloc>   Self;
 
   public:
@@ -168,7 +168,7 @@ namespace spatial
     { }
 
     runtime_frozen_boxset(dimension_type dim, const Compare& compare,
-			  const Alloc& alloc)
+                          const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim << 1), compare, alloc)
     { except::check_rank_argument(dim); }
 
@@ -177,7 +177,7 @@ namespace spatial
     { }
 
     runtime_frozen_boxset(const runtime_frozen_boxset& other,
-			  bool balancing = false)
+                          bool balancing = false)
       : base_type(other, balancing)
     { }
 
@@ -185,7 +185,7 @@ namespace spatial
     operator=(const runtime_frozen_boxset& other)
     {
       return static_cast<runtime_frozen_boxset<Key, Compare, Alloc>&>
-	(base_type::operator=(other));
+        (base_type::operator=(other));
     }
   };
 

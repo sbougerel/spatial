@@ -1195,8 +1195,8 @@ namespace spatial
         const typename spatial::container_traits<Container>::key_type& lower,
         const typename spatial::container_traits<Container>::key_type& upper)
   {
-    range_bounds<container_traits<Container>::key_type,
-	         container_traits<Container>::compare_type>
+    range_bounds<typename container_traits<Container>::key_type,
+                 typename container_traits<Container>::compare_type>
     bounds = make_range_bounds(container, lower, upper);
     return std::make_pair(details::range::begin(container, bounds),
                           details::range::end(container, bounds));
@@ -1210,8 +1210,8 @@ namespace spatial
         const typename spatial::container_traits<Container>::key_type& lower,
         const typename spatial::container_traits<Container>::key_type& upper)
   {
-    range_bounds<container_traits<Container>::key_type,
-	         container_traits<Container>::compare_type>
+    range_bounds<typename container_traits<Container>::key_type,
+                 typename container_traits<Container>::compare_type>
     bounds = make_range_bounds(container, lower, upper);
     return std::make_pair(details::range::const_begin(container, bounds),
                           details::range::const_end(container, bounds));
@@ -1225,8 +1225,8 @@ namespace spatial
               const typename spatial::container_traits<Container>::key_type& lower,
               const typename spatial::container_traits<Container>::key_type& upper)
   {
-    range_bounds<container_traits<Container>::key_type,
-	         container_traits<Container>::compare_type>
+    range_bounds<typename container_traits<Container>::key_type,
+                 typename container_traits<Container>::compare_type>
     bounds = make_range_bounds(container, lower, upper);
     return std::make_pair(details::range::const_begin(container, bounds),
                           details::range::const_end(container, bounds));
@@ -1312,11 +1312,11 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& lower,
    const typename spatial::container_traits<Container>::key_type& upper)
   {
-    closed_range_bounds<container_traits<Container>::key_type,
-	                container_traits<Container>::compare_type>
+    closed_range_bounds<typename container_traits<Container>::key_type,
+                        typename container_traits<Container>::compare_type>
     bounds = make_closed_range_bounds(container, lower, upper);
-    return std::make_pair(details::closed_range::begin(container, bounds),
-                          details::closed_range::end(container, bounds));
+    return std::make_pair(details::range::begin(container, bounds),
+                          details::range::end(container, bounds));
   }
 
   template <typename Container>
@@ -1328,11 +1328,11 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& lower,
    const typename spatial::container_traits<Container>::key_type& upper)
   {
-    closed_range_bounds<container_traits<Container>::key_type,
-	                container_traits<Container>::compare_type>
+    closed_range_bounds<typename container_traits<Container>::key_type,
+                        typename container_traits<Container>::compare_type>
     bounds = make_closed_range_bounds(container, lower, upper);
-    return std::make_pair(details::closed_range::const_begin(container, bounds),
-                          details::closed_range::const_end(container, bounds));
+    return std::make_pair(details::range::const_begin(container, bounds),
+                          details::range::const_end(container, bounds));
   }
 
   template <typename Container>
@@ -1344,11 +1344,11 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& lower,
    const typename spatial::container_traits<Container>::key_type& upper)
   {
-    closed_range_bounds<container_traits<Container>::key_type,
-	                container_traits<Container>::compare_type>
+    closed_range_bounds<typename container_traits<Container>::key_type,
+                        typename container_traits<Container>::compare_type>
     bounds = make_closed_range_bounds(container, lower, upper);
-    return std::make_pair(details::closed_range::const_begin(container, bounds),
-                          details::closed_range::const_end(container, bounds));
+    return std::make_pair(details::range::const_begin(container, bounds),
+                          details::range::const_end(container, bounds));
   }
   //@}
 
@@ -1431,11 +1431,11 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& lower,
    const typename spatial::container_traits<Container>::key_type& upper)
   {
-    open_range_bounds<container_traits<Container>::key_type,
-	              container_traits<Container>::compare_type>
+    open_range_bounds<typename container_traits<Container>::key_type,
+                      typename container_traits<Container>::compare_type>
     bounds = make_open_range_bounds(container, lower, upper);
-    return std::make_pair(details::open_range::begin(container, bounds),
-                          details::open_range::end(container, bounds));
+    return std::make_pair(details::range::begin(container, bounds),
+                          details::range::end(container, bounds));
   }
 
   template <typename Container>
@@ -1447,11 +1447,11 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& lower,
    const typename spatial::container_traits<Container>::key_type& upper)
   {
-    open_range_bounds<container_traits<Container>::key_type,
-	              container_traits<Container>::compare_type>
+    open_range_bounds<typename container_traits<Container>::key_type,
+                      typename container_traits<Container>::compare_type>
     bounds = make_open_range_bounds(container, lower, upper);
-    return std::make_pair(details::open_range::const_begin(container, bounds),
-                          details::open_range::const_end(container, bounds));
+    return std::make_pair(details::range::const_begin(container, bounds),
+                          details::range::const_end(container, bounds));
   }
 
   template <typename Container>
@@ -1463,11 +1463,11 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& lower,
    const typename spatial::container_traits<Container>::key_type& upper)
   {
-    open_range_bounds<container_traits<Container>::key_type,
-	                container_traits<Container>::compare_type>
+    open_range_bounds<typename container_traits<Container>::key_type,
+                      typename container_traits<Container>::compare_type>
     bounds = make_open_range_bounds(container, lower, upper);
-    return std::make_pair(details::open_range::const_begin(container, bounds),
-                          details::open_range::const_end(container, bounds));
+    return std::make_pair(details::range::const_begin(container, bounds),
+                          details::range::const_end(container, bounds));
   }
   //@}
 
@@ -1509,7 +1509,7 @@ namespace spatial
     typename spatial::container_traits<Container>::compare_type, Layout> >
   {
     overlap_view
-    (const Container& iterable,
+    (const Container& container,
      const typename spatial::container_traits<Container>::key_type& target)
       : range_predicate_view
         <const Container,
@@ -1537,11 +1537,11 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& target,
    Layout)
   {
-    overlap_bounds<container_traits<Container>::key_type,
-	           container_traits<Container>::compare_type, Layout>
+    overlap_bounds<typename container_traits<Container>::key_type,
+                   typename container_traits<Container>::compare_type, Layout>
     bounds = make_overlap_bounds(container, target, Layout());
-    return std::make_pair(details::overlap::begin(container, bounds),
-                          details::overlap::end(container, bounds));
+    return std::make_pair(details::range::begin(container, bounds),
+                          details::range::end(container, bounds));
   }
 
   template <typename Container>
@@ -1552,11 +1552,12 @@ namespace spatial
   (Container& container,
    const typename spatial::container_traits<Container>::key_type& target)
   {
-    overlap_bounds<container_traits<Container>::key_type,
-	           container_traits<Container>::compare_type, Layout>
-    bounds = make_overlap_bounds(container, target, llhh_layout_tag);
-    return std::make_pair(details::overlap::begin(container, bounds),
-                          details::overlap::end(container, bounds));
+    overlap_bounds<typename container_traits<Container>::key_type,
+                   typename container_traits<Container>::compare_type,
+                   llhh_layout_tag>
+      bounds = make_overlap_bounds(container, target, llhh_layout_tag());
+    return std::make_pair(details::range::begin(container, bounds),
+                          details::range::end(container, bounds));
   }
 
   template <typename Container, typename Layout>
@@ -1568,11 +1569,11 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& target,
    Layout)
   {
-    overlap_bounds<container_traits<Container>::key_type,
-	           container_traits<Container>::compare_type>
+    overlap_bounds<typename container_traits<Container>::key_type,
+                   typename container_traits<Container>::compare_type, Layout>
     bounds = make_overlap_bounds(container, target, Layout());
-    return std::make_pair(details::overlap::const_begin(container, bounds),
-                          details::overlap::const_end(container, bounds));
+    return std::make_pair(details::range::const_begin(container, bounds),
+                          details::range::const_end(container, bounds));
   }
 
   template <typename Container>
@@ -1583,11 +1584,12 @@ namespace spatial
   (const Container& container,
    const typename spatial::container_traits<Container>::key_type& target)
   {
-    overlap_bounds<container_traits<Container>::key_type,
-	           container_traits<Container>::compare_type, Layout>
-    bounds = make_overlap_bounds(container, target, llhh_layout_tag);
-    return std::make_pair(details::overlap::begin(container, bounds),
-                          details::overlap::end(container, bounds));
+    overlap_bounds<typename container_traits<Container>::key_type,
+                   typename container_traits<Container>::compare_type,
+                   llhh_layout_tag>
+      bounds = make_overlap_bounds(container, target, llhh_layout_tag());
+    return std::make_pair(details::range::begin(container, bounds),
+                          details::range::end(container, bounds));
   }
 
   template <typename Container, typename Layout>
@@ -1599,11 +1601,11 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& target,
    Layout)
   {
-    overlap_bounds<container_traits<Container>::key_type,
-	           container_traits<Container>::compare_type>
+    overlap_bounds<typename container_traits<Container>::key_type,
+                   typename container_traits<Container>::compare_type, Layout>
     bounds = make_overlap_bounds(container, target, Layout());
-    return std::make_pair(details::overlap::const_begin(container, bounds),
-                          details::overlap::const_end(container, bounds));
+    return std::make_pair(details::range::const_begin(container, bounds),
+                          details::range::const_end(container, bounds));
   }
 
   template <typename Container>
@@ -1614,11 +1616,12 @@ namespace spatial
   (const Container& container,
    const typename spatial::container_traits<Container>::key_type& target)
   {
-    overlap_bounds<container_traits<Container>::key_type,
-	           container_traits<Container>::compare_type, Layout>
-    bounds = make_overlap_bounds(container, target, llhh_layout_tag);
-    return std::make_pair(details::overlap::begin(container, bounds),
-                          details::overlap::end(container, bounds));
+    overlap_bounds<typename container_traits<Container>::key_type,
+                   typename container_traits<Container>::compare_type,
+                   llhh_layout_tag>
+      bounds = make_overlap_bounds(container, target, llhh_layout_tag());
+    return std::make_pair(details::range::begin(container, bounds),
+                          details::range::end(container, bounds));
   }
   //@}
 
@@ -1639,14 +1642,14 @@ namespace spatial
     typename spatial::container_traits<Container>::compare_type, Layout> >
   {
     enclose_view
-    (Container& iterable,
+    (Container& container,
      const typename spatial::container_traits<Container>::key_type& target)
       : range_predicate_view
         <Container,
          enclose_bounds
          <typename spatial::container_traits<Container>::key_type,
           typename spatial::container_traits<Container>::compare_type, Layout> >
-        (container, make_enclose_bounds(iterable, target, Layout()))
+        (container, make_enclose_bounds(container, target, Layout()))
     { }
   };
 
@@ -1660,14 +1663,14 @@ namespace spatial
     typename spatial::container_traits<Container>::compare_type, Layout> >
   {
     enclose_view
-    (const Container& iterable,
+    (const Container& container,
      const typename spatial::container_traits<Container>::key_type& target)
       : range_predicate_view
         <const Container,
          enclose_bounds
          <typename spatial::container_traits<Container>::key_type,
           typename spatial::container_traits<Container>::compare_type, Layout> >
-        (container, make_enclose_bounds(iterable, target, Layout()))
+        (container, make_enclose_bounds(container, target, Layout()))
     { }
   };
   //@}
@@ -1683,93 +1686,97 @@ namespace spatial
   inline
   std::pair<typename enclose_view<Container, Layout>::iterator,
             typename enclose_view<Container, Layout>::iterator>
-  enclosed
+  enclose
   (Container& container,
    const typename spatial::container_traits<Container>::key_type& target,
    Layout)
   {
-    enclose_bounds<container_traits<Container>::key_type,
-	           container_traits<Container>::compare_type>
+    enclose_bounds<typename container_traits<Container>::key_type,
+                   typename container_traits<Container>::compare_type, Layout>
     bounds = make_enclose_bounds(container, target, Layout());
-    return std::make_pair(details::enclosed::begin(container, bounds),
-                          details::enclosed::end(container, bounds));
+    return std::make_pair(details::range::begin(container, bounds),
+                          details::range::end(container, bounds));
   }
 
   template <typename Container>
   inline
   std::pair<typename enclose_view<Container, llhh_layout_tag>::iterator,
             typename enclose_view<Container, llhh_layout_tag>::iterator>
-  enclosed
+  enclose
   (Container& container,
    const typename spatial::container_traits<Container>::key_type& target)
   {
-    enclose_bounds<container_traits<Container>::key_type,
-	           container_traits<Container>::compare_type>
+    enclose_bounds<typename container_traits<Container>::key_type,
+                   typename container_traits<Container>::compare_type,
+                   llhh_layout_tag>
     bounds = make_enclose_bounds(container, target, llhh_layout_tag());
-    return std::make_pair(details::enclosed::begin(container, bounds),
-                          details::enclosed::end(container, bounds));
+    return std::make_pair(details::range::begin(container, bounds),
+                          details::range::end(container, bounds));
   }
 
   template <typename Container, typename Layout>
   inline
   std::pair<typename enclose_view<Container, Layout>::const_iterator,
             typename enclose_view<Container, Layout>::const_iterator>
-  enclosed
+  enclose
   (const Container& container,
    const typename spatial::container_traits<Container>::key_type& target,
    Layout)
   {
-    enclose_bounds<container_traits<Container>::key_type,
-	           container_traits<Container>::compare_type>
+    enclose_bounds<typename container_traits<Container>::key_type,
+                   typename container_traits<Container>::compare_type, Layout>
     bounds = make_enclose_bounds(container, target, Layout());
-    return std::make_pair(details::enclosed::const_begin(container, bounds),
-                          details::enclosed::const_end(container, bounds));
+    return std::make_pair(details::range::const_begin(container, bounds),
+                          details::range::const_end(container, bounds));
   }
 
   template <typename Container>
   inline
   std::pair<typename enclose_view<Container, llhh_layout_tag>::const_iterator,
             typename enclose_view<Container, llhh_layout_tag>::const_iterator>
-  enclosed
+  enclose
   (const Container& container,
    const typename spatial::container_traits<Container>::key_type& target)
   {
-    enclose_bounds<container_traits<Container>::key_type,
-	           container_traits<Container>::compare_type>
+    enclose_bounds<typename container_traits<Container>::key_type,
+                   typename container_traits<Container>::compare_type,
+                   llhh_layout_tag>
     bounds = make_enclose_bounds(container, target, llhh_layout_tag());
-    return std::make_pair(details::enclosed::const_begin(container, bounds),
-                          details::enclosed::const_end(container, bounds));
+    return std::make_pair(details::range::const_begin(container, bounds),
+                          details::range::const_end(container, bounds));
   }
 
   template <typename Container, typename Layout>
   inline
   std::pair<typename enclose_view<Container, Layout>::const_iterator,
             typename enclose_view<Container, Layout>::const_iterator>
-  const_enclosed
+  const_enclose
   (const Container& container,
    const typename spatial::container_traits<Container>::key_type& target,
    Layout)
   {
-    enclose_bounds<container_traits<Container>::key_type,
-	           container_traits<Container>::compare_type>
+    enclose_bounds<typename container_traits<Container>::key_type,
+                   typename container_traits<Container>::compare_type,
+                   Layout>
     bounds = make_enclose_bounds(container, target, Layout());
-    return std::make_pair(details::enclosed::const_begin(container, bounds),
-                          details::enclosed::const_end(container, bounds));
+    return std::make_pair(details::range::const_begin(container, bounds),
+                          details::range::const_end(container, bounds));
   }
 
   template <typename Container>
   inline
   std::pair<typename enclose_view<Container, llhh_layout_tag>::const_iterator,
             typename enclose_view<Container, llhh_layout_tag>::const_iterator>
-  const_enclosed
+  const_enclose
   (const Container& container,
    const typename spatial::container_traits<Container>::key_type& target)
   {
-    enclose_bounds<container_traits<Container>::key_type,
-	           container_traits<Container>::compare_type>
+    enclose_bounds<typename container_traits<Container>::key_type,
+                   typename container_traits<Container>::compare_type,
+                   llhh_layout_tag>
     bounds = make_enclose_bounds(container, target, llhh_layout_tag());
-    return std::make_pair(details::enclosed::const_begin(container, bounds),
-                          details::enclosed::const_end(container, bounds));
+    return std::make_pair(details::range::const_begin(container, bounds),
+                          details::range::const_end(container, bounds));
   }
   //@}
 

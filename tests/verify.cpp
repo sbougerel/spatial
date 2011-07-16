@@ -73,14 +73,18 @@ BOOST_AUTO_TEST_CASE ( install_srand )
 
 ///////////////////////////  spatial_traits.hpp  ///////////////////////////////
 
+template <typename T> void silence_unused(const T&) { }
+
 BOOST_AUTO_TEST_CASE( test_traits_condition )
 {
   typedef details::condition<true, std::pair<int, int>,
     std::allocator<int> >::type type1;
   type1 must_compile_1 = std::pair<int, int>();
+  silence_unused(must_compile_1);
   typedef details::condition<false, std::pair<int, int>,
     std::allocator<int> >::type type2;
   type2 must_compile_2 = std::allocator<int>();
+  silence_unused(must_compile_2);
 }
 
 BOOST_AUTO_TEST_CASE( test_node_traits )
@@ -88,9 +92,11 @@ BOOST_AUTO_TEST_CASE( test_node_traits )
   typedef details::node_traits<details::Kdtree_node<int> >
     ::invariant_category type1;
   type1 must_compile_1 = details::strict_invariant_tag();
+  silence_unused(must_compile_1);
   typedef details::node_traits<details::Relaxed_kdtree_node<int> >
     ::invariant_category type2;
   type2 must_compile_2 = details::relaxed_invariant_tag();
+  silence_unused(must_compile_2);
 }
 
 BOOST_AUTO_TEST_CASE( test_true_or_false_type )
@@ -98,6 +104,8 @@ BOOST_AUTO_TEST_CASE( test_true_or_false_type )
   // Just have to compile it to verify it :)
   std::tr1::false_type one = details::true_or_false_type<false>::type();
   std::tr1::true_type two = details::true_or_false_type<true>::type();
+  silence_unused(one);
+  silence_unused(two);
 }
 
 ///////////////////////////  spatial_details.hpp  //////////////////////////////
@@ -4554,10 +4562,10 @@ BOOST_AUTO_TEST_CASE( test_geometry_manhattan )
   using namespace spatial::details::geometry;
   triple_access access;
   manhattan<triple, triple_access, int> geometry (access);
-  // distance_type should be declared
-  typedef manhattan<triple, triple_access, int>
-    ::distance_type distance_type;
   {
+    // distance_type should be declared
+    typedef manhattan<triple, triple_access, int>
+      ::distance_type distance_type;
     triple p, q;
     p.x = rand() % 80 - 40;
     p.y = rand() % 80 - 40;
@@ -4583,7 +4591,7 @@ BOOST_AUTO_TEST_CASE( test_geometry_manhattan )
     bracket_cast_accessor<point5d, double> access_double;
     manhattan<point5d, bracket_cast_accessor<point5d, double>, double>
       geometry_double(access_double);
-        typedef manhattan<point5d, bracket_cast_accessor<point5d, double>, double>
+    typedef manhattan<point5d, bracket_cast_accessor<point5d, double>, double>
       ::distance_type distance_type;
     // Bad attempt to test that given any 2 points, the result of
     // distance_to_plane is always less or equal to distance to key
@@ -4691,57 +4699,62 @@ BOOST_AUTO_TEST_CASE( test_neighbor_deference )
 
 BOOST_AUTO_TEST_CASE( test_neighbor_minimum )
 {
-  using namespace spatial::details::geometry;
-  typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
-  typedef euclidian_double
-    <kdtree_type::key_type,
-     bracket_cast_accessor<point2d, double> > geometry_type;
-  typedef details::Neighbor_iterator
-    <kdtree_type::rank_type, kdtree_type::key_type,
-     kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type> iterator_type;
   {
-    // If tree has one node, it should always return that node.
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, ones, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 0);
-    BOOST_CHECK_CLOSE(iter.impl_.distance_(), std::sqrt(2.0), .000000000001);
-    BOOST_CHECK(iter.impl_.target_() == ones);
-  }
-  {
-    // Find the expected closest at on a left-unblanced tree
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(threes);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, ones, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == ones);
-    BOOST_CHECK_EQUAL(iter.distance(), .0);
-    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
-  }
-  {
-    // Find the expected closest at on a right-unblanced tree
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(threes);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, fours, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == threes);
-    BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(2.0), .000000000001);
-    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
+    using namespace spatial::details::geometry;
+    typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
+    typedef euclidian_double
+      <kdtree_type::key_type,
+       bracket_cast_accessor<point2d, double> > geometry_type;
+    typedef details::Neighbor_iterator
+      <kdtree_type::rank_type, kdtree_type::key_type,
+       kdtree_type::node_type, kdtree_type::compare_type,
+       geometry_type> iterator_type;
+    {
+      // If tree has one node, it should always return that node.
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, ones, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 0);
+      BOOST_CHECK_CLOSE(iter.impl_.distance_(), std::sqrt(2.0), .000000000001);
+      BOOST_CHECK(iter.impl_.target_() == ones);
+    }
+    {
+      // Find the expected closest at on a left-unblanced tree
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(threes);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, ones, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == ones);
+      BOOST_CHECK_EQUAL(iter.distance(), .0);
+      BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
+    }
+    {
+      // Find the expected closest at on a right-unblanced tree
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(threes);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, fours, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == threes);
+      BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(2.0), .000000000001);
+      BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
+    }
   }
   {
     // Find the closest in a tree with a lot of positions, cross-check
@@ -4789,55 +4802,60 @@ BOOST_AUTO_TEST_CASE( test_neighbor_minimum )
 
 BOOST_AUTO_TEST_CASE( test_neighbor_maximum )
 {
-  typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
-  typedef euclidian_double
-    <kdtree_type::key_type, kdtree_type::compare_type> geometry_type;
-  typedef details::Neighbor_iterator
-    <kdtree_type::rank_type, kdtree_type::key_type,
-     kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type> iterator_type;
   {
-    // If tree has one node, it should always return that node.
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, ones, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 0);
-    BOOST_CHECK_CLOSE(iter.impl_.distance_(), std::sqrt(2.0), .000000000001);
-    BOOST_CHECK(iter.impl_.target_() == ones);
-  }
-  {
-    // Find the expected furthest on a left-unblanced tree
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(threes);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, ones, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == threes);
-    BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(8.0), .000000000001);
-    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
-  }
-  {
-    // Find the expected furthest on a right-unblanced tree
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(threes);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, fours, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == zeros);
-    BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(32.0), .000000000001);
-    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
+    typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
+    typedef euclidian_double
+      <kdtree_type::key_type, kdtree_type::compare_type> geometry_type;
+    typedef details::Neighbor_iterator
+      <kdtree_type::rank_type, kdtree_type::key_type,
+       kdtree_type::node_type, kdtree_type::compare_type,
+       geometry_type> iterator_type;
+    {
+      // If tree has one node, it should always return that node.
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, ones, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 0);
+      BOOST_CHECK_CLOSE(iter.impl_.distance_(), std::sqrt(2.0), .000000000001);
+      BOOST_CHECK(iter.impl_.target_() == ones);
+    }
+    {
+      // Find the expected furthest on a left-unblanced tree
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(threes);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, ones, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == threes);
+      BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(8.0), .000000000001);
+      BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
+    }
+    {
+      // Find the expected furthest on a right-unblanced tree
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(threes);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, fours, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == zeros);
+      BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(32.0), .000000000001);
+      BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
+    }
   }
   {
     // Find the furthest in a tree with a lot of positions, cross-check
@@ -4885,83 +4903,85 @@ BOOST_AUTO_TEST_CASE( test_neighbor_maximum )
 
 BOOST_AUTO_TEST_CASE( test_neighbor_increment )
 {
-  typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
-  typedef euclidian_square_double
-    <kdtree_type::key_type, kdtree_type::compare_type> geometry_type;
-  typedef details::Neighbor_iterator
-    <kdtree_type::rank_type, kdtree_type::key_type,
-     kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type> iterator_type;
   {
-    // If tree has one node, it should iterate to the end
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type(fix.kdtree.rank(), fix.kdtree.compare(), geometry, zeros,
-                    0, static_cast<kdtree_type::node_type*>
-                    (fix.kdtree.end().node->parent), 0.0);
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 0);
-    BOOST_CHECK(iter.impl_.target_() == zeros);
-    BOOST_CHECK_NO_THROW(++iter);
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 1);
-    BOOST_CHECK(iter.impl_.target_() == zeros);
-  }
-  {
-    // Find the expected nodes on a left-unblanced tree
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(threes);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, threes, 0,
-                             fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == threes);
-    ++iter;
-    BOOST_CHECK(*iter == twos);
-    BOOST_CHECK(iter.distance() == 2);
-    ++iter;
-    BOOST_CHECK(*iter == ones);
-    BOOST_CHECK(iter.distance() == 8);
-    ++iter;
-    BOOST_CHECK(*iter == zeros);
-    BOOST_CHECK(iter.distance() == 18);
-    ++iter;
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 1);
-    BOOST_CHECK(iter.impl_.target_() == threes);
-  }
-  {
-    // Find the expected furthest on a right-unblanced tree
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(threes);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, zeros, 0,
-                             fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == zeros);
-    ++iter;
-    BOOST_CHECK(*iter == ones);
-    BOOST_CHECK(iter.distance() == 2);
-    ++iter;
-    BOOST_CHECK(*iter == twos);
-    BOOST_CHECK(iter.distance() == 8);
-    ++iter;
-    BOOST_CHECK(*iter == threes);
-    BOOST_CHECK(iter.distance() == 18);
-    ++iter;
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 1);
-    BOOST_CHECK(iter.impl_.target_() == zeros);
+    typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
+    typedef euclidian_square_double
+      <kdtree_type::key_type, kdtree_type::compare_type> geometry_type;
+    typedef details::Neighbor_iterator
+      <kdtree_type::rank_type, kdtree_type::key_type,
+       kdtree_type::node_type, kdtree_type::compare_type,
+       geometry_type> iterator_type;
+    {
+      // If tree has one node, it should iterate to the end
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type(fix.kdtree.rank(), fix.kdtree.compare(), geometry, zeros,
+                      0, static_cast<kdtree_type::node_type*>
+                      (fix.kdtree.end().node->parent), 0.0);
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 0);
+      BOOST_CHECK(iter.impl_.target_() == zeros);
+      BOOST_CHECK_NO_THROW(++iter);
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 1);
+      BOOST_CHECK(iter.impl_.target_() == zeros);
+    }
+    {
+      // Find the expected nodes on a left-unblanced tree
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(threes);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, threes, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == threes);
+      ++iter;
+      BOOST_CHECK(*iter == twos);
+      BOOST_CHECK(iter.distance() == 2);
+      ++iter;
+      BOOST_CHECK(*iter == ones);
+      BOOST_CHECK(iter.distance() == 8);
+      ++iter;
+      BOOST_CHECK(*iter == zeros);
+      BOOST_CHECK(iter.distance() == 18);
+      ++iter;
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 1);
+      BOOST_CHECK(iter.impl_.target_() == threes);
+    }
+    {
+      // Find the expected furthest on a right-unblanced tree
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(threes);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, zeros, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == zeros);
+      ++iter;
+      BOOST_CHECK(*iter == ones);
+      BOOST_CHECK(iter.distance() == 2);
+      ++iter;
+      BOOST_CHECK(*iter == twos);
+      BOOST_CHECK(iter.distance() == 8);
+      ++iter;
+      BOOST_CHECK(*iter == threes);
+      BOOST_CHECK(iter.distance() == 18);
+      ++iter;
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 1);
+      BOOST_CHECK(iter.impl_.target_() == zeros);
+    }
   }
   {
     typedef Hundred_Kdtree_5D_fixture::kdtree_type kdtree_type;
@@ -5009,87 +5029,91 @@ BOOST_AUTO_TEST_CASE( test_neighbor_increment )
 
 BOOST_AUTO_TEST_CASE( test_neighbor_decrement )
 {
-  typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
-  typedef euclidian_square_double
-    <kdtree_type::key_type, kdtree_type::compare_type> geometry_type;
-  typedef details::Neighbor_iterator
-    <kdtree_type::rank_type, kdtree_type::key_type,
-     kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type> iterator_type;
   {
-    // If tree has one node, it should iterate to the end
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type(fix.kdtree.rank(), fix.kdtree.compare(), geometry, zeros,
-                    0, static_cast<kdtree_type::node_type*>
-                    (fix.kdtree.end().node->parent), 0.0);
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 0);
-    BOOST_CHECK(iter.impl_.target_() == zeros);
-    BOOST_CHECK_NO_THROW(--iter);
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 1);
-    BOOST_CHECK(iter.impl_.target_() == zeros);
-  }
-  {
-    // Find the expected nodes on a left-unblanced tree
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(threes);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, threes, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == zeros);
-    --iter;
-    BOOST_CHECK(*iter == ones);
-    BOOST_CHECK(iter.distance() == 8);
-    --iter;
-    BOOST_CHECK(*iter == twos);
-    BOOST_CHECK(iter.distance() == 2);
-    --iter;
-    BOOST_CHECK(*iter == threes);
-    BOOST_CHECK(iter.distance() == 0);
-    --iter;
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 1);
-    BOOST_CHECK(iter.impl_.target_() == threes);
-    --iter;
-    BOOST_CHECK(*iter == zeros);
-    BOOST_CHECK(iter.distance() == 18);
-  }
-  {
-    // Find the expected furthest on a right-unblanced tree
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(threes);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, threes, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == zeros);
-    --iter;
-    BOOST_CHECK(*iter == ones);
-    BOOST_CHECK(iter.distance() == 8);
-    --iter;
-    BOOST_CHECK(*iter == twos);
-    BOOST_CHECK(iter.distance() == 2);
-    --iter;
-    BOOST_CHECK(*iter == threes);
-    BOOST_CHECK(iter.distance() == 0);
-    --iter;
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 1);
-    BOOST_CHECK(iter.impl_.target_() == threes);
-    --iter;
-    BOOST_CHECK(*iter == zeros);
-    BOOST_CHECK(iter.distance() == 18);
+    typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
+    typedef euclidian_square_double
+      <kdtree_type::key_type, kdtree_type::compare_type> geometry_type;
+    typedef details::Neighbor_iterator
+      <kdtree_type::rank_type, kdtree_type::key_type,
+       kdtree_type::node_type, kdtree_type::compare_type,
+       geometry_type> iterator_type;
+    {
+      // If tree has one node, it should iterate to the end
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type(fix.kdtree.rank(), fix.kdtree.compare(), geometry, zeros,
+                      0, static_cast<kdtree_type::node_type*>
+                      (fix.kdtree.end().node->parent), 0.0);
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 0);
+      BOOST_CHECK(iter.impl_.target_() == zeros);
+      BOOST_CHECK_NO_THROW(--iter);
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 1);
+      BOOST_CHECK(iter.impl_.target_() == zeros);
+    }
+    {
+      // Find the expected nodes on a left-unblanced tree
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(threes);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, threes, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == zeros);
+      --iter;
+      BOOST_CHECK(*iter == ones);
+      BOOST_CHECK(iter.distance() == 8);
+      --iter;
+      BOOST_CHECK(*iter == twos);
+      BOOST_CHECK(iter.distance() == 2);
+      --iter;
+      BOOST_CHECK(*iter == threes);
+      BOOST_CHECK(iter.distance() == 0);
+      --iter;
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 1);
+      BOOST_CHECK(iter.impl_.target_() == threes);
+      --iter;
+      BOOST_CHECK(*iter == zeros);
+      BOOST_CHECK(iter.distance() == 18);
+    }
+    {
+      // Find the expected furthest on a right-unblanced tree
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(threes);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, threes, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == zeros);
+      --iter;
+      BOOST_CHECK(*iter == ones);
+      BOOST_CHECK(iter.distance() == 8);
+      --iter;
+      BOOST_CHECK(*iter == twos);
+      BOOST_CHECK(iter.distance() == 2);
+      --iter;
+      BOOST_CHECK(*iter == threes);
+      BOOST_CHECK(iter.distance() == 0);
+      --iter;
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 1);
+      BOOST_CHECK(iter.impl_.target_() == threes);
+      --iter;
+      BOOST_CHECK(*iter == zeros);
+      BOOST_CHECK(iter.distance() == 18);
+    }
   }
   {
     typedef Hundred_Kdtree_5D_fixture::kdtree_type kdtree_type;
@@ -5136,42 +5160,44 @@ BOOST_AUTO_TEST_CASE( test_neighbor_decrement )
 
 BOOST_AUTO_TEST_CASE( test_neighbor_lower_bound )
 {
-  // Return the smallest element in set that is greater or equal to limit.
-  // Test with high density and oob values.
-  typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
-  typedef manhattan
-    <kdtree_type::key_type, kdtree_type::compare_type, float> geometry_type;
-  typedef details::Neighbor_iterator
-    <kdtree_type::rank_type, kdtree_type::key_type,
-     kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type> iterator_type;
   {
-    // Check that there is no failure out of limits
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type it = iterator_type::lower_bound
-      (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-       zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
-    // Check that there is no failure in limits.
-    fix.kdtree.insert(ones);
-    it = iterator_type::lower_bound
-      (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-       zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
-    BOOST_CHECK(*it == ones);
-  }
-  {
-    // Check that there is no failure in limits
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type it = iterator_type::lower_bound
-      (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-       zeros, 0.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
-    BOOST_CHECK(*it == zeros);
+    // Return the smallest element in set that is greater or equal to limit.
+    // Test with high density and oob values.
+    typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
+    typedef manhattan
+      <kdtree_type::key_type, kdtree_type::compare_type, float> geometry_type;
+    typedef details::Neighbor_iterator
+      <kdtree_type::rank_type, kdtree_type::key_type,
+       kdtree_type::node_type, kdtree_type::compare_type,
+       geometry_type> iterator_type;
+    {
+      // Check that there is no failure out of limits
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type it = iterator_type::lower_bound
+        (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+         zeros, 1.f, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
+      // Check that there is no failure in limits.
+      fix.kdtree.insert(ones);
+      it = iterator_type::lower_bound
+        (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+         zeros, 1.f, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
+      BOOST_CHECK(*it == ones);
+    }
+    {
+      // Check that there is no failure in limits
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type it = iterator_type::lower_bound
+        (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+         zeros, 0.f, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
+      BOOST_CHECK(*it == zeros);
+    }
   }
   {
     // On random sets, check that the appropriate nodes are found.
@@ -5210,41 +5236,43 @@ BOOST_AUTO_TEST_CASE( test_neighbor_lower_bound )
 
 BOOST_AUTO_TEST_CASE( test_neighbor_upper_bound )
 {
-  // Return the smallest element in set that is strictly greater than key.
-  // Test with high density and oob values.
-  typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
-  typedef manhattan
-    <kdtree_type::key_type, kdtree_type::compare_type, float> geometry_type;
-  typedef details::Neighbor_iterator
-    <kdtree_type::rank_type, kdtree_type::key_type,
-     kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type> iterator_type;
   {
-    // Check that there is no failure out of limits
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type it = iterator_type::upper_bound
-      (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-       zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
-    // Check that there is no failure in limits.
-    fix.kdtree.insert(ones);
-    it = iterator_type::upper_bound
-      (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-       zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
-    BOOST_CHECK(*it == ones);
-  }
-  {
-    // Check that there is no failure in limits
-    Empty_Kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type it = iterator_type::upper_bound
-      (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-       zeros, 0.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
+    // Return the smallest element in set that is strictly greater than key.
+    // Test with high density and oob values.
+    typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
+    typedef manhattan
+      <kdtree_type::key_type, kdtree_type::compare_type, float> geometry_type;
+    typedef details::Neighbor_iterator
+      <kdtree_type::rank_type, kdtree_type::key_type,
+       kdtree_type::node_type, kdtree_type::compare_type,
+       geometry_type> iterator_type;
+    {
+      // Check that there is no failure out of limits
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type it = iterator_type::upper_bound
+        (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+         zeros, 1.f, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
+      // Check that there is no failure in limits.
+      fix.kdtree.insert(ones);
+      it = iterator_type::upper_bound
+        (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+         zeros, 1.f, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
+      BOOST_CHECK(*it == ones);
+    }
+    {
+      // Check that there is no failure in limits
+      Empty_Kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type it = iterator_type::upper_bound
+        (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+         zeros, 0.f, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
+    }
   }
   {
     // On random sets, check that the appropriate nodes are found.
@@ -7314,57 +7342,62 @@ BOOST_AUTO_TEST_CASE( test_relaxed_range_iterator_post_increment )
 
 BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_minimum )
 {
-  using namespace spatial::details::geometry;
-  typedef Empty_Relaxed_kdtree_2D_fixture::kdtree_type kdtree_type;
-  typedef euclidian_double
-    <kdtree_type::key_type,
-     bracket_cast_accessor<point2d, double> > geometry_type;
-  typedef details::Neighbor_iterator
-    <kdtree_type::rank_type, kdtree_type::key_type,
-     kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type> iterator_type;
   {
-    // If tree has one node, it should always return that node.
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, ones, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 0);
-    BOOST_CHECK_CLOSE(iter.impl_.distance_(), std::sqrt(2.0), .000000000001);
-    BOOST_CHECK(iter.impl_.target_() == ones);
-  }
-  {
-    // Find the expected closest at on a left-unblanced tree
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(threes);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, ones, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == ones);
-    BOOST_CHECK_EQUAL(iter.distance(), .0);
-    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
-  }
-  {
-    // Find the expected closest at on a right-unblanced tree
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(threes);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, fours, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == threes);
-    BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(2.0), .000000000001);
-    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
+    using namespace spatial::details::geometry;
+    typedef Empty_Relaxed_kdtree_2D_fixture::kdtree_type kdtree_type;
+    typedef euclidian_double
+      <kdtree_type::key_type,
+       bracket_cast_accessor<point2d, double> > geometry_type;
+    typedef details::Neighbor_iterator
+      <kdtree_type::rank_type, kdtree_type::key_type,
+       kdtree_type::node_type, kdtree_type::compare_type,
+       geometry_type> iterator_type;
+    {
+      // If tree has one node, it should always return that node.
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, ones, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 0);
+      BOOST_CHECK_CLOSE(iter.impl_.distance_(), std::sqrt(2.0), .000000000001);
+      BOOST_CHECK(iter.impl_.target_() == ones);
+    }
+    {
+      // Find the expected closest at on a left-unblanced tree
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(threes);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, ones, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == ones);
+      BOOST_CHECK_EQUAL(iter.distance(), .0);
+      BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
+    }
+    {
+      // Find the expected closest at on a right-unblanced tree
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(threes);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, fours, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == threes);
+      BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(2.0), .000000000001);
+      BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
+    }
   }
   {
     // Find the closest in a tree with a lot of positions, cross-check
@@ -7412,55 +7445,60 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_minimum )
 
 BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_maximum )
 {
-  typedef Empty_Relaxed_kdtree_2D_fixture::kdtree_type kdtree_type;
-  typedef euclidian_double
-    <kdtree_type::key_type, kdtree_type::compare_type> geometry_type;
-  typedef details::Neighbor_iterator
-    <kdtree_type::rank_type, kdtree_type::key_type,
-     kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type> iterator_type;
   {
-    // If tree has one node, it should always return that node.
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, ones, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 0);
-    BOOST_CHECK_CLOSE(iter.impl_.distance_(), std::sqrt(2.0), .000000000001);
-    BOOST_CHECK(iter.impl_.target_() == ones);
-  }
-  {
-    // Find the expected furthest on a left-unblanced tree
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(threes);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, ones, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == threes);
-    BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(8.0), .000000000001);
-    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
-  }
-  {
-    // Find the expected furthest on a right-unblanced tree
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(threes);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, fours, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == zeros);
-    BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(32.0), .000000000001);
-    BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
+    typedef Empty_Relaxed_kdtree_2D_fixture::kdtree_type kdtree_type;
+    typedef euclidian_double
+      <kdtree_type::key_type, kdtree_type::compare_type> geometry_type;
+    typedef details::Neighbor_iterator
+      <kdtree_type::rank_type, kdtree_type::key_type,
+       kdtree_type::node_type, kdtree_type::compare_type,
+       geometry_type> iterator_type;
+    {
+      // If tree has one node, it should always return that node.
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, ones, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 0);
+      BOOST_CHECK_CLOSE(iter.impl_.distance_(), std::sqrt(2.0), .000000000001);
+      BOOST_CHECK(iter.impl_.target_() == ones);
+    }
+    {
+      // Find the expected furthest on a left-unblanced tree
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(threes);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, ones, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == threes);
+      BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(8.0), .000000000001);
+      BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
+    }
+    {
+      // Find the expected furthest on a right-unblanced tree
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(threes);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, fours, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == zeros);
+      BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(32.0), .000000000001);
+      BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
+    }
   }
   {
     // Find the furthest in a tree with a lot of positions, cross-check
@@ -7508,83 +7546,85 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_maximum )
 
 BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_increment )
 {
-  typedef Empty_Relaxed_kdtree_2D_fixture::kdtree_type kdtree_type;
-  typedef euclidian_square_double
-    <kdtree_type::key_type, kdtree_type::compare_type> geometry_type;
-  typedef details::Neighbor_iterator
-    <kdtree_type::rank_type, kdtree_type::key_type,
-     kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type> iterator_type;
   {
-    // If tree has one node, it should iterate to the end
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type(fix.kdtree.rank(), fix.kdtree.compare(), geometry, zeros,
-                    0, static_cast<kdtree_type::node_type*>
-                    (fix.kdtree.end().node->parent), 0.0);
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 0);
-    BOOST_CHECK(iter.impl_.target_() == zeros);
-    BOOST_CHECK_NO_THROW(++iter);
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 1);
-    BOOST_CHECK(iter.impl_.target_() == zeros);
-  }
-  {
-    // Find the expected nodes on a left-unblanced tree
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(threes);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, threes, 0,
-                             fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == threes);
-    ++iter;
-    BOOST_CHECK(*iter == twos);
-    BOOST_CHECK(iter.distance() == 2);
-    ++iter;
-    BOOST_CHECK(*iter == ones);
-    BOOST_CHECK(iter.distance() == 8);
-    ++iter;
-    BOOST_CHECK(*iter == zeros);
-    BOOST_CHECK(iter.distance() == 18);
-    ++iter;
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 1);
-    BOOST_CHECK(iter.impl_.target_() == threes);
-  }
-  {
-    // Find the expected furthest on a right-unblanced tree
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(threes);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, zeros, 0,
-                             fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == zeros);
-    ++iter;
-    BOOST_CHECK(*iter == ones);
-    BOOST_CHECK(iter.distance() == 2);
-    ++iter;
-    BOOST_CHECK(*iter == twos);
-    BOOST_CHECK(iter.distance() == 8);
-    ++iter;
-    BOOST_CHECK(*iter == threes);
-    BOOST_CHECK(iter.distance() == 18);
-    ++iter;
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 1);
-    BOOST_CHECK(iter.impl_.target_() == zeros);
+    typedef Empty_Relaxed_kdtree_2D_fixture::kdtree_type kdtree_type;
+    typedef euclidian_square_double
+      <kdtree_type::key_type, kdtree_type::compare_type> geometry_type;
+    typedef details::Neighbor_iterator
+      <kdtree_type::rank_type, kdtree_type::key_type,
+       kdtree_type::node_type, kdtree_type::compare_type,
+       geometry_type> iterator_type;
+    {
+      // If tree has one node, it should iterate to the end
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type(fix.kdtree.rank(), fix.kdtree.compare(), geometry, zeros,
+                      0, static_cast<kdtree_type::node_type*>
+                      (fix.kdtree.end().node->parent), 0.0);
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 0);
+      BOOST_CHECK(iter.impl_.target_() == zeros);
+      BOOST_CHECK_NO_THROW(++iter);
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 1);
+      BOOST_CHECK(iter.impl_.target_() == zeros);
+    }
+    {
+      // Find the expected nodes on a left-unblanced tree
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(threes);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, threes, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == threes);
+      ++iter;
+      BOOST_CHECK(*iter == twos);
+      BOOST_CHECK(iter.distance() == 2);
+      ++iter;
+      BOOST_CHECK(*iter == ones);
+      BOOST_CHECK(iter.distance() == 8);
+      ++iter;
+      BOOST_CHECK(*iter == zeros);
+      BOOST_CHECK(iter.distance() == 18);
+      ++iter;
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 1);
+      BOOST_CHECK(iter.impl_.target_() == threes);
+    }
+    {
+      // Find the expected furthest on a right-unblanced tree
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(threes);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::minimum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, zeros, 0,
+                               fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == zeros);
+      ++iter;
+      BOOST_CHECK(*iter == ones);
+      BOOST_CHECK(iter.distance() == 2);
+      ++iter;
+      BOOST_CHECK(*iter == twos);
+      BOOST_CHECK(iter.distance() == 8);
+      ++iter;
+      BOOST_CHECK(*iter == threes);
+      BOOST_CHECK(iter.distance() == 18);
+      ++iter;
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 1);
+      BOOST_CHECK(iter.impl_.target_() == zeros);
+    }
   }
   {
     typedef Hundred_Relaxed_kdtree_5D_fixture::kdtree_type kdtree_type;
@@ -7632,87 +7672,89 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_increment )
 
 BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_decrement )
 {
-  typedef Empty_Relaxed_kdtree_2D_fixture::kdtree_type kdtree_type;
-  typedef euclidian_square_double
-    <kdtree_type::key_type, kdtree_type::compare_type> geometry_type;
-  typedef details::Neighbor_iterator
-    <kdtree_type::rank_type, kdtree_type::key_type,
-     kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type> iterator_type;
   {
-    // If tree has one node, it should iterate to the end
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type(fix.kdtree.rank(), fix.kdtree.compare(), geometry, zeros,
-                    0, static_cast<kdtree_type::node_type*>
-                    (fix.kdtree.end().node->parent), 0.0);
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 0);
-    BOOST_CHECK(iter.impl_.target_() == zeros);
-    BOOST_CHECK_NO_THROW(--iter);
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 1);
-    BOOST_CHECK(iter.impl_.target_() == zeros);
-  }
-  {
-    // Find the expected nodes on a left-unblanced tree
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(threes);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, threes, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == zeros);
-    --iter;
-    BOOST_CHECK(*iter == ones);
-    BOOST_CHECK(iter.distance() == 8);
-    --iter;
-    BOOST_CHECK(*iter == twos);
-    BOOST_CHECK(iter.distance() == 2);
-    --iter;
-    BOOST_CHECK(*iter == threes);
-    BOOST_CHECK(iter.distance() == 0);
-    --iter;
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 1);
-    BOOST_CHECK(iter.impl_.target_() == threes);
-    --iter;
-    BOOST_CHECK(*iter == zeros);
-    BOOST_CHECK(iter.distance() == 18);
-  }
-  {
-    // Find the expected furthest on a right-unblanced tree
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    fix.kdtree.insert(ones);
-    fix.kdtree.insert(twos);
-    fix.kdtree.insert(threes);
-    geometry_type geometry;
-    iterator_type iter =
-      iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
-                             geometry, threes, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(*iter == zeros);
-    --iter;
-    BOOST_CHECK(*iter == ones);
-    BOOST_CHECK(iter.distance() == 8);
-    --iter;
-    BOOST_CHECK(*iter == twos);
-    BOOST_CHECK(iter.distance() == 2);
-    --iter;
-    BOOST_CHECK(*iter == threes);
-    BOOST_CHECK(iter.distance() == 0);
-    --iter;
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
-    BOOST_CHECK(iter.impl_.node_dim_ == 1);
-    BOOST_CHECK(iter.impl_.target_() == threes);
-    --iter;
-    BOOST_CHECK(*iter == zeros);
-    BOOST_CHECK(iter.distance() == 18);
+    typedef Empty_Relaxed_kdtree_2D_fixture::kdtree_type kdtree_type;
+    typedef euclidian_square_double
+      <kdtree_type::key_type, kdtree_type::compare_type> geometry_type;
+    typedef details::Neighbor_iterator
+      <kdtree_type::rank_type, kdtree_type::key_type,
+       kdtree_type::node_type, kdtree_type::compare_type,
+       geometry_type> iterator_type;
+    {
+      // If tree has one node, it should iterate to the end
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type(fix.kdtree.rank(), fix.kdtree.compare(), geometry, zeros,
+                      0, static_cast<kdtree_type::node_type*>
+                      (fix.kdtree.end().node->parent), 0.0);
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 0);
+      BOOST_CHECK(iter.impl_.target_() == zeros);
+      BOOST_CHECK_NO_THROW(--iter);
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 1);
+      BOOST_CHECK(iter.impl_.target_() == zeros);
+    }
+    {
+      // Find the expected nodes on a left-unblanced tree
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(threes);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, threes, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == zeros);
+      --iter;
+      BOOST_CHECK(*iter == ones);
+      BOOST_CHECK(iter.distance() == 8);
+      --iter;
+      BOOST_CHECK(*iter == twos);
+      BOOST_CHECK(iter.distance() == 2);
+      --iter;
+      BOOST_CHECK(*iter == threes);
+      BOOST_CHECK(iter.distance() == 0);
+      --iter;
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 1);
+      BOOST_CHECK(iter.impl_.target_() == threes);
+      --iter;
+      BOOST_CHECK(*iter == zeros);
+      BOOST_CHECK(iter.distance() == 18);
+    }
+    {
+      // Find the expected furthest on a right-unblanced tree
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      fix.kdtree.insert(ones);
+      fix.kdtree.insert(twos);
+      fix.kdtree.insert(threes);
+      geometry_type geometry;
+      iterator_type iter =
+        iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.compare(),
+                               geometry, threes, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(*iter == zeros);
+      --iter;
+      BOOST_CHECK(*iter == ones);
+      BOOST_CHECK(iter.distance() == 8);
+      --iter;
+      BOOST_CHECK(*iter == twos);
+      BOOST_CHECK(iter.distance() == 2);
+      --iter;
+      BOOST_CHECK(*iter == threes);
+      BOOST_CHECK(iter.distance() == 0);
+      --iter;
+      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+      BOOST_CHECK(iter.impl_.node_dim_ == 1);
+      BOOST_CHECK(iter.impl_.target_() == threes);
+      --iter;
+      BOOST_CHECK(*iter == zeros);
+      BOOST_CHECK(iter.distance() == 18);
+    }
   }
   {
     typedef Hundred_Relaxed_kdtree_5D_fixture::kdtree_type kdtree_type;
@@ -7759,42 +7801,44 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_decrement )
 
 BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_lower_bound )
 {
-  // Return the smallest element in set that is greater or equal to limit.
-  // Test with high density and oob values.
-  typedef Empty_Relaxed_kdtree_2D_fixture::kdtree_type kdtree_type;
-  typedef manhattan
-    <kdtree_type::key_type, kdtree_type::compare_type, float> geometry_type;
-  typedef details::Neighbor_iterator
-    <kdtree_type::rank_type, kdtree_type::key_type,
-     kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type> iterator_type;
   {
-    // Check that there is no failure out of limits
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type it = iterator_type::lower_bound
-      (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-       zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
-    // Check that there is no failure in limits.
-    fix.kdtree.insert(ones);
-    it = iterator_type::lower_bound
-      (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-       zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
-    BOOST_CHECK(*it == ones);
-  }
-  {
-    // Check that there is no failure in limits
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type it = iterator_type::lower_bound
-      (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-       zeros, 0.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
-    BOOST_CHECK(*it == zeros);
+    // Return the smallest element in set that is greater or equal to limit.
+    // Test with high density and oob values.
+    typedef Empty_Relaxed_kdtree_2D_fixture::kdtree_type kdtree_type;
+    typedef manhattan
+      <kdtree_type::key_type, kdtree_type::compare_type, float> geometry_type;
+    typedef details::Neighbor_iterator
+      <kdtree_type::rank_type, kdtree_type::key_type,
+       kdtree_type::node_type, kdtree_type::compare_type,
+       geometry_type> iterator_type;
+    {
+      // Check that there is no failure out of limits
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type it = iterator_type::lower_bound
+        (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+         zeros, 1.f, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
+      // Check that there is no failure in limits.
+      fix.kdtree.insert(ones);
+      it = iterator_type::lower_bound
+        (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+         zeros, 1.f, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
+      BOOST_CHECK(*it == ones);
+    }
+    {
+      // Check that there is no failure in limits
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type it = iterator_type::lower_bound
+        (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+         zeros, 0.f, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
+      BOOST_CHECK(*it == zeros);
+    }
   }
   {
     // On random sets, check that the appropriate nodes are found.
@@ -7833,41 +7877,43 @@ BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_lower_bound )
 
 BOOST_AUTO_TEST_CASE( test_relaxed_neighbor_upper_bound )
 {
-  // Return the smallest element in set that is strictly greater than key.
-  // Test with high density and oob values.
-  typedef Empty_Relaxed_kdtree_2D_fixture::kdtree_type kdtree_type;
-  typedef manhattan
-    <kdtree_type::key_type, kdtree_type::compare_type, float> geometry_type;
-  typedef details::Neighbor_iterator
-    <kdtree_type::rank_type, kdtree_type::key_type,
-     kdtree_type::node_type, kdtree_type::compare_type,
-     geometry_type> iterator_type;
   {
-    // Check that there is no failure out of limits
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type it = iterator_type::upper_bound
-      (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-       zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
-    // Check that there is no failure in limits.
-    fix.kdtree.insert(ones);
-    it = iterator_type::upper_bound
-      (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-       zeros, 1.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
-    BOOST_CHECK(*it == ones);
-  }
-  {
-    // Check that there is no failure in limits
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    fix.kdtree.insert(zeros);
-    geometry_type geometry;
-    iterator_type it = iterator_type::upper_bound
-      (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
-       zeros, 0.f, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
+    // Return the smallest element in set that is strictly greater than key.
+    // Test with high density and oob values.
+    typedef Empty_Relaxed_kdtree_2D_fixture::kdtree_type kdtree_type;
+    typedef manhattan
+      <kdtree_type::key_type, kdtree_type::compare_type, float> geometry_type;
+    typedef details::Neighbor_iterator
+      <kdtree_type::rank_type, kdtree_type::key_type,
+       kdtree_type::node_type, kdtree_type::compare_type,
+       geometry_type> iterator_type;
+    {
+      // Check that there is no failure out of limits
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type it = iterator_type::upper_bound
+        (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+         zeros, 1.f, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
+      // Check that there is no failure in limits.
+      fix.kdtree.insert(ones);
+      it = iterator_type::upper_bound
+        (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+         zeros, 1.f, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(it.impl_.node_ != fix.kdtree.end().node);
+      BOOST_CHECK(*it == ones);
+    }
+    {
+      // Check that there is no failure in limits
+      Empty_Relaxed_kdtree_2D_fixture fix;
+      fix.kdtree.insert(zeros);
+      geometry_type geometry;
+      iterator_type it = iterator_type::upper_bound
+        (fix.kdtree.rank(), fix.kdtree.compare(), geometry,
+         zeros, 0.f, 0, fix.kdtree.end().node->parent);
+      BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
+    }
   }
   {
     // On random sets, check that the appropriate nodes are found.

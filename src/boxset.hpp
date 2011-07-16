@@ -2,7 +2,7 @@
 
 /**
  *  @file   boxset.hpp
- *  @brief  
+ *  @brief
  *
  *  - 2009-02-26 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
  *    Creation of the file.
@@ -41,17 +41,17 @@ namespace spatial
 {
 
   template<dimension_type Rank, typename Key,
-	   typename Compare = bracket_less<Key>,
-	   typename BalancingPolicy = loose_balancing,
-	   typename Alloc = std::allocator<Key> >
+           typename Compare = bracket_less<Key>,
+           typename BalancingPolicy = loose_balancing,
+           typename Alloc = std::allocator<Key> >
   struct boxset
     : details::Relaxed_kdtree<details::Static_rank<Rank << 1>, Key, Compare,
-			      BalancingPolicy, Alloc, true>
+                              BalancingPolicy, Alloc, true>
   {
   private:
     typedef details::Relaxed_kdtree
     <details::Static_rank<Rank << 1>, Key, Compare,
-		          BalancingPolicy, Alloc, true>           base_type;
+                          BalancingPolicy, Alloc, true>           base_type;
     typedef boxset<Rank, Key, Compare, BalancingPolicy, Alloc>    Self;
 
   public:
@@ -66,7 +66,7 @@ namespace spatial
     { }
 
     boxset(const Compare& compare, const BalancingPolicy& balancing,
-	     const Alloc& alloc)
+             const Alloc& alloc)
       : base_type(details::Static_rank<Rank << 1>(), compare, balancing, alloc)
     { }
 
@@ -84,12 +84,12 @@ namespace spatial
    *  rank of the @ref boxset can be determined at run time and does not need
    *  to be fixed at compile time. Using:
    *  @code
-   *    struct box { \/* ... *\/ };
+   *    struct box { ... };
    *    boxset<0, box> my_set;
    *  @endcode
    *  ...is therefore completely equivalent to:
    *  @code
-   *    struct box { \/* ... *\/ };
+   *    struct box { ... };
    *    runtime_boxset<box> my_set;
    *  @endcode
    *
@@ -97,16 +97,16 @@ namespace spatial
    *  container.
    */
   template<typename Key,
-	   typename Compare,
-	   typename BalancingPolicy,
-	   typename Alloc>
+           typename Compare,
+           typename BalancingPolicy,
+           typename Alloc>
   struct boxset<0, Key, Compare, BalancingPolicy, Alloc>
     : details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
-			      BalancingPolicy, Alloc, true>
+                              BalancingPolicy, Alloc, true>
   {
   private:
     typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
-				    BalancingPolicy, Alloc, true> base_type;
+                                    BalancingPolicy, Alloc, true> base_type;
     typedef boxset<0, Key, Compare, BalancingPolicy, Alloc>     Self;
 
   public:
@@ -121,12 +121,12 @@ namespace spatial
     { except::check_rank_argument(dim); }
 
     boxset(dimension_type dim, const Compare& compare,
-	   const BalancingPolicy& policy)
+           const BalancingPolicy& policy)
       : base_type(details::Dynamic_rank(dim << 1), compare, policy)
     { except::check_rank_argument(dim); }
 
     boxset(dimension_type dim, const Compare& compare,
-	   const BalancingPolicy& policy, const Alloc& alloc)
+           const BalancingPolicy& policy, const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim << 1), compare, policy, alloc)
     { except::check_rank_argument(dim); }
 
@@ -157,16 +157,16 @@ namespace spatial
    *  be determined at run time and does not need to be fixed at compile time.
    */
   template<typename Key,
-	   typename Compare = bracket_less<Key>,
-	   typename BalancingPolicy = loose_balancing,
-	   typename Alloc = std::allocator<Key> >
+           typename Compare = bracket_less<Key>,
+           typename BalancingPolicy = loose_balancing,
+           typename Alloc = std::allocator<Key> >
   struct runtime_boxset
     : details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
-			      BalancingPolicy, Alloc, true>
+                              BalancingPolicy, Alloc, true>
   {
   private:
     typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
-				    BalancingPolicy, Alloc, true>  base_type;
+                                    BalancingPolicy, Alloc, true>  base_type;
     typedef runtime_boxset<Key, Compare, BalancingPolicy, Alloc> Self;
 
   public:
@@ -181,12 +181,12 @@ namespace spatial
     { except::check_rank_argument(dim); }
 
     runtime_boxset(dimension_type dim, const Compare& compare,
-		     const BalancingPolicy& policy)
+                     const BalancingPolicy& policy)
       : base_type(details::Dynamic_rank(dim << 1), compare, policy)
     { except::check_rank_argument(dim); }
 
     runtime_boxset(dimension_type dim, const Compare& compare,
-		     const BalancingPolicy& policy, const Alloc& alloc)
+                     const BalancingPolicy& policy, const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim << 1), compare, policy, alloc)
     { except::check_rank_argument(dim); }
 
@@ -199,7 +199,7 @@ namespace spatial
     { }
 
     runtime_boxset(const Compare& compare, const BalancingPolicy& policy,
-		     const Alloc& alloc)
+                     const Alloc& alloc)
       : base_type(details::Dynamic_rank(2), compare, policy, alloc)
     { }
 

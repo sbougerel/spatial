@@ -2,7 +2,7 @@
 
 /**
  *  @file   pointset.hpp
- *  @brief  
+ *  @brief
  *
  *  - 2009-02-26 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
  *    Creation of the file.
@@ -41,16 +41,16 @@ namespace spatial
 {
 
   template<dimension_type Rank, typename Key,
-	   typename Compare = bracket_less<Key>,
-	   typename BalancingPolicy = loose_balancing,
-	   typename Alloc = std::allocator<Key> >
+           typename Compare = bracket_less<Key>,
+           typename BalancingPolicy = loose_balancing,
+           typename Alloc = std::allocator<Key> >
   struct pointset
     : details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Compare,
-			      BalancingPolicy, Alloc, true>
+                              BalancingPolicy, Alloc, true>
   {
   private:
     typedef details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Compare,
-				    BalancingPolicy, Alloc, true>   base_type;
+                                    BalancingPolicy, Alloc, true>   base_type;
     typedef pointset<Rank, Key, Compare, BalancingPolicy, Alloc>    Self;
 
   public:
@@ -65,7 +65,7 @@ namespace spatial
     { }
 
     pointset(const Compare& compare, const BalancingPolicy& balancing,
-	     const Alloc& alloc)
+             const Alloc& alloc)
       : base_type(details::Static_rank<Rank>(), compare, balancing, alloc)
     { }
 
@@ -83,12 +83,12 @@ namespace spatial
    *  the @ref pointset can be determined at run time and does not need to be
    *  fixed at compile time. Using:
    *  @code
-   *    struct point { \/* ... *\/ };
+   *    struct point { ... };
    *    pointset<0, point> my_set;
    *  @endcode
    *  ...is therefore completely equivalent to:
    *  @code
-   *    struct point { \/* ... *\/ };
+   *    struct point { ... };
    *    runtime_pointset<point> my_set;
    *  @endcode
    *
@@ -96,14 +96,14 @@ namespace spatial
    *  container.
    */
   template<typename Key, typename Compare, typename BalancingPolicy,
-	   typename Alloc>
+           typename Alloc>
   struct pointset<0, Key, Compare, BalancingPolicy, Alloc>
     : details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
-			      BalancingPolicy, Alloc, true>
+                              BalancingPolicy, Alloc, true>
   {
   private:
     typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
-				    BalancingPolicy, Alloc, true> base_type;
+                                    BalancingPolicy, Alloc, true> base_type;
     typedef pointset<0, Key, Compare, BalancingPolicy, Alloc>     Self;
 
   public:
@@ -118,12 +118,12 @@ namespace spatial
     { except::check_rank_argument(dim); }
 
     pointset(dimension_type dim, const Compare& compare,
-		     const BalancingPolicy& policy)
+                     const BalancingPolicy& policy)
       : base_type(details::Dynamic_rank(dim), compare, policy)
     { except::check_rank_argument(dim); }
 
     pointset(dimension_type dim, const Compare& compare,
-		     const BalancingPolicy& policy, const Alloc& alloc)
+                     const BalancingPolicy& policy, const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim), compare, policy, alloc)
     { except::check_rank_argument(dim); }
 
@@ -136,7 +136,7 @@ namespace spatial
     { }
 
     pointset(const Compare& compare, const BalancingPolicy& policy,
-		     const Alloc& alloc)
+                     const Alloc& alloc)
       : base_type(details::Dynamic_rank(), compare, policy, alloc)
     { }
 
@@ -154,16 +154,16 @@ namespace spatial
    *  be determined at run time and does not need to be fixed at compile time.
    */
   template<typename Key,
-	   typename Compare = bracket_less<Key>,
-	   typename BalancingPolicy = loose_balancing,
-	   typename Alloc = std::allocator<Key> >
+           typename Compare = bracket_less<Key>,
+           typename BalancingPolicy = loose_balancing,
+           typename Alloc = std::allocator<Key> >
   struct runtime_pointset
     : details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
-			      BalancingPolicy, Alloc, true>
+                              BalancingPolicy, Alloc, true>
   {
   private:
     typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
-				    BalancingPolicy, Alloc, true>  base_type;
+                                    BalancingPolicy, Alloc, true>  base_type;
     typedef runtime_pointset<Key, Compare, BalancingPolicy, Alloc> Self;
 
   public:
@@ -178,12 +178,12 @@ namespace spatial
     { except::check_rank_argument(dim); }
 
     runtime_pointset(dimension_type dim, const Compare& compare,
-		     const BalancingPolicy& policy)
+                     const BalancingPolicy& policy)
       : base_type(details::Dynamic_rank(dim), compare, policy)
     { except::check_rank_argument(dim); }
 
     runtime_pointset(dimension_type dim, const Compare& compare,
-		     const BalancingPolicy& policy, const Alloc& alloc)
+                     const BalancingPolicy& policy, const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim), compare, policy, alloc)
     { except::check_rank_argument(dim); }
 
@@ -196,7 +196,7 @@ namespace spatial
     { }
 
     runtime_pointset(const Compare& compare, const BalancingPolicy& policy,
-		     const Alloc& alloc)
+                     const Alloc& alloc)
       : base_type(details::Dynamic_rank(), compare, policy, alloc)
     { }
 
