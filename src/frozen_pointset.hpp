@@ -106,11 +106,11 @@ namespace spatial
 
     explicit frozen_pointset(dimension_type dim)
       : base_type(details::Dynamic_rank(dim))
-    { }
+    { except::check_rank_argument(dim); }
 
     frozen_pointset(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim), compare)
-    { }
+    { except::check_rank_argument(dim); }
 
     explicit frozen_pointset(const Compare& compare)
       : base_type(compare)
@@ -119,7 +119,7 @@ namespace spatial
     frozen_pointset(dimension_type dim, const Compare& compare,
 		    const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim), compare, alloc)
-    { }
+    { except::check_rank_argument(dim); }
 
     frozen_pointset(const Compare& compare, const Alloc& alloc)
       : base_type(details::Dynamic_rank(), compare, alloc)
@@ -157,11 +157,11 @@ namespace spatial
 
     explicit runtime_frozen_pointset(dimension_type dim)
       : base_type(details::Dynamic_rank(dim))
-    { }
+    { except::check_rank_argument(dim); }
 
     runtime_frozen_pointset(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim), compare)
-    { }
+    { except::check_rank_argument(dim); }
 
     explicit runtime_frozen_pointset(const Compare& compare)
       : base_type(compare)
@@ -170,7 +170,7 @@ namespace spatial
     runtime_frozen_pointset(dimension_type dim, const Compare& compare,
 			    const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim), compare, alloc)
-    { }
+    { except::check_rank_argument(dim); }
 
     runtime_frozen_pointset(const Compare& compare, const Alloc& alloc)
       : base_type(details::Dynamic_rank(), compare, alloc)

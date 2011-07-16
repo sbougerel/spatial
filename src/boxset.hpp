@@ -114,21 +114,21 @@ namespace spatial
 
     explicit boxset(dimension_type dim)
       : base_type(details::Dynamic_rank(dim << 1))
-    { }
+    { except::check_rank_argument(dim); }
 
     boxset(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim << 1), compare)
-    { }
+    { except::check_rank_argument(dim); }
 
     boxset(dimension_type dim, const Compare& compare,
-		     const BalancingPolicy& policy)
+	   const BalancingPolicy& policy)
       : base_type(details::Dynamic_rank(dim << 1), compare, policy)
-    { }
+    { except::check_rank_argument(dim); }
 
     boxset(dimension_type dim, const Compare& compare,
-		     const BalancingPolicy& policy, const Alloc& alloc)
+	   const BalancingPolicy& policy, const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim << 1), compare, policy, alloc)
-    { }
+    { except::check_rank_argument(dim); }
 
     explicit boxset(const Compare& compare)
       : base_type(details::Dynamic_rank(2), compare)
@@ -139,7 +139,7 @@ namespace spatial
     { }
 
     boxset(const Compare& compare, const BalancingPolicy& policy,
-		     const Alloc& alloc)
+           const Alloc& alloc)
       : base_type(details::Dynamic_rank(2), compare, policy, alloc)
     { }
 
@@ -174,21 +174,21 @@ namespace spatial
 
     explicit runtime_boxset(dimension_type dim)
       : base_type(details::Dynamic_rank(dim << 1))
-    { }
+    { except::check_rank_argument(dim); }
 
     runtime_boxset(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim << 1), compare)
-    { }
+    { except::check_rank_argument(dim); }
 
     runtime_boxset(dimension_type dim, const Compare& compare,
 		     const BalancingPolicy& policy)
       : base_type(details::Dynamic_rank(dim << 1), compare, policy)
-    { }
+    { except::check_rank_argument(dim); }
 
     runtime_boxset(dimension_type dim, const Compare& compare,
 		     const BalancingPolicy& policy, const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim << 1), compare, policy, alloc)
-    { }
+    { except::check_rank_argument(dim); }
 
     explicit runtime_boxset(const Compare& compare)
       : base_type(details::Dynamic_rank(2), compare)
