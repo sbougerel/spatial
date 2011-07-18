@@ -111,7 +111,7 @@ namespace spatial
     (dimension_type rank, dimension_type dimension)
     {
       if (dimension >= rank)
-	throw invalid_dimension_argument("dimension is out of range");
+        throw invalid_dimension_argument("dimension is out of range");
     }
 
     /**
@@ -124,8 +124,8 @@ namespace spatial
     inline void check_node_argument(Node* node)
     {
       if (node == 0 || node->left == node)
-	throw invalid_node_argument
-	  ("node points to null or header node");
+        throw invalid_node_argument
+          ("node points to null or header node");
     }
 
     /**
@@ -137,8 +137,8 @@ namespace spatial
     inline void check_node_iterator_argument(Node* node)
     {
       if (node == 0 || node->left == node)
-	throw invalid_iterator_argument
-	  ("iterator is points to null or header node");
+        throw invalid_iterator_argument
+          ("iterator is points to null or header node");
     }
 
     /**
@@ -154,8 +154,8 @@ namespace spatial
     inline void check_iterator_argument(Ptr1 ptr1, Ptr2 ptr2)
     {
       if (ptr1 != ptr2)
-	throw invalid_iterator_argument
-	  ("iterator is invalid or does not belong to the container used");
+        throw invalid_iterator_argument
+          ("iterator is invalid or does not belong to the container used");
     }
 
     /**
@@ -168,7 +168,7 @@ namespace spatial
     inline void check_empty_container_argument(const Tp& cont)
     {
       if (cont.empty())
-	throw invalid_empty_container_argument("container is empty");
+        throw invalid_empty_container_argument("container is empty");
     }
 
     /**
@@ -190,9 +190,9 @@ namespace spatial
      const typename container_traits<Tp>::key_type& upper)
     {
       for (dimension_type dim = 0; dim < container.dimension(); ++dim)
-	if (!container.compare()(dim, lower, upper))
-	  throw invalid_range_bounds
-	    ("lower is greater or equal to upper over one dimension at least");
+        if (!container.compare()(dim, lower, upper))
+          throw invalid_range_bounds
+            ("lower is greater or equal to upper over one dimension at least");
     }
 
     /**
@@ -210,7 +210,7 @@ namespace spatial
      const typename container_traits<Tp>::key_type& lower,
      const typename container_traits<Tp>::key_type& upper)
     {
-	return check_open_range_bounds(container, lower, upper);
+        return check_open_range_bounds(container, lower, upper);
     }
 
     /**
@@ -229,9 +229,9 @@ namespace spatial
      const typename container_traits<Tp>::key_type& upper)
     {
       for (dimension_type dim = 0; dim < container.dimension(); ++dim)
-	if (container.compare()(dim, upper, lower))
-	  throw invalid_range_bounds
-	    ("upper is stricly less than lower over one dimension at least");
+        if (container.compare()(dim, upper, lower))
+          throw invalid_range_bounds
+            ("upper is stricly less than lower over one dimension at least");
     }
 
     //@{
@@ -252,10 +252,11 @@ namespace spatial
     {
       dimension_type rank = container.dimension() >> 1;
       for (dimension_type i = 0; i < rank; ++i)
-	if (container.compare()(i + rank, box, i, box))
-	  throw invalid_box_argument
-	    ("box does not follow specified layout or coordinates are invalid");
+        if (container.compare()(i + rank, box, i, box))
+          throw invalid_box_argument
+            ("box does not follow specified layout or coordinates are invalid");
     }
+
     template <typename Tp>
     inline void check_box_argument
     (const Tp& container,
@@ -264,10 +265,11 @@ namespace spatial
     {
       dimension_type rank = container.dimension() >> 1;
       for (dimension_type i = 0; i < rank; ++i)
-	if (container.compare()(i, box, i + rank, box))
-	  throw invalid_box_argument
-	    ("box does not follow specified layout or coordinates are invalid");
+        if (container.compare()(i, box, i + rank, box))
+          throw invalid_box_argument
+            ("box does not follow specified layout or coordinates are invalid");
     }
+
     template <typename Tp>
     inline void check_box_argument
     (const Tp& container,
@@ -275,10 +277,11 @@ namespace spatial
      lhlh_layout_tag)
     {
       for (dimension_type i = 0; i < container.dimension(); i += 2)
-	if (container.compare()(i + 1, box, i, box))
-	  throw invalid_box_argument
-	    ("box does not follow specified layout or coordinates are invalid");
+        if (container.compare()(i + 1, box, i, box))
+          throw invalid_box_argument
+            ("box does not follow specified layout or coordinates are invalid");
     }
+
     template <typename Tp>
     inline void check_box_argument
     (const Tp& container,
@@ -286,9 +289,9 @@ namespace spatial
      hlhl_layout_tag)
     {
       for (dimension_type i = 0; i < container.dimension(); i += 2)
-	if (container.compare()(i, box, i + 1, box))
-	  throw invalid_box_argument
-	    ("box does not follow specified layout or coordinates are invalid");
+        if (container.compare()(i, box, i + 1, box))
+          throw invalid_box_argument
+            ("box does not follow specified layout or coordinates are invalid");
     }
     //@}
 

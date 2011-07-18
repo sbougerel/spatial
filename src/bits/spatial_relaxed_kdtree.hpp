@@ -169,7 +169,7 @@ namespace spatial
       clone_node(Const_Base_ptr node)
       {
         Const_Link_type origin_node = static_cast<Const_Link_type>(node);
-        Link_type new_node = create_node(origin_node->key_field);
+        Link_type new_node = create_node(origin_node->value);
         new_node->weight = origin_node->weight;
         return new_node;
       }
@@ -319,7 +319,7 @@ namespace spatial
       size() const
       {
         return Base::empty() ? 0
-          : static_cast<const Weighted_node*>(Base::get_root())->weight;
+          : static_cast<Const_Link_type>(Base::get_root())->weight;
       }
 
       /**

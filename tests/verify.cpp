@@ -379,23 +379,23 @@ struct Five_Kdtree_node_fixture
     node_root.parent = &header;
     node_root.left = &node_left;
     node_root.right = &node_right;
-    node_root.key_field = twos;
+    node_root.value = twos;
     node_left.parent = &node_root;
     node_left.left = &node_left_left;
     node_left.right = &node_left_right;
-    node_left.key_field = ones;
+    node_left.value = ones;
     node_right.parent = &node_root;
     node_right.left = 0;
     node_right.right = 0;
-    node_right.key_field = threes;
+    node_right.value = threes;
     node_left_right.parent = &node_left;
     node_left_right.left = 0;
     node_left_right.right = 0;
-    node_left_right.key_field = ones;
+    node_left_right.value = ones;
     node_left_left.parent = &node_left;
     node_left_left.left = 0;
     node_left_left.right = 0;
-    node_left_left.key_field = zeros;
+    node_left_left.value = zeros;
   }
 };
 
@@ -425,27 +425,27 @@ struct Five_Relaxed_kdtree_node_fixture
     node_root.left = &node_left;
     node_root.right = &node_right;
     node_root.weight = 5;
-    node_root.key_field = twos;
+    node_root.value = twos;
     node_left.parent = &node_root;
     node_left.left = &node_left_left;
     node_left.right = &node_left_right;
     node_left.weight = 3;
-    node_left.key_field = ones;
+    node_left.value = ones;
     node_right.parent = &node_root;
     node_right.left = 0;
     node_right.right = 0;
     node_right.weight = 1;
-    node_right.key_field = threes;
+    node_right.value = threes;
     node_left_right.parent = &node_left;
     node_left_right.left = 0;
     node_left_right.right = 0;
     node_left_right.weight = 1;
-    node_left_right.key_field = ones;
+    node_left_right.value = ones;
     node_left_left.parent = &node_left;
     node_left_left.left = 0;
     node_left_left.right = 0;
     node_left_left.weight = 1;
-    node_left_left.key_field = zeros;
+    node_left_left.value = zeros;
   }
 };
 
@@ -716,8 +716,8 @@ BOOST_AUTO_TEST_CASE( test_swap_kdtree_node )
   Kdtree_node<point2d>* left_left = &fix.node_left_left;
   Kdtree_node<point2d>* right = &fix.node_right;
   swap(*left_left, *right);
-  BOOST_CHECK(fix.node_left_left.key_field == zeros);
-  BOOST_CHECK(fix.node_right.key_field == threes);
+  BOOST_CHECK(fix.node_left_left.value == zeros);
+  BOOST_CHECK(fix.node_right.value == threes);
 }
 
 BOOST_AUTO_TEST_CASE( test_swap_relaxed_kdtree_node )
@@ -728,8 +728,8 @@ BOOST_AUTO_TEST_CASE( test_swap_relaxed_kdtree_node )
   swap(*left, *right);
   BOOST_CHECK_EQUAL(fix.node_left.weight, 1);
   BOOST_CHECK_EQUAL(fix.node_right.weight, 3);
-  BOOST_CHECK(fix.node_left.key_field == ones);
-  BOOST_CHECK(fix.node_right.key_field == threes);
+  BOOST_CHECK(fix.node_left.value == ones);
+  BOOST_CHECK(fix.node_right.value == threes);
 }
 
 BOOST_AUTO_TEST_CASE( test_Node_iterator )
@@ -744,7 +744,7 @@ BOOST_AUTO_TEST_CASE( test_Node_iterator )
     test_node.parent = &test_node;
     test_node.left = 0;
     test_node.right = 0;
-    test_node.key_field = test_object;
+    test_node.value = test_object;
     iterator iter(&test_node);
     BOOST_CHECK(*iter == test_object);
     BOOST_CHECK_EQUAL(iter->first, 1);
@@ -761,7 +761,7 @@ BOOST_AUTO_TEST_CASE( test_Node_iterator )
     test_node.parent = &test_node;
     test_node.left = 0;
     test_node.right = 0;
-    test_node.key_field = test_object;
+    test_node.value = test_object;
     iterator iter(&test_node);
     BOOST_CHECK(*iter == test_object);
     BOOST_CHECK_EQUAL(iter->first, 1);
@@ -802,7 +802,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Node_iterator )
     test_node.parent = &test_node;
     test_node.left = 0;
     test_node.right = 0;
-    test_node.key_field = test_object;
+    test_node.value = test_object;
     iterator iter(&test_node);
     BOOST_CHECK(*iter == test_object);
     BOOST_CHECK_EQUAL(iter->first, 1);
@@ -816,7 +816,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Node_iterator )
     test_node.parent = &test_node;
     test_node.left = 0;
     test_node.right = 0;
-    test_node.key_field = test_object;
+    test_node.value = test_object;
     iterator iter(&test_node);
     BOOST_CHECK(*iter == test_object);
     BOOST_CHECK_EQUAL(iter->first, 1);
@@ -854,7 +854,7 @@ BOOST_AUTO_TEST_CASE( test_Preorder_node_iterator )
     test_node.parent = &test_node;
     test_node.left = 0;
     test_node.right = 0;
-    test_node.key_field = test_object;
+    test_node.value = test_object;
     iterator iter(&test_node);
     BOOST_CHECK(*iter == test_object);
     BOOST_CHECK_EQUAL(iter->first, 1);
@@ -2993,7 +2993,7 @@ BOOST_AUTO_TEST_CASE( test_range_iterator_deference )
   node.parent = 0;
   node.right = 0;
   node.left = 0;
-  node.key_field = pair_type(1, 2);
+  node.value = pair_type(1, 2);
   range_bounds<pair_type, pair_less> bounds;
   range_iterator_true_type i(details::Dynamic_rank(2), bounds, 0, &node);
   BOOST_CHECK_EQUAL((*i).first, 1);
@@ -4688,13 +4688,13 @@ BOOST_AUTO_TEST_CASE( test_neighbor_deference )
     citer;
   Kdtree_node<point2d> node;
   iter.impl_.node_ = &node;
-  node.key_field = ones;
+  node.value = ones;
   BOOST_CHECK(*iter == ones);
   citer.impl_.node_ = &node;
-  node.key_field = twos;
+  node.value = twos;
   BOOST_CHECK(*citer == twos);
   *iter = threes;
-  BOOST_CHECK(node.key_field == threes);
+  BOOST_CHECK(node.value == threes);
 }
 
 BOOST_AUTO_TEST_CASE( test_neighbor_minimum )
@@ -6124,37 +6124,37 @@ struct Seven_Relaxed_kdtree_node_fixture
     node_root.left = &node_left;
     node_root.right = &node_right;
     node_root.weight = 7;
-    node_root.key_field = twos;
+    node_root.value = twos;
     node_left.parent = &node_root;
     node_left.left = &node_left_left;
     node_left.right = &node_left_right;
     node_left.weight = 3;
-    node_left.key_field = ones;
+    node_left.value = ones;
     node_right.parent = &node_root;
     node_right.left = &node_right_left;
     node_right.right = 0;
     node_right.weight = 3;
-    node_right.key_field = threes;
+    node_right.value = threes;
     node_right_left.parent = &node_right;
     node_right_left.left = 0;
     node_right_left.right = &node_right_left_right;
     node_right_left.weight = 2;
-    node_right_left.key_field = threes;
+    node_right_left.value = threes;
     node_right_left_right.parent = &node_right_left;
     node_right_left_right.left = 0;
     node_right_left_right.right = 0;
     node_right_left_right.weight = 1;
-    node_right_left_right.key_field = threes;
+    node_right_left_right.value = threes;
     node_left_right.parent = &node_left;
     node_left_right.left = 0;
     node_left_right.right = 0;
     node_left_right.weight = 1;
-    node_left_right.key_field = ones;
+    node_left_right.value = ones;
     node_left_left.parent = &node_left;
     node_left_left.left = 0;
     node_left_left.right = 0;
     node_left_left.weight = 1;
-    node_left_left.key_field = zeros;
+    node_left_left.value = zeros;
   }
 };
 

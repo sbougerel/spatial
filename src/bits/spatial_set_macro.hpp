@@ -2,7 +2,7 @@
 
 /**
  *  @file   spatial_set_macro.hpp
- *  @brief  
+ *  @brief
  *
  *  Change log:
  *
@@ -19,11 +19,11 @@
 #endif
 
 #ifndef SPATIAL_KEY
-#  define SPATIAL_KEY(node) static_cast<Link_type>((node))->key_field
+#  define SPATIAL_KEY(node) static_cast<Link_type>((node))->value
 #endif
 
 #ifndef SPATIAL_KEY_CONST
-#  define SPATIAL_KEY_CONST(node) static_cast<Const_Link_type>((node))->key_field
+#  define SPATIAL_KEY_CONST(node) static_cast<Const_Link_type>((node))->value
 #endif
 
 #endif // SPATIAL_SET_MACRO_HPP

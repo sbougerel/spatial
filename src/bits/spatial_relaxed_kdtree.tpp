@@ -106,15 +106,15 @@ namespace spatial
       // Note that while I can theorize this for several algorithms (simple
       // iteration, mapping iteration, range iteration), I still have to perform
       // experiments that reflect this hypothesis.
-      if (static_cast<Weighted_node*>(node)->weight <=
+      if (static_cast<Link_type>(node)->weight <=
           static_cast<weight_type>(Base::dimension()) << 1)
         { return false; }
       return m_balancing(Base::rank(),
                          more_left + (node->left
-                                      ? static_cast<Weighted_node*>
+                                      ? static_cast<Link_type>
                                       (node->left)->weight : 0),
                          more_right + (node->right
-                                       ? static_cast<Weighted_node*>
+                                       ? static_cast<Link_type>
                                        (node->right)->weight : 0));
     }
 
@@ -154,10 +154,10 @@ namespace spatial
         {
           SPATIAL_ASSERT_CHECK
             ((node->right
-              ? static_cast<Weighted_node*>(node->right)->weight : 0)
+              ? static_cast<Link_type>(node->right)->weight : 0)
              + (node->left
-                ? static_cast<Weighted_node*>(node->left)->weight: 0)
-             + 1 == static_cast<Weighted_node*>(node)->weight);
+                ? static_cast<Link_type>(node->left)->weight: 0)
+             + 1 == static_cast<Link_type>(node)->weight);
           // Balancing equal values on either side of the tree
           if (cmp(node_dim, SPATIAL_KEY(new_node), SPATIAL_KEY(node))
               || (!cmp(node_dim, SPATIAL_KEY(node), SPATIAL_KEY(new_node))
@@ -172,7 +172,7 @@ namespace spatial
                   new_node->parent = node;
                   if (Base::get_leftmost() == node)
                     { Base::set_leftmost(new_node); }
-                  ++static_cast<Weighted_node*>(node)->weight;
+                  ++static_cast<Link_type>(node)->weight;
                   break;
                 }
               else
@@ -183,7 +183,7 @@ namespace spatial
                     }
                   else
                     {
-                      ++static_cast<Weighted_node*>(node)->weight;
+                      ++static_cast<Link_type>(node)->weight;
                       node = node->left;
                       node_dim = incr_dim(Base::rank(), node_dim);
                     }
@@ -197,7 +197,7 @@ namespace spatial
                   new_node->parent = node;
                   if (Base::get_rightmost() == node)
                     { Base::set_rightmost(new_node); }
-                  ++static_cast<Weighted_node*>(node)->weight;
+                  ++static_cast<Link_type>(node)->weight;
                   break;
                 }
               else
@@ -208,7 +208,7 @@ namespace spatial
                     }
                   else
                     {
-                      ++static_cast<Weighted_node*>(node)->weight;
+                      ++static_cast<Link_type>(node)->weight;
                       node = node->right;
                       node_dim = incr_dim(Base::rank(), node_dim);
                     }
@@ -292,8 +292,8 @@ namespace spatial
             {
               node = node->parent;
               node_dim = decr_dim(Base::rank(), node_dim);
-              SPATIAL_ASSERT_CHECK(static_cast<Weighted_node*>(node)->weight > 1);
-              --static_cast<Weighted_node*>(node)->weight;
+              SPATIAL_ASSERT_CHECK(static_cast<Link_type>(node)->weight > 1);
+              --static_cast<Link_type>(node)->weight;
               if(is_node_unbalanced(node))
                 {
                   node = balance_node(node_dim, node);  // recursive!
@@ -319,8 +319,8 @@ namespace spatial
       node_dim = decr_dim(Base::rank(), node_dim);
       while(!Node_base::header(p))
         {
-          SPATIAL_ASSERT_CHECK(static_cast<Weighted_node*>(p)->weight > 1);
-          --static_cast<Weighted_node*>(p)->weight;
+          SPATIAL_ASSERT_CHECK(static_cast<Link_type>(p)->weight > 1);
+          --static_cast<Link_type>(p)->weight;
           if(is_node_unbalanced(p))
             { p = balance_node(node_dim, p); } // balance node
           p = p->parent;

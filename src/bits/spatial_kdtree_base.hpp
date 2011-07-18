@@ -287,7 +287,7 @@ namespace spatial
       create_node(const key_type& x)
       {
         safe_allocator safe(get_node_allocator());
-        get_allocator().construct(&safe.ptr->key_field, x);
+        get_allocator().construct(&safe.ptr->value, x);
         return safe.release();
       }
 
@@ -297,7 +297,7 @@ namespace spatial
       void
       destroy_node(Link_type node)
       {
-        get_allocator().destroy(&node->key_field);
+        get_allocator().destroy(&node->value);
         get_node_allocator().deallocate(node, 1);
       }
 

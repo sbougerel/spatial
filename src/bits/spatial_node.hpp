@@ -56,14 +56,14 @@ namespace spatial
       static Base_ptr
       minimum(Base_ptr x)
       {
-	while (x->left != 0) x = x->left;
-	return x;
+        while (x->left != 0) x = x->left;
+        return x;
       }
 
       static Const_Base_ptr
       minimum(Const_Base_ptr x)
       {
-	return minimum(const_cast<Base_ptr>(x));
+        return minimum(const_cast<Base_ptr>(x));
       }
       //@}
 
@@ -76,14 +76,14 @@ namespace spatial
       static Base_ptr
       maximum(Base_ptr x)
       {
-	while (x->right != 0) x = x->right;
-	return x;
+        while (x->right != 0) x = x->right;
+        return x;
       }
 
       static Const_Base_ptr
       maximum(Const_Base_ptr x)
       {
-	return maximum(const_cast<Base_ptr>(x));
+        return maximum(const_cast<Base_ptr>(x));
       }
       //@}
 
@@ -99,7 +99,7 @@ namespace spatial
       static Const_Base_ptr
       increment(Const_Base_ptr x)
       {
-	return increment(const_cast<Base_ptr>(x));
+        return increment(const_cast<Base_ptr>(x));
       }
       //@}
 
@@ -115,7 +115,7 @@ namespace spatial
       static Const_Base_ptr
       decrement(Const_Base_ptr x)
       {
-	return decrement(const_cast<Base_ptr>(x));
+        return decrement(const_cast<Base_ptr>(x));
       }
       //@}
 
@@ -144,30 +144,22 @@ namespace spatial
     };
 
     /**
-     *  @brief  Define the node type for a Kdtree that contains the Key member.
+     *  @brief  Define the node type for a Kdtree that contains the value member.
      */
-    template<typename Key>
+    template<typename Value>
     struct Kdtree_node : Node_base
     {
-      Key key_field;
-    };
-
-    /**
-     *  @brief  Define a weighted node type for the k-d tree. The weight
-     *  information is maintained by the tree implementation.
-     */
-    struct Weighted_node : Node_base
-    {
-      weight_type weight;
+      Value value;
     };
 
     /**
      *  @brief  Define a weighted node type for the relaxed k-d tree.
      */
-    template<typename Key>
-    struct Relaxed_kdtree_node : Weighted_node
+    template<typename Value>
+    struct Relaxed_kdtree_node : Node_base
     {
-      Key key_field;
+      weight_type weight;
+      Value value;
     };
 
     //@{
@@ -180,36 +172,37 @@ namespace spatial
      *  the caller.
      */
     void swap(Node_base& a, Node_base& b);
-    template<typename Key>
-    inline void swap(Kdtree_node<Key>& a, Kdtree_node<Key>& b)
+    template<typename Value>
+    inline void swap(Kdtree_node<Value>& a, Kdtree_node<Value>& b)
     {
       swap(*static_cast<Node_base::Base_ptr>(&a),
-	   *static_cast<Node_base::Base_ptr>(&b));
+           *static_cast<Node_base::Base_ptr>(&b));
     }
-    template<typename Key>
-    inline void swap(Relaxed_kdtree_node<Key>& a, Relaxed_kdtree_node<Key>& b)
+    template<typename Value>
+    inline void swap(Relaxed_kdtree_node<Value>& a, Relaxed_kdtree_node<Value>& b)
     {
       std::swap(a.weight, b.weight);
       swap(*static_cast<Node_base::Base_ptr>(&a),
-	   *static_cast<Node_base::Base_ptr>(&b));
+           *static_cast<Node_base::Base_ptr>(&b));
     }
     //@}
 
     /**
      *  @brief  A bidirectional iterator traversing all node in the tree in
-     *  symetric order.
+     *  inorder traversal. This iterator provides mutable access to the nodes in
+     *  the tree.
      */
-    template<typename Key, typename Node>
+    template<typename Value, typename Node>
     struct Node_iterator
     {
-      typedef Key                              value_type;
-      typedef Key&                             reference;
-      typedef Key*                             pointer;
+      typedef Value                            value_type;
+      typedef Value&                           reference;
+      typedef Value*                           pointer;
       typedef std::ptrdiff_t                   difference_type;
       typedef std::bidirectional_iterator_tag  iterator_category;
 
     private:
-      typedef Node_iterator<Key, Node>         Self;
+      typedef Node_iterator<Value, Node>       Self;
       typedef Node_base::Base_ptr              Base_ptr;
       typedef Node*                            Link_type;
 
@@ -221,40 +214,40 @@ namespace spatial
 
       reference
       operator*() const
-      { return static_cast<Link_type>(node)->key_field; }
+      { return static_cast<Link_type>(node)->value; }
 
       pointer
       operator->() const
-      { return &static_cast<Link_type>(node)->key_field; }
+      { return &static_cast<Link_type>(node)->value; }
 
       Self&
       operator++()
       {
-	node = Node_base::increment(node);
-	return *this;
+        node = Node_base::increment(node);
+        return *this;
       }
 
       Self
       operator++(int)
       {
-	Self tmp = *this;
-	node = Node_base::increment(node);
-	return tmp;
+        Self tmp = *this;
+        node = Node_base::increment(node);
+        return tmp;
       }
 
       Self&
       operator--()
       {
-	node = Node_base::decrement(node);
-	return *this;
+        node = Node_base::decrement(node);
+        return *this;
       }
 
       Self
       operator--(int)
       {
-	Self tmp = *this;
-	node = Node_base::decrement(node);
-	return tmp;
+        Self tmp = *this;
+        node = Node_base::decrement(node);
+        return tmp;
       }
 
       bool
@@ -268,22 +261,26 @@ namespace spatial
       Base_ptr node;
     };
 
-    template<typename Key, typename Node>
+    /**
+     *  @brief  A bidirectional iterator traversing all node in the tree in
+     *  inorder traversal. This iterator provides constant access to the nodes
+     *  in the tree.
+     */
+    template<typename Value, typename Node>
     struct Const_Node_iterator
     {
-      typedef const Key                         value_type;
-      typedef const Key&                        reference;
-      typedef const Key*                        pointer;
+      typedef Value                             value_type;
+      typedef const Value&                      reference;
+      typedef const Value*                      pointer;
       typedef std::ptrdiff_t                    difference_type;
       typedef std::bidirectional_iterator_tag   iterator_category;
 
     private:
-      typedef Const_Node_iterator
-      <Key, Node>                               Self;
+      typedef Const_Node_iterator<Value, Node>  Self;
       typedef Node_base::Const_Base_ptr         Base_ptr;
       typedef const Node*                       Link_type;
 
-      typedef Node_iterator<Key, Node>          iterator;
+      typedef Node_iterator<Value, Node>        iterator;
 
     public:
       Const_Node_iterator() : node() { }
@@ -295,40 +292,40 @@ namespace spatial
 
       reference
       operator*() const
-      { return static_cast<Link_type>(node)->key_field; }
+      { return static_cast<Link_type>(node)->value; }
 
       pointer
       operator->() const
-      { return &static_cast<Link_type>(node)->key_field; }
+      { return &static_cast<Link_type>(node)->value; }
 
       Self&
       operator++()
       {
-	node = Node_base::increment(node);
-	return *this;
+        node = Node_base::increment(node);
+        return *this;
       }
 
       Self
       operator++(int)
       {
-	Self tmp = *this;
-	node = Node_base::increment(node);
-	return tmp;
+        Self tmp = *this;
+        node = Node_base::increment(node);
+        return tmp;
       }
 
       Self&
       operator--()
       {
-	node = Node_base::decrement(node);
-	return *this;
+        node = Node_base::decrement(node);
+        return *this;
       }
 
       Self
       operator--(int)
       {
-	Self tmp = *this;
-	node = Node_base::decrement(node);
-	return tmp;
+        Self tmp = *this;
+        node = Node_base::decrement(node);
+        return tmp;
       }
 
       bool
@@ -342,19 +339,24 @@ namespace spatial
       Base_ptr node;
     };
 
-    template<typename Key, typename Node>
+    /**
+     *  A forward iterator that iterates through the node of the container in
+     *  preorder transversal. It provides constant access to the node. It is
+     *  used mainly to clone the tree.
+     */
+    template<typename Value, typename Node>
     struct Preorder_node_iterator
     {
-      typedef Key                           value_type;
-      typedef const Key&                    reference;
-      typedef const Key*                    pointer;
-      typedef std::ptrdiff_t                difference_type;
-      typedef std::forward_iterator_tag     iterator_category;
+      typedef Value                                value_type;
+      typedef const Value&                         reference;
+      typedef const Value*                         pointer;
+      typedef std::ptrdiff_t                       difference_type;
+      typedef std::forward_iterator_tag            iterator_category;
 
     private:
-      typedef Preorder_node_iterator<Key, Node>  Self;
-      typedef Node_base::Const_Base_ptr          Base_ptr;
-      typedef const Node*                        Link_type;
+      typedef Preorder_node_iterator<Value, Node>  Self;
+      typedef Node_base::Const_Base_ptr            Base_ptr;
+      typedef const Node*                          Link_type;
 
     public:
       Preorder_node_iterator() : node() { }
@@ -364,25 +366,25 @@ namespace spatial
 
       reference
       operator*()
-      { return static_cast<Link_type>(node)->key_field; }
+      { return static_cast<Link_type>(node)->value; }
 
       pointer
       operator->()
-      { return &static_cast<Link_type>(node)->key_field; }
+      { return &static_cast<Link_type>(node)->value; }
 
       Self&
       operator++()
       {
-	node = Node_base::preorder_increment(node);
-	return *this;
+        node = Node_base::preorder_increment(node);
+        return *this;
       }
 
       Self
       operator++(int)
       {
-	Self tmp = *this;
-	node = Node_base::preorder_increment(node);
-	return tmp;
+        Self tmp = *this;
+        node = Node_base::preorder_increment(node);
+        return tmp;
       }
 
       bool

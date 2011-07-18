@@ -258,11 +258,11 @@ namespace spatial
 
       reference
       operator*() const
-      { return static_cast<Link_type>(impl_.node_)->key_field; }
+      { return static_cast<Link_type>(impl_.node_)->value; }
 
       pointer
       operator->() const
-      { return &static_cast<Link_type>(impl_.node_)->key_field; }
+      { return &static_cast<Link_type>(impl_.node_)->value; }
 
       Derived&
       operator++()
@@ -631,7 +631,7 @@ namespace spatial
     { return details::neighbor::const_upper_bound(*container_, geometry_, target_, upper); }
 
     neighbor_view(Container& iterable, const Geometry& geometry,
-	          const key_type& target)
+                  const key_type& target)
       : target_(target), geometry_(geometry), container_(&iterable)
     { }
 
@@ -717,7 +717,7 @@ namespace spatial
     { return details::neighbor::const_upper_bound(*container_, geometry_, target_, upper); }
 
     neighbor_view(const Container& iterable, const Geometry& geometry,
-	          const key_type& target)
+                  const key_type& target)
       : target_(target), geometry_(geometry), container_(&iterable)
     { }
 

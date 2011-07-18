@@ -734,11 +734,11 @@ namespace spatial
 
       reference
       operator*() const
-      { return static_cast<Link_type>(impl_.node_)->key_field; }
+      { return static_cast<Link_type>(impl_.node_)->value; }
 
       pointer
       operator->() const
-      { return &static_cast<Link_type>(impl_.node_)->key_field; }
+      { return &static_cast<Link_type>(impl_.node_)->value; }
 
       /**
        *  @brief  Find the next matching node in in-order transversal or
