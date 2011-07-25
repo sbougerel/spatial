@@ -398,7 +398,60 @@ namespace spatial
       Base_ptr node;
     };
 
+    //@{
+    /**
+     *  Help with retrieval of the key_type from the value_type and the
+     *  node_type in a container.
+     */
+    template <typename Key, typename Value, typename Node>
+    struct Linker
+    {
+      const Node* link(Node_base::Const_Base_ptr ptr) const
+      { return static_cast<const Node*>(ptr); }
+      Node* link(Node_base::Base_ptr ptr) const
+      { return static_cast<Node*>(ptr); }
+
+      const Key& key(Node_base::Const_Base_ptr ptr) const
+      { return link(ptr)->value.first; }
+      Key& key(Node_base::Base_ptr ptr) const
+      { return link(ptr)->value.first; }
+
+      const Value& val(Node_base::Const_Base_ptr ptr) const
+      { return link(ptr)->value; }
+      Value& val(Node_base::Base_ptr ptr) const
+      { return link(ptr)->value; }
+
+      const Key& pick(const Value& value) const { return value.first; }
+      Key& pick(Value& value) const { return value.first; }
+    };
+
+    // Specialization for containers where Key is same as Value
+    template <typename Key, typename Node>
+    struct Linker<Key, Key, Node>
+    {
+      const Node* link(Node_base::Const_Base_ptr ptr) const
+      { return static_cast<const Node*>(ptr); }
+      Node* link(Node_base::Base_ptr ptr) const
+      { return static_cast<Node*>(ptr); }
+
+      const Key& key(Node_base::Const_Base_ptr ptr) const
+      { return link(ptr)->value; }
+      Key& key(Node_base::Base_ptr ptr) const
+      { return link(ptr)->value; }
+
+      const Key& val(Node_base::Const_Base_ptr ptr) const
+      { return link(ptr)->value; }
+      Key& val(Node_base::Base_ptr ptr) const
+      { return link(ptr)->value; }
+
+      const Key& pick(const Key& value) const { return value; }
+      Key& pick(Key& value) const { return value; }
+    };
+    //@}
+
   } // namespace details
 } // namespace spatial
+
+#include "spatial_node.tpp"
 
 #endif // SPATIAL_NODE_HPP

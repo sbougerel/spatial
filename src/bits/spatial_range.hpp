@@ -76,15 +76,15 @@ namespace spatial
    */
   template <typename Tp>
   equal_bounds<typename container_traits<Tp>::key_type,
-               typename container_traits<Tp>::compare_type>
+               typename container_traits<Tp>::key_compare>
   make_equal_bounds
   (const Tp& container,
    const typename container_traits<Tp>::key_type& key)
   {
     return equal_bounds
       <typename container_traits<Tp>::key_type,
-      typename container_traits<Tp>::compare_type>
-      (container.compare(), key);
+      typename container_traits<Tp>::key_compare>
+      (container.key_comp(), key);
   }
 
   /**
@@ -147,17 +147,17 @@ namespace spatial
 
   /**
    *  @brief  Open bound factory that takes in a @c container, a @c lower and @c
-   *  upper key range, returning an @c open_bounds<Key, Compare> type.  @see
-   *  equal_bounds<Key, Compare>
+   *  upper key range, returning an <tt>open_bounds<Key, Compare></tt> type.
+   *  @see equal_bounds<Key, Compare>
    *
    *  This factory also checks that lower and upper satisfy range requirements
-   *  over an open interval for each dimension, e.g:
-   *  @c compare.compare()(d, lower, upper) must be true for all value of @c d
-   *  within 0 and @c tree.dimension().
+   *  over an open interval for each dimension, e.g: <tt>compare.key_comp()(d,
+   *  lower, upper)</tt> must be true for all value of @c d within 0 and @c
+   *  container.dimension().
    */
   template <typename Tp>
   open_range_bounds<typename container_traits<Tp>::key_type,
-                    typename container_traits<Tp>::compare_type>
+                    typename container_traits<Tp>::key_compare>
   make_open_range_bounds
   (const Tp& container,
    const typename container_traits<Tp>::key_type& lower,
@@ -166,8 +166,8 @@ namespace spatial
     except::check_open_range_bounds(container, lower, upper);
     return open_range_bounds
       <typename container_traits<Tp>::key_type,
-      typename container_traits<Tp>::compare_type>
-      (container.compare(), lower, upper);
+      typename container_traits<Tp>::key_compare>
+      (container.key_comp(), lower, upper);
   }
 
   /**
@@ -229,14 +229,14 @@ namespace spatial
    *
    *  This factory also check that lower and upper satisfy range requirements
    *  over an regular interval for each dimension, e.g: @c
-   *  container.compare()(d, lower, upper) must be true for all value of @c d
-   *  within 0 and @c container.dimension() or container.compare()(d, upper,
+   *  container.key_comp()(d, lower, upper) must be true for all value of @c d
+   *  within 0 and @c container.dimension() or container.key_comp()(d, upper,
    *  lower) must also be false (which mean the values are equal on that
    *  particular dimension).
    */
   template <typename Tp>
   range_bounds<typename container_traits<Tp>::key_type,
-               typename container_traits<Tp>::compare_type>
+               typename container_traits<Tp>::key_compare>
   make_range_bounds
   (const Tp& container,
    const typename container_traits<Tp>::key_type& lower,
@@ -245,8 +245,8 @@ namespace spatial
     except::check_range_bounds(container, lower, upper);
     return range_bounds
       <typename container_traits<Tp>::key_type,
-      typename container_traits<Tp>::compare_type>
-      (container.compare(), lower, upper);
+      typename container_traits<Tp>::key_compare>
+      (container.key_comp(), lower, upper);
   }
 
   /**
@@ -311,14 +311,14 @@ namespace spatial
    *
    *  This factory also check that lower and upper satisfy range requirements
    *  over an regular interval for each dimension, e.g: @c
-   *  container.compare()(d, lower, upper) must be true for all value of @c d
-   *  within 0 and @c container.dimension() or container.compare()(d, upper,
+   *  container.key_comp()(d, lower, upper) must be true for all value of @c d
+   *  within 0 and @c container.dimension() or container.key_comp()(d, upper,
    *  lower) must also be false (which mean the values are equal on that
    *  particular dimension).
    */
   template <typename Tp>
   closed_range_bounds<typename container_traits<Tp>::key_type,
-                      typename container_traits<Tp>::compare_type>
+                      typename container_traits<Tp>::key_compare>
   make_closed_range_bounds
   (const Tp& container,
    const typename container_traits<Tp>::key_type& lower,
@@ -327,8 +327,8 @@ namespace spatial
     except::check_closed_range_bounds(container, lower, upper);
     return closed_range_bounds
       <typename container_traits<Tp>::key_type,
-      typename container_traits<Tp>::compare_type>
-      (container.compare(), lower, upper);
+      typename container_traits<Tp>::key_compare>
+      (container.key_comp(), lower, upper);
   }
 
   /**
@@ -440,7 +440,7 @@ namespace spatial
    */
   template <typename Tp, typename Layout>
   overlap_bounds<typename container_traits<Tp>::key_type,
-                 typename container_traits<Tp>::compare_type,
+                 typename container_traits<Tp>::key_compare,
                  Layout>
   make_overlap_bounds
   (const Tp& container,
@@ -450,13 +450,13 @@ namespace spatial
     except::check_box_argument(container, target, tag);
     return overlap_bounds
       <typename container_traits<Tp>::key_type,
-      typename container_traits<Tp>::compare_type, Layout>
-      (container.compare(), target);
+      typename container_traits<Tp>::key_compare, Layout>
+      (container.key_comp(), target);
   }
 
   template <typename Tp>
   overlap_bounds<typename container_traits<Tp>::key_type,
-                 typename container_traits<Tp>::compare_type,
+                 typename container_traits<Tp>::key_compare,
                  llhh_layout_tag>
   make_overlap_bounds
   (const Tp& container,
@@ -585,7 +585,7 @@ namespace spatial
    */
   template <typename Tp, typename Layout>
   enclose_bounds<typename container_traits<Tp>::key_type,
-                 typename container_traits<Tp>::compare_type,
+                 typename container_traits<Tp>::key_compare,
                  Layout>
   make_enclose_bounds
   (const Tp& container,
@@ -595,13 +595,13 @@ namespace spatial
     except::check_box_argument(container, target, tag);
     return enclose_bounds
       <typename container_traits<Tp>::key_type,
-      typename container_traits<Tp>::compare_type, Layout>
-      (container.compare(), target);
+      typename container_traits<Tp>::key_compare, Layout>
+      (container.key_comp(), target);
   }
 
   template <typename Tp>
   enclose_bounds<typename container_traits<Tp>::key_type,
-                 typename container_traits<Tp>::compare_type,
+                 typename container_traits<Tp>::key_compare,
                  llhh_layout_tag>
   make_enclose_bounds
   (const Tp& container,
@@ -620,24 +620,25 @@ namespace spatial
      *  model of RangePredicate. See the RangePredicate concept for more
      *  information on writing a range predicates.
      */
-    template <typename Rank, typename Key, typename Node,
+    template <typename Rank, typename Key, typename Value, typename Node,
               typename Predicate, bool Constant, typename Derived>
     struct Range_iterator_base
     {
-      typedef Key                             value_type;
+      typedef Value                           value_type;
+      typedef typename condition
+      <Constant, const Value&, Value&>::type  reference;
       typedef typename details::condition
-      <Constant, const Key&, Key&>::type      reference;
-      typedef typename details::condition
-      <Constant, const Key*, Key*>::type      pointer;
+      <Constant, const Value*, Value*>::type  pointer;
       typedef std::ptrdiff_t                  difference_type;
       typedef std::bidirectional_iterator_tag iterator_category;
 
     protected:
-      typedef typename details::condition
-      <Constant, details::Node_base::Const_Base_ptr,
-       details::Node_base::Base_ptr>::type    Base_ptr;
-      typedef typename details::condition
+      typedef typename condition
+      <Constant, Node_base::Const_Base_ptr,
+       Node_base::Base_ptr>::type             Base_ptr;
+      typedef typename condition
       <Constant, const Node*, Node*>::type    Link_type;
+      typedef Linker<Key, Value, Node>        Link_;
 
     public:
       /**
@@ -793,40 +794,40 @@ namespace spatial
       Range_iterator_impl impl_;
     };
 
-    template <typename Rank, typename Key, typename Node,
+    template <typename Rank, typename Key, typename Value, typename Node,
               typename Predicate, bool Constant1, bool Constant2,
               typename Derived1, typename Derived2>
     inline bool
     operator==(const Range_iterator_base
-               <Rank, Key, Node, Predicate, Constant1, Derived1>& x,
+               <Rank, Key, Value, Node, Predicate, Constant1, Derived1>& x,
                const Range_iterator_base
-               <Rank, Key, Node, Predicate, Constant2, Derived2>& y)
+               <Rank, Key, Value, Node, Predicate, Constant2, Derived2>& y)
     { return x.impl_.node_ == y.impl_.node_; }
 
-    template <typename Rank, typename Key, typename Node,
+    template <typename Rank, typename Key, typename Value, typename Node,
               typename Predicate, bool Constant1, bool Constant2,
               typename Derived1, typename Derived2>
     inline bool
     operator!=(const Range_iterator_base
-               <Rank, Key, Node, Predicate, Constant1, Derived1>& x,
+               <Rank, Key, Value, Node, Predicate, Constant1, Derived1>& x,
                const Range_iterator_base
-               <Rank, Key, Node, Predicate, Constant2, Derived2>& y)
+               <Rank, Key, Value, Node, Predicate, Constant2, Derived2>& y)
     { return !(x == y); }
 
     /**
      *  @brief  A mutable iterator based on Range_iterator_base.
      */
-    template <typename Rank, typename Key, typename Node,
+    template <typename Rank, typename Key, typename Value, typename Node,
               typename Predicate>
     struct Range_iterator
       : public Range_iterator_base
-    <Rank, Key, Node, Predicate, false,
-     Range_iterator<Rank, Key, Node, Predicate> >
+    <Rank, Key, Value, Node, Predicate, false,
+     Range_iterator<Rank, Key, Value, Node, Predicate> >
     {
     private:
       typedef Range_iterator_base
-      <Rank, Key, Node, Predicate, false, Range_iterator
-       <Rank, Key, Node, Predicate> > Base;
+      <Rank, Key, Value, Node, Predicate, false,
+       Range_iterator<Rank, Key, Value, Node, Predicate> > Base;
 
     public:
       explicit
@@ -836,25 +837,47 @@ namespace spatial
       { }
 
       Range_iterator() { }
+
+      //@{
+      /**
+       *  This iterator can be casted silently into a container iterator. You can
+       *  therefore use this iterator as an argument to the erase function of
+       *  the container, for example.
+       *
+       *  @warning When using this iterator as an argument to the erase function
+       *  of the container, this iterator will get invalidated after erase.
+       */
+      operator Node_iterator<Value, Node>()
+      {
+        return Node_iterator<Value, Node>
+          (static_cast<typename Base::Link_type>(Base::impl_.node_));
+      }
+
+      operator Const_Node_iterator<Value, Node>()
+      {
+        return Const_Node_iterator<Value, Node>
+          (static_cast<typename Base::Link_type>(Base::impl_.node_));
+      }
+      //@}
     };
 
     /**
      *  @brief  A constant iterator based on Range_iterator_base.
      */
-    template <typename Rank, typename Key, typename Node,
+    template <typename Rank, typename Key, typename Value, typename Node,
               typename Predicate>
     struct Const_Range_iterator
       : public Range_iterator_base
-    <Rank, Key, Node, Predicate, true,
-     Const_Range_iterator<Rank, Key, Node, Predicate> >
+    <Rank, Key, Value, Node, Predicate, true,
+     Const_Range_iterator<Rank, Key, Value, Node, Predicate> >
     {
     private:
       typedef Range_iterator
-      <Rank, Key, Node, Predicate>    iterator;
+      <Rank, Key, Value, Node, Predicate>    iterator;
 
       typedef Range_iterator_base
-      <Rank, Key, Node, Predicate, true, Const_Range_iterator
-       <Rank, Key, Node, Predicate> > Base;
+      <Rank, Key, Value, Node, Predicate, true,
+       Const_Range_iterator<Rank, Key, Value, Node, Predicate> > Base;
 
     public:
       explicit
@@ -870,6 +893,54 @@ namespace spatial
         : Base(typename Base::Range_iterator_impl
                (i.rank(), i.predicate(), i.impl_.node_dim_(), i.impl_.node_))
       { }
+
+      /**
+       *  This iterator can be casted silently into a container iterator. You can
+       *  therefore use this iterator as an argument to the erase function of
+       *  the container, for example.
+       *
+       *  @warning When using this iterator as an argument to the erase function
+       *  of the container, this iterator will get invalidated after erase.
+       */
+      operator Const_Node_iterator<Value, Node>()
+      {
+        return Const_Node_iterator<Value, Node>
+          (static_cast<typename Base::Link_type>(Base::impl_.node_));
+      }
+    };
+
+    /**
+     * Define the equal_iterator type that is used in the base tree structures
+     * to search through a set of object of equivalent coordinates.
+     */
+    template<typename Container>
+    struct equal_iterator
+    {
+      typedef spatial::details::Range_iterator
+      <typename container_traits<Container>::rank_type,
+       typename container_traits<Container>::key_type,
+       typename container_traits<Container>::value_type,
+       typename container_traits<Container>::node_type,
+       equal_bounds<typename container_traits<Container>::key_type,
+                    typename container_traits<Container>::key_compare> >
+      type;
+    };
+
+    /**
+     * Define the const_equal_iterator type that is used in the base tree
+     * structures to search through a set of object of equivalent coordinates.
+     */
+    template<typename Container>
+    struct const_equal_iterator
+    {
+      typedef spatial::details::Const_Range_iterator
+      <typename container_traits<Container>::rank_type,
+       typename container_traits<Container>::key_type,
+       typename container_traits<Container>::value_type,
+       typename container_traits<Container>::node_type,
+       equal_bounds<typename container_traits<Container>::key_type,
+                    typename container_traits<Container>::key_compare> >
+        type;
     };
 
     namespace range
@@ -881,6 +952,7 @@ namespace spatial
         typedef Range_iterator
         <typename container_traits<Container>::rank_type,
          typename container_traits<Container>::key_type,
+         typename container_traits<Container>::value_type,
          typename container_traits<Container>::node_type,
          Predicate> type;
       };
@@ -891,6 +963,7 @@ namespace spatial
         typedef Const_Range_iterator
         <typename container_traits<Container>::rank_type,
          typename container_traits<Container>::key_type,
+         typename container_traits<Container>::value_type,
          typename container_traits<Container>::node_type,
          Predicate> type;
       };
@@ -962,14 +1035,14 @@ namespace spatial
    *    {
    *      switch(dim)
    *        {
-   *    // for dimension 0, only the interval ]-1, 1[ matches...
+   *        // for dimension 0, only the interval ]-1, 1[ matches...
    *        case 0: return x[0] <= -1 ? spatial::below
    *                       : (x[0] >= 1 ? spatial::above : spatial::matching );
-   *    // for dimension 1, it's always a match...
+   *        // for dimension 1, it's always a match...
    *        case 1: return spatial::matching;
-   *    // for dimension 2, matches unless it's equal or above 2...
+   *        // for dimension 2, matches unless it's equal or above 2...
    *        case 2: return x[2] < 2 ? spatial::matching : spatial::above;
-   *    // else we must be out of range...
+   *        // else we must be out of range...
    *        default: throw std::out_of_range();
    *        }
    *    }
@@ -985,18 +1058,23 @@ namespace spatial
     typedef typename spatial::container_traits<Container>   traits_type;
 
   public:
-    typedef typename traits_type::key_type           key_type;
-    typedef typename traits_type::pointer            pointer;
-    typedef typename traits_type::const_pointer      const_pointer;
-    typedef typename traits_type::reference          reference;
-    typedef typename traits_type::const_reference    const_reference;
-    typedef typename traits_type::node_type          node_type;
-    typedef typename traits_type::size_type          size_type;
-    typedef typename traits_type::difference_type    difference_type;
-    typedef typename traits_type::allocator_type     allocator_type;
-    typedef typename traits_type::compare_type       compare_type;
-    typedef typename traits_type::rank_type          rank_type;
+    // Container traits
+    typedef typename traits_type::key_type            key_type;
+    typedef typename traits_type::mapped_type         mapped_type;
+    typedef typename traits_type::value_type          value_type;
+    typedef typename traits_type::pointer             pointer;
+    typedef typename traits_type::const_pointer       const_pointer;
+    typedef typename traits_type::reference           reference;
+    typedef typename traits_type::const_reference     const_reference;
+    typedef typename traits_type::node_type           node_type;
+    typedef typename traits_type::size_type           size_type;
+    typedef typename traits_type::difference_type     difference_type;
+    typedef typename traits_type::allocator_type      allocator_type;
+    typedef typename traits_type::key_compare         key_compare;
+    typedef typename traits_type::value_compare       value_compare;
+    typedef typename traits_type::rank_type           rank_type;
 
+    // Iterator types
     typedef typename spatial::details::condition
     <traits_type::const_iterator_tag::value,
      typename details::range::const_iterator<Container, Predicate>::type,
@@ -1043,17 +1121,23 @@ namespace spatial
     typedef typename spatial::container_traits<Container>   traits_type;
 
   public:
-    typedef typename traits_type::key_type           key_type;
-    typedef typename traits_type::const_pointer      pointer;
-    typedef typename traits_type::const_pointer      const_pointer;
-    typedef typename traits_type::const_reference    reference;
-    typedef typename traits_type::const_reference    const_reference;
-    typedef typename traits_type::size_type          size_type;
-    typedef typename traits_type::difference_type    difference_type;
-    typedef typename traits_type::allocator_type     allocator_type;
-    typedef typename traits_type::compare_type       compare_type;
-    typedef typename traits_type::rank_type          rank_type;
+    // Container traits
+    typedef typename traits_type::key_type            key_type;
+    typedef typename traits_type::mapped_type         mapped_type;
+    typedef typename traits_type::value_type          value_type;
+    typedef typename traits_type::pointer             pointer;
+    typedef typename traits_type::const_pointer       const_pointer;
+    typedef typename traits_type::reference           reference;
+    typedef typename traits_type::const_reference     const_reference;
+    typedef typename traits_type::node_type           node_type;
+    typedef typename traits_type::size_type           size_type;
+    typedef typename traits_type::difference_type     difference_type;
+    typedef typename traits_type::allocator_type      allocator_type;
+    typedef typename traits_type::key_compare         key_compare;
+    typedef typename traits_type::value_compare       value_compare;
+    typedef typename traits_type::rank_type           rank_type;
 
+    // Iterator types
     typedef typename details::range::const_iterator
     <Container, Predicate>::type                     iterator;
     typedef iterator                                 const_iterator;
@@ -1145,7 +1229,7 @@ namespace spatial
     : range_predicate_view
   <Container,
    range_bounds<typename spatial::container_traits<Container>::key_type,
-                typename spatial::container_traits<Container>::compare_type> >
+                typename spatial::container_traits<Container>::key_compare> >
   {
     range_view
     (Container& container,
@@ -1154,7 +1238,7 @@ namespace spatial
       : range_predicate_view
         <Container,
          range_bounds<typename spatial::container_traits<Container>::key_type,
-                      typename spatial::container_traits<Container>::compare_type> >
+                      typename spatial::container_traits<Container>::key_compare> >
         (container, make_range_bounds(container, lower, upper))
     { }
   };
@@ -1165,7 +1249,7 @@ namespace spatial
     : range_predicate_view
   <const Container,
    range_bounds<typename spatial::container_traits<Container>::key_type,
-                typename spatial::container_traits<Container>::compare_type> >
+                typename spatial::container_traits<Container>::key_compare> >
   {
     range_view
     (const Container& container,
@@ -1174,7 +1258,7 @@ namespace spatial
       : range_predicate_view
         <const Container,
          range_bounds<typename spatial::container_traits<Container>::key_type,
-                      typename spatial::container_traits<Container>::compare_type> >
+                      typename spatial::container_traits<Container>::key_compare> >
         (container, make_range_bounds(container, lower, upper))
     { }
   };
@@ -1196,7 +1280,7 @@ namespace spatial
         const typename spatial::container_traits<Container>::key_type& upper)
   {
     range_bounds<typename container_traits<Container>::key_type,
-                 typename container_traits<Container>::compare_type>
+                 typename container_traits<Container>::key_compare>
     bounds = make_range_bounds(container, lower, upper);
     return std::make_pair(details::range::begin(container, bounds),
                           details::range::end(container, bounds));
@@ -1211,7 +1295,7 @@ namespace spatial
         const typename spatial::container_traits<Container>::key_type& upper)
   {
     range_bounds<typename container_traits<Container>::key_type,
-                 typename container_traits<Container>::compare_type>
+                 typename container_traits<Container>::key_compare>
     bounds = make_range_bounds(container, lower, upper);
     return std::make_pair(details::range::const_begin(container, bounds),
                           details::range::const_end(container, bounds));
@@ -1226,7 +1310,7 @@ namespace spatial
               const typename spatial::container_traits<Container>::key_type& upper)
   {
     range_bounds<typename container_traits<Container>::key_type,
-                 typename container_traits<Container>::compare_type>
+                 typename container_traits<Container>::key_compare>
     bounds = make_range_bounds(container, lower, upper);
     return std::make_pair(details::range::const_begin(container, bounds),
                           details::range::const_end(container, bounds));
@@ -1258,7 +1342,7 @@ namespace spatial
   <Container,
    closed_range_bounds
    <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::compare_type> >
+    typename spatial::container_traits<Container>::key_compare> >
   {
     closed_range_view
     (Container& container,
@@ -1268,7 +1352,7 @@ namespace spatial
         <Container,
          closed_range_bounds
          <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::compare_type> >
+          typename spatial::container_traits<Container>::key_compare> >
         (container, make_closed_range_bounds(container, lower, upper))
     { }
   };
@@ -1280,7 +1364,7 @@ namespace spatial
   <const Container,
    closed_range_bounds
    <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::compare_type> >
+    typename spatial::container_traits<Container>::key_compare> >
   {
     closed_range_view
     (const Container& container,
@@ -1290,7 +1374,7 @@ namespace spatial
         <const Container,
          closed_range_bounds
          <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::compare_type> >
+          typename spatial::container_traits<Container>::key_compare> >
         (container, make_closed_range_bounds(container, lower, upper))
     { }
   };
@@ -1313,7 +1397,7 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& upper)
   {
     closed_range_bounds<typename container_traits<Container>::key_type,
-                        typename container_traits<Container>::compare_type>
+                        typename container_traits<Container>::key_compare>
     bounds = make_closed_range_bounds(container, lower, upper);
     return std::make_pair(details::range::begin(container, bounds),
                           details::range::end(container, bounds));
@@ -1329,7 +1413,7 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& upper)
   {
     closed_range_bounds<typename container_traits<Container>::key_type,
-                        typename container_traits<Container>::compare_type>
+                        typename container_traits<Container>::key_compare>
     bounds = make_closed_range_bounds(container, lower, upper);
     return std::make_pair(details::range::const_begin(container, bounds),
                           details::range::const_end(container, bounds));
@@ -1345,7 +1429,7 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& upper)
   {
     closed_range_bounds<typename container_traits<Container>::key_type,
-                        typename container_traits<Container>::compare_type>
+                        typename container_traits<Container>::key_compare>
     bounds = make_closed_range_bounds(container, lower, upper);
     return std::make_pair(details::range::const_begin(container, bounds),
                           details::range::const_end(container, bounds));
@@ -1377,7 +1461,7 @@ namespace spatial
   <Container,
    open_range_bounds
    <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::compare_type> >
+    typename spatial::container_traits<Container>::key_compare> >
   {
     open_range_view
     (Container& container,
@@ -1387,7 +1471,7 @@ namespace spatial
         <Container,
          open_range_bounds
          <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::compare_type> >
+          typename spatial::container_traits<Container>::key_compare> >
         (container, make_open_range_bounds(container, lower, upper))
     { }
   };
@@ -1399,7 +1483,7 @@ namespace spatial
   <const Container,
    open_range_bounds
    <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::compare_type> >
+    typename spatial::container_traits<Container>::key_compare> >
   {
     open_range_view
     (const Container& container,
@@ -1409,7 +1493,7 @@ namespace spatial
         <const Container,
          open_range_bounds
          <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::compare_type> >
+          typename spatial::container_traits<Container>::key_compare> >
         (container, make_open_range_bounds(container, lower, upper))
     { }
   };
@@ -1432,7 +1516,7 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& upper)
   {
     open_range_bounds<typename container_traits<Container>::key_type,
-                      typename container_traits<Container>::compare_type>
+                      typename container_traits<Container>::key_compare>
     bounds = make_open_range_bounds(container, lower, upper);
     return std::make_pair(details::range::begin(container, bounds),
                           details::range::end(container, bounds));
@@ -1448,7 +1532,7 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& upper)
   {
     open_range_bounds<typename container_traits<Container>::key_type,
-                      typename container_traits<Container>::compare_type>
+                      typename container_traits<Container>::key_compare>
     bounds = make_open_range_bounds(container, lower, upper);
     return std::make_pair(details::range::const_begin(container, bounds),
                           details::range::const_end(container, bounds));
@@ -1464,7 +1548,7 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& upper)
   {
     open_range_bounds<typename container_traits<Container>::key_type,
-                      typename container_traits<Container>::compare_type>
+                      typename container_traits<Container>::key_compare>
     bounds = make_open_range_bounds(container, lower, upper);
     return std::make_pair(details::range::const_begin(container, bounds),
                           details::range::const_end(container, bounds));
@@ -1485,7 +1569,7 @@ namespace spatial
   <Container,
    overlap_bounds
    <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::compare_type, Layout> >
+    typename spatial::container_traits<Container>::key_compare, Layout> >
   {
     overlap_view
     (Container& container,
@@ -1494,7 +1578,7 @@ namespace spatial
         <Container,
          overlap_bounds
          <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::compare_type, Layout> >
+          typename spatial::container_traits<Container>::key_compare, Layout> >
         (container, make_overlap_bounds(container, target, Layout()))
     { }
   };
@@ -1506,7 +1590,7 @@ namespace spatial
   <const Container,
    overlap_bounds
    <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::compare_type, Layout> >
+    typename spatial::container_traits<Container>::key_compare, Layout> >
   {
     overlap_view
     (const Container& container,
@@ -1515,7 +1599,7 @@ namespace spatial
         <const Container,
          overlap_bounds
          <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::compare_type, Layout> >
+          typename spatial::container_traits<Container>::key_compare, Layout> >
         (container, make_overlap_bounds(container, target, Layout()))
     { }
   };
@@ -1538,7 +1622,7 @@ namespace spatial
    Layout)
   {
     overlap_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::compare_type, Layout>
+                   typename container_traits<Container>::key_compare, Layout>
     bounds = make_overlap_bounds(container, target, Layout());
     return std::make_pair(details::range::begin(container, bounds),
                           details::range::end(container, bounds));
@@ -1553,7 +1637,7 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& target)
   {
     overlap_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::compare_type,
+                   typename container_traits<Container>::key_compare,
                    llhh_layout_tag>
       bounds = make_overlap_bounds(container, target, llhh_layout_tag());
     return std::make_pair(details::range::begin(container, bounds),
@@ -1570,7 +1654,7 @@ namespace spatial
    Layout)
   {
     overlap_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::compare_type, Layout>
+                   typename container_traits<Container>::key_compare, Layout>
     bounds = make_overlap_bounds(container, target, Layout());
     return std::make_pair(details::range::const_begin(container, bounds),
                           details::range::const_end(container, bounds));
@@ -1585,7 +1669,7 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& target)
   {
     overlap_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::compare_type,
+                   typename container_traits<Container>::key_compare,
                    llhh_layout_tag>
       bounds = make_overlap_bounds(container, target, llhh_layout_tag());
     return std::make_pair(details::range::begin(container, bounds),
@@ -1602,7 +1686,7 @@ namespace spatial
    Layout)
   {
     overlap_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::compare_type, Layout>
+                   typename container_traits<Container>::key_compare, Layout>
     bounds = make_overlap_bounds(container, target, Layout());
     return std::make_pair(details::range::const_begin(container, bounds),
                           details::range::const_end(container, bounds));
@@ -1617,7 +1701,7 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& target)
   {
     overlap_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::compare_type,
+                   typename container_traits<Container>::key_compare,
                    llhh_layout_tag>
       bounds = make_overlap_bounds(container, target, llhh_layout_tag());
     return std::make_pair(details::range::begin(container, bounds),
@@ -1639,7 +1723,7 @@ namespace spatial
   <Container,
    enclose_bounds
    <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::compare_type, Layout> >
+    typename spatial::container_traits<Container>::key_compare, Layout> >
   {
     enclose_view
     (Container& container,
@@ -1648,7 +1732,7 @@ namespace spatial
         <Container,
          enclose_bounds
          <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::compare_type, Layout> >
+          typename spatial::container_traits<Container>::key_compare, Layout> >
         (container, make_enclose_bounds(container, target, Layout()))
     { }
   };
@@ -1660,7 +1744,7 @@ namespace spatial
   <const Container,
    enclose_bounds
    <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::compare_type, Layout> >
+    typename spatial::container_traits<Container>::key_compare, Layout> >
   {
     enclose_view
     (const Container& container,
@@ -1669,7 +1753,7 @@ namespace spatial
         <const Container,
          enclose_bounds
          <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::compare_type, Layout> >
+          typename spatial::container_traits<Container>::key_compare, Layout> >
         (container, make_enclose_bounds(container, target, Layout()))
     { }
   };
@@ -1692,7 +1776,7 @@ namespace spatial
    Layout)
   {
     enclose_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::compare_type, Layout>
+                   typename container_traits<Container>::key_compare, Layout>
     bounds = make_enclose_bounds(container, target, Layout());
     return std::make_pair(details::range::begin(container, bounds),
                           details::range::end(container, bounds));
@@ -1707,7 +1791,7 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& target)
   {
     enclose_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::compare_type,
+                   typename container_traits<Container>::key_compare,
                    llhh_layout_tag>
     bounds = make_enclose_bounds(container, target, llhh_layout_tag());
     return std::make_pair(details::range::begin(container, bounds),
@@ -1724,7 +1808,7 @@ namespace spatial
    Layout)
   {
     enclose_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::compare_type, Layout>
+                   typename container_traits<Container>::key_compare, Layout>
     bounds = make_enclose_bounds(container, target, Layout());
     return std::make_pair(details::range::const_begin(container, bounds),
                           details::range::const_end(container, bounds));
@@ -1739,7 +1823,7 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& target)
   {
     enclose_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::compare_type,
+                   typename container_traits<Container>::key_compare,
                    llhh_layout_tag>
     bounds = make_enclose_bounds(container, target, llhh_layout_tag());
     return std::make_pair(details::range::const_begin(container, bounds),
@@ -1756,7 +1840,7 @@ namespace spatial
    Layout)
   {
     enclose_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::compare_type,
+                   typename container_traits<Container>::key_compare,
                    Layout>
     bounds = make_enclose_bounds(container, target, Layout());
     return std::make_pair(details::range::const_begin(container, bounds),
@@ -1772,7 +1856,7 @@ namespace spatial
    const typename spatial::container_traits<Container>::key_type& target)
   {
     enclose_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::compare_type,
+                   typename container_traits<Container>::key_compare,
                    llhh_layout_tag>
     bounds = make_enclose_bounds(container, target, llhh_layout_tag());
     return std::make_pair(details::range::const_begin(container, bounds),
@@ -1781,5 +1865,7 @@ namespace spatial
   //@}
 
 } // namespace spatial
+
+#include "spatial_range.tpp"
 
 #endif // SPATIAL_RANGE_HPP

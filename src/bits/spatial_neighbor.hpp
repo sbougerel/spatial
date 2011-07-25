@@ -18,6 +18,8 @@
 #  error "Do not include this file directly in your project."
 #endif
 
+#include "spatial_geometry.hpp"
+
 namespace spatial
 {
   namespace details
@@ -74,17 +76,18 @@ namespace spatial
      *  documentation should provide extensive help to design custom geometry
      *  types.
      */
-    template <typename Rank, typename Key, typename Node, typename Compare,
-              typename Geometry, bool Constant, typename Derived>
+    template <typename Rank, typename Key, typename Value, typename Node,
+              typename Compare, typename Geometry, bool Constant,
+              typename Derived>
     struct Neighbor_iterator_base
     {
       typedef Geometry                          geometry_type;
       typedef typename Geometry::distance_type  distance_type;
-      typedef Key                               value_type;
+      typedef Value                             value_type;
       typedef typename details::condition
-      <Constant, const Key&, Key&>::type        reference;
+      <Constant, const Value&, Value&>::type    reference;
       typedef typename details::condition
-      <Constant, const Key*, Key*>::type        pointer;
+      <Constant, const Value*, Value*>::type    pointer;
       typedef std::ptrdiff_t                    difference_type;
       typedef std::bidirectional_iterator_tag   iterator_category;
 
@@ -94,8 +97,7 @@ namespace spatial
        details::Node_base::Base_ptr>::type      Base_ptr;
       typedef typename details::condition
       <Constant, const Node*, Node*>::type      Link_type;
-      typedef typename details::node_traits<Node>
-      ::invariant_category                      invariant_category;
+      typedef Linker<Key, Value, Node>          Link_;
 
     public:
       /**
@@ -297,78 +299,97 @@ namespace spatial
       Neighbor_iterator_impl impl_;
     };
 
-    template <typename Rank, typename Key, typename Node,
-              typename Compare, typename Geometry,
-              bool Constant1, bool Constant2,
-              typename Derived1, typename Derived2>
+    template <typename Rank, typename Key, typename Value, typename Node,
+              typename Compare, typename Geometry, bool Constant1,
+              bool Constant2, typename Derived1, typename Derived2>
     inline bool
-    operator==(const Neighbor_iterator_base
-               <Rank, Key, Node, Compare, Geometry, Constant1, Derived1>& x,
-               const Neighbor_iterator_base
-               <Rank, Key, Node, Compare, Geometry, Constant2, Derived2>& y)
+    operator==(const Neighbor_iterator_base<Rank, Key, Value, Node, Compare,
+                                            Geometry, Constant1, Derived1>& x,
+               const Neighbor_iterator_base<Rank, Key, Value, Node, Compare,
+                                            Geometry, Constant2, Derived2>& y)
     { return x.impl_.node_ == y.impl_.node_; }
 
-    template <typename Rank, typename Key, typename Node,
-              typename Compare, typename Geometry,
-              bool Constant1, bool Constant2,
-              typename Derived1, typename Derived2>
+    template <typename Rank, typename Key, typename Value, typename Node,
+              typename Compare, typename Geometry, bool Constant1,
+              bool Constant2, typename Derived1, typename Derived2>
     inline bool
-    operator!=(const Neighbor_iterator_base
-               <Rank, Key, Node, Compare, Geometry, Constant1, Derived1>& x,
-               const Neighbor_iterator_base
-               <Rank, Key, Node, Compare, Geometry, Constant2, Derived2>& y)
+    operator!=(const Neighbor_iterator_base<Rank, Key, Value, Node, Compare,
+                                            Geometry, Constant1, Derived1>& x,
+               const Neighbor_iterator_base<Rank, Key, Value, Node, Compare,
+                                            Geometry, Constant2, Derived2>& y)
     { return !(x == y); }
 
     /**
      *  @brief  A mutable iterator based on Neighbor_iterator_base.
      */
-    template <typename Rank, typename Key, typename Node,
+    template <typename Rank, typename Key, typename Value, typename Node,
               typename Compare, typename Geometry>
     struct Neighbor_iterator
       : Neighbor_iterator_base
-    <Rank, Key, Node, Compare, Geometry, false,
-     Neighbor_iterator<Rank, Key, Node, Compare, Geometry> >
+    <Rank, Key, Value, Node, Compare, Geometry, false,
+     Neighbor_iterator<Rank, Key, Value, Node, Compare, Geometry> >
     {
     private:
       typedef Neighbor_iterator_base
-      <Rank, Key, Node, Compare, Geometry, false,
+      <Rank, Key, Value, Node, Compare, Geometry, false,
        Neighbor_iterator
-       <Rank, Key, Node, Compare, Geometry> >       Base;
-          typedef typename Base::Link_type              Link_type;
-          typedef typename Base::distance_type          distance_type;
-          typedef typename Base::Neighbor_iterator_impl impl_type;
+       <Rank, Key, Value, Node, Compare, Geometry> >   Base;
+      typedef typename Base::Link_type                 Link_type;
+      typedef typename Base::distance_type             distance_type;
+      typedef typename Base::Neighbor_iterator_impl    impl_type;
 
     public:
-      Neighbor_iterator(const Rank& r, const Compare& c,
-                        const Geometry& g, const Key& k,
-                        dimension_type node_dim, Link_type link,
+      Neighbor_iterator(const Rank& r, const Compare& c, const Geometry& g,
+                        const Key& k, dimension_type node_dim, Link_type link,
                         const distance_type& d = distance_type())
         : Base(impl_type(r, c, g, k, node_dim, link, d))
       { }
 
       Neighbor_iterator() { }
+
+      //@{
+      /**
+       *  This iterator can be casted silently into a container iterator. You can
+       *  therefore use this iterator as an argument to the erase function of
+       *  the container, for example.
+       *
+       *  @warning When using this iterator as an argument to the erase function
+       *  of the container, this iterator will get invalidated after erase.
+       */
+      operator Node_iterator<Value, Node>()
+      {
+        return Node_iterator<Value, Node>
+          (static_cast<typename Base::Link_type>(Base::impl_.node_));
+      }
+
+      operator Const_Node_iterator<Value, Node>()
+      {
+        return Const_Node_iterator<Value, Node>
+          (static_cast<typename Base::Link_type>(Base::impl_.node_));
+      }
+      //@}
     };
 
     /**
      *  @brief  A constant iterator based on Neighbor_iterator_base.
      */
-    template <typename Rank, typename Key, typename Node,
+    template <typename Rank, typename Key, typename Value, typename Node,
               typename Compare, typename Geometry>
     struct Const_Neighbor_iterator
       : Neighbor_iterator_base
-    <Rank, Key, Node, Compare, Geometry, true,
-     Const_Neighbor_iterator<Rank, Key, Node, Compare, Geometry> >
+    <Rank, Key, Value, Node, Compare, Geometry, true,
+     Const_Neighbor_iterator<Rank, Key, Value, Node, Compare, Geometry> >
     {
     private:
       typedef Neighbor_iterator
-      <Rank, Key, Node, Compare, Geometry>          iterator;
+      <Rank, Key, Value, Node, Compare, Geometry>       iterator;
       typedef Neighbor_iterator_base
-      <Rank, Key, Node, Compare, Geometry, true,
+      <Rank, Key, Value, Node, Compare, Geometry, true,
        Const_Neighbor_iterator
-       <Rank, Key, Node, Compare, Geometry> >       Base;
-          typedef typename Base::Link_type              Link_type;
-          typedef typename Base::distance_type          distance_type;
-          typedef typename Base::Neighbor_iterator_impl impl_type;
+       <Rank, Key, Value, Node, Compare, Geometry> >  Base;
+      typedef typename Base::Link_type                Link_type;
+      typedef typename Base::distance_type            distance_type;
+      typedef typename Base::Neighbor_iterator_impl   impl_type;
 
     public:
       Const_Neighbor_iterator
@@ -385,6 +406,20 @@ namespace spatial
                (i.rank(), i.compare(), i.geometry(),
                 i.target(), i.distance(), i.impl.node_dim, i.impl.node))
       { }
+
+      /**
+       *  This iterator can be casted silently into a container iterator. You can
+       *  therefore use this iterator as an argument to the erase function of
+       *  the container, for example.
+       *
+       *  @warning When using this iterator as an argument to the erase function
+       *  of the container, this iterator will get invalidated after erase.
+       */
+      operator Const_Node_iterator<Value, Node>()
+      {
+        return Const_Node_iterator<Value, Node>
+          (static_cast<typename Base::Link_type>(Base::impl_.node_));
+      }
     };
 
     namespace neighbor
@@ -396,6 +431,7 @@ namespace spatial
         typedef spatial::details::Neighbor_iterator
         <typename container_traits<Container>::rank_type,
          typename container_traits<Container>::key_type,
+         typename container_traits<Container>::value_type,
          typename container_traits<Container>::node_type,
          typename container_traits<Container>::compare_type,
          Geometry>
@@ -408,6 +444,7 @@ namespace spatial
         typedef spatial::details::Const_Neighbor_iterator
         <typename container_traits<Container>::rank_type,
          typename container_traits<Container>::key_type,
+         typename container_traits<Container>::value_type,
          typename container_traits<Container>::node_type,
          typename container_traits<Container>::compare_type,
          Geometry>
@@ -534,7 +571,10 @@ namespace spatial
     typedef typename spatial::container_traits<Container>  traits_type;
 
   public:
+    // Container traits
     typedef typename traits_type::key_type            key_type;
+    typedef typename traits_type::mapped_type         mapped_type;
+    typedef typename traits_type::value_type          value_type;
     typedef typename traits_type::pointer             pointer;
     typedef typename traits_type::const_pointer       const_pointer;
     typedef typename traits_type::reference           reference;
@@ -543,11 +583,13 @@ namespace spatial
     typedef typename traits_type::size_type           size_type;
     typedef typename traits_type::difference_type     difference_type;
     typedef typename traits_type::allocator_type      allocator_type;
-    typedef typename traits_type::compare_type        compare_type;
+    typedef typename traits_type::key_compare         key_compare;
+    typedef typename traits_type::value_compare       value_compare;
     typedef typename traits_type::rank_type           rank_type;
 
     typedef typename Geometry::distance_type          distance_type;
 
+    // Iterator types
     typedef typename spatial::details::condition
     <traits_type::const_iterator_tag::value,
      typename details::neighbor::const_iterator<Container, Geometry>::type,
@@ -648,7 +690,10 @@ namespace spatial
     typedef typename spatial::container_traits<Container>  traits_type;
 
   public:
+    // Container traits
     typedef typename traits_type::key_type            key_type;
+    typedef typename traits_type::mapped_type         mapped_type;
+    typedef typename traits_type::value_type          value_type;
     typedef typename traits_type::pointer             pointer;
     typedef typename traits_type::const_pointer       const_pointer;
     typedef typename traits_type::reference           reference;
@@ -657,7 +702,8 @@ namespace spatial
     typedef typename traits_type::size_type           size_type;
     typedef typename traits_type::difference_type     difference_type;
     typedef typename traits_type::allocator_type      allocator_type;
-    typedef typename traits_type::compare_type        compare_type;
+    typedef typename traits_type::key_compare         key_compare;
+    typedef typename traits_type::value_compare       value_compare;
     typedef typename traits_type::rank_type           rank_type;
 
     typedef typename Geometry::distance_type          distance_type;
@@ -935,5 +981,7 @@ namespace spatial
   //@}
 
 } // namespace spatial
+
+#include "spatial_neighbor.tpp"
 
 #endif // SPATIAL_NEIGHBOR_HPP

@@ -1,3 +1,12 @@
+2011-07-26  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * Revamp large amount of code to add support for pair<key, mapped>
+        values in container, and further down the road, paved the way for
+        intrusive container support. However no of it is documented nor unit
+        tested. So it is still in stage of infancy. At least the rest works. In
+        the process, I rearranged includes and remove some of the files from the
+        index, that have no use now.
+
 2011-07-15  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * src/bits/spatial_exceptions.hpp added a new exception check in all
@@ -28,7 +37,7 @@
 2011-07-13  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * doc/Doxyfile Add grouped distribution of documentation so has to
-	save some documentation hassle.
+        save some documentation hassle.
 
         * src/bits/spatial_node.hpp removed the @test list documentation
         marker in this file and other. Test list will be rebuilt if it becomes

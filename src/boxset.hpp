@@ -14,28 +14,7 @@
 #define SPATIAL_BOXSET_HPP
 
 #include "bits/spatial.hpp"
-#include "bits/spatial_set_macro.hpp"
-#include "bits/spatial_traits.hpp"
-#include "bits/spatial_exceptions.hpp"
-#include "bits/spatial_assert.hpp"
-#include "bits/spatial_details.hpp"
-#include "bits/spatial_function.hpp"
-#include "bits/spatial_node.hpp"
-#include "bits/spatial_mapping.hpp"
-#include "bits/spatial_range.hpp"
-#include "bits/spatial_geometry.hpp"
-#include "bits/spatial_neighbor.hpp"
-#include "bits/spatial_kdtree_base.hpp"
-#include "bits/spatial_kdtree.hpp"
 #include "bits/spatial_relaxed_kdtree.hpp"
-#include "bits/spatial_node.tpp"
-#include "bits/spatial_mapping.tpp"
-#include "bits/spatial_range.tpp"
-#include "bits/spatial_neighbor.tpp"
-#include "bits/spatial_kdtree_base.tpp"
-#include "bits/spatial_kdtree.tpp"
-#include "bits/spatial_relaxed_kdtree.tpp"
-#include "bits/spatial_unset_macro.hpp"
 
 namespace spatial
 {
@@ -45,12 +24,12 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct boxset
-    : details::Relaxed_kdtree<details::Static_rank<Rank << 1>, Key, Compare,
+    : details::Relaxed_kdtree<details::Static_rank<Rank << 1>, Key, Key, Compare,
                               BalancingPolicy, Alloc, true>
   {
   private:
     typedef details::Relaxed_kdtree
-    <details::Static_rank<Rank << 1>, Key, Compare,
+    <details::Static_rank<Rank << 1>, Key, Key, Compare,
                           BalancingPolicy, Alloc, true>           base_type;
     typedef boxset<Rank, Key, Compare, BalancingPolicy, Alloc>    Self;
 
@@ -101,11 +80,11 @@ namespace spatial
            typename BalancingPolicy,
            typename Alloc>
   struct boxset<0, Key, Compare, BalancingPolicy, Alloc>
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
                               BalancingPolicy, Alloc, true>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
                                     BalancingPolicy, Alloc, true> base_type;
     typedef boxset<0, Key, Compare, BalancingPolicy, Alloc>     Self;
 
@@ -161,11 +140,11 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct runtime_boxset
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
                               BalancingPolicy, Alloc, true>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
                                     BalancingPolicy, Alloc, true>  base_type;
     typedef runtime_boxset<Key, Compare, BalancingPolicy, Alloc> Self;
 
@@ -181,12 +160,12 @@ namespace spatial
     { except::check_rank_argument(dim); }
 
     runtime_boxset(dimension_type dim, const Compare& compare,
-                     const BalancingPolicy& policy)
+                   const BalancingPolicy& policy)
       : base_type(details::Dynamic_rank(dim << 1), compare, policy)
     { except::check_rank_argument(dim); }
 
     runtime_boxset(dimension_type dim, const Compare& compare,
-                     const BalancingPolicy& policy, const Alloc& alloc)
+                   const BalancingPolicy& policy, const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim << 1), compare, policy, alloc)
     { except::check_rank_argument(dim); }
 
@@ -199,7 +178,7 @@ namespace spatial
     { }
 
     runtime_boxset(const Compare& compare, const BalancingPolicy& policy,
-                     const Alloc& alloc)
+                   const Alloc& alloc)
       : base_type(details::Dynamic_rank(2), compare, policy, alloc)
     { }
 

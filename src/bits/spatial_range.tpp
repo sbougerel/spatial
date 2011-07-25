@@ -24,10 +24,10 @@ namespace spatial
   namespace details
   {
 
-    template<typename Rank, typename Key, typename Node,
+    template<typename Rank, typename Key, typename Value, typename Node,
              typename Predicate, bool Constant, typename Derived>
     inline void
-    Range_iterator_base<Rank, Key, Node, Predicate, Constant, Derived>
+    Range_iterator_base<Rank, Key, Value, Node, Predicate, Constant, Derived>
     ::increment()
     {
       SPATIAL_ASSERT_CHECK(!Node_base::header(impl_.node_));
@@ -36,13 +36,13 @@ namespace spatial
       do
         {
           if (impl_.node_->right != 0
-              && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_),
+              && predicate()(impl_.node_dim_(), Link_().key(impl_.node_),
                              rank()()) != above)
             {
               impl_.node_ = impl_.node_->right;
               impl_.node_dim_() = incr_dim(rank(), impl_.node_dim_());
               while (impl_.node_->left != 0
-                     && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_),
+                     && predicate()(impl_.node_dim_(), Link_().key(impl_.node_),
                                     rank()()) != below)
                 {
                   impl_.node_ = impl_.node_->left;
@@ -63,16 +63,16 @@ namespace spatial
             }
         }
       while (!Node_base::header(impl_.node_)
-             && match_all(rank(), SPATIAL_KEY(impl_.node_), predicate())
+             && match_all(rank(), Link_().key(impl_.node_), predicate())
              == false);
       SPATIAL_ASSERT_CHECK(impl_.node_dim_() < rank()());
       SPATIAL_ASSERT_CHECK(impl_.node_ != 0);
     }
 
-    template<typename Rank, typename Key, typename Node,
+    template<typename Rank, typename Key, typename Value, typename Node,
              typename Predicate, bool Constant, typename Derived>
     inline void
-    Range_iterator_base<Rank, Key, Node, Predicate, Constant, Derived>
+    Range_iterator_base<Rank, Key, Value, Node, Predicate, Constant, Derived>
     ::decrement()
     {
       SPATIAL_ASSERT_CHECK(impl_.node_ != 0);
@@ -85,13 +85,13 @@ namespace spatial
       do
         {
           if (impl_.node_->left != 0
-              && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_),
+              && predicate()(impl_.node_dim_(), Link_().key(impl_.node_),
                              rank()()) != below)
             {
               impl_.node_ = impl_.node_->left;
               impl_.node_dim_() = incr_dim(rank(), impl_.node_dim_());
               while (impl_.node_->right != 0
-                     && predicate()(impl_.node_dim_(), SPATIAL_KEY(impl_.node_),
+                     && predicate()(impl_.node_dim_(), Link_().key(impl_.node_),
                                     rank()()) != above)
                 {
                   impl_.node_ = impl_.node_->right;
@@ -112,19 +112,19 @@ namespace spatial
             }
         }
       while (!Node_base::header(impl_.node_)
-             && match_all(rank(), SPATIAL_KEY(impl_.node_), predicate())
+             && match_all(rank(), Link_().key(impl_.node_), predicate())
              == false);
       SPATIAL_ASSERT_CHECK(impl_.node_dim_() < rank()());
       SPATIAL_ASSERT_CHECK(impl_.node_ != 0);
     }
 
-    template<typename Rank, typename Key, typename Node,
+    template<typename Rank, typename Key, typename Value, typename Node,
              typename Predicate, bool Constant, typename Derived>
     inline Derived
-    Range_iterator_base<Rank, Key, Node, Predicate, Constant, Derived>
+    Range_iterator_base<Rank, Key, Value, Node, Predicate, Constant, Derived>
     ::minimum
-    (const Rank& rank, const Predicate& predicate,
-     dimension_type node_dim, Base_ptr node)
+    (const Rank& rank, const Predicate& predicate, dimension_type node_dim,
+     Base_ptr node)
     {
       SPATIAL_ASSERT_CHECK(node_dim < rank());
       SPATIAL_ASSERT_CHECK(!Node_base::header(node));
@@ -132,13 +132,13 @@ namespace spatial
       Base_ptr end = node->parent;
       // Quick positioning according to in-order transversal.
       while (node->right != 0
-             && predicate(node_dim, SPATIAL_KEY(node), rank()) == below)
+             && predicate(node_dim, Link_().key(node), rank()) == below)
         {
           node = node->right;
           node_dim = incr_dim(rank, node_dim);
         }
       while (node->left != 0
-             && predicate(node_dim, SPATIAL_KEY(node), rank()) != below)
+             && predicate(node_dim, Link_().key(node), rank()) != below)
         {
           node = node->left;
           node_dim = incr_dim(rank, node_dim);
@@ -146,15 +146,15 @@ namespace spatial
       // Start algorithm.
       do
         {
-          if (match_all(rank, SPATIAL_KEY(node), predicate) == true)
+          if (match_all(rank, Link_().key(node), predicate) == true)
             { break; }
           if (node->right != 0
-              && predicate(node_dim, SPATIAL_KEY(node), rank()) != above)
+              && predicate(node_dim, Link_().key(node), rank()) != above)
             {
               node = node->right;
               node_dim = incr_dim(rank, node_dim);
               while (node->left != 0
-                     && predicate(node_dim, SPATIAL_KEY(node), rank()) != below)
+                     && predicate(node_dim, Link_().key(node), rank()) != below)
                 {
                   node = node->left;
                   node_dim = incr_dim(rank, node_dim);
@@ -179,13 +179,13 @@ namespace spatial
       return Derived(rank, predicate, node_dim, static_cast<Link_type>(node));
     }
 
-    template<typename Rank, typename Key, typename Node,
+    template<typename Rank, typename Key, typename Value, typename Node,
              typename Predicate, bool Constant, typename Derived>
     inline Derived
-    Range_iterator_base<Rank, Key, Node, Predicate, Constant, Derived>
+    Range_iterator_base<Rank, Key, Value, Node, Predicate, Constant, Derived>
     ::maximum
-    (const Rank& rank, const Predicate& predicate,
-     dimension_type node_dim, Base_ptr node)
+    (const Rank& rank, const Predicate& predicate, dimension_type node_dim,
+     Base_ptr node)
     {
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(node_dim < rank());
@@ -193,13 +193,13 @@ namespace spatial
       Base_ptr end = node->parent;
       // Quick positioning according to in-order transversal.
       while (node->left != 0
-             && predicate(node_dim, SPATIAL_KEY(node), rank()) == above)
+             && predicate(node_dim, Link_().key(node), rank()) == above)
         {
           node = node->left;
           node_dim = incr_dim(rank, node_dim);
         }
       while (node->right != 0
-             && predicate(node_dim, SPATIAL_KEY(node), rank()) != above)
+             && predicate(node_dim, Link_().key(node), rank()) != above)
         {
           node = node->right;
           node_dim = incr_dim(rank, node_dim);
@@ -207,15 +207,15 @@ namespace spatial
       // Start algorithm.
       do
         {
-          if (match_all(rank, SPATIAL_KEY(node), predicate) == true)
+          if (match_all(rank, Link_().key(node), predicate) == true)
             { break; }
           if (node->left != 0
-              && predicate(node_dim, SPATIAL_KEY(node), rank()) != below)
+              && predicate(node_dim, Link_().key(node), rank()) != below)
             {
               node = node->left;
               node_dim = incr_dim(rank, node_dim);
               while (node->right != 0
-                     && predicate(node_dim, SPATIAL_KEY(node), rank()) != above)
+                     && predicate(node_dim, Link_().key(node), rank()) != above)
                 {
                   node = node->right;
                   node_dim = incr_dim(rank, node_dim);

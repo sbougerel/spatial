@@ -32,26 +32,27 @@ namespace spatial
      *  dimension K-d tree is very small by comparison to the number of objects,
      *  but pretty inefficient otherwise, by comparison to a set.
      */
-    template <typename Rank, typename Key, typename Node,
+    template <typename Rank, typename Key, typename Value, typename Node,
               typename Compare, bool Constant, typename Derived>
     struct Mapping_iterator_base
     {
-      typedef Key                             value_type;
+      typedef Value                              value_type;
       typedef typename condition
-      <Constant, const Key&, Key&>::type      reference;
+      <Constant, const Value&, Value&>::type     reference;
       typedef typename condition
-      <Constant, const Key*, Key*>::type      pointer;
-      typedef std::ptrdiff_t                  difference_type;
-      typedef std::bidirectional_iterator_tag iterator_category;
+      <Constant, const Value*, Value*>::type     pointer;
+      typedef std::ptrdiff_t                     difference_type;
+      typedef std::bidirectional_iterator_tag    iterator_category;
 
     protected:
       typedef typename condition
       <Constant, Node_base::Const_Base_ptr,
-       Node_base::Base_ptr>::type             Base_ptr;
+       Node_base::Base_ptr>::type                Base_ptr;
       typedef typename condition
-      <Constant, const Node*, Node*>::type    Link_type;
+      <Constant, const Node*, Node*>::type       Link_type;
       typedef typename node_traits<Node>
-      ::invariant_category                    invariant_category;
+      ::invariant_category                       invariant_category;
+      typedef Linker<Key, Value, Node>           Link_;
 
     public:
       /**
@@ -79,9 +80,9 @@ namespace spatial
          *  You can modify this key if you suddenly want the iterator to change
          *  dimension of iteration. However this field must always satisfy:
          *
-         *     mapping_dim() < KeyDimension()
+         *     mapping_dim() < Rank()
          *
-         *  @see KeyDimension
+         *  Rank being the template rank provider for the iterator.
          */
         Compress<Compare, dimension_type> mapping_dim_;
 
@@ -233,40 +234,40 @@ namespace spatial
       Mapping_iterator_impl impl_;
     };
 
-    template <typename Rank, typename Key, typename Node,
+    template <typename Rank, typename Key, typename Value, typename Node,
               typename Compare, bool Constant1, bool Constant2,
               typename Derived1, typename Derived2>
     inline bool
     operator==(const Mapping_iterator_base
-               <Rank, Key, Node, Compare, Constant1, Derived1>& x,
+               <Rank, Key, Value, Node, Compare, Constant1, Derived1>& x,
                const Mapping_iterator_base
-               <Rank, Key, Node, Compare, Constant2, Derived2>& y)
+               <Rank, Key, Value, Node, Compare, Constant2, Derived2>& y)
     { return x.impl_.node_ == y.impl_.node_; }
 
-    template <typename Rank, typename Key, typename Node,
+    template <typename Rank, typename Key, typename Value, typename Node,
               typename Compare, bool Constant1, bool Constant2,
               typename Derived1, typename Derived2>
     inline bool
     operator!=(const Mapping_iterator_base
-               <Rank, Key, Node, Compare, Constant1, Derived1>& x,
+               <Rank, Key, Value, Node, Compare, Constant1, Derived1>& x,
                const Mapping_iterator_base
-               <Rank, Key, Node, Compare, Constant2, Derived2>& y)
+               <Rank, Key, Value, Node, Compare, Constant2, Derived2>& y)
     { return !(x == y); }
 
     /**
      *  @brief  A mutable iterator based on Mapping_iterator_base.
      */
-    template <typename Rank, typename Key, typename Node,
+    template <typename Rank, typename Key, typename Value, typename Node,
               typename Compare>
     struct Mapping_iterator
       : Mapping_iterator_base
-    <Rank, Key, Node, Compare, false,
-     Mapping_iterator<Rank, Key, Node, Compare> >
+    <Rank, Key, Value, Node, Compare, false,
+     Mapping_iterator<Rank, Key, Value, Node, Compare> >
     {
     private:
       typedef Mapping_iterator_base
-      <Rank, Key, Node, Compare, false,
-       Mapping_iterator<Rank, Key, Node, Compare> >   Base;
+      <Rank, Key, Value, Node, Compare, false,
+       Mapping_iterator<Rank, Key, Value, Node, Compare> >   Base;
 
     public:
       Mapping_iterator(const Rank& r, const Compare& c,
@@ -277,25 +278,47 @@ namespace spatial
       { }
 
       Mapping_iterator() { }
+
+      //@{
+      /**
+       *  This iterator can be casted silently into a container iterator. You can
+       *  therefore use this iterator as an argument to the erase function of
+       *  the container, for example.
+       *
+       *  @warning When using this iterator as an argument to the erase function
+       *  of the container, this iterator will get invalidated after erase.
+       */
+      operator Node_iterator<Value, Node>()
+      {
+        return Node_iterator<Value, Node>
+          (static_cast<typename Base::Link_type>(Base::impl_.node_));
+      }
+
+      operator Const_Node_iterator<Value, Node>()
+      {
+        return Const_Node_iterator<Value, Node>
+          (static_cast<typename Base::Link_type>(Base::impl_.node_));
+      }
+      //@}
     };
 
     /**
      *  @brief  A constant iterator based on Mapping_iterator_base.
      */
-    template <typename Rank, typename Key, typename Node,
+    template <typename Rank, typename Key, typename Value, typename Node,
               typename Compare>
     struct Const_Mapping_iterator
       : Mapping_iterator_base
-    <Rank, Key, Node, Compare, true,
-     Const_Mapping_iterator<Rank, Key, Node, Compare> >
+    <Rank, Key, Value, Node, Compare, true,
+     Const_Mapping_iterator<Rank, Key, Value, Node, Compare> >
     {
     private:
       typedef Mapping_iterator
-      <Rank, Key, Node, Compare>    iterator;
+      <Rank, Key, Value, Node, Compare>    iterator;
 
       typedef Mapping_iterator_base
-      <Rank, Key, Node, Compare, true,
-       Const_Mapping_iterator<Rank, Key, Node, Compare> > Base;
+      <Rank, Key, Value, Node, Compare, true,
+       Const_Mapping_iterator<Rank, Key, Value, Node, Compare> > Base;
 
     public:
       Const_Mapping_iterator
@@ -312,6 +335,20 @@ namespace spatial
                (i.rank(), i.compare(), i.impl_.mapping_dim_(),
                 i.impl_.node_dim_, i.impl_.node_))
       { }
+
+      /**
+       *  This iterator can be casted silently into a container iterator. You can
+       *  therefore use this iterator as an argument to the erase function of
+       *  the container, for example.
+       *
+       *  @warning When using this iterator as an argument to the erase function
+       *  of the container, this iterator will get invalidated after erase.
+       */
+      operator Const_Node_iterator<Value, Node>()
+      {
+        return Const_Node_iterator<Value, Node>
+          (static_cast<typename Base::Link_type>(Base::impl_.node_));
+      }
     };
 
     namespace mapping
@@ -322,8 +359,9 @@ namespace spatial
         typedef spatial::details::Mapping_iterator
         <typename container_traits<Container>::rank_type,
          typename container_traits<Container>::key_type,
+         typename container_traits<Container>::value_type,
          typename container_traits<Container>::node_type,
-         typename container_traits<Container>::compare_type>
+         typename container_traits<Container>::key_compare>
         type;
       };
 
@@ -333,8 +371,9 @@ namespace spatial
         typedef spatial::details::Const_Mapping_iterator
         <typename container_traits<Container>::rank_type,
          typename container_traits<Container>::key_type,
+         typename container_traits<Container>::value_type,
          typename container_traits<Container>::node_type,
-         typename container_traits<Container>::compare_type>
+         typename container_traits<Container>::key_compare>
         type;
       };
 
@@ -344,7 +383,7 @@ namespace spatial
       {
         except::check_dimension_argument(container.dimension(), mapping_dim);
         return typename iterator<Container>::type
-          (container.rank(), container.compare(),
+          (container.rank(), container.key_comp(),
            mapping_dim, container.dimension() - 1,
            get_end(container));
       }
@@ -369,7 +408,7 @@ namespace spatial
             except::check_dimension_argument
               (container.dimension(), mapping_dim);
             return iterator<Container>::type::minimum
-              (container.rank(), container.compare(),
+              (container.rank(), container.key_comp(),
                mapping_dim, 0, container.end().node->parent);
           }
       }
@@ -395,7 +434,7 @@ namespace spatial
             except::check_dimension_argument
               (container.dimension(), mapping_dim);
             return iterator<Container>::type::lower_bound
-              (container.rank(), container.compare(),
+              (container.rank(), container.key_comp(),
                mapping_dim, 0, container.end().node->parent, key);
           }
       }
@@ -423,7 +462,7 @@ namespace spatial
             except::check_dimension_argument
               (container.dimension(), mapping_dim);
             return iterator<Container>::type::upper_bound
-              (container.rank(), container.compare(),
+              (container.rank(), container.key_comp(),
                mapping_dim, 0, container.end().node->parent, key);
           }
       }
@@ -457,7 +496,10 @@ namespace spatial
     typedef typename spatial::container_traits<Container>      traits_type;
 
   public:
+    // Container traits
     typedef typename traits_type::key_type            key_type;
+    typedef typename traits_type::mapped_type         mapped_type;
+    typedef typename traits_type::value_type          value_type;
     typedef typename traits_type::pointer             pointer;
     typedef typename traits_type::const_pointer       const_pointer;
     typedef typename traits_type::reference           reference;
@@ -466,9 +508,11 @@ namespace spatial
     typedef typename traits_type::size_type           size_type;
     typedef typename traits_type::difference_type     difference_type;
     typedef typename traits_type::allocator_type      allocator_type;
-    typedef typename traits_type::compare_type        compare_type;
+    typedef typename traits_type::key_compare         key_compare;
+    typedef typename traits_type::value_compare       value_compare;
     typedef typename traits_type::rank_type           rank_type;
 
+    // Iterator types
     typedef typename spatial::details::condition
     <traits_type::const_iterator_tag::value,
      typename details::mapping::const_iterator<Container>::type,
@@ -569,18 +613,23 @@ namespace spatial
     typedef typename spatial::container_traits<Container>    traits_type;
 
   public:
+    // Container traits
     typedef typename traits_type::key_type            key_type;
-    typedef typename traits_type::const_pointer       pointer;
+    typedef typename traits_type::mapped_type         mapped_type;
+    typedef typename traits_type::value_type          value_type;
+    typedef typename traits_type::pointer             pointer;
     typedef typename traits_type::const_pointer       const_pointer;
-    typedef typename traits_type::const_reference     reference;
+    typedef typename traits_type::reference           reference;
     typedef typename traits_type::const_reference     const_reference;
     typedef typename traits_type::node_type           node_type;
     typedef typename traits_type::size_type           size_type;
     typedef typename traits_type::difference_type     difference_type;
     typedef typename traits_type::allocator_type      allocator_type;
-    typedef typename traits_type::compare_type        compare_type;
+    typedef typename traits_type::key_compare         key_compare;
+    typedef typename traits_type::value_compare       value_compare;
     typedef typename traits_type::rank_type           rank_type;
 
+    // Iterator types
     typedef typename
     details::mapping::const_iterator<Container>::type const_iterator;
     typedef const_iterator                            iterator;
@@ -645,5 +694,7 @@ namespace spatial
   };
 
 } // namespace spatial
+
+#include "spatial_mapping.tpp"
 
 #endif // SPATIAL_MAPPING_HPP

@@ -24,18 +24,52 @@ namespace spatial
   namespace details
   {
 
-    template<typename Rank, typename Key, typename Compare,
-             typename Balancing, typename Alloc, bool ConstIterator>
+    template <typename Rank, typename Key, typename Mapped, typename Compare,
+              typename Balancing, typename Alloc, bool ConstIterator>
     inline void
-    Relaxed_kdtree<Rank, Key, Compare, Balancing, Alloc, ConstIterator>
-    ::copy_structure(const Self& other)
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
+    ::destroy_all_nodes()
+    {
+      Node_base::Base_ptr node = get_root();
+      while (!Node_base::header(node))
+        {
+          if (node->left != 0) { node = node->left; }
+          else if (node->right != 0) { node = node->right; }
+          else
+            {
+              Node_base::Base_ptr p = node->parent;
+              if (Node_base::header(p))
+                {
+                  set_root(get_header());
+                  set_leftmost(get_header());
+                  set_rightmost(get_header());
+                }
+              else
+                {
+                  if (p->left == node) { p->left = 0; }
+                  else { p->right = 0; }
+                }
+              SPATIAL_ASSERT_CHECK(node != 0);
+              SPATIAL_ASSERT_CHECK(p != 0);
+              destroy_node(static_cast<Link_type>(node));
+              node = p;
+            }
+        }
+    }
+
+    template <typename Rank, typename Key, typename Mapped, typename Compare,
+              typename Balancing, typename Alloc, bool ConstIterator>
+    inline void
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
+    ::copy_structure
+    (const Self& other)
     {
       SPATIAL_ASSERT_CHECK(!other.empty());
-      SPATIAL_ASSERT_CHECK(Base::empty());
+      SPATIAL_ASSERT_CHECK(empty());
       Const_Base_ptr other_node = other.get_root();
       Base_ptr node = clone_node(other_node); // may throw
-      node->parent = Base::get_header();
-      Base::set_root(node);
+      node->parent = get_header();
+      set_root(node);
       try
         {
           while(!Node_base::header(other_node))
@@ -78,22 +112,22 @@ namespace spatial
                     }
                 }
             }
-          SPATIAL_ASSERT_CHECK(!Base::empty());
+          SPATIAL_ASSERT_CHECK(!empty());
           SPATIAL_ASSERT_CHECK(Node_base::header(other_node));
           SPATIAL_ASSERT_CHECK(Node_base::header(node));
         }
       catch (...)
         { clear(); throw; } // clean-up before re-throw
-      Base::set_leftmost(Node_base::minimum(Base::get_root()));
-      Base::set_rightmost(Node_base::maximum(Base::get_root()));
+      set_leftmost(Node_base::minimum(get_root()));
+      set_rightmost(Node_base::maximum(get_root()));
     }
 
-    template<typename Rank, typename Key, typename Compare,
-             typename Balancing, typename Alloc, bool ConstIterator>
+    template <typename Rank, typename Key, typename Mapped, typename Compare,
+              typename Balancing, typename Alloc, bool ConstIterator>
     inline bool
-    Relaxed_kdtree<Rank, Key, Compare, Balancing, Alloc, ConstIterator>
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
     ::is_node_unbalanced
-    (Base_ptr node, weight_type more_left, weight_type more_right)
+    (Base_ptr node, weight_type more_left, weight_type more_right) const
     {
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!Node_base::header(node));
@@ -107,26 +141,26 @@ namespace spatial
       // iteration, mapping iteration, range iteration), I still have to perform
       // experiments that reflect this hypothesis.
       if (static_cast<Link_type>(node)->weight <=
-          static_cast<weight_type>(Base::dimension()) << 1)
+          static_cast<weight_type>(dimension()) << 1)
         { return false; }
-      return m_balancing(Base::rank(),
-                         more_left + (node->left
-                                      ? static_cast<Link_type>
-                                      (node->left)->weight : 0),
-                         more_right + (node->right
-                                       ? static_cast<Link_type>
-                                       (node->right)->weight : 0));
+      return balancing()
+        (rank(),
+         more_left + (node->left
+                      ? static_cast<Link_type>(node->left)->weight : 0),
+         more_right + (node->right
+                       ? static_cast<Link_type>(node->right)->weight : 0));
     }
 
-    template<typename Rank, typename Key, typename Compare,
-             typename Balancing, typename Alloc, bool ConstIterator>
-    inline typename Relaxed_kdtree<Rank, Key, Compare, Balancing, Alloc,
-                                   ConstIterator>::Base_ptr
-    Relaxed_kdtree<Rank, Key, Compare, Balancing, Alloc, ConstIterator>
+    template <typename Rank, typename Key, typename Mapped, typename Compare,
+              typename Balancing, typename Alloc, bool ConstIterator>
+    inline
+    typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
+                            ConstIterator>::Base_ptr
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
     ::balance_node
     (dimension_type node_dim, Base_ptr node)
     {
-      Base_ptr p = node->parent; // Parent does not get swapped!
+      Base_ptr p = node->parent; // Parent does not get swapped but node does!
       bool left_node = (p->left == node);
       // erase first...
       erase_node(node_dim, node);
@@ -138,18 +172,17 @@ namespace spatial
         : (left_node ? p->left : p->right);
     }
 
-    template<typename Rank, typename Key, typename Compare,
-             typename Balancing, typename Alloc, bool ConstIterator>
+    template <typename Rank, typename Key, typename Mapped, typename Compare,
+              typename Balancing, typename Alloc, bool ConstIterator>
     inline
-    typename Relaxed_kdtree<Rank, Key, Compare, Balancing, Alloc, ConstIterator>
-    ::iterator
-    Relaxed_kdtree<Rank, Key, Compare, Balancing, Alloc, ConstIterator>
+    typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
+                            ConstIterator>::iterator
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
     ::insert_node
-    (dimension_type node_dim, Base_ptr node, Base_ptr new_node)
+    (dimension_type node_dim, Base_ptr node, Base_ptr target_node)
     {
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!Node_base::header(node));
-      const Compare& cmp = Base::compare();
       while (true)
         {
           SPATIAL_ASSERT_CHECK
@@ -159,8 +192,9 @@ namespace spatial
                 ? static_cast<Link_type>(node->left)->weight: 0)
              + 1 == static_cast<Link_type>(node)->weight);
           // Balancing equal values on either side of the tree
-          if (cmp(node_dim, SPATIAL_KEY(new_node), SPATIAL_KEY(node))
-              || (!cmp(node_dim, SPATIAL_KEY(node), SPATIAL_KEY(new_node))
+          if (key_comp()(node_dim, Link_().key(target_node), Link_().key(node))
+              || (!key_comp()(node_dim, Link_().key(node),
+                             Link_().key(target_node))
                   && (node->left == 0
                       || (node->right != 0
                           && static_cast<Link_type>(node->left)->weight
@@ -168,10 +202,10 @@ namespace spatial
             {
               if (node->left == 0)
                 {
-                  node->left = new_node;
-                  new_node->parent = node;
-                  if (Base::get_leftmost() == node)
-                    { Base::set_leftmost(new_node); }
+                  node->left = target_node;
+                  target_node->parent = node;
+                  if (get_leftmost() == node)
+                    { set_leftmost(target_node); }
                   ++static_cast<Link_type>(node)->weight;
                   break;
                 }
@@ -185,7 +219,7 @@ namespace spatial
                     {
                       ++static_cast<Link_type>(node)->weight;
                       node = node->left;
-                      node_dim = incr_dim(Base::rank(), node_dim);
+                      node_dim = incr_dim(rank(), node_dim);
                     }
                 }
             }
@@ -193,10 +227,10 @@ namespace spatial
             {
               if (node->right == 0)
                 {
-                  node->right = new_node;
-                  new_node->parent = node;
-                  if (Base::get_rightmost() == node)
-                    { Base::set_rightmost(new_node); }
+                  node->right = target_node;
+                  target_node->parent = node;
+                  if (get_rightmost() == node)
+                    { set_rightmost(target_node); }
                   ++static_cast<Link_type>(node)->weight;
                   break;
                 }
@@ -210,28 +244,33 @@ namespace spatial
                     {
                       ++static_cast<Link_type>(node)->weight;
                       node = node->right;
-                      node_dim = incr_dim(Base::rank(), node_dim);
+                      node_dim = incr_dim(rank(), node_dim);
                     }
                 }
             }
         }
-      SPATIAL_ASSERT_CHECK(new_node != 0);
-      SPATIAL_ASSERT_CHECK(!Node_base::header(new_node));
-      SPATIAL_ASSERT_CHECK(!Node_base::header(new_node->parent));
-      return iterator(static_cast<Link_type>(new_node));
+      SPATIAL_ASSERT_CHECK(target_node != 0);
+      SPATIAL_ASSERT_CHECK(!Node_base::header(target_node));
+      SPATIAL_ASSERT_CHECK(!Node_base::header(target_node->parent));
+      SPATIAL_ASSERT_CHECK(target_node->right == 0);
+      SPATIAL_ASSERT_CHECK(target_node->left == 0);
+      SPATIAL_ASSERT_CHECK(target_node->parent != 0);
+      return iterator(static_cast<Link_type>(target_node));
     }
 
-    template<typename Rank, typename Key, typename Compare,
-             typename Balancing, typename Alloc, bool ConstIterator>
-    inline typename Relaxed_kdtree<Rank, Key, Compare, Balancing, Alloc,
-                                   ConstIterator>::Base_ptr
-    Relaxed_kdtree<Rank, Key, Compare, Balancing, Alloc, ConstIterator>
+    template <typename Rank, typename Key, typename Mapped, typename Compare,
+              typename Balancing, typename Alloc, bool ConstIterator>
+    inline
+    typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
+                            ConstIterator>::Base_ptr
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
     ::erase_node
     (dimension_type node_dim, Base_ptr node)
     {
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!Node_base::header(node));
-      typedef Mapping_iterator<Rank, Key, node_type, Compare> mapping_iterator;
+      typedef Mapping_iterator<rank_type, key_type, value_type, node_type,
+                               Compare> mapping_iterator;
       Base_ptr parent = node->parent;
       while (node->right != 0 || node->left != 0)
         {
@@ -242,22 +281,22 @@ namespace spatial
                   < static_cast<Link_type>(node->left)->weight))
             {
               candidate = mapping_iterator::maximum
-                (Base::rank(), Base::compare(), node_dim,
-                 incr_dim(Base::rank(), node_dim), node->left);
-              if (Base::get_leftmost() == candidate.impl_.node_)
-                { Base::set_leftmost(node); }
-              if (Base::get_rightmost() == node)
-                { Base::set_rightmost(candidate.impl_.node_); }
+                (rank(), key_comp(), node_dim,
+                 incr_dim(rank(), node_dim), node->left);
+              if (get_leftmost() == candidate.impl_.node_)
+                { set_leftmost(node); }
+              if (get_rightmost() == node)
+                { set_rightmost(candidate.impl_.node_); }
             }
           else
             {
               candidate = mapping_iterator::minimum
-                (Base::rank(), Base::compare(), node_dim,
-                 incr_dim(Base::rank(), node_dim), node->right);
-              if (Base::get_rightmost() == candidate.impl_.node_)
-                { Base::set_rightmost(node); }
-              if (Base::get_leftmost() == node)
-                { Base::set_leftmost(candidate.impl_.node_); }
+                (rank(), key_comp(), node_dim,
+                 incr_dim(rank(), node_dim), node->right);
+              if (get_rightmost() == candidate.impl_.node_)
+                { set_rightmost(node); }
+              if (get_leftmost() == node)
+                { set_leftmost(candidate.impl_.node_); }
             }
           spatial::details::swap(*static_cast<Link_type>(candidate.impl_.node_),
                                  *static_cast<Link_type>(node));
@@ -271,27 +310,27 @@ namespace spatial
       Base_ptr p = node->parent;
       if (Node_base::header(p))
         {
-          Base::set_root(Base::get_header());
-          Base::set_leftmost(Base::get_header());
-          Base::set_rightmost(Base::get_header());
+          set_root(get_header());
+          set_leftmost(get_header());
+          set_rightmost(get_header());
         }
       else
         {
           if (p->left == node)
             {
               p->left = 0;
-              if (Base::get_leftmost() == node) { Base::set_leftmost(p); }
+              if (get_leftmost() == node) { set_leftmost(p); }
             }
           else
             {
               p->right = 0;
-              if (Base::get_rightmost() == node) { Base::set_rightmost(p); }
+              if (get_rightmost() == node) { set_rightmost(p); }
             }
           // decrease count and rebalance parents up to parent
           while(node->parent != parent)
             {
               node = node->parent;
-              node_dim = decr_dim(Base::rank(), node_dim);
+              node_dim = decr_dim(rank(), node_dim);
               SPATIAL_ASSERT_CHECK(static_cast<Link_type>(node)->weight > 1);
               --static_cast<Link_type>(node)->weight;
               if(is_node_unbalanced(node))
@@ -305,18 +344,18 @@ namespace spatial
       return node;
     }
 
-    template<typename Rank, typename Key, typename Compare,
-             typename Balancing, typename Alloc, bool ConstIterator>
+    template <typename Rank, typename Key, typename Mapped, typename Compare,
+              typename Balancing, typename Alloc, bool ConstIterator>
     inline void
-    Relaxed_kdtree<Rank, Key, Compare, Balancing, Alloc, ConstIterator>
-    ::erase_node_finish
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
+    ::erase_node_balance
     (dimension_type node_dim, Base_ptr node)
     {
       SPATIAL_ASSERT_CHECK(!Node_base::header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
       Base_ptr p = node->parent;
       erase_node(node_dim, node);
-      node_dim = decr_dim(Base::rank(), node_dim);
+      node_dim = decr_dim(rank(), node_dim);
       while(!Node_base::header(p))
         {
           SPATIAL_ASSERT_CHECK(static_cast<Link_type>(p)->weight > 1);
@@ -324,62 +363,49 @@ namespace spatial
           if(is_node_unbalanced(p))
             { p = balance_node(node_dim, p); } // balance node
           p = p->parent;
-          node_dim = decr_dim(Base::rank(), node_dim);
+          node_dim = decr_dim(rank(), node_dim);
         }
     }
 
-    template<typename Rank, typename Key, typename Compare,
-             typename Balancing, typename Alloc, bool ConstIterator>
+    template <typename Rank, typename Key, typename Mapped, typename Compare,
+              typename Balancing, typename Alloc, bool ConstIterator>
     inline void
-    Relaxed_kdtree<Rank, Key, Compare, Balancing, Alloc, ConstIterator>
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
     ::erase
-    (const_iterator target)
+    (iterator target)
     {
       except::check_node_iterator_argument(target.node);
-      dimension_type node_dim = Base::rank()() - 1;
+      dimension_type node_dim = rank()() - 1;
       Const_Base_ptr node = target.node;
       while (!Node_base::header(node))
         {
           node = node->parent;
-          node_dim = incr_dim(Base::rank(), node_dim);
+          node_dim = incr_dim(rank(), node_dim);
         }
-      except::check_iterator_argument(node, Base::get_header());
-      erase_node_finish(node_dim, const_cast<Base_ptr>(target.node));
-      destroy_node(static_cast<Link_type>(const_cast<Base_ptr>(target.node)));
+      except::check_iterator_argument(node, get_header());
+      erase_node_balance(node_dim, target.node);
+      destroy_node(static_cast<Link_type>(target.node));
     }
 
-    template<typename Rank, typename Key, typename Compare,
-             typename Balancing, typename Alloc, bool ConstIterator>
-    inline typename Relaxed_kdtree<Rank, Key, Compare, Balancing, Alloc,
-                                   ConstIterator>::size_type
-    Relaxed_kdtree<Rank, Key, Compare, Balancing, Alloc, ConstIterator>
+    template <typename Rank, typename Key, typename Mapped, typename Compare,
+              typename Balancing, typename Alloc, bool ConstIterator>
+    inline
+    typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
+                            ConstIterator>::size_type
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
     ::erase
     (const key_type& key)
     {
       size_type cnt = 0;
       while (true)
         {
-          if (Base::empty()) break;
-          std::pair<typename Base::equal_iterator,
-                    typename Base::equal_iterator>
-            found = Base::equal_range(key);
-          typename Base::equal_iterator iter = found.first;
-          for (; iter != found.second; ++iter)
-            {
-              /*
-               * If the compiler throws you an error at the line below, please,
-               * define the '==' operator for the type 'key_type'.
-               */
-              if (*iter == key)
-                {
-                  erase_node_finish(iter.impl_.node_dim_(), iter.impl_.node_);
-                  destroy_node(static_cast<Link_type>(iter.impl_.node_));
-                  ++cnt;
-                  // We modified the tree, so we re-initialize the iterators
-                  break;
-                }
-            }
-          if (iter == found.second) break;
+          if (empty()) break;
+          std::pair<equal_iterator, equal_iterator> found = equal_range(key);
+          if (found.first == found.second) break; // no node matching this key
+          erase_node_balance(found.first.impl_.node_dim_(),
+                             found.first.impl_.node_);
+          destroy_node(static_cast<Link_type>(found.first.impl_.node_));
+          ++cnt;
         }
       return cnt;
     }

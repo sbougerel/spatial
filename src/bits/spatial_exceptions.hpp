@@ -190,7 +190,7 @@ namespace spatial
      const typename container_traits<Tp>::key_type& upper)
     {
       for (dimension_type dim = 0; dim < container.dimension(); ++dim)
-        if (!container.compare()(dim, lower, upper))
+        if (!container.key_comp()(dim, lower, upper))
           throw invalid_range_bounds
             ("lower is greater or equal to upper over one dimension at least");
     }
@@ -229,7 +229,7 @@ namespace spatial
      const typename container_traits<Tp>::key_type& upper)
     {
       for (dimension_type dim = 0; dim < container.dimension(); ++dim)
-        if (container.compare()(dim, upper, lower))
+        if (container.key_comp()(dim, upper, lower))
           throw invalid_range_bounds
             ("upper is stricly less than lower over one dimension at least");
     }
@@ -252,7 +252,7 @@ namespace spatial
     {
       dimension_type rank = container.dimension() >> 1;
       for (dimension_type i = 0; i < rank; ++i)
-        if (container.compare()(i + rank, box, i, box))
+        if (container.key_comp()(i + rank, box, i, box))
           throw invalid_box_argument
             ("box does not follow specified layout or coordinates are invalid");
     }
@@ -265,7 +265,7 @@ namespace spatial
     {
       dimension_type rank = container.dimension() >> 1;
       for (dimension_type i = 0; i < rank; ++i)
-        if (container.compare()(i, box, i + rank, box))
+        if (container.key_comp()(i, box, i + rank, box))
           throw invalid_box_argument
             ("box does not follow specified layout or coordinates are invalid");
     }
@@ -277,7 +277,7 @@ namespace spatial
      lhlh_layout_tag)
     {
       for (dimension_type i = 0; i < container.dimension(); i += 2)
-        if (container.compare()(i + 1, box, i, box))
+        if (container.key_comp()(i + 1, box, i, box))
           throw invalid_box_argument
             ("box does not follow specified layout or coordinates are invalid");
     }
@@ -289,7 +289,7 @@ namespace spatial
      hlhl_layout_tag)
     {
       for (dimension_type i = 0; i < container.dimension(); i += 2)
-        if (container.compare()(i, box, i + 1, box))
+        if (container.key_comp()(i, box, i + 1, box))
           throw invalid_box_argument
             ("box does not follow specified layout or coordinates are invalid");
     }

@@ -53,10 +53,10 @@ namespace spatial
       Compress() { }
 
       Compress(const Member& member)
-	: Base(), member_(member) { }
+        : Base(), member_(member) { }
 
       Compress(const Base& compressed_base, const Member& member)
-	: Base(compressed_base), member_(member) { }
+        : Base(compressed_base), member_(member) { }
 
       //@{
       /**
@@ -110,12 +110,33 @@ namespace spatial
 
       explicit
       Dynamic_rank(dimension_type rank = 1)
-	: rank_(rank)
+        : rank_(rank)
       { }
 
     private:
       dimension_type rank_;
     };
+
+    //@{
+    /**
+     *  @brief  Perform a specialized assign for empty classes.
+     */
+    template<bool, typename Tp>
+    struct template_member_assign_provider
+    {
+      static void do_it(Tp& left, const Tp& right)
+      { left = right; }
+    };
+
+    template<typename Tp>
+    struct template_member_assign_provider<true, Tp>
+    { static void do_it(Tp&, const Tp&) { } };
+
+    template <typename Tp>
+    struct template_member_assign
+      : template_member_assign_provider<std::tr1::is_empty<Tp>::value, Tp>
+    { };
+    //@}
 
     //@{
     /**
@@ -126,8 +147,8 @@ namespace spatial
     {
       static void do_it(Tp& left, Tp& right)
       {
-	using std::swap;
-	swap(left, right);
+        using std::swap;
+        swap(left, right);
       }
     };
 
@@ -168,10 +189,10 @@ namespace spatial
     template <typename Key, typename Compare>
     inline bool
     less_by_ref(const Compare& compare, dimension_type node_dim,
-		const Key& x, const Key& y)
+                const Key& x, const Key& y)
     {
       return (compare(node_dim, x, y)
-	      || (&x < &y && !compare(node_dim, y, x)));
+              || (&x < &y && !compare(node_dim, y, x)));
     }
 
     /**
@@ -183,10 +204,10 @@ namespace spatial
     match_all(const Rank& rank, const Key& key, const Predicate& predicate)
     {
       for (dimension_type i = 0; i < rank(); ++i)
-	{
-	  if (predicate(i, key, rank()) != matching)
-	    { return false; }
-	}
+        {
+          if (predicate(i, key, rank()) != matching)
+            { return false; }
+        }
       return true;
     }
 
@@ -199,10 +220,10 @@ namespace spatial
     match_any(const Rank& rank, const Key& key, const Predicate& predicate)
     {
       for (dimension_type i = 0; i < rank(); ++i)
-	{
-	  if (predicate(i, key, rank()) == matching)
-	    { return true; }
-	}
+        {
+          if (predicate(i, key, rank()) == matching)
+            { return true; }
+        }
       return false;
     }
 
@@ -213,15 +234,48 @@ namespace spatial
     template <typename Rank, typename Key, typename Predicate>
     inline bool
     match_most(const Rank& rank, dimension_type exclude_dim,
-	       const Key& key, const Predicate& predicate)
+               const Key& key, const Predicate& predicate)
     {
       for (dimension_type i = 0; i < rank(); ++i)
-	{
-	  if (i != exclude_dim && predicate(i, key, rank()) != matching)
-	    { return false; }
-	}
+        {
+          if (i != exclude_dim && predicate(i, key, rank()) != matching)
+            { return false; }
+        }
       return true;
     }
+
+    /**
+     *  Value compare functor for container storing pairs of Key, Value types,
+     *  such as @ref pointmap, @ref boxmap, etc. These container provide a
+     *  @c key_compare functor type that is being used for the comparison of the
+     *  value.
+     *
+     *  In @ref pointmap, @ref boxmap and other containers, the value type
+     *  differs from the key type. Value type is a pair of key type and mapped
+     *  type. The @c KeyCompare functor, provided to the container is reused
+     *  to compare the value by using the first element of each value which is
+     *  the key.
+     */
+    template <typename Value, typename KeyCompare>
+    struct ValueCompare : private KeyCompare
+    {
+      ValueCompare(const KeyCompare& x) : KeyCompare(x) { }
+
+      ValueCompare() : KeyCompare() { }
+
+      /**
+       *  Compare 2 values @c a and @c b with the comparison operator provided
+       *  by @c KeyCompare.
+       *
+       *  @param a The left value to compare.
+       *  @param b The right value to compare.
+       *  @return The returned value is equivalent to <tt>KeyCompare()(a, b)</tt>.
+       */
+      bool operator()(const Value& a, const Value& b) const
+      {
+        return KeyCompare::operator()(a.first, b.first);
+      }
+    };
 
   } // namespace details
 

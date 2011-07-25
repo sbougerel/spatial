@@ -2,7 +2,7 @@
 
 /**
  *  @file   spatial_traits.hpp
- *  @brief  
+ *  @brief
  *
  *  Change Log:
  *
@@ -35,12 +35,7 @@ namespace spatial
 {
   namespace details
   {
-    /*
-     * Resolves the type passed as a template, useful to enforce a tag.
-     */
-    template <typename Type>
-    struct identity { typedef Type type; };
-
+    //@{
     /*
      *  A type trait that choses between 2 types
      */
@@ -50,6 +45,7 @@ namespace spatial
     template<typename Tp1, typename Tp2>
     struct condition<false, Tp1, Tp2>
     { typedef Tp2 type; };
+    //@}
 
     /*
      *  The category of invariants for a k-d tree: strict or relaxed.
@@ -60,6 +56,7 @@ namespace spatial
     // Forward declaration needed for the traits
     template<typename Key> struct Kdtree_node;
 
+    //@{
     /*
      *  The node traits of the trees in spatial.
      */
@@ -70,6 +67,7 @@ namespace spatial
     template<typename Key>
     struct node_traits<Kdtree_node<Key> >
     { typedef strict_invariant_tag invariant_category; };
+    //@}
 
     /*
      *  Help to retrieve the invariant category for a node type.
@@ -79,6 +77,7 @@ namespace spatial
     invariant_category(const Node&)
     { return typename node_traits<Node>::invariant_category(); }
 
+    //@{
     /*
      * A helper function to tag container for contant or non constant
      * iterators.
@@ -90,6 +89,17 @@ namespace spatial
     template<>
     struct true_or_false_type<true>
     { typedef std::tr1::true_type type; };
+    //@}
+
+    //@{
+    /**
+     *  A helper that tells if two types are the same.
+     */
+    template<typename Tp1, typename Tp2>
+    struct is_same : std::tr1::false_type { };
+    template <typename Tp>
+    struct is_same<Tp, Tp> : std::tr1::true_type { };
+    //@}
 
   } // namespace details
 
@@ -102,14 +112,32 @@ namespace spatial
   struct container_traits
   {
     /**
-     *  @brief  The type representing the key managed by the container. key_type
+     *  The type representing the key managed by the container. @c key_type
      *  holds the coordinates that keeps its instances ordered in the container.
      */
     typedef typename Tp::key_type               key_type;
 
     /**
-     *  @brief  Represent a pointer to a key_type. May or may not be mutable,
-     *  depending on the type of key_type.
+     *  The type representing the mapped values managed by the container. When
+     *  @c mapped_type and @c key_type are different, as in mapped containers
+     *  @ref pointmap or @ref boxmap; mapped_type holds the mutable part of the
+     *  container value. Modifing the @c mapped_type does not affect @c
+     *  key_type.
+     */
+    typedef typename Tp::mapped_type            mapped_type;
+
+    /**
+     *  When mapped_type and key_type are different, value_type holds a pair
+     *  formed by key_type (first) and mapped_type (second); this is the case
+     *  for @ref pointmap or @ref boxmap containers. In @ref pointset and @ref
+     *  boxset containers, @c key_type, @c mapped_type and @c value_type are all
+     *  similar types.
+     */
+    typedef typename Tp::value_type             value_type;
+
+    /**
+     *  @brief  Represent a pointer to a @c value_type. This type is used by the
+     *  iterators of the container.
      */
     typedef typename Tp::pointer                pointer;
 
@@ -133,14 +161,22 @@ namespace spatial
     typedef typename Tp::node_type              node_type;
     typedef typename Tp::size_type              size_type;
     typedef typename Tp::difference_type        difference_type;
-    typedef typename Tp::node_allocator_type    node_allocator_type;
     typedef typename Tp::allocator_type         allocator_type;
-    typedef typename Tp::compare_type           compare_type;
+
+    /**
+     *  Comparison functor used to compare two instances of @c key_type. It is
+     *  also the type provided by the user in the various containers, @ref
+     *  pointset, @ref boxset, @ref pointmap or @ref boxmap.
+     */
+    typedef typename Tp::key_compare            key_compare;
+
+    /**
+     *  Comparison functor used to compare two instances of @c value_type. This
+     *  type is deduced from the key_compare in all containers.
+     */
+    typedef typename Tp::value_compare          value_compare;
+
     typedef typename Tp::rank_type              rank_type;
-    typedef typename Tp::iterator               iterator;
-    typedef typename Tp::const_iterator         const_iterator;
-    typedef typename Tp::reverse_iterator       reverse_iterator;
-    typedef typename Tp::const_reverse_iterator const_reverse_iterator;
 
     /**
      *  @brief  A tag that defines whether the iterator of the container are

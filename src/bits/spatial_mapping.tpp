@@ -25,8 +25,8 @@ namespace spatial
   {
     namespace mapping
     {
-      template<typename Impl, typename Base_ptr, typename Link_type,
-               typename Rank, typename Key, typename Compare>
+      template<typename Impl, typename Base_ptr, typename Link_,
+               typename Rank, typename Compare>
       inline void
       increment(Impl& impl_, details::relaxed_invariant_tag)
       {
@@ -49,36 +49,36 @@ namespace spatial
               }
             while (node->left != 0
                    && (node_dim != impl_.mapping_dim_()
-                       || !cmp(node_dim, SPATIAL_KEY(node),
-                              SPATIAL_KEY(impl_.node_))));
+                       || !cmp(node_dim, Link_().key(node),
+                               Link_().key(impl_.node_))));
           }
         Base_ptr ceiling = node->parent; // the upper limit of unvisited nodes
         bool sibling_visited = false;    // at ceiling, sibling node is visited
-        if (less_by_ref(cmp, impl_.mapping_dim_(), SPATIAL_KEY(impl_.node_),
-                        SPATIAL_KEY(node)))
+        if (less_by_ref(cmp, impl_.mapping_dim_(), Link_().key(impl_.node_),
+                        Link_().key(node)))
           { best = node; best_dim = node_dim; }
         do
           {
             if (node->right != 0
                 && (node_dim != impl_.mapping_dim_() || best == 0
-                    || !cmp(node_dim, SPATIAL_KEY(best), SPATIAL_KEY(node))))
+                    || !cmp(node_dim, Link_().key(best), Link_().key(node))))
               {
                 node = node->right;
                 node_dim = incr_dim(rank, node_dim);
                 while (node->left != 0
                        && (node_dim != impl_.mapping_dim_()
-                           || !cmp(node_dim, SPATIAL_KEY(node),
-                                   SPATIAL_KEY(impl_.node_))))
+                           || !cmp(node_dim, Link_().key(node),
+                                   Link_().key(impl_.node_))))
                   {
                     node = node->left;
                     node_dim = incr_dim(rank, node_dim);
                   }
                 if (less_by_ref(cmp, impl_.mapping_dim_(),
-                                SPATIAL_KEY(impl_.node_),
-                                SPATIAL_KEY(node))
+                                Link_().key(impl_.node_),
+                                Link_().key(node))
                     && (best == 0
                         || less_by_ref(cmp, impl_.mapping_dim_(),
-                                       SPATIAL_KEY(node), SPATIAL_KEY(best))))
+                                       Link_().key(node), Link_().key(best))))
                   { best = node; best_dim = node_dim; }
               }
             else
@@ -99,12 +99,12 @@ namespace spatial
                     if (node == ceiling)
                       {
                         if (less_by_ref(cmp, impl_.mapping_dim_(),
-                                        SPATIAL_KEY(impl_.node_),
-                                        SPATIAL_KEY(node))
+                                        Link_().key(impl_.node_),
+                                        Link_().key(node))
                             && (best == 0
                                 || less_by_ref(cmp, impl_.mapping_dim_(),
-                                               SPATIAL_KEY(node),
-                                               SPATIAL_KEY(best))))
+                                               Link_().key(node),
+                                               Link_().key(best))))
                           { best = node; best_dim = node_dim; }
                         sibling_visited = false;
                         ceiling = p;
@@ -119,19 +119,19 @@ namespace spatial
                     while (node->left != 0
                            && (node_dim != impl_.mapping_dim_()
                                || !cmp(node_dim,
-                                       SPATIAL_KEY(node),
-                                       SPATIAL_KEY(impl_.node_))))
+                                       Link_().key(node),
+                                       Link_().key(impl_.node_))))
                       {
                         node = node->left;
                         node_dim = incr_dim(rank, node_dim);
                       }
                     if (less_by_ref(cmp, impl_.mapping_dim_(),
-                                    SPATIAL_KEY(impl_.node_),
-                                    SPATIAL_KEY(node))
+                                    Link_().key(impl_.node_),
+                                    Link_().key(node))
                         && (best == 0
                             || less_by_ref(cmp, impl_.mapping_dim_(),
-                                           SPATIAL_KEY(node),
-                                           SPATIAL_KEY(best))))
+                                           Link_().key(node),
+                                           Link_().key(best))))
                       { best = node; best_dim = node_dim; }
                   }
                 else
@@ -141,12 +141,12 @@ namespace spatial
                     if (!Node_base::header(node))
                       {
                         if (less_by_ref(cmp, impl_.mapping_dim_(),
-                                        SPATIAL_KEY(impl_.node_),
-                                        SPATIAL_KEY(node))
+                                        Link_().key(impl_.node_),
+                                        Link_().key(node))
                             && (best == 0
                                 || less_by_ref(cmp, impl_.mapping_dim_(),
-                                               SPATIAL_KEY(node),
-                                               SPATIAL_KEY(best))))
+                                               Link_().key(node),
+                                               Link_().key(best))))
                           { best = node; best_dim = node_dim; }
                       }
                   }
@@ -160,8 +160,8 @@ namespace spatial
         SPATIAL_ASSERT_CHECK(impl_.node_ != 0);
       }
 
-      template<typename Impl, typename Base_ptr, typename Link_type,
-               typename Rank, typename Key, typename Compare>
+      template<typename Impl, typename Base_ptr, typename Link_,
+               typename Rank, typename Compare>
       inline void
       increment(Impl& impl, details::strict_invariant_tag)
       {
@@ -184,36 +184,36 @@ namespace spatial
               }
             while (node->left != 0
                    && (node_dim != impl.mapping_dim_() // optimization
-                       || cmp(node_dim, SPATIAL_KEY(impl.node_),
-                              SPATIAL_KEY(node))));
+                       || cmp(node_dim, Link_().key(impl.node_),
+                              Link_().key(node))));
           }
         Base_ptr ceiling = node->parent; // the upper limit of unvisited nodes
         bool sibling_visited = false;    // at ceiling, sibling node is visited
-        if (less_by_ref(cmp, impl.mapping_dim_(), SPATIAL_KEY(impl.node_),
-                        SPATIAL_KEY(node)))
+        if (less_by_ref(cmp, impl.mapping_dim_(), Link_().key(impl.node_),
+                        Link_().key(node)))
           { best = node; best_dim = node_dim; }
         do
           {
             if (node->right != 0
                 && (node_dim != impl.mapping_dim_() || best == 0
-                    || !cmp(node_dim, SPATIAL_KEY(best), SPATIAL_KEY(node))))
+                    || !cmp(node_dim, Link_().key(best), Link_().key(node))))
               {
                 node = node->right;
                 node_dim = incr_dim(rank, node_dim);
                 while (node->left != 0
                        && (node_dim != impl.mapping_dim_()  // optimization
-                           || cmp(node_dim, SPATIAL_KEY(impl.node_),
-                                  SPATIAL_KEY(node))))
+                           || cmp(node_dim, Link_().key(impl.node_),
+                                  Link_().key(node))))
                   {
                     node = node->left;
                     node_dim = incr_dim(rank, node_dim);
                   }
                 if (less_by_ref(cmp, impl.mapping_dim_(),
-                                SPATIAL_KEY(impl.node_),
-                                SPATIAL_KEY(node))
+                                Link_().key(impl.node_),
+                                Link_().key(node))
                     && (best == 0
                         || less_by_ref(cmp, impl.mapping_dim_(),
-                                       SPATIAL_KEY(node), SPATIAL_KEY(best))))
+                                       Link_().key(node), Link_().key(best))))
                   { best = node; best_dim = node_dim; }
               }
             else
@@ -234,12 +234,12 @@ namespace spatial
                     if (node == ceiling)
                       {
                         if (less_by_ref(cmp, impl.mapping_dim_(),
-                                        SPATIAL_KEY(impl.node_),
-                                        SPATIAL_KEY(node))
+                                        Link_().key(impl.node_),
+                                        Link_().key(node))
                             && (best == 0
                                 || less_by_ref(cmp, impl.mapping_dim_(),
-                                               SPATIAL_KEY(node),
-                                               SPATIAL_KEY(best))))
+                                               Link_().key(node),
+                                               Link_().key(best))))
                           { best = node; best_dim = node_dim; }
                         sibling_visited = false;
                         ceiling = p;
@@ -254,19 +254,19 @@ namespace spatial
                     while (node->left != 0
                            && (node_dim != impl.mapping_dim_() // optimization
                                || cmp(node_dim,
-                                      SPATIAL_KEY(impl.node_),
-                                      SPATIAL_KEY(node))))
+                                      Link_().key(impl.node_),
+                                      Link_().key(node))))
                       {
                         node = node->left;
                         node_dim = incr_dim(rank, node_dim);
                       }
                     if (less_by_ref(cmp, impl.mapping_dim_(),
-                                    SPATIAL_KEY(impl.node_),
-                                    SPATIAL_KEY(node))
+                                    Link_().key(impl.node_),
+                                    Link_().key(node))
                         && (best == 0
                             || less_by_ref(cmp, impl.mapping_dim_(),
-                                           SPATIAL_KEY(node),
-                                           SPATIAL_KEY(best))))
+                                           Link_().key(node),
+                                           Link_().key(best))))
                       { best = node; best_dim = node_dim; }
                   }
                 else
@@ -276,12 +276,12 @@ namespace spatial
                     if (!Node_base::header(node))
                       {
                         if (less_by_ref(cmp, impl.mapping_dim_(),
-                                        SPATIAL_KEY(impl.node_),
-                                        SPATIAL_KEY(node))
+                                        Link_().key(impl.node_),
+                                        Link_().key(node))
                             && (best == 0
                                 || less_by_ref(cmp, impl.mapping_dim_(),
-                                               SPATIAL_KEY(node),
-                                               SPATIAL_KEY(best))))
+                                               Link_().key(node),
+                                               Link_().key(best))))
                           { best = node; best_dim = node_dim; }
                       }
                   }
@@ -295,15 +295,14 @@ namespace spatial
         SPATIAL_ASSERT_CHECK(impl.node_ != 0);
       }
 
-      // Find the maximum from node and stop when reaching the parent. Iterate in
-      // right-first fashion.
+      // Find the maximum from node and stop when reaching the parent. Iterate
+      // in right-first fashion.
       template<typename Iterator, typename Base_ptr, typename Link_type,
-               typename Rank, typename Key, typename Compare>
+               typename Link_, typename Rank, typename Compare>
       inline Iterator
       maximum
-      (const Rank& rank, const Compare& cmp,
-       dimension_type mapping_dim, dimension_type node_dim,
-       Base_ptr node, details::relaxed_invariant_tag)
+      (const Rank& rank, const Compare& cmp, dimension_type mapping_dim,
+       dimension_type node_dim, Base_ptr node, details::relaxed_invariant_tag)
       {
         SPATIAL_ASSERT_CHECK(node != 0);
         SPATIAL_ASSERT_CHECK(mapping_dim < rank());
@@ -321,7 +320,7 @@ namespace spatial
           {
             if (node->left != 0
                 && (node_dim != mapping_dim
-                    || !cmp(mapping_dim, SPATIAL_KEY(node), SPATIAL_KEY(best))))
+                    || !cmp(mapping_dim, Link_().key(node), Link_().key(best))))
               {
                 node = node->left;
                 node_dim = incr_dim(rank, node_dim);
@@ -331,7 +330,7 @@ namespace spatial
                     node_dim = incr_dim(rank, node_dim);
                   }
                 if (less_by_ref(cmp, mapping_dim,
-                                SPATIAL_KEY(best), SPATIAL_KEY(node)))
+                                Link_().key(best), Link_().key(node)))
                   { best = node; best_dim = node_dim; }
               }
             else
@@ -346,7 +345,7 @@ namespace spatial
                 node = p; node_dim = decr_dim(rank, node_dim);
                 if (node != end
                     && less_by_ref(cmp, mapping_dim,
-                                   SPATIAL_KEY(best), SPATIAL_KEY(node)))
+                                   Link_().key(best), Link_().key(node)))
                   { best = node; best_dim = node_dim; }
               }
           }
@@ -362,12 +361,11 @@ namespace spatial
       // Specialized template that works a little faster on regular kdtree tree
       // nodes since invariant is applied strictly.
       template<typename Iterator, typename Base_ptr, typename Link_type,
-               typename Rank, typename Key, typename Compare>
+               typename Link_, typename Rank, typename Compare>
       inline Iterator
       maximum
-      (const Rank& rank, const Compare& cmp,
-       dimension_type mapping_dim, dimension_type node_dim,
-       Base_ptr node, details::strict_invariant_tag)
+      (const Rank& rank, const Compare& cmp, dimension_type mapping_dim,
+       dimension_type node_dim, Base_ptr node, details::strict_invariant_tag)
       {
         SPATIAL_ASSERT_CHECK(node != 0);
         SPATIAL_ASSERT_CHECK(mapping_dim < rank());
@@ -393,7 +391,7 @@ namespace spatial
                     node_dim = incr_dim(rank, node_dim);
                   }
                 if (less_by_ref(cmp, mapping_dim,
-                                SPATIAL_KEY(best), SPATIAL_KEY(node)))
+                                Link_().key(best), Link_().key(node)))
                   { best = node; best_dim = node_dim; }
               }
             else
@@ -408,7 +406,7 @@ namespace spatial
                 node = p; node_dim = decr_dim(rank, node_dim);
                 if (node != end
                     && less_by_ref(cmp, mapping_dim,
-                                   SPATIAL_KEY(best), SPATIAL_KEY(node)))
+                                   Link_().key(best), Link_().key(node)))
                   { best = node; best_dim = node_dim; }
               }
           }
@@ -421,15 +419,15 @@ namespace spatial
                         static_cast<Link_type>(best));
       }
 
-      // Walk tree nodes in left-first fashion, bouncing off values that are lower
-      // than key.
+      // Walk tree nodes in left-first fashion, bouncing off values that are
+      // lower than key.
       template<typename Iterator, typename Base_ptr, typename Link_type,
-               typename Rank, typename Key, typename Compare>
+               typename Link_, typename Rank, typename Key, typename Compare>
       inline Iterator
       lower_bound
-      (const Rank& rank, const Compare& cmp,
-       dimension_type mapping_dim, dimension_type node_dim,
-       Base_ptr node, const Key& flag, details::relaxed_invariant_tag)
+      (const Rank& rank, const Compare& cmp, dimension_type mapping_dim,
+       dimension_type node_dim, Base_ptr node, const Key& flag,
+       details::relaxed_invariant_tag)
       {
         SPATIAL_ASSERT_CHECK(node != 0);
         SPATIAL_ASSERT_CHECK(mapping_dim < rank());
@@ -440,33 +438,33 @@ namespace spatial
         dimension_type best_dim = 0;
         while (node->left != 0
                && (node_dim != mapping_dim
-                   || !cmp(node_dim, SPATIAL_KEY(node), flag)))
+                   || !cmp(node_dim, Link_().key(node), flag)))
           {
             node = node->left;
             node_dim = incr_dim(rank, node_dim);
           }
-        if (!cmp(mapping_dim, SPATIAL_KEY(node), flag))
+        if (!cmp(mapping_dim, Link_().key(node), flag))
           { best = node; best_dim = node_dim; }
         do
           {
             if (node->right != 0
                 && (node_dim != mapping_dim || best == 0
                     || !cmp(mapping_dim,
-                            SPATIAL_KEY(best), SPATIAL_KEY(node))))
+                            Link_().key(best), Link_().key(node))))
               {
                 node = node->right;
                 node_dim = incr_dim(rank, node_dim);
                 while (node->left != 0
                        && (node_dim != mapping_dim
-                           || !cmp(node_dim, SPATIAL_KEY(node), flag)))
+                           || !cmp(node_dim, Link_().key(node), flag)))
                   {
                     node = node->left;
                     node_dim = incr_dim(rank, node_dim);
                   }
-                if (!cmp(mapping_dim, SPATIAL_KEY(node), flag)
+                if (!cmp(mapping_dim, Link_().key(node), flag)
                     && (best == 0
                         || less_by_ref(cmp, mapping_dim,
-                                       SPATIAL_KEY(node), SPATIAL_KEY(best))))
+                                       Link_().key(node), Link_().key(best))))
                   { best = node; best_dim = node_dim; }
               }
             else
@@ -480,10 +478,10 @@ namespace spatial
                   }
                 node = p; node_dim = decr_dim(rank, node_dim);
                 if (node != end
-                    && !cmp(mapping_dim, SPATIAL_KEY(node), flag)
+                    && !cmp(mapping_dim, Link_().key(node), flag)
                     && (best == 0
                         || less_by_ref(cmp, mapping_dim,
-                                       SPATIAL_KEY(node), SPATIAL_KEY(best))))
+                                       Link_().key(node), Link_().key(best))))
                   { best = node; best_dim = node_dim; }
               }
           }
@@ -498,12 +496,12 @@ namespace spatial
       // Specialized template that works a little faster on regular kdtree tree
       // nodes since invariant is applied strictly.
       template<typename Iterator, typename Base_ptr, typename Link_type,
-               typename Rank, typename Key, typename Compare>
+               typename Link_, typename Rank, typename Key, typename Compare>
       inline Iterator
       lower_bound
-      (const Rank& rank, const Compare& cmp,
-       dimension_type mapping_dim, dimension_type node_dim,
-       Base_ptr node, const Key& flag, details::strict_invariant_tag)
+      (const Rank& rank, const Compare& cmp, dimension_type mapping_dim,
+       dimension_type node_dim, Base_ptr node, const Key& flag,
+       details::strict_invariant_tag)
       {
         SPATIAL_ASSERT_CHECK(node != 0);
         SPATIAL_ASSERT_CHECK(mapping_dim < rank());
@@ -514,33 +512,33 @@ namespace spatial
         dimension_type best_dim = 0;
         while (node->left != 0
                && (node_dim != mapping_dim // optimization
-                   || cmp(node_dim, flag, SPATIAL_KEY(node))))
+                   || cmp(node_dim, flag, Link_().key(node))))
           {
             node = node->left;
             node_dim = incr_dim(rank, node_dim);
           }
-        if (!cmp(mapping_dim, SPATIAL_KEY(node), flag))
+        if (!cmp(mapping_dim, Link_().key(node), flag))
           { best = node; best_dim = node_dim; }
         do
           {
             if (node->right != 0
                 && (node_dim != mapping_dim || best == 0
                     || !cmp(mapping_dim,
-                            SPATIAL_KEY(best), SPATIAL_KEY(node))))
+                            Link_().key(best), Link_().key(node))))
               {
                 node = node->right;
                 node_dim = incr_dim(rank, node_dim);
                 while (node->left != 0
                        && (node_dim != mapping_dim // optimization
-                           || cmp(node_dim, flag, SPATIAL_KEY(node))))
+                           || cmp(node_dim, flag, Link_().key(node))))
                   {
                     node = node->left;
                     node_dim = incr_dim(rank, node_dim);
                   }
-                if (!cmp(mapping_dim, SPATIAL_KEY(node), flag)
+                if (!cmp(mapping_dim, Link_().key(node), flag)
                     && (best == 0
                         || less_by_ref(cmp, mapping_dim,
-                                       SPATIAL_KEY(node), SPATIAL_KEY(best))))
+                                       Link_().key(node), Link_().key(best))))
                   { best = node; best_dim = node_dim; }
               }
             else
@@ -554,10 +552,10 @@ namespace spatial
                   }
                 node = p; node_dim = decr_dim(rank, node_dim);
                 if (node != end
-                    && !cmp(mapping_dim, SPATIAL_KEY(node), flag)
+                    && !cmp(mapping_dim, Link_().key(node), flag)
                     && (best == 0
                         || less_by_ref(cmp, mapping_dim,
-                                       SPATIAL_KEY(node), SPATIAL_KEY(best))))
+                                       Link_().key(node), Link_().key(best))))
                   { best = node; best_dim = node_dim; }
               }
           }
@@ -571,38 +569,35 @@ namespace spatial
 
     } // namespace mapping
 
-    template<typename Rank, typename Key, typename Node,
+    template<typename Rank, typename Key, typename Value, typename Node,
              typename Compare, bool Constant, typename Derived>
     inline void
-    Mapping_iterator_base<Rank, Key, Node, Compare, Constant, Derived>
+    Mapping_iterator_base<Rank, Key, Value, Node, Compare, Constant, Derived>
     ::increment()
     {
       details::mapping::increment
-        <Mapping_iterator_impl, Base_ptr, Link_type, Rank, Key, Compare>
+        <Mapping_iterator_impl, Base_ptr, Link_, Rank, Compare>
         (impl_, invariant_category());
     }
 
     // The next largest key on the mapping dimension is likely to be found in the
     // children of the current best, so, descend into the children of node first.
-    template<typename Rank, typename Key, typename Node,
+    template<typename Rank, typename Key, typename Value, typename Node,
              typename Compare, bool Constant, typename Derived>
     inline void
-    Mapping_iterator_base
-    <Rank, Key, Node, Compare, Constant, Derived>
+    Mapping_iterator_base<Rank, Key, Value, Node, Compare, Constant, Derived>
     ::decrement()
     {
-      const Compare& cmp = this->compare();
-      const Rank& rk = this->rank();
       SPATIAL_ASSERT_CHECK(impl_.node_ != 0);
-      SPATIAL_ASSERT_CHECK(impl_.mapping_dim_() < rk());
-      SPATIAL_ASSERT_CHECK(impl_.node_dim_ < rk());
+      SPATIAL_ASSERT_CHECK(impl_.mapping_dim_() < rank()());
+      SPATIAL_ASSERT_CHECK(impl_.node_dim_ < rank()());
       Base_ptr best = 0; // not null when best has been found
       Base_ptr node = impl_.node_;
       dimension_type node_dim = impl_.node_dim_;
       dimension_type best_dim = impl_.node_dim_;
       if (Node_base::header(node))
         {
-          operator=(maximum(rk, cmp,
+          operator=(maximum(rank(), compare(),
                             impl_.mapping_dim_(), 0, node->parent));
           return;
         }
@@ -611,39 +606,40 @@ namespace spatial
           do
             {
               node = node->right;
-              node_dim = incr_dim(rk, node_dim);
+              node_dim = incr_dim(rank(), node_dim);
             }
           while (node->right != 0
                  && (node_dim != impl_.mapping_dim_()
-                     || !cmp(node_dim, SPATIAL_KEY(impl_.node_),
-                             SPATIAL_KEY(node))));
+                     || !compare()(node_dim, Link_().key(impl_.node_),
+                             Link_().key(node))));
         }
       Base_ptr ceiling = node->parent; // the upper limit of unvisited nodes
       bool sibling_visited = false;    // at ceiling, sibling node is visited
-      if (less_by_ref(cmp, impl_.mapping_dim_(),
-                      SPATIAL_KEY(node), SPATIAL_KEY(impl_.node_)))
+      if (less_by_ref(compare(), impl_.mapping_dim_(),
+                      Link_().key(node), Link_().key(impl_.node_)))
         { best = node; best_dim = node_dim; }
       do
         {
           if (node->left != 0
               && (node_dim != impl_.mapping_dim_() || best == 0
-                  || !cmp(node_dim, SPATIAL_KEY(node), SPATIAL_KEY(best))))
+                  || !compare()(node_dim,
+                                Link_().key(node), Link_().key(best))))
             {
               node = node->left;
-              node_dim = incr_dim(rk, node_dim);
+              node_dim = incr_dim(rank(), node_dim);
               while (node->right != 0
                      && (node_dim != impl_.mapping_dim_()
-                         || !cmp(node_dim, SPATIAL_KEY(impl_.node_),
-                                 SPATIAL_KEY(node))))
+                         || !compare()(node_dim, Link_().key(impl_.node_),
+                                 Link_().key(node))))
                 {
                   node = node->right;
-                  node_dim = incr_dim(rk, node_dim);
+                  node_dim = incr_dim(rank(), node_dim);
                 }
-              if (less_by_ref(cmp, impl_.mapping_dim_(), SPATIAL_KEY(node),
-                              SPATIAL_KEY(impl_.node_))
+              if (less_by_ref(compare(), impl_.mapping_dim_(),
+                              Link_().key(node), Link_().key(impl_.node_))
                   && (best == 0
-                      || less_by_ref(cmp, impl_.mapping_dim_(),
-                                     SPATIAL_KEY(best), SPATIAL_KEY(node))))
+                      || less_by_ref(compare(), impl_.mapping_dim_(),
+                                     Link_().key(best), Link_().key(node))))
                 { best = node; best_dim = node_dim; }
             }
           else
@@ -659,17 +655,17 @@ namespace spatial
                             || (p->left == node && p->right == 0))))
                 {
                   node = p;
-                  node_dim = decr_dim(rk, node_dim);
+                  node_dim = decr_dim(rank(), node_dim);
                   p = node->parent;
                   if (node == ceiling)
                     {
-                      if (less_by_ref(cmp, impl_.mapping_dim_(),
-                                      SPATIAL_KEY(node),
-                                      SPATIAL_KEY(impl_.node_))
+                      if (less_by_ref(compare(), impl_.mapping_dim_(),
+                                      Link_().key(node),
+                                      Link_().key(impl_.node_))
                           && (best == 0
-                              || less_by_ref(cmp, impl_.mapping_dim_(),
-                                             SPATIAL_KEY(best),
-                                             SPATIAL_KEY(node))))
+                              || less_by_ref(compare(), impl_.mapping_dim_(),
+                                             Link_().key(best),
+                                             Link_().key(node))))
                         { best = node; best_dim = node_dim; }
                       sibling_visited = false;
                       ceiling = p;
@@ -683,33 +679,33 @@ namespace spatial
                   // go to full right in unvisited sibling
                   while (node->right != 0
                          && (node_dim != impl_.mapping_dim_()
-                             || !cmp(node_dim, SPATIAL_KEY(impl_.node_),
-                                     SPATIAL_KEY(node))))
+                             || !compare()(node_dim, Link_().key(impl_.node_),
+                                     Link_().key(node))))
                     {
                       node = node->right;
-                      node_dim = incr_dim(rk, node_dim);
+                      node_dim = incr_dim(rank(), node_dim);
                     }
-                  if (less_by_ref(cmp, impl_.mapping_dim_(),
-                                  SPATIAL_KEY(node), SPATIAL_KEY(impl_.node_))
+                  if (less_by_ref(compare(), impl_.mapping_dim_(),
+                                  Link_().key(node), Link_().key(impl_.node_))
                       && (best == 0
-                          || less_by_ref(cmp, impl_.mapping_dim_(),
-                                         SPATIAL_KEY(best),
-                                         SPATIAL_KEY(node))))
+                          || less_by_ref(compare(), impl_.mapping_dim_(),
+                                         Link_().key(best),
+                                         Link_().key(node))))
                     { best = node; best_dim = node_dim; }
                 }
               else
                 {
                   node = p;
-                  node_dim = decr_dim(rk, node_dim);
+                  node_dim = decr_dim(rank(), node_dim);
                   if (!Node_base::header(node))
                     {
-                      if (less_by_ref(cmp, impl_.mapping_dim_(),
-                                      SPATIAL_KEY(node),
-                                      SPATIAL_KEY(impl_.node_))
+                      if (less_by_ref(compare(), impl_.mapping_dim_(),
+                                      Link_().key(node),
+                                      Link_().key(impl_.node_))
                           && (best == 0
-                              || less_by_ref(cmp, impl_.mapping_dim_(),
-                                             SPATIAL_KEY(best),
-                                             SPATIAL_KEY(node))))
+                              || less_by_ref(compare(), impl_.mapping_dim_(),
+                                             Link_().key(best),
+                                             Link_().key(node))))
                         { best = node; best_dim = node_dim; }
                     }
                 }
@@ -718,22 +714,20 @@ namespace spatial
       while (!Node_base::header(node));
       if (best != 0) { impl_.node_ = best; impl_.node_dim_ = best_dim; }
       else { impl_.node_ = node; impl_.node_dim_ = node_dim; }
-      SPATIAL_ASSERT_CHECK(impl_.mapping_dim_() < rk());
-      SPATIAL_ASSERT_CHECK(impl_.node_dim_ < rk());
+      SPATIAL_ASSERT_CHECK(impl_.mapping_dim_() < rank()());
+      SPATIAL_ASSERT_CHECK(impl_.node_dim_ < rank()());
       SPATIAL_ASSERT_CHECK(impl_.node_ != 0);
     }
 
     // Find the minimum from node and stop when reaching the parent. Iterate in
     // left-first fashion.
-    template<typename Rank, typename Key, typename Node,
+    template<typename Rank, typename Key, typename Value, typename Node,
              typename Compare, bool Constant, typename Derived>
     inline Derived
-    Mapping_iterator_base
-    <Rank, Key, Node, Compare, Constant, Derived>
+    Mapping_iterator_base<Rank, Key, Value, Node, Compare, Constant, Derived>
     ::minimum
-    (const Rank& rank, const Compare& cmp,
-     dimension_type mapping_dim, dimension_type node_dim,
-     Base_ptr node)
+    (const Rank& rank, const Compare& cmp, dimension_type mapping_dim,
+     dimension_type node_dim, Base_ptr node)
     {
       SPATIAL_ASSERT_CHECK(mapping_dim < rank());
       SPATIAL_ASSERT_CHECK(node_dim < rank());
@@ -749,7 +743,7 @@ namespace spatial
           if (node->right != 0
               && (node_dim != mapping_dim
                   || !cmp(mapping_dim,
-                          SPATIAL_KEY(best), SPATIAL_KEY(node))))
+                          Link_().key(best), Link_().key(node))))
             {
               node = node->right;
               node_dim = incr_dim(rank, node_dim);
@@ -759,7 +753,7 @@ namespace spatial
                   node_dim = incr_dim(rank, node_dim);
                 }
               if (less_by_ref(cmp, mapping_dim,
-                              SPATIAL_KEY(node), SPATIAL_KEY(best)))
+                              Link_().key(node), Link_().key(best)))
                 { best = node; best_dim = node_dim; }
             }
           else
@@ -775,7 +769,7 @@ namespace spatial
               node_dim = decr_dim(rank, node_dim);
               if (node != end
                   && less_by_ref(cmp, mapping_dim,
-                                 SPATIAL_KEY(node), SPATIAL_KEY(best)))
+                                 Link_().key(node), Link_().key(best)))
                 { best = node; best_dim = node_dim; }
             }
         }
@@ -788,49 +782,41 @@ namespace spatial
                      static_cast<Link_type>(best));
     }
 
-    template<typename Rank, typename Key, typename Node,
+    template<typename Rank, typename Key, typename Value, typename Node,
              typename Compare, bool Constant, typename Derived>
     inline Derived
-    Mapping_iterator_base
-    <Rank, Key, Node, Compare, Constant, Derived>
+    Mapping_iterator_base<Rank, Key, Value, Node, Compare, Constant, Derived>
     ::maximum
-    (const Rank& rank, const Compare& cmp,
-     dimension_type mapping_dim, dimension_type node_dim,
-     Base_ptr node)
+    (const Rank& rank, const Compare& cmp, dimension_type mapping_dim,
+     dimension_type node_dim, Base_ptr node)
     {
       return details::mapping::maximum
-        <Derived, Base_ptr, Link_type, Rank, Key, Compare>
-        (rank, cmp, mapping_dim, node_dim, node,
-         invariant_category());
+        <Derived, Base_ptr, Link_type, Link_, Rank, Compare>
+        (rank, cmp, mapping_dim, node_dim, node, invariant_category());
     }
 
-    template<typename Rank, typename Key, typename Node,
+    template<typename Rank, typename Key, typename Value, typename Node,
              typename Compare, bool Constant, typename Derived>
     inline Derived
-    Mapping_iterator_base
-    <Rank, Key, Node, Compare, Constant, Derived>
+    Mapping_iterator_base<Rank, Key, Value, Node, Compare, Constant, Derived>
     ::lower_bound
-    (const Rank& rank, const Compare& cmp,
-     dimension_type mapping_dim, dimension_type node_dim,
-     Base_ptr node, const Key& flag)
+    (const Rank& rank, const Compare& cmp, dimension_type mapping_dim,
+     dimension_type node_dim, Base_ptr node, const Key& flag)
     {
       return details::mapping::lower_bound
-        <Derived, Base_ptr, Link_type, Rank, Key, Compare>
-        (rank, cmp, mapping_dim, node_dim, node, flag,
-         invariant_category());
+        <Derived, Base_ptr, Link_type, Link_, Rank, Key, Compare>
+        (rank, cmp, mapping_dim, node_dim, node, flag, invariant_category());
     }
 
     // Walk tree nodes in right-first fashion, bouncing off values that are higher
     // than key.
-    template<typename Rank, typename Key, typename Node,
+    template<typename Rank, typename Key, typename Value, typename Node,
              typename Compare, bool Constant, typename Derived>
     inline Derived
-    Mapping_iterator_base
-    <Rank, Key, Node, Compare, Constant, Derived>
+    Mapping_iterator_base<Rank, Key, Value, Node, Compare, Constant, Derived>
     ::upper_bound
-    (const Rank& rank, const Compare& cmp,
-     dimension_type mapping_dim, dimension_type node_dim,
-     Base_ptr node, const Key& flag)
+    (const Rank& rank, const Compare& cmp, dimension_type mapping_dim,
+     dimension_type node_dim, Base_ptr node, const Key& flag)
     {
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(mapping_dim < rank());
@@ -841,30 +827,30 @@ namespace spatial
       dimension_type best_dim = 0;
       while (node->left != 0
              && (node_dim != mapping_dim
-                 || cmp(node_dim, flag, SPATIAL_KEY(node))))
+                 || cmp(node_dim, flag, Link_().key(node))))
         { node = node->left; node_dim = incr_dim(rank, node_dim); }
-      if (cmp(mapping_dim, flag, SPATIAL_KEY(node)))
+      if (cmp(mapping_dim, flag, Link_().key(node)))
         { best = node; best_dim = node_dim; }
       do
         {
           if (node->right != 0
               && (node_dim != mapping_dim || best == 0
                   || !cmp(mapping_dim,
-                          SPATIAL_KEY(best), SPATIAL_KEY(node))))
+                          Link_().key(best), Link_().key(node))))
             {
               node = node->right;
               node_dim = incr_dim(rank, node_dim);
               while (node->left != 0
                      && (node_dim != mapping_dim
-                         || cmp(node_dim, flag, SPATIAL_KEY(node))))
+                         || cmp(node_dim, flag, Link_().key(node))))
                 {
                   node = node->left;
                   node_dim = incr_dim(rank, node_dim);
                 }
-              if (cmp(mapping_dim, flag, SPATIAL_KEY(node))
+              if (cmp(mapping_dim, flag, Link_().key(node))
                   && (best == 0
                       || less_by_ref(cmp, mapping_dim,
-                                     SPATIAL_KEY(node), SPATIAL_KEY(best))))
+                                     Link_().key(node), Link_().key(best))))
                 { best = node; best_dim = node_dim; }
             }
           else
@@ -878,10 +864,10 @@ namespace spatial
                 }
               node = p; node_dim = decr_dim(rank, node_dim);
               if (node != end
-                  && cmp(mapping_dim, flag, SPATIAL_KEY(node))
+                  && cmp(mapping_dim, flag, Link_().key(node))
                   && (best == 0
                       || less_by_ref(cmp, mapping_dim,
-                                     SPATIAL_KEY(node), SPATIAL_KEY(best))))
+                                     Link_().key(node), Link_().key(best))))
                 { best = node; best_dim = node_dim; }
             }
         }

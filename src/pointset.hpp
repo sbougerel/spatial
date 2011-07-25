@@ -14,28 +14,7 @@
 #define SPATIAL_POINTSET_HPP
 
 #include "bits/spatial.hpp"
-#include "bits/spatial_set_macro.hpp"
-#include "bits/spatial_traits.hpp"
-#include "bits/spatial_exceptions.hpp"
-#include "bits/spatial_assert.hpp"
-#include "bits/spatial_details.hpp"
-#include "bits/spatial_function.hpp"
-#include "bits/spatial_node.hpp"
-#include "bits/spatial_mapping.hpp"
-#include "bits/spatial_range.hpp"
-#include "bits/spatial_geometry.hpp"
-#include "bits/spatial_neighbor.hpp"
-#include "bits/spatial_kdtree_base.hpp"
-#include "bits/spatial_kdtree.hpp"
 #include "bits/spatial_relaxed_kdtree.hpp"
-#include "bits/spatial_node.tpp"
-#include "bits/spatial_mapping.tpp"
-#include "bits/spatial_range.tpp"
-#include "bits/spatial_neighbor.tpp"
-#include "bits/spatial_kdtree_base.tpp"
-#include "bits/spatial_kdtree.tpp"
-#include "bits/spatial_relaxed_kdtree.tpp"
-#include "bits/spatial_unset_macro.hpp"
 
 namespace spatial
 {
@@ -45,12 +24,13 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct pointset
-    : details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Compare,
+    : details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Key, Compare,
                               BalancingPolicy, Alloc, true>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Compare,
-                                    BalancingPolicy, Alloc, true>   base_type;
+    typedef
+    details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Key, Compare,
+                            BalancingPolicy, Alloc, true>           base_type;
     typedef pointset<Rank, Key, Compare, BalancingPolicy, Alloc>    Self;
 
   public:
@@ -98,11 +78,11 @@ namespace spatial
   template<typename Key, typename Compare, typename BalancingPolicy,
            typename Alloc>
   struct pointset<0, Key, Compare, BalancingPolicy, Alloc>
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
                               BalancingPolicy, Alloc, true>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
                                     BalancingPolicy, Alloc, true> base_type;
     typedef pointset<0, Key, Compare, BalancingPolicy, Alloc>     Self;
 
@@ -158,11 +138,11 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct runtime_pointset
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
                               BalancingPolicy, Alloc, true>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Compare,
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
                                     BalancingPolicy, Alloc, true>  base_type;
     typedef runtime_pointset<Key, Compare, BalancingPolicy, Alloc> Self;
 
