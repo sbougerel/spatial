@@ -49,8 +49,7 @@ namespace spatial
     frozen_boxset&
     operator=(const frozen_boxset& other)
     {
-      return static_cast<frozen_boxset<Rank, Key, Compare, Alloc>&>
-        (base_type::operator=(other));
+      return static_cast<Self&>(base_type::operator=(other));
     }
   };
 
@@ -111,8 +110,7 @@ namespace spatial
     frozen_boxset&
     operator=(const frozen_boxset& other)
     {
-      return static_cast<frozen_boxset<0, Key, Compare, Alloc>&>
-        (base_type::operator=(other));
+      return static_cast<Self&>(base_type::operator=(other));
     }
   };
 
@@ -163,8 +161,7 @@ namespace spatial
     runtime_frozen_boxset&
     operator=(const runtime_frozen_boxset& other)
     {
-      return static_cast<runtime_frozen_boxset<Key, Compare, Alloc>&>
-        (base_type::operator=(other));
+      return static_cast<Self&>(base_type::operator=(other));
     }
   };
 

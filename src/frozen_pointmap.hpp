@@ -19,17 +19,17 @@
 namespace spatial
 {
 
-  template<dimension_type Rank, typename Key,
+  template<dimension_type Rank, typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<Key> >
   struct frozen_pointset
-    : details::Kdtree<details::Static_rank<Rank>, Key, Key, Compare,
-                      Alloc, true>
+    : details::Kdtree<details::Static_rank<Rank>, Key, Mapped, Compare,
+                      Alloc, false>
   {
   private:
-    typedef details::Kdtree<details::Static_rank<Rank>, Key, Key, Compare,
-                            Alloc, true>               base_type;
-    typedef frozen_pointset<Rank, Key, Compare, Alloc> Self;
+    typedef details::Kdtree<details::Static_rank<Rank>, Key, Mapped, Compare,
+                            Alloc, false>                       base_type;
+    typedef frozen_pointset<Rank, Key, Mapped, Compare, Alloc>  Self;
 
   public:
 
@@ -71,14 +71,15 @@ namespace spatial
    *  @see runtime_frozen_pointset for more information about how to use this
    *  container.
    */
-  template<typename Key, typename Compare, typename Alloc>
-  struct frozen_pointset<0, Key, Compare, Alloc>
-    : details::Kdtree<details::Dynamic_rank, Key, Key, Compare, Alloc, true>
+  template<typename Key, typename Mapped, typename Compare, typename Alloc>
+  struct frozen_pointset<0, Key, Mapped, Compare, Alloc>
+    : details::Kdtree<details::Dynamic_rank, Key, Mapped, Compare,
+		      Alloc, false>
   {
   private:
-    typedef details::Kdtree<details::Dynamic_rank, Key, Key, Compare, Alloc,
-                            true>                      base_type;
-    typedef frozen_pointset<0, Key, Compare, Alloc>    Self;
+    typedef details::Kdtree<details::Dynamic_rank, Key, Mapped, Compare,
+			    Alloc, false>                    base_type;
+    typedef frozen_pointset<0, Key, Mapped, Compare, Alloc>  Self;
 
   public:
     frozen_pointset() { }
@@ -119,16 +120,17 @@ namespace spatial
    *  @brief  pointset with dynamic rank support. The rank of the pointset can
    *  be determined at run time and does not need to be fixed at compile time.
    */
-  template<typename Key,
+  template<typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<Key> >
   struct runtime_frozen_pointset
-    : details::Kdtree<details::Dynamic_rank, Key, Key, Compare, Alloc, true>
+    : details::Kdtree<details::Dynamic_rank, Key, Mapped, Compare,
+		      Alloc, false>
   {
   private:
-    typedef details::Kdtree<details::Dynamic_rank, Key, Key, Compare, Alloc,
-                            true>                          base_type;
-    typedef runtime_frozen_pointset<Key, Compare, Alloc>   Self;
+    typedef details::Kdtree<details::Dynamic_rank, Key, Mapped, Compare,
+			    Alloc, false>                         base_type;
+    typedef runtime_frozen_pointset<Key, Mapped, Compare, Alloc>  Self;
 
   public:
     runtime_frozen_pointset() { }

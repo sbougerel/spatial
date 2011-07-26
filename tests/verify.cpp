@@ -38,6 +38,10 @@
 #include "../src/frozen_pointset.hpp"
 #include "../src/boxset.hpp"
 #include "../src/frozen_boxset.hpp"
+#include "../src/pointmap.hpp"
+#include "../src/frozen_pointmap.hpp"
+#include "../src/boxmap.hpp"
+#include "../src/frozen_boxmap.hpp"
 
 using namespace spatial;
 
@@ -46,30 +50,6 @@ BOOST_AUTO_TEST_CASE ( install_srand )
   // not sure where else to put this...
   srand((unsigned int)time(NULL));
 }
-
-////////////////////  TESTING MODULES FROM BASE TO HIGH ORDER  /////////////////
-// 1. spatial.hpp (no tests at the moment)
-// 2. spatial_assert.hpp (single macro with assert and a throw)
-// 3. spatial_traits.hpp
-// 4. spatial_details.hpp
-// 5. spatial_tree.hpp
-// 6. spatial_exceptions.hpp
-// 7. spatial_function.hpp
-// 8. spatial_kdtree_base.hpp
-// 9. spatial_kdtree.hpp
-// 10. spatial_mapping.hpp
-// 11. spatial_range.hpp
-// 12. spatial_geometry.hpp
-// 13. spatial_neighbor.hpp
-// 14. spatial_relaxed_kdtree.hpp (the rebalancing guy!)
-// 15. pointset.hpp (define pointset, dynamic_pointset)
-// 16. pointmap.hpp (define pointmap, variable_pointmap)
-// 17. boxset.hpp (define boxset, dynamic_boxset)
-// 18. boxmap.hpp (define boxmap, variable_boxmap)
-// 19. spatial_intersect.hpp
-// 20. spatial_include.hpp
-// ... and one day, VP-trees as well may be...
-////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////  spatial_traits.hpp  ///////////////////////////////
 

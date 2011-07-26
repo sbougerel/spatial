@@ -413,7 +413,7 @@ namespace spatial
 
       const Key& key(Node_base::Const_Base_ptr ptr) const
       { return link(ptr)->value.first; }
-      Key& key(Node_base::Base_ptr ptr) const
+      const Key& key(Node_base::Base_ptr ptr) const
       { return link(ptr)->value.first; }
 
       const Value& val(Node_base::Const_Base_ptr ptr) const
@@ -436,7 +436,7 @@ namespace spatial
 
       const Key& key(Node_base::Const_Base_ptr ptr) const
       { return link(ptr)->value; }
-      Key& key(Node_base::Base_ptr ptr) const
+      const Key& key(Node_base::Base_ptr ptr) const
       { return link(ptr)->value; }
 
       const Key& val(Node_base::Const_Base_ptr ptr) const

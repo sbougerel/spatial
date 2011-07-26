@@ -213,21 +213,21 @@ namespace spatial
 
     public:
       // Container intrincsic types
-      typedef Rank                                   rank_type;
-      typedef Key                                    key_type;
-      typedef Mapped                                 mapped_type;
-      typedef Relaxed_kdtree_node<Key>               node_type;
+      typedef Rank                                    rank_type;
+      typedef Key                                     key_type;
+      typedef Mapped                                  mapped_type;
+      typedef Relaxed_kdtree_node<Key>                node_type;
       typedef typename details::condition
       <is_same<key_type, mapped_type>::value, key_type,
-       std::pair<key_type, mapped_type> >::type      value_type;
-      typedef Compare                                key_compare;
+       std::pair<const key_type, mapped_type> >::type value_type;
+      typedef Compare                                 key_compare;
       typedef typename details::condition
       <ConstIterator, key_compare,
-       ValueCompare<value_type, key_compare> >::type value_compare;
-      typedef Alloc                                  allocator_type;
+       ValueCompare<value_type, key_compare> >::type  value_compare;
+      typedef Alloc                                   allocator_type;
       typedef typename true_or_false_type
-      <ConstIterator>::type                          const_iterator_tag;
-      typedef Balancing                              balancing_policy;
+      <ConstIterator>::type                           const_iterator_tag;
+      typedef Balancing                               balancing_policy;
 
       // Container iterator related types
       typedef typename details::condition
