@@ -262,6 +262,8 @@ namespace spatial
     private:
       typedef typename Alloc::template rebind
       <Relaxed_kdtree_node<value_type> >::other   Node_allocator;
+      typedef typename Alloc::template rebind
+      <value_type>::other                         Value_allocator;
 
       // The types used to deal with nodes
       typedef Node_base::Base_ptr                 Base_ptr;
@@ -372,8 +374,8 @@ namespace spatial
       get_node_allocator()
       { return impl_.header_.base(); }
 
-      allocator_type
-      get_allocator() const { return impl_.header_.base(); }
+      Value_allocator
+      get_value_allocator() const { return impl_.header_.base(); }
 
     private:
       // Allocation/Deallocation of nodes
@@ -392,7 +394,7 @@ namespace spatial
       create_node(const value_type& value)
       {
         safe_allocator safe(get_node_allocator());
-        get_allocator().construct(&safe.link->value, value); // may throw
+        get_value_allocator().construct(&safe.link->value, value); // may throw
         Link_type node = safe.release();
         // leave parent uninitialized: its value will change during insertion.
         node->left = 0;
@@ -415,7 +417,7 @@ namespace spatial
       void
       destroy_node(Link_type node)
       {
-        get_allocator().destroy(&node->value);
+        get_value_allocator().destroy(&node->value);
         get_node_allocator().deallocate(node, 1);
       }
 
@@ -600,7 +602,7 @@ namespace spatial
        *  Returns the allocator used by the tree.
        */
       allocator_type
-      allocator() const { return get_allocator(); }
+      get_allocator() const { return get_value_allocator(); }
 
       /**
        *  @brief  True if the tree is empty.

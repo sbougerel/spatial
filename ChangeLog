@@ -1,3 +1,8 @@
+2011-07-27  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * Fix an issue with allocator, where the user defined allocator was used
+        instead of a rebind, which can cause significant issues.
+
 2011-07-26  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * Revamp large amount of code to add support for pair<key, mapped>

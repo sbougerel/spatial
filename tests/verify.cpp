@@ -1245,7 +1245,7 @@ BOOST_AUTO_TEST_CASE( test_empty_Kdtree_basic_accessor )
   BOOST_CHECK_EQUAL(fix.kdtree.dimension(), 2);
   BOOST_CHECK_NO_THROW(rank = fix.kdtree.rank());
   BOOST_CHECK_NO_THROW(compare = fix.kdtree.key_comp());
-  BOOST_CHECK_NO_THROW(alloc = fix.kdtree.allocator());
+  BOOST_CHECK_NO_THROW(alloc = fix.kdtree.get_allocator());
 }
 
 using details::Kdtree;
