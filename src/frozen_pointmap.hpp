@@ -1,7 +1,7 @@
 // -*- C++ -*-
 
 /**
- *  @file   frozen_pointset.hpp
+ *  @file   frozen_pointmap.hpp
  *  @brief
  *
  *  - 2009-02-26 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
@@ -10,8 +10,8 @@
  *  - (next change goes here)
  */
 
-#ifndef SPATIAL_FROZEN_POINTSET_HPP
-#define SPATIAL_FROZEN_POINTSET_HPP
+#ifndef SPATIAL_FROZEN_POINTMAP_HPP
+#define SPATIAL_FROZEN_POINTMAP_HPP
 
 #include "bits/spatial.hpp"
 #include "bits/spatial_kdtree.hpp"
@@ -22,95 +22,95 @@ namespace spatial
   template<dimension_type Rank, typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<std::pair<Key, Mapped> > >
-  struct frozen_pointset
+  struct frozen_pointmap
     : details::Kdtree<details::Static_rank<Rank>, Key, Mapped, Compare,
                       Alloc, false>
   {
   private:
     typedef details::Kdtree<details::Static_rank<Rank>, Key, Mapped, Compare,
                             Alloc, false>                       base_type;
-    typedef frozen_pointset<Rank, Key, Mapped, Compare, Alloc>  Self;
+    typedef frozen_pointmap<Rank, Key, Mapped, Compare, Alloc>  Self;
 
   public:
 
-    frozen_pointset() { }
+    frozen_pointmap() { }
 
-    explicit frozen_pointset(const Compare& compare)
+    explicit frozen_pointmap(const Compare& compare)
       : base_type(details::Static_rank<Rank>())
     { }
 
-    frozen_pointset(const Compare& compare, const Alloc& alloc)
+    frozen_pointmap(const Compare& compare, const Alloc& alloc)
       : base_type(details::Static_rank<Rank>(), compare, alloc)
     { }
 
-    frozen_pointset(const frozen_pointset& other, bool balancing = false)
+    frozen_pointmap(const frozen_pointmap& other, bool balancing = false)
       : base_type(other, balancing)
     { }
 
-    frozen_pointset&
-    operator=(const frozen_pointset& other)
+    frozen_pointmap&
+    operator=(const frozen_pointmap& other)
     {
       return static_cast<Self&>(base_type::operator=(other));
     }
   };
 
   /**
-   *  Specialization for @ref frozen_pointset with runtime rank support. The
-   *  rank of the @ref frozen_pointset can be determined at run time and does
+   *  Specialization for @ref frozen_pointmap with runtime rank support. The
+   *  rank of the @ref frozen_pointmap can be determined at run time and does
    *  not need to be fixed at compile time. Using:
    *  @code
    *    struct point { ... };
-   *    frozen_pointset<0, point> my_set;
+   *    frozen_pointmap<0, point> my_set;
    *  @endcode
    *  ...is therefore completely equivalent to:
    *  @code
    *    struct point { ... };
-   *    runtime_frozen_pointset<point> my_set;
+   *    runtime_frozen_pointmap<point> my_set;
    *  @endcode
    *
-   *  @see runtime_frozen_pointset for more information about how to use this
+   *  @see runtime_frozen_pointmap for more information about how to use this
    *  container.
    */
   template<typename Key, typename Mapped, typename Compare, typename Alloc>
-  struct frozen_pointset<0, Key, Mapped, Compare, Alloc>
+  struct frozen_pointmap<0, Key, Mapped, Compare, Alloc>
     : details::Kdtree<details::Dynamic_rank, Key, Mapped, Compare,
 		      Alloc, false>
   {
   private:
     typedef details::Kdtree<details::Dynamic_rank, Key, Mapped, Compare,
 			    Alloc, false>                    base_type;
-    typedef frozen_pointset<0, Key, Mapped, Compare, Alloc>  Self;
+    typedef frozen_pointmap<0, Key, Mapped, Compare, Alloc>  Self;
 
   public:
-    frozen_pointset() { }
+    frozen_pointmap() { }
 
-    explicit frozen_pointset(dimension_type dim)
+    explicit frozen_pointmap(dimension_type dim)
       : base_type(details::Dynamic_rank(dim))
     { except::check_rank_argument(dim); }
 
-    frozen_pointset(dimension_type dim, const Compare& compare)
+    frozen_pointmap(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim), compare)
     { except::check_rank_argument(dim); }
 
-    explicit frozen_pointset(const Compare& compare)
+    explicit frozen_pointmap(const Compare& compare)
       : base_type(compare)
     { }
 
-    frozen_pointset(dimension_type dim, const Compare& compare,
+    frozen_pointmap(dimension_type dim, const Compare& compare,
                     const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim), compare, alloc)
     { except::check_rank_argument(dim); }
 
-    frozen_pointset(const Compare& compare, const Alloc& alloc)
+    frozen_pointmap(const Compare& compare, const Alloc& alloc)
       : base_type(details::Dynamic_rank(), compare, alloc)
     { }
 
-    frozen_pointset(const frozen_pointset& other, bool balancing = false)
+    frozen_pointmap(const frozen_pointmap& other, bool balancing = false)
       : base_type(other, balancing)
     { }
 
-    frozen_pointset&
-    operator=(const frozen_pointset& other)
+    frozen_pointmap&
+    operator=(const frozen_pointmap& other)
     {
       return static_cast<Self&>(base_type::operator=(other));
     }
@@ -123,46 +123,46 @@ namespace spatial
   template<typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<std::pair<Key, Mapped> > >
-  struct runtime_frozen_pointset
+  struct runtime_frozen_pointmap
     : details::Kdtree<details::Dynamic_rank, Key, Mapped, Compare,
 		      Alloc, false>
   {
   private:
     typedef details::Kdtree<details::Dynamic_rank, Key, Mapped, Compare,
 			    Alloc, false>                         base_type;
-    typedef runtime_frozen_pointset<Key, Mapped, Compare, Alloc>  Self;
+    typedef runtime_frozen_pointmap<Key, Mapped, Compare, Alloc>  Self;
 
   public:
-    runtime_frozen_pointset() { }
+    runtime_frozen_pointmap() { }
 
-    explicit runtime_frozen_pointset(dimension_type dim)
+    explicit runtime_frozen_pointmap(dimension_type dim)
       : base_type(details::Dynamic_rank(dim))
     { except::check_rank_argument(dim); }
 
-    runtime_frozen_pointset(dimension_type dim, const Compare& compare)
+    runtime_frozen_pointmap(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim), compare)
     { except::check_rank_argument(dim); }
 
-    explicit runtime_frozen_pointset(const Compare& compare)
+    explicit runtime_frozen_pointmap(const Compare& compare)
       : base_type(compare)
     { }
 
-    runtime_frozen_pointset(dimension_type dim, const Compare& compare,
+    runtime_frozen_pointmap(dimension_type dim, const Compare& compare,
                             const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim), compare, alloc)
     { except::check_rank_argument(dim); }
 
-    runtime_frozen_pointset(const Compare& compare, const Alloc& alloc)
+    runtime_frozen_pointmap(const Compare& compare, const Alloc& alloc)
       : base_type(details::Dynamic_rank(), compare, alloc)
     { }
 
-    runtime_frozen_pointset(const runtime_frozen_pointset& other,
+    runtime_frozen_pointmap(const runtime_frozen_pointmap& other,
                             bool balancing = false)
       : base_type(other, balancing)
     { }
 
-    runtime_frozen_pointset&
-    operator=(const runtime_frozen_pointset& other)
+    runtime_frozen_pointmap&
+    operator=(const runtime_frozen_pointmap& other)
     {
       return static_cast<Self&>(base_type::operator=(other));
     }
@@ -170,4 +170,4 @@ namespace spatial
 
 }
 
-#endif // SPATIAL_FROZEN_POINTSET_HPP
+#endif // SPATIAL_FROZEN_POINTMAP_HPP
