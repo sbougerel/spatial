@@ -124,7 +124,7 @@ namespace spatial
    */
   template<typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
-           typename Alloc = std::allocator<Key> >
+           typename Alloc = std::allocator<std::pair<Key, Mapped> > >
   struct runtime_frozen_boxmap
     : details::Kdtree<details::Dynamic_rank, Key, Mapped, Compare,
 		      Alloc, false>

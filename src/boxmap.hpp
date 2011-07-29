@@ -22,7 +22,7 @@ namespace spatial
   template<dimension_type Rank, typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
            typename BalancingPolicy = loose_balancing,
-           typename Alloc = std::allocator<Key> >
+	   typename Alloc = std::allocator<std::pair<Key, Mapped> > >
   struct boxset
     : details::Relaxed_kdtree<details::Static_rank<Rank << 1>, Key, Mapped,
 			      Compare, BalancingPolicy, Alloc, false>
@@ -142,7 +142,7 @@ namespace spatial
   template<typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
            typename BalancingPolicy = loose_balancing,
-           typename Alloc = std::allocator<Key> >
+           typename Alloc = std::allocator<std::pair<Key, Mapped> > >
   struct runtime_boxset
     : details::Relaxed_kdtree<details::Dynamic_rank, Key, Mapped, Compare,
                               BalancingPolicy, Alloc, false>
