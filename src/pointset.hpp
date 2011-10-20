@@ -24,12 +24,12 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct pointset
-    : details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Key, Compare,
+    : details::Relaxed_kdtree<details::Static_rank<Rank>, Key, void, Compare,
                               BalancingPolicy, Alloc, true>
   {
   private:
     typedef
-    details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Key, Compare,
+    details::Relaxed_kdtree<details::Static_rank<Rank>, Key, void, Compare,
                             BalancingPolicy, Alloc, true>           base_type;
     typedef pointset<Rank, Key, Compare, BalancingPolicy, Alloc>    Self;
 
@@ -78,11 +78,11 @@ namespace spatial
   template<typename Key, typename Compare, typename BalancingPolicy,
            typename Alloc>
   struct pointset<0, Key, Compare, BalancingPolicy, Alloc>
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
                               BalancingPolicy, Alloc, true>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
                                     BalancingPolicy, Alloc, true> base_type;
     typedef pointset<0, Key, Compare, BalancingPolicy, Alloc>     Self;
 
@@ -138,11 +138,11 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct runtime_pointset
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
                               BalancingPolicy, Alloc, true>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
                                     BalancingPolicy, Alloc, true>  base_type;
     typedef runtime_pointset<Key, Compare, BalancingPolicy, Alloc> Self;
 

@@ -60,12 +60,14 @@ namespace spatial
    *  not need to be fixed at compile time. Using:
    *  @code
    *    struct point { ... };
-   *    frozen_pointmap<0, point> my_set;
+   *    struct mapped { ... };
+   *    frozen_pointmap<0, point, mapped> my_set;
    *  @endcode
    *  ...is therefore completely equivalent to:
    *  @code
    *    struct point { ... };
-   *    runtime_frozen_pointmap<point> my_set;
+   *    struct mapped { ... };
+   *    runtime_frozen_pointmap<point, mapped> my_set;
    *  @endcode
    *
    *  @see runtime_frozen_pointmap for more information about how to use this

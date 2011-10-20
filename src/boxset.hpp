@@ -24,12 +24,12 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct boxset
-    : details::Relaxed_kdtree<details::Static_rank<Rank << 1>, Key, Key, Compare,
-                              BalancingPolicy, Alloc, true>
+    : details::Relaxed_kdtree<details::Static_rank<Rank << 1>, Key, void,
+                              Compare, BalancingPolicy, Alloc, true>
   {
   private:
     typedef details::Relaxed_kdtree
-    <details::Static_rank<Rank << 1>, Key, Key, Compare,
+    <details::Static_rank<Rank << 1>, Key, void, Compare,
                           BalancingPolicy, Alloc, true>           base_type;
     typedef boxset<Rank, Key, Compare, BalancingPolicy, Alloc>    Self;
 
@@ -80,11 +80,11 @@ namespace spatial
            typename BalancingPolicy,
            typename Alloc>
   struct boxset<0, Key, Compare, BalancingPolicy, Alloc>
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
                               BalancingPolicy, Alloc, true>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
                                     BalancingPolicy, Alloc, true> base_type;
     typedef boxset<0, Key, Compare, BalancingPolicy, Alloc>     Self;
 
@@ -140,11 +140,11 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct runtime_boxset
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
                               BalancingPolicy, Alloc, true>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
                                     BalancingPolicy, Alloc, true>  base_type;
     typedef runtime_boxset<Key, Compare, BalancingPolicy, Alloc> Self;
 

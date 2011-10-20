@@ -28,9 +28,9 @@ namespace spatial
   {
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool ConstIterator>
+              typename Alloc, bool SingleKey>
     inline void
-    Kdtree<Rank, Key, Mapped, Compare, Alloc, ConstIterator>
+    Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>
     ::destroy_all_nodes()
     {
       Node_base::Base_ptr node = get_root();
@@ -61,10 +61,10 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool ConstIterator>
+              typename Alloc, bool SingleKey>
     inline
-    typename Kdtree<Rank, Key, Mapped, Compare, Alloc, ConstIterator>::iterator
-    Kdtree<Rank, Key, Mapped, Compare, Alloc, ConstIterator>::insert_node
+    typename Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>::iterator
+    Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>::insert_node
     (Base_ptr target_node)
     {
       SPATIAL_ASSERT_CHECK(target_node != 0);
@@ -129,9 +129,9 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool ConstIterator>
+              typename Alloc, bool SingleKey>
     inline void
-    Kdtree<Rank, Key, Mapped, Compare, Alloc, ConstIterator>::copy_structure
+    Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>::copy_structure
     (const Self& other)
     {
       SPATIAL_ASSERT_CHECK(!other.empty());
@@ -198,9 +198,9 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool ConstIterator>
+              typename Alloc, bool SingleKey>
     inline void
-    Kdtree<Rank, Key, Mapped, Compare, Alloc, ConstIterator>
+    Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>
     ::copy_rebalance(const Self& other)
     {
       SPATIAL_ASSERT_CHECK(empty());
@@ -240,9 +240,9 @@ namespace spatial
     };
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool ConstIterator>
+              typename Alloc, bool SingleKey>
     inline void
-    Kdtree<Rank, Key, Mapped, Compare, Alloc, ConstIterator>
+    Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>
     ::rebalance_node_insert
     (typename std::vector<Base_ptr>::iterator first,
      typename std::vector<Base_ptr>::iterator last, dimension_type dim)
@@ -267,9 +267,9 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool ConstIterator>
+              typename Alloc, bool SingleKey>
     inline void
-    Kdtree<Rank, Key, Mapped, Compare, Alloc, ConstIterator>
+    Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>
     ::rebalance()
     {
       if (empty()) return;
@@ -285,9 +285,9 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool ConstIterator>
+              typename Alloc, bool SingleKey>
     inline void
-    Kdtree<Rank, Key, Mapped, Compare, Alloc, ConstIterator>::erase_node
+    Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>::erase_node
     (dimension_type node_dim, Base_ptr node)
     {
       SPATIAL_ASSERT_CHECK(node != 0);
@@ -363,9 +363,9 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool ConstIterator>
+              typename Alloc, bool SingleKey>
     inline void
-    Kdtree<Rank, Key, Mapped, Compare, Alloc, ConstIterator>
+    Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>
     ::erase(iterator target)
     {
       except::check_node_iterator_argument(target.node);
@@ -381,10 +381,10 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool ConstIterator>
+              typename Alloc, bool SingleKey>
     inline
-    typename Kdtree<Rank, Key, Mapped, Compare, Alloc, ConstIterator>::size_type
-    Kdtree<Rank, Key, Mapped, Compare, Alloc, ConstIterator>::erase
+    typename Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>::size_type
+    Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>::erase
     (const key_type& key)
     {
       size_type cnt = 0;

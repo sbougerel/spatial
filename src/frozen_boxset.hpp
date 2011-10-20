@@ -23,11 +23,11 @@ namespace spatial
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<Key> >
   struct frozen_boxset
-    : details::Kdtree<details::Static_rank<Rank << 1>, Key, Key, Compare,
+    : details::Kdtree<details::Static_rank<Rank << 1>, Key, void, Compare,
                       Alloc, true>
   {
   private:
-    typedef details::Kdtree<details::Static_rank<Rank << 1>, Key, Key, Compare,
+    typedef details::Kdtree<details::Static_rank<Rank << 1>, Key, void, Compare,
                             Alloc, true>               base_type;
     typedef frozen_boxset<Rank, Key, Compare, Alloc> Self;
 
@@ -72,10 +72,10 @@ namespace spatial
    */
   template<typename Key, typename Compare, typename Alloc>
   struct frozen_boxset<0, Key, Compare, Alloc>
-    : details::Kdtree<details::Dynamic_rank, Key, Key, Compare, Alloc, true>
+    : details::Kdtree<details::Dynamic_rank, Key, void, Compare, Alloc, true>
   {
   private:
-    typedef details::Kdtree<details::Dynamic_rank, Key, Key, Compare, Alloc,
+    typedef details::Kdtree<details::Dynamic_rank, Key, void, Compare, Alloc,
                             true> base_type;
     typedef frozen_boxset<0, Key, Compare, Alloc>    Self;
 
@@ -122,10 +122,10 @@ namespace spatial
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<Key> >
   struct runtime_frozen_boxset
-    : details::Kdtree<details::Dynamic_rank, Key, Key, Compare, Alloc, true>
+    : details::Kdtree<details::Dynamic_rank, Key, void, Compare, Alloc, true>
   {
   private:
-    typedef details::Kdtree<details::Dynamic_rank, Key, Key, Compare, Alloc,
+    typedef details::Kdtree<details::Dynamic_rank, Key, void, Compare, Alloc,
                             true>     base_type;
     typedef runtime_frozen_boxset<Key, Compare, Alloc>   Self;
 

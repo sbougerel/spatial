@@ -60,14 +60,14 @@ namespace spatial
    *  need to be fixed at compile time. Using:
    *  @code
    *    struct box { ... };
-   *    struct value { ... };
-   *    frozen_boxmap<0, box, value> my_set;
+   *    struct mapped { ... };
+   *    frozen_boxmap<0, box, mapped> my_set;
    *  @endcode
    *  ...is therefore equivalent to:
    *  @code
    *    struct box { ... };
-   *    struct value { ... };
-   *    runtime_frozen_boxmap<box, value> my_set;
+   *    struct mapped { ... };
+   *    runtime_frozen_boxmap<box, mapped> my_set;
    *  @endcode
    *
    *  @see runtime_frozen_boxmap for more information about how to use this

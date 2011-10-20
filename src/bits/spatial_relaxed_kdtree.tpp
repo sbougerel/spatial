@@ -25,9 +25,9 @@ namespace spatial
   {
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool ConstIterator>
+              typename Balancing, typename Alloc, bool SingleKey>
     inline void
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
     ::destroy_all_nodes()
     {
       Node_base::Base_ptr node = get_root();
@@ -58,9 +58,9 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool ConstIterator>
+              typename Balancing, typename Alloc, bool SingleKey>
     inline void
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
     ::copy_structure
     (const Self& other)
     {
@@ -123,9 +123,9 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool ConstIterator>
+              typename Balancing, typename Alloc, bool SingleKey>
     inline bool
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
     ::is_node_unbalanced
     (Base_ptr node, weight_type more_left, weight_type more_right) const
     {
@@ -152,11 +152,11 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool ConstIterator>
+              typename Balancing, typename Alloc, bool SingleKey>
     inline
     typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                            ConstIterator>::Base_ptr
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
+                            SingleKey>::Base_ptr
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
     ::balance_node
     (dimension_type node_dim, Base_ptr node)
     {
@@ -173,11 +173,11 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool ConstIterator>
+              typename Balancing, typename Alloc, bool SingleKey>
     inline
     typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                            ConstIterator>::iterator
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
+                            SingleKey>::iterator
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
     ::insert_node
     (dimension_type node_dim, Base_ptr node, Base_ptr target_node)
     {
@@ -259,11 +259,11 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool ConstIterator>
+              typename Balancing, typename Alloc, bool SingleKey>
     inline
     typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                            ConstIterator>::Base_ptr
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
+                            SingleKey>::Base_ptr
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
     ::erase_node
     (dimension_type node_dim, Base_ptr node)
     {
@@ -345,9 +345,9 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool ConstIterator>
+              typename Balancing, typename Alloc, bool SingleKey>
     inline void
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
     ::erase_node_balance
     (dimension_type node_dim, Base_ptr node)
     {
@@ -368,9 +368,9 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool ConstIterator>
+              typename Balancing, typename Alloc, bool SingleKey>
     inline void
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
     ::erase
     (iterator target)
     {
@@ -388,11 +388,11 @@ namespace spatial
     }
 
     template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool ConstIterator>
+              typename Balancing, typename Alloc, bool SingleKey>
     inline
     typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                            ConstIterator>::size_type
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, ConstIterator>
+                            SingleKey>::size_type
+    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
     ::erase
     (const key_type& key)
     {

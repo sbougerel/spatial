@@ -66,13 +66,13 @@ namespace spatial
    *  @code
    *    struct point { ... };
    *    struct mapped { ... };
-   *    pointmap<0, point> my_set;
+   *    pointmap<0, point, mapped> my_set;
    *  @endcode
    *  ...is therefore completely equivalent to:
    *  @code
    *    struct point { ... };
    *    struct mapped { ... };
-   *    runtime_pointmap<point> my_set;
+   *    runtime_pointmap<point, mapped> my_set;
    *  @endcode
    *
    *  @see runtime_pointmap for more information about how to use this
