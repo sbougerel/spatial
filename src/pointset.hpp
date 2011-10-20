@@ -1,12 +1,16 @@
 // -*- C++ -*-
 
+// Copyright Sylvain Bougerel 2009 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
 /**
  *  @file   pointset.hpp
  *  @brief
  *
  *  - 2009-02-26 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
  *    Creation of the file.
- *
  *  - (next change goes here)
  */
 
