@@ -1,13 +1,18 @@
 // -*- C++ -*-
+//
+// Copyright Sylvain Bougerel 2009 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 /**
  *  @file   frozen_boxmap.hpp
- *  @brief
+ *  @brief  Contains the definition of the @ref frozen_boxmap and @ref
+ *  runtime_frozen_boxmap containers. These containers are mapped containers and
+ *  store values in space that can be represented as boxes.
  *
- *  - 2009-02-26 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
- *
- *  - (next change goes here)
+ *  @see frozen_boxmap
+ *  @see runtime_frozen_boxmap
  */
 
 #ifndef SPATIAL_FROZEN_BOXMAP_HPP
@@ -23,16 +28,18 @@ namespace spatial
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<std::pair<Key, Mapped> > >
   struct frozen_boxmap
-    : details::Kdtree<details::Static_rank<Rank << 1>, Key, Mapped, Compare,
-                      Alloc, false>
+    : details::Kdtree<details::Static_rank<Rank << 1>, Key,
+                      std::pair<Key, Mapped>, Compare, Alloc>
   {
   private:
-    typedef
-    details::Kdtree<details::Static_rank<Rank << 1>, Key, Mapped, Compare,
-		    Alloc, false>                            base_type;
+    typedef details::Kdtree
+    <details::Static_rank<Rank << 1>, Key, std::pair<Key, Mapped>,
+     Compare, Alloc>                          base_type;
     typedef frozen_boxmap<Rank, Key, Mapped, Compare, Alloc> Self;
 
   public:
+    typedef Mapped                            mapped_type;
+
     frozen_boxmap() { }
 
     explicit frozen_boxmap(const Compare& compare)
@@ -75,15 +82,17 @@ namespace spatial
    */
   template<typename Key, typename Mapped, typename Compare, typename Alloc>
   struct frozen_boxmap<0, Key, Mapped, Compare, Alloc>
-    : details::Kdtree<details::Dynamic_rank, Key, Mapped, Compare,
-		      Alloc, false>
+    : details::Kdtree<details::Dynamic_rank, Key,
+                      std::pair<Key, Mapped>, Compare, Alloc>
   {
   private:
-    typedef details::Kdtree<details::Dynamic_rank, Key, Mapped,
-			    Compare, Alloc, false>         base_type;
+    typedef details::Kdtree<details::Dynamic_rank, Key, std::pair<Key, Mapped>,
+                            Compare, Alloc>   base_type;
     typedef frozen_boxmap<0, Key, Mapped, Compare, Alloc>  Self;
 
   public:
+    typedef Mapped                            mapped_type;
+
     frozen_boxmap() : base_type(details::Dynamic_rank(2)) { }
 
     explicit frozen_boxmap(dimension_type dim)
@@ -126,15 +135,17 @@ namespace spatial
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<std::pair<Key, Mapped> > >
   struct runtime_frozen_boxmap
-    : details::Kdtree<details::Dynamic_rank, Key, Mapped, Compare,
-		      Alloc, false>
+    : details::Kdtree<details::Dynamic_rank, Key, std::pair<Key, Mapped>,
+                      Compare, Alloc>
   {
   private:
-    typedef details::Kdtree<details::Dynamic_rank, Key, Mapped,
-			    Compare, Alloc, false>             base_type;
+    typedef details::Kdtree<details::Dynamic_rank, Key, std::pair<Key, Mapped>,
+                            Compare, Alloc>   base_type;
     typedef runtime_frozen_boxmap<Key, Mapped, Compare, Alloc> Self;
 
   public:
+    typedef Mapped                            mapped_type;
+
     runtime_frozen_boxmap() : base_type(details::Dynamic_rank(2)) { }
 
     explicit runtime_frozen_boxmap(dimension_type dim)

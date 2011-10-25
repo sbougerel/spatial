@@ -1,14 +1,18 @@
 // -*- C++ -*-
+//
+// Copyright Sylvain Bougerel 2009 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 /**
  *  @file   spatial_mapping.hpp
- *  @brief
+ *  @brief  Contains the definition of the mapping iterators. These iterators
+ *  walk through all nodes in the tree in order from the lowest to the highest
+ *  value along a particular dimension. The @key_comp comparator of the
+ *  container is used for comparision.
  *
- *  Change log:
- *
- *  - 31-10-2009 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
- *
+ *  @see mapping
  */
 
 #ifndef SPATIAL_MAPPING_HPP
@@ -498,7 +502,6 @@ namespace spatial
   public:
     // Container traits
     typedef typename traits_type::key_type            key_type;
-    typedef typename traits_type::mapped_type         mapped_type;
     typedef typename traits_type::value_type          value_type;
     typedef typename traits_type::pointer             pointer;
     typedef typename traits_type::const_pointer       const_pointer;
@@ -514,7 +517,7 @@ namespace spatial
 
     // Iterator types
     typedef typename spatial::details::condition
-    <traits_type::const_iterator_tag::value,
+    <std::tr1::is_same<key_type, value_type>::value,
      typename details::mapping::const_iterator<Container>::type,
      typename details::mapping::iterator<Container>::type
      >::type                                          iterator;
@@ -615,7 +618,6 @@ namespace spatial
   public:
     // Container traits
     typedef typename traits_type::key_type            key_type;
-    typedef typename traits_type::mapped_type         mapped_type;
     typedef typename traits_type::value_type          value_type;
     typedef typename traits_type::pointer             pointer;
     typedef typename traits_type::const_pointer       const_pointer;

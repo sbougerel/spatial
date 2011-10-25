@@ -1,13 +1,18 @@
 // -*- C++ -*-
+//
+// Copyright Sylvain Bougerel 2009 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 /**
  *  @file   pointmap.hpp
- *  @brief
+ *  @brief  Contains the definition of the @ref pointmap and @ref
+ *  runtime_pointmap containers. These containers are mapped containers and
+ *  store values in space that can be represented as points.
  *
- *  - 2009-02-26 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
- *
- *  - (next change goes here)
+ *  @see pointmap
+ *  @see runtime_pointmap
  */
 
 #ifndef SPATIAL_POINTMAP_HPP
@@ -24,17 +29,20 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<std::pair<Key, Mapped> > >
   struct pointmap
-    : details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Mapped, Compare,
-                              BalancingPolicy, Alloc, false>
+    : details::Relaxed_kdtree<details::Static_rank<Rank>, Key,
+                              std::pair<Key, Mapped>, Compare,
+                              BalancingPolicy, Alloc>
   {
   private:
-    typedef
-    details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Mapped, Compare,
-                            BalancingPolicy, Alloc, false>   base_type;
-    typedef pointmap<Rank, Key, Mapped, Compare, BalancingPolicy,
-		     Alloc>                                  Self;
+    typedef details::Relaxed_kdtree
+    <details::Static_rank<Rank>, Key, std::pair<Key, Mapped>, Compare,
+     BalancingPolicy, Alloc>                  base_type;
+    typedef pointmap<Rank, Key, Mapped, Compare,
+                     BalancingPolicy, Alloc>  Self;
 
   public:
+    typedef Mapped                            mapped_type;
+
     pointmap() { }
 
     explicit pointmap(const Compare& compare)
@@ -79,19 +87,22 @@ namespace spatial
    *  container.
    */
   template<typename Key, typename Mapped, typename Compare,
-	   typename BalancingPolicy, typename Alloc>
+           typename BalancingPolicy, typename Alloc>
   struct pointmap<0, Key, Mapped, Compare, BalancingPolicy, Alloc>
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Mapped, Compare,
-                              BalancingPolicy, Alloc, false>
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key,
+                              std::pair<Key, Mapped>, Compare,
+                              BalancingPolicy, Alloc>
   {
   private:
-    typedef
-    details::Relaxed_kdtree<details::Dynamic_rank, Key, Mapped, Compare,
-			    BalancingPolicy, Alloc, false> base_type;
+    typedef details::Relaxed_kdtree
+    <details::Dynamic_rank, Key, std::pair<Key, Mapped>,
+     Compare, BalancingPolicy, Alloc>       base_type;
     typedef pointmap<0, Key, Mapped, Compare, BalancingPolicy,
-		     Alloc>                                Self;
+                     Alloc>                 Self;
 
   public:
+    typedef Mapped                          mapped_type;
+
     pointmap() { }
 
     explicit pointmap(dimension_type dim)
@@ -143,17 +154,20 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<std::pair<Key, Mapped> > >
   struct runtime_pointmap
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Mapped, Compare,
-                              BalancingPolicy, Alloc, false>
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key,
+                              std::pair<Key, Mapped>, Compare,
+                              BalancingPolicy, Alloc>
   {
   private:
-    typedef
-    details::Relaxed_kdtree<details::Dynamic_rank, Key, Mapped, Compare,
-			    BalancingPolicy, Alloc, false>  base_type;
+    typedef details::Relaxed_kdtree
+    <details::Dynamic_rank, Key, std::pair<Key, Mapped>, Compare,
+     BalancingPolicy, Alloc>                base_type;
     typedef runtime_pointmap<Key, Mapped, Compare, BalancingPolicy,
-			     Alloc>                         Self;
+                             Alloc>         Self;
 
   public:
+    typedef Mapped                          mapped_type;
+
     runtime_pointmap() { }
 
     explicit runtime_pointmap(dimension_type dim)

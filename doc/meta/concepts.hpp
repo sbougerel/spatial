@@ -1,4 +1,43 @@
 /**
+ *  Rank concept defines the model for a functor class used to represent the
+ *  rank of a container, or the minimum number of dimensions in space expressed
+ *  in all values stored in the container.
+ *  @concept Definition of the Rank concept.
+ *
+ *  The models of Rank shall publicly provide the following interface:
+ *  \concept_tab
+ *  \concept_leg T
+ *  \concept_des A model of Rank
+ *  \concept_req dimension_type T::operator()() const
+ *  \concept_des Returns the number of dimensions expressed in all values stored
+ *  in the container.
+ *  \concept_end
+ *
+ *  Values may be expressed in many more dimensions than the container in which
+ *  they are stored. However, if a container as a rank of 3, therefore all the
+ *  values in this container are expected to be represented in at least 3
+ *  dimensions in space.
+ *
+ *  Models of this concepts are not normally used by the user, however, they are
+ *  used internally by all containers. Their are two models of Rank in the
+ *  library:
+ *  \ul Static_rank, which holds a value of the number of dimension that is known
+ *  at compile time, and will not change during program execution. That value is
+ *  a template parameter.
+ *  \l Dynamic_rank, which holds a variable value of the number of dimension,
+ *  which defaults to 1, and which may change during execution of the program.
+ *  \lu
+ *
+ *  Finally, it is useful to know that in the box\* familly of containers, such
+ *  as boxset or boxmap, the model of Rank always holds twice the dimension
+ *  value given in parameter. If your boxes are represented in 2 dimensions
+ *  (like a rectangle), the Rank of the container will return 4. That is because
+ *  box\* containers treat 2D boxes as a 4D point in space, giving rise to a
+ *  double number of axis, for each of the low and high coordinate of a box.
+ */
+struct Rank { };
+
+/**
  *  TrivialComparison concept defines the model for a functor class used to
  *  perform strict comparison between two values of a spatial container,
  *  over a single dimension. The functor shall return a boolean value equal
@@ -6,7 +45,7 @@
  *  dimension.
  *  @concept Definition of the TrivialComparison concept.
  *
- *  The models of TrivialComparison shall publicly provides the following
+ *  The models of TrivialComparison shall publicly provide the following
  *  interface:
  *  \concept_tab
  *  \concept_leg T
@@ -34,7 +73,7 @@ struct TrivialComparison { };
  *  @concept Definition of the RegularComparison concept.
  *
  *  The models of RegularComparison shall also model TrivialComparison and publicly
- *  provides the following interface:
+ *  provide the following interface:
  *  \concept_tab
  *  \concept_leg T
  *  \concept_des A model of RegularComparison

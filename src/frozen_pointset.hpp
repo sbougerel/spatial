@@ -1,13 +1,26 @@
 // -*- C++ -*-
+//
+// Copyright Sylvain Bougerel 2009 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 /**
  *  @file   frozen_pointset.hpp
- *  @brief
+ *  @brief  Contains the definition of the @ref frozen_pointset and @ref
+ *  runtime_frozen_pointset containers. These containers are not mapped
+ *  containers and store values in space that can be represented as points.
  *
- *  - 2009-02-26 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
+ *  Iterating these containers always yield a constant value iterator. That is
+ *  because modifying the value stored in the container may compromise the
+ *  ordering in the container. One way around this issue is to use a @ref
+ *  frozen_pointmap container or to @c const_cast the value dereferenced from
+ *  the iterator.
  *
- *  - (next change goes here)
+ *  @see frozen_pointmap
+ *  @see runtime_frozen_pointmap
+ *  @see frozen_pointset
+ *  @see runtime_frozen_pointset
  */
 
 #ifndef SPATIAL_FROZEN_POINTSET_HPP
@@ -23,16 +36,15 @@ namespace spatial
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<Key> >
   struct frozen_pointset
-    : details::Kdtree<details::Static_rank<Rank>, Key, void, Compare,
-                      Alloc, true>
+    : details::Kdtree<details::Static_rank<Rank>, Key, Key,
+                      Compare, Alloc>
   {
   private:
-    typedef details::Kdtree<details::Static_rank<Rank>, Key, void, Compare,
-                            Alloc, true>               base_type;
+    typedef details::Kdtree<details::Static_rank<Rank>, Key, Key,
+                            Compare, Alloc>            base_type;
     typedef frozen_pointset<Rank, Key, Compare, Alloc> Self;
 
   public:
-
     frozen_pointset() { }
 
     explicit frozen_pointset(const Compare& compare)
@@ -73,11 +85,11 @@ namespace spatial
    */
   template<typename Key, typename Compare, typename Alloc>
   struct frozen_pointset<0, Key, Compare, Alloc>
-    : details::Kdtree<details::Dynamic_rank, Key, void, Compare, Alloc, true>
+    : details::Kdtree<details::Dynamic_rank, Key, Key, Compare, Alloc>
   {
   private:
-    typedef details::Kdtree<details::Dynamic_rank, Key, void, Compare, Alloc,
-                            true>                      base_type;
+    typedef details::Kdtree<details::Dynamic_rank, Key, Key,
+                            Compare, Alloc>            base_type;
     typedef frozen_pointset<0, Key, Compare, Alloc>    Self;
 
   public:
@@ -123,11 +135,11 @@ namespace spatial
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<Key> >
   struct runtime_frozen_pointset
-    : details::Kdtree<details::Dynamic_rank, Key, void, Compare, Alloc, true>
+    : details::Kdtree<details::Dynamic_rank, Key, Key, Compare, Alloc>
   {
   private:
-    typedef details::Kdtree<details::Dynamic_rank, Key, void, Compare, Alloc,
-                            true>                          base_type;
+    typedef details::Kdtree<details::Dynamic_rank, Key, Key,
+                            Compare, Alloc>                base_type;
     typedef runtime_frozen_pointset<Key, Compare, Alloc>   Self;
 
   public:

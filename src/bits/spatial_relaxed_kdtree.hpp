@@ -22,16 +22,8 @@
  *  complexity of in invariant. However scapegoat rotations still provide
  *  amortized insertion and deletion times on the tree, and allow for multiple
  *  balancing policies to be defined.
- */
-
-/*
- *  Change Log:
  *
- *  - 2009-02-26 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
- *
- *  - (next change goes here)
- *
+ *  @see Relaxed_kdtree
  */
 
 #ifndef SPATIAL_RELAXED_KDTREE_HPP
@@ -121,42 +113,36 @@ namespace spatial
   namespace details
   {
     // Forward decl.
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     class Relaxed_kdtree;
 
     //@{
     /**
      *  Accessor to header of the kd-tree. These functions are useful outside of
-     *  the k-d tree to initialize iterators.
+     *  the \kdtree to initialize iterators.
      */
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline
-    typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                            SingleKey>::node_type*
-    get_end(Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                           SingleKey>& value)
+    typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing,
+                            Alloc>::node_type*
+    get_end(Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>& value)
     {
       return static_cast
-        <typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                                 SingleKey>::node_type*>
-        (value.get_header());
+        <typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing,
+                                 Alloc>::node_type*>(value.get_header());
     }
 
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline const
-    typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                            SingleKey>::node_type*
-    get_end(const Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                                 SingleKey>& value)
+    typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::node_type*
+    get_end(const Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>& value)
     {
       return static_cast
-        <const typename
-        Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                       SingleKey>::node_type*>
-        (value.get_header());
+        <const typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing,
+                                       Alloc>::node_type*>(value.get_header());
     }
     //@}
 
@@ -165,32 +151,26 @@ namespace spatial
      *  Accessor to the root value of the kd-tree. These functions are useful
      *  outside of the k-d tree to initialize iterators.
      */
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline
-    typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                            SingleKey>::node_type*
-    get_begin(Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                             SingleKey>& value)
+    typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::node_type*
+    get_begin(Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>& value)
     {
       return static_cast
-        <typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                                 SingleKey>::node_type*>
+        <typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::node_type*>
         (value.get_root());
     }
 
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline const
-    typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                            SingleKey>::node_type*
-    get_begin(const Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                                   SingleKey>& value)
+    typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::node_type*
+    get_begin(const Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>& value)
     {
       return static_cast
         <const typename
-        Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                       SingleKey>::node_type*>
+        Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::node_type*>
         (value.get_root());
     }
     //@}
@@ -204,55 +184,51 @@ namespace spatial
      *  ordering along each dimension! Each node maintains the count of its
      *  children nodes plus one.
      */
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     class Relaxed_kdtree
     {
-      typedef Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                             SingleKey>    Self;
+      typedef Relaxed_kdtree<Rank, Key, Value, Compare, Balancing,
+                             Alloc>                   Self;
 
     public:
       // Container intrincsic types
       typedef Rank                                    rank_type;
       typedef Key                                     key_type;
-      typedef Mapped                                  mapped_type;
+      typedef Value                                   value_type;
       typedef Relaxed_kdtree_node<Key>                node_type;
-      typedef typename details::condition
-      <SingleKey, key_type,
-       std::pair<const key_type, mapped_type> >::type value_type;
       typedef Compare                                 key_compare;
       typedef typename details::condition
-      <SingleKey, key_compare,
+      <std::tr1::is_same<Key, Value>::value, key_compare,
        ValueCompare<value_type, key_compare> >::type  value_compare;
       typedef Alloc                                   allocator_type;
-      typedef typename true_or_false_type
-      <SingleKey>::type                               const_iterator_tag;
       typedef Balancing                               balancing_policy;
 
       // Container iterator related types
       typedef typename details::condition
-      <SingleKey, const value_type*,
-       value_type*>::type                  pointer;
-      typedef const value_type*            const_pointer;
+      <std::tr1::is_same<Key, Value>::value,
+       const value_type*, value_type*>::type             pointer;
+      typedef const value_type*                          const_pointer;
       typedef typename details::condition
-      <SingleKey, const value_type&,
-       value_type&>::type                  reference;
-      typedef const Key&                   const_reference;
-      typedef std::size_t                  size_type;
-      typedef std::ptrdiff_t               difference_type;
+      <std::tr1::is_same<Key, Value>::value,
+       const value_type&, value_type&>::type             reference;
+      typedef const Key&                                 const_reference;
+      typedef std::size_t                                size_type;
+      typedef std::ptrdiff_t                             difference_type;
 
       // Container iterators
       // Conformant to C++ standard, if Key and Value are the same type then
       // iterator and const_iterator shall be the same.
       typedef typename details::condition
-      <SingleKey, Const_Node_iterator<value_type, node_type>,
+      <std::tr1::is_same<Key, Value>::value,
+       Const_Node_iterator<value_type, node_type>,
        Node_iterator<value_type, node_type> >::type      iterator;
       typedef Const_Node_iterator<value_type, node_type> const_iterator;
       typedef std::reverse_iterator<iterator>            reverse_iterator;
       typedef std::reverse_iterator
       <const_iterator>                                   const_reverse_iterator;
       typedef typename details::condition
-      <SingleKey,
+      <std::tr1::is_same<Key, Value>::value,
        typename details::const_equal_iterator<Self>::type,
        typename details::equal_iterator<Self>::type >
       ::type                                             equal_iterator;
@@ -883,13 +859,11 @@ namespace spatial
     /**
      *  @brief  Swap the content of the relaxed @kdtree @p left and @p right.
      */
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline void swap
-    (Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                    SingleKey>& left,
-     Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                    SingleKey>& right)
+    (Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>& left,
+     Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>& right)
     { left.swap(right); }
 
     /**
@@ -902,13 +876,13 @@ namespace spatial
      *  better than @f[ O(2nlog(n)) @f] complexity. However this will change
      *  when mapping_iterator will get support for ordering over all dimensions.
      */
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline bool
-    operator==(const Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing,
-                                    Alloc, SingleKey>& a,
-               const Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing,
-                                    Alloc, SingleKey>& b)
+    operator==(const Relaxed_kdtree<Rank, Key, Value, Compare, Balancing,
+                                    Alloc>& a,
+               const Relaxed_kdtree<Rank, Key, Value, Compare, Balancing,
+                                    Alloc>& b)
     { return (a.size() == b.size() && a.dimension() == b.dimension()); }
 
     /**
@@ -917,13 +891,13 @@ namespace spatial
      *
      *  More details are given on operator=.
      */
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline bool
-    operator!=(const Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing,
-                                    Alloc, SingleKey>& a,
-               const Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing,
-                                    Alloc, SingleKey>& b)
+    operator!=(const Relaxed_kdtree<Rank, Key, Value, Compare, Balancing,
+                                    Alloc>& a,
+               const Relaxed_kdtree<Rank, Key, Value, Compare, Balancing,
+                                    Alloc>& b)
     { return !(a.size() == b.size()); }
 
   } // namespace details

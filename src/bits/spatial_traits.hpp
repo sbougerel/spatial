@@ -77,30 +77,6 @@ namespace spatial
     invariant_category(const Node&)
     { return typename node_traits<Node>::invariant_category(); }
 
-    //@{
-    /*
-     * A helper function to tag container for contant or non constant
-     * iterators.
-     */
-    template<bool ConstantIterator>
-    struct true_or_false_type
-    { typedef std::tr1::false_type type; };
-
-    template<>
-    struct true_or_false_type<true>
-    { typedef std::tr1::true_type type; };
-    //@}
-
-    //@{
-    /**
-     *  A helper that tells if two types are the same.
-     */
-    template<typename Tp1, typename Tp2>
-    struct is_same : std::tr1::false_type { };
-    template <typename Tp>
-    struct is_same<Tp, Tp> : std::tr1::true_type { };
-    //@}
-
   } // namespace details
 
   /**
@@ -116,15 +92,6 @@ namespace spatial
      *  holds the coordinates that keeps its instances ordered in the container.
      */
     typedef typename Tp::key_type               key_type;
-
-    /**
-     *  The type representing the mapped values managed by the container. When
-     *  @c mapped_type and @c key_type are different, as in mapped containers
-     *  @ref pointmap or @ref boxmap; mapped_type holds the mutable part of the
-     *  container value. Modifing the @c mapped_type does not affect @c
-     *  key_type.
-     */
-    typedef typename Tp::mapped_type            mapped_type;
 
     /**
      *  When mapped_type and key_type are different, value_type holds a pair
@@ -176,14 +143,12 @@ namespace spatial
      */
     typedef typename Tp::value_compare          value_compare;
 
-    typedef typename Tp::rank_type              rank_type;
-
     /**
-     *  @brief  A tag that defines whether the iterator of the container are
-     *  constant or not. It can take 2 values, either std::tr1::true_type or
-     *  std::tr1::false_type.
+     *  The type used to represent the rank of the container. It is not a number
+     *  but a wrapper around a dimension_type value. A rank_type is a model of
+     *  @ref Rank.
      */
-    typedef typename Tp::const_iterator_tag     const_iterator_tag;
+    typedef typename Tp::rank_type              rank_type;
   };
 
   /**

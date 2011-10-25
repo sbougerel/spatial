@@ -1,5 +1,5 @@
 // -*- C++ -*-
-
+//
 // Copyright Sylvain Bougerel 2009 - 2012.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file COPYING or copy at
@@ -7,11 +7,20 @@
 
 /**
  *  @file   pointset.hpp
- *  @brief
+ *  @brief  Contains the definition of the @ref pointset and @ref
+ *  runtime_pointset containers. These containers are not mapped containers and
+ *  store values in space that can be represented as points.
  *
- *  - 2009-02-26 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
- *  - (next change goes here)
+ *  Iterating these containers always yield a constant value iterator. That is
+ *  because modifying the value stored in the container may compromise the
+ *  ordering in the container. One way around this issue is to use a @ref
+ *  pointmap container or to @c const_cast the value dereferenced from the
+ *  iterator.
+ *
+ *  @see pointmap
+ *  @see runtime_pointmap
+ *  @see pointset
+ *  @see runtime_pointset
  */
 
 #ifndef SPATIAL_POINTSET_HPP
@@ -28,14 +37,14 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct pointset
-    : details::Relaxed_kdtree<details::Static_rank<Rank>, Key, void, Compare,
-                              BalancingPolicy, Alloc, true>
+    : details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Key, Compare,
+                              BalancingPolicy, Alloc>
   {
   private:
     typedef
-    details::Relaxed_kdtree<details::Static_rank<Rank>, Key, void, Compare,
-                            BalancingPolicy, Alloc, true>           base_type;
-    typedef pointset<Rank, Key, Compare, BalancingPolicy, Alloc>    Self;
+    details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Key, Compare,
+                            BalancingPolicy, Alloc>               base_type;
+    typedef pointset<Rank, Key, Compare, BalancingPolicy, Alloc>  Self;
 
   public:
     pointset() { }
@@ -82,13 +91,13 @@ namespace spatial
   template<typename Key, typename Compare, typename BalancingPolicy,
            typename Alloc>
   struct pointset<0, Key, Compare, BalancingPolicy, Alloc>
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
-                              BalancingPolicy, Alloc, true>
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+                              BalancingPolicy, Alloc>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
-                                    BalancingPolicy, Alloc, true> base_type;
-    typedef pointset<0, Key, Compare, BalancingPolicy, Alloc>     Self;
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+                                    BalancingPolicy, Alloc>    base_type;
+    typedef pointset<0, Key, Compare, BalancingPolicy, Alloc>  Self;
 
   public:
     pointset() { }
@@ -142,12 +151,12 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct runtime_pointset
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
-                              BalancingPolicy, Alloc, true>
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+                              BalancingPolicy, Alloc>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
-                                    BalancingPolicy, Alloc, true>  base_type;
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+                                    BalancingPolicy, Alloc>        base_type;
     typedef runtime_pointset<Key, Compare, BalancingPolicy, Alloc> Self;
 
   public:

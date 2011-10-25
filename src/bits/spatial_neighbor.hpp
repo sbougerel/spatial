@@ -573,7 +573,6 @@ namespace spatial
   public:
     // Container traits
     typedef typename traits_type::key_type            key_type;
-    typedef typename traits_type::mapped_type         mapped_type;
     typedef typename traits_type::value_type          value_type;
     typedef typename traits_type::pointer             pointer;
     typedef typename traits_type::const_pointer       const_pointer;
@@ -591,7 +590,7 @@ namespace spatial
 
     // Iterator types
     typedef typename spatial::details::condition
-    <traits_type::const_iterator_tag::value,
+    <std::tr1::is_same<key_type, value_type>::value,
      typename details::neighbor::const_iterator<Container, Geometry>::type,
      typename details::neighbor::iterator<Container, Geometry>::type
      >::type                                          iterator;
@@ -692,7 +691,6 @@ namespace spatial
   public:
     // Container traits
     typedef typename traits_type::key_type            key_type;
-    typedef typename traits_type::mapped_type         mapped_type;
     typedef typename traits_type::value_type          value_type;
     typedef typename traits_type::pointer             pointer;
     typedef typename traits_type::const_pointer       const_pointer;

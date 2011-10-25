@@ -1,15 +1,20 @@
 // -*- C++ -*-
+//
+// Copyright Sylvain Bougerel 2009 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 /**
  *  @file   spatial_kdtree.hpp
- *  @brief
+ *  @brief  Kdtree class is defined in this file and its implementation is in
+ *  the corresponding *.tpp file.
  *
- *  Change Log:
+ *  The Kdtree class defines all the methods and algorithms to store, delete and
+ *  iterate over nodes in a Kdtree. This class is the bare definition of the
+ *  kdtree and must be rebalanced by the user after nodes have been inserted.
  *
- *  - 2009-09-19 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
- *
- *  - (next change goes here)
+ *  @see Kdtree
  */
 
 #ifndef SPATIAL_KDTREE_HPP
@@ -35,8 +40,8 @@ namespace spatial
   {
 
     // Forward decl.
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
     class Kdtree;
 
     //@{
@@ -44,29 +49,27 @@ namespace spatial
      *  Accessor to the header node of the Kdtree container. These functions are
      *  necessary to initialize iterators external to the container.
      */
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
     inline
-    typename Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>
+    typename Kdtree<Rank, Key, Value, Compare, Alloc>
     ::node_type*
-    get_end(Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>& value)
+    get_end(Kdtree<Rank, Key, Value, Compare, Alloc>& value)
     {
-      return static_cast<typename Kdtree<Rank, Key, Mapped, Compare, Alloc,
-                                         SingleKey>::node_type*>
+      return static_cast
+        <typename Kdtree<Rank, Key, Value, Compare, Alloc>::node_type*>
         (value.get_header());
     }
 
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
     inline const
-    typename Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>
+    typename Kdtree<Rank, Key, Value, Compare, Alloc>
     ::node_type*
-    get_end(const Kdtree<Rank, Key, Mapped, Compare, Alloc,
-                         SingleKey>& value)
+    get_end(const Kdtree<Rank, Key, Value, Compare, Alloc>& value)
     {
       return static_cast
-        <const typename Kdtree<Rank, Key, Mapped, Compare, Alloc,
-                               SingleKey>::node_type*>
+        <const typename Kdtree<Rank, Key, Value, Compare, Alloc>::node_type*>
         (value.get_header());
     }
     //@}
@@ -76,30 +79,27 @@ namespace spatial
      *  Accessor to the root node of the Kdtree container. These functions are
      *  necessary to initialize iterators external to the container.
      */
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
     inline
-    typename Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>
+    typename Kdtree<Rank, Key, Value, Compare, Alloc>
     ::node_type*
-    get_begin(Kdtree<Rank, Key, Mapped, Compare, Alloc,
-                     SingleKey>& value)
+    get_begin(Kdtree<Rank, Key, Value, Compare, Alloc>& value)
     {
-      return static_cast<typename Kdtree<Rank, Key, Mapped, Compare, Alloc,
-                                         SingleKey>::node_type*>
+      return static_cast
+        <typename Kdtree<Rank, Key, Value, Compare, Alloc>::node_type*>
         (value.get_root());
     }
 
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
     inline const
-    typename Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>
+    typename Kdtree<Rank, Key, Value, Compare, Alloc>
     ::node_type*
-    get_begin(const Kdtree<Rank, Key, Mapped, Compare, Alloc,
-                           SingleKey>& value)
+    get_begin(const Kdtree<Rank, Key, Value, Compare, Alloc>& value)
     {
       return static_cast
-        <const typename Kdtree<Rank, Key, Mapped, Compare, Alloc,
-                               SingleKey>::node_type*>
+        <const typename Kdtree<Rank, Key, Value, Compare, Alloc>::node_type*>
         (value.get_root());
     }
     //@}
@@ -113,54 +113,50 @@ namespace spatial
      *  ordering along each dimension! Each node maintains the count of its
      *  children nodes plus one.
      */
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
     class Kdtree
     {
-      typedef Kdtree<Rank, Key, Mapped, Compare, Alloc,
-                     SingleKey>            Self;
+      typedef Kdtree<Rank, Key, Value, Compare, Alloc>  Self;
 
     public:
       // Container intrincsic types
-      typedef Rank                                    rank_type;
-      typedef Key                                     key_type;
-      typedef Mapped                                  mapped_type;
+      typedef Rank                                       rank_type;
+      typedef Key                                        key_type;
+      typedef Value                                      value_type;
+      typedef Kdtree_node<value_type>                    node_type;
+      typedef Compare                                    key_compare;
       typedef typename details::condition
-      <SingleKey, key_type,
-       std::pair<const key_type, mapped_type> >::type value_type;
-      typedef Kdtree_node<value_type>                 node_type;
-      typedef Compare                                 key_compare;
-      typedef typename details::condition
-      <SingleKey, key_compare,
-       ValueCompare<value_type, key_compare> >::type  value_compare;
-      typedef Alloc                                   allocator_type;
-      typedef typename true_or_false_type
-      <SingleKey>::type                               const_iterator_tag;
+      <std::tr1::is_same<Key, Value>::value, key_compare,
+       ValueCompare<value_type, key_compare> >::type     value_compare;
+      typedef Alloc                                      allocator_type;
 
       // Container iterator related types
       typedef typename details::condition
-      <SingleKey, const value_type*,
-       value_type*>::type                  pointer;
-      typedef const value_type*            const_pointer;
+      <std::tr1::is_same<Key, Value>::value,
+       const value_type*, value_type*>::type             pointer;
+      typedef const value_type*                          const_pointer;
       typedef typename details::condition
-      <SingleKey, const value_type&,
-       value_type&>::type                  reference;
-      typedef const Key&                   const_reference;
-      typedef std::size_t                  size_type;
-      typedef std::ptrdiff_t               difference_type;
+      <std::tr1::is_same<Key, Value>::value,
+       const value_type&,
+       value_type&>::type                                reference;
+      typedef const Key&                                 const_reference;
+      typedef std::size_t                                size_type;
+      typedef std::ptrdiff_t                             difference_type;
 
       // Container iterators
       // Conformant to C++ ISO standard, if Key and Value are the same type then
       // iterator and const_iterator shall be the same.
       typedef typename details::condition
-      <SingleKey, Const_Node_iterator<value_type, node_type>,
+      <std::tr1::is_same<Key, Value>::value,
+       Const_Node_iterator<value_type, node_type>,
        Node_iterator<value_type, node_type> >::type      iterator;
       typedef Const_Node_iterator<value_type, node_type> const_iterator;
       typedef std::reverse_iterator<iterator>            reverse_iterator;
       typedef std::reverse_iterator
       <const_iterator>                                   const_reverse_iterator;
       typedef typename details::condition
-      <SingleKey,
+      <std::tr1::is_same<Key, Value>::value,
        typename details::const_equal_iterator<Self>::type,
        typename details::equal_iterator<Self>::type >
       ::type                                             equal_iterator;
@@ -748,11 +744,11 @@ namespace spatial
     /**
      *  @brief  Swap the content of the tree @p left and @p right.
      */
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
     inline void swap
-    (Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>& left,
-     Kdtree<Rank, Key, Mapped, Compare, Alloc, SingleKey>& right)
+    (Kdtree<Rank, Key, Value, Compare, Alloc>& left,
+     Kdtree<Rank, Key, Value, Compare, Alloc>& right)
     { left.swap(right); }
 
     /**
@@ -765,13 +761,11 @@ namespace spatial
      *  better than @f[ O(2nlog(n)) @f] complexity. However this will change
      *  when mapping_iterator will get support for ordering over all dimensions.
      */
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
     inline bool
-    operator==(const Kdtree<Rank, Key, Mapped, Compare, Alloc,
-                            SingleKey>& a,
-               const Kdtree<Rank, Key, Mapped, Compare, Alloc,
-                            SingleKey>& b)
+    operator==(const Kdtree<Rank, Key, Value, Compare, Alloc>& a,
+               const Kdtree<Rank, Key, Value, Compare, Alloc>& b)
     { return (a.size() == b.size() && a.dimension() == b.dimension()); }
 
     /**
@@ -780,13 +774,11 @@ namespace spatial
      *
      *  More details are given on operator=.
      */
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
     inline bool
-    operator!=(const Kdtree<Rank, Key, Mapped, Compare, Alloc,
-                            SingleKey>& a,
-               const Kdtree<Rank, Key, Mapped, Compare, Alloc,
-                            SingleKey>& b)
+    operator!=(const Kdtree<Rank, Key, Value, Compare, Alloc>& a,
+               const Kdtree<Rank, Key, Value, Compare, Alloc>& b)
     { return !(a.size() == b.size()); }
 
   } // namespace details

@@ -24,10 +24,10 @@ namespace spatial
   namespace details
   {
 
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline void
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
+    Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>
     ::destroy_all_nodes()
     {
       Node_base::Base_ptr node = get_root();
@@ -57,10 +57,10 @@ namespace spatial
         }
     }
 
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline void
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
+    Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>
     ::copy_structure
     (const Self& other)
     {
@@ -122,10 +122,10 @@ namespace spatial
       set_rightmost(Node_base::maximum(get_root()));
     }
 
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline bool
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
+    Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>
     ::is_node_unbalanced
     (Base_ptr node, weight_type more_left, weight_type more_right) const
     {
@@ -151,12 +151,11 @@ namespace spatial
                        ? static_cast<Link_type>(node->right)->weight : 0));
     }
 
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline
-    typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                            SingleKey>::Base_ptr
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
+    typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::Base_ptr
+    Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>
     ::balance_node
     (dimension_type node_dim, Base_ptr node)
     {
@@ -172,12 +171,11 @@ namespace spatial
         : (left_node ? p->left : p->right);
     }
 
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline
-    typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                            SingleKey>::iterator
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
+    typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::iterator
+    Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>
     ::insert_node
     (dimension_type node_dim, Base_ptr node, Base_ptr target_node)
     {
@@ -258,12 +256,11 @@ namespace spatial
       return iterator(static_cast<Link_type>(target_node));
     }
 
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline
-    typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                            SingleKey>::Base_ptr
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
+    typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::Base_ptr
+    Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>
     ::erase_node
     (dimension_type node_dim, Base_ptr node)
     {
@@ -344,10 +341,10 @@ namespace spatial
       return node;
     }
 
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline void
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
+    Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>
     ::erase_node_balance
     (dimension_type node_dim, Base_ptr node)
     {
@@ -367,10 +364,10 @@ namespace spatial
         }
     }
 
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline void
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
+    Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>
     ::erase
     (iterator target)
     {
@@ -387,12 +384,11 @@ namespace spatial
       destroy_node(static_cast<Link_type>(target.node));
     }
 
-    template <typename Rank, typename Key, typename Mapped, typename Compare,
-              typename Balancing, typename Alloc, bool SingleKey>
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Balancing, typename Alloc>
     inline
-    typename Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc,
-                            SingleKey>::size_type
-    Relaxed_kdtree<Rank, Key, Mapped, Compare, Balancing, Alloc, SingleKey>
+    typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::size_type
+    Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>
     ::erase
     (const key_type& key)
     {

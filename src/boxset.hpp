@@ -1,13 +1,25 @@
 // -*- C++ -*-
+//
+// Copyright Sylvain Bougerel 2009 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 /**
  *  @file   boxset.hpp
- *  @brief
+ *  @brief  Contains the definition of the @ref boxset and @ref
+ *  runtime_boxset containers. These containers are not mapped containers and
+ *  store values in space that can be represented as boxes.
  *
- *  - 2009-02-26 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
+ *  Iterating these containers always yield a constant value iterator. That is
+ *  because modifying the value stored in the container may compromise the
+ *  ordering in the container. One way around this issue is to use a @ref boxmap
+ *  container or to @c const_cast the value dereferenced from the iterator.
  *
- *  - (next change goes here)
+ *  @see boxmap
+ *  @see runtime_boxmap
+ *  @see boxset
+ *  @see runtime_boxset
  */
 
 #ifndef SPATIAL_BOXSET_HPP
@@ -24,14 +36,14 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct boxset
-    : details::Relaxed_kdtree<details::Static_rank<Rank << 1>, Key, void,
-                              Compare, BalancingPolicy, Alloc, true>
+    : details::Relaxed_kdtree<details::Static_rank<Rank << 1>, Key, Key,
+                              Compare, BalancingPolicy, Alloc>
   {
   private:
     typedef details::Relaxed_kdtree
-    <details::Static_rank<Rank << 1>, Key, void, Compare,
-                          BalancingPolicy, Alloc, true>           base_type;
-    typedef boxset<Rank, Key, Compare, BalancingPolicy, Alloc>    Self;
+    <details::Static_rank<Rank << 1>, Key, Key, Compare,
+                          BalancingPolicy, Alloc>               base_type;
+    typedef boxset<Rank, Key, Compare, BalancingPolicy, Alloc>  Self;
 
   public:
     boxset() { }
@@ -80,13 +92,13 @@ namespace spatial
            typename BalancingPolicy,
            typename Alloc>
   struct boxset<0, Key, Compare, BalancingPolicy, Alloc>
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
-                              BalancingPolicy, Alloc, true>
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+                              BalancingPolicy, Alloc>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
-                                    BalancingPolicy, Alloc, true> base_type;
-    typedef boxset<0, Key, Compare, BalancingPolicy, Alloc>     Self;
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+                                    BalancingPolicy, Alloc> base_type;
+    typedef boxset<0, Key, Compare, BalancingPolicy, Alloc> Self;
 
   public:
     boxset() : base_type(details::Dynamic_rank(2)) { }
@@ -140,12 +152,12 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct runtime_boxset
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
-                              BalancingPolicy, Alloc, true>
+    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+                              BalancingPolicy, Alloc>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, void, Compare,
-                                    BalancingPolicy, Alloc, true>  base_type;
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
+                                    BalancingPolicy, Alloc>      base_type;
     typedef runtime_boxset<Key, Compare, BalancingPolicy, Alloc> Self;
 
   public:
