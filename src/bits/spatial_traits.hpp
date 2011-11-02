@@ -103,31 +103,37 @@ namespace spatial
     typedef typename Tp::value_type             value_type;
 
     /**
-     *  @brief  Represent a pointer to a @c value_type. This type is used by the
+     *  Represent a pointer to a @c value_type. This type is used by the
      *  iterators of the container.
      */
     typedef typename Tp::pointer                pointer;
 
-    /**
-     *  @brief  Represent a pointer to a key_type. key_type is always constant.
-     */
+    //! Represent a pointer to a key_type. key_type is always constant.
     typedef typename Tp::const_pointer          const_pointer;
 
     /**
-     *  @brief  Represent a reference to a key_type. May or may not be mutable,
+     *  Represent a reference to a key_type. May or may not be mutable,
      *  depending on the type of key_type.
      */
     typedef typename Tp::reference              reference;
 
-    /**
-     *  @brief  Represent a reference to a key_type. key_type is always
-     *  constant.
-     */
+    //! Represent a reference to a key_type. key_type is always constant.
     typedef typename Tp::const_reference        const_reference;
 
-    typedef typename Tp::node_type              node_type;
+    /**
+     *  The \ref LinkMode type that is associated with the container. Accessing
+     *  this type allows external iterators to tie the nodes in the container
+     *  with the proper linking type.
+     */
+    typedef typename Tp::mode_type              mode_type;
+
+    //! The size type is used to list the number of element in the tree.
     typedef typename Tp::size_type              size_type;
+
+    //! The difference type is used when 2 iterators from the tree are substracted.
     typedef typename Tp::difference_type        difference_type;
+
+    //! The allocator used in the container.
     typedef typename Tp::allocator_type         allocator_type;
 
     /**

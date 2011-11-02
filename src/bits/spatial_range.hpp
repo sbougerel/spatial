@@ -634,11 +634,11 @@ namespace spatial
 
     protected:
       typedef typename condition
-      <Constant, Node_base::Const_Base_ptr,
-       Node_base::Base_ptr>::type             Base_ptr;
+      <Constant, typename Node::const_ptr,
+       typename Node::ptr>::type              node_ptr;
       typedef typename condition
-      <Constant, const Node*, Node*>::type    Link_type;
-      typedef Linker<Key, Value, Node>        Link_;
+      <Constant, typename Node::const_link_type,
+       typename Node::link_type>::type        link_ptr;
 
     public:
       /**
@@ -654,7 +654,7 @@ namespace spatial
 
         Range_iterator_impl
         (const Rank& rank, const Predicate& predicate,
-         dimension_type node_dim, Base_ptr node)
+         dimension_type node_dim, node_ptr node)
           : Rank(rank), node_dim_(predicate, node_dim), node_(node)
         { }
 
@@ -675,7 +675,7 @@ namespace spatial
          *
          *     Predicate(key) == matching
          */
-        Base_ptr node_;
+        node_ptr node_;
       };
 
       const Rank&
@@ -714,7 +714,7 @@ namespace spatial
        */
       static Derived
       minimum(const Rank& rank, const Predicate& predicate,
-              dimension_type node_dim, Base_ptr node);
+              dimension_type node_dim, node_ptr node);
 
       /**
        *  @brief  From @c x, find the node with the maximum value in the range
@@ -731,15 +731,15 @@ namespace spatial
        */
       static Derived
       maximum(const Rank& rank, const Predicate& predicate,
-              dimension_type node_dim, Base_ptr node);
+              dimension_type node_dim, node_ptr node);
 
       reference
       operator*() const
-      { return static_cast<Link_type>(impl_.node_)->value; }
+      { return value(impl_.node_); }
 
       pointer
       operator->() const
-      { return &static_cast<Link_type>(impl_.node_)->value; }
+      { return &value(impl_.node_); }
 
       /**
        *  @brief  Find the next matching node in in-order transversal or
@@ -847,13 +847,13 @@ namespace spatial
        *  @warning When using this iterator as an argument to the erase function
        *  of the container, this iterator will get invalidated after erase.
        */
-      operator Node_iterator<Value, Node>()
+      operator Node_iterator<Node>()
       {
-        return Node_iterator<Value, Node>
+        return Node_iterator<Node>
           (static_cast<typename Base::Link_type>(Base::impl_.node_));
       }
 
-      operator Const_Node_iterator<Value, Node>()
+      operator Const_Node_iterator<Node>()
       {
         return Const_Node_iterator<Value, Node>
           (static_cast<typename Base::Link_type>(Base::impl_.node_));

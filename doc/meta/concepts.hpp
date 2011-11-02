@@ -1,8 +1,68 @@
 /**
+ *  A link mode defines the relationship between a node and the links that bears
+ *  the node. It provides all necessary informations in order to get from the
+ *  node to the link, and to access the key and value information contained in
+ *  the link.
+ *  \concept Definition of the LinkMode concept.
+ *
+ *  The important concept to understand is that the link is the type that
+ *  aggregates the key, the value and the node. A tree is composed of a series
+ *  of nodes all tied to their key and values through the link type.
+ *
+ *  There are multiple types of link in the library. Sometimes, the link derives
+ *  from the node and the key and values are attributes. Some other times, the
+ *  value type is the link itself, and it contains the node as an
+ *  attribute. This diversity explains why, in the tree algorithm, only the node
+ *  is being used, and the key, the value or the link are only retreived on
+ *  demand.
+ *
+ *  The models of LinkMode shall publicly provide the following interface:
+ *  \concept_tab
+ *  \concept_leg T \concept_des A model of LinkMode
+ *  \concept_req typename T::link_type;
+ *  \concept_des The link type which should be defined as Link.
+ *  \concept_req typename T::key_type;
+ *  \concept_des The key type in the link.
+ *  \concept_req typename T::value_type;
+ *  \concept_des The value type in the link.
+ *  \concept_req typename T::link_ptr
+ *  \concept_des A pointer to a mutable value of \c T::link_type.
+ *  \concept_req typename T::const_link_ptr
+ *  \concept_des A pointer to a contant value of \c T::link_type.
+ *  \concept_req T::key_type& key(Node<T>::ptr);
+ *  \concept_des A function to return a \c T::key_type reference from a node
+ *  pointer must exists.
+ *  \concept_req const T::key_type& key(Node<T>::const_ptr);
+ *  \concept_des A function to return a const \c T::key_type reference from a
+ *  constant node pointer must exists.
+ *  \concept_req T::value_type& value(Node<T>::ptr);
+ *  \concept_des A function to return a \c T::value_type reference from a node
+ *  pointer must exists.
+ *  \concept_req const T::value_type& value(Node<T>::const_ptr);
+ *  \concept_des A function to return a const \c T::value_type reference from a
+ *  constant node pointer must exists.
+ *  \concept_req T::link_ptr link(Node<T>::ptr);
+ *  \concept_des A function to return a \c T::link_ptr from a node pointer must
+ *  exists.
+ *  \concept_req T::const_link_ptr link(Node<T>::const_ptr);
+ *  \concept_des A function to return a \c T::const_link_type from a constant
+ *  node pointer must exists.
+ *
+ *  This level of abstraction allows the same algorithms to be used for regular
+ *  and intrusive containers, without loss of performance and without the use of
+ *  a cumbersome syntax.
+ *
+ *  Currently, \ref Kdtree_link and \ref Relaxed_kdtree_link are models of
+ *  LinkMode. These two types have the peculiarity to be both the link and the
+ *  linking mode.
+ */
+struct LinkMode { };
+
+/**
  *  Rank concept defines the model for a functor class used to represent the
  *  rank of a container, or the minimum number of dimensions in space expressed
  *  in all values stored in the container.
- *  @concept Definition of the Rank concept.
+ *  \concept Definition of the Rank concept.
  *
  *  The models of Rank shall publicly provide the following interface:
  *  \concept_tab
