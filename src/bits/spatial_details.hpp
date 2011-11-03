@@ -1,15 +1,16 @@
 // -*- C++ -*-
+//
+// Copyright Sylvain Bougerel 2009 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_details.hpp
- *  @brief
+ *  Contains the definition of many utilities used across the entire library but
+ *  that should not generally be manipulated by the end users of the
+ *  library. All utilities are declared within the ::spatial::details namespace.
  *
- *  Change Log:
- *
- *  - 2009-09-10 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
- *
- *  - (next change goes here)
+ *  \file   spatial_details.hpp
  */
 
 #ifndef SPATIAL_DETAILS_HPP
@@ -19,10 +20,10 @@
 #  error "Do not include this file directly in your project."
 #endif
 
-#include <algorithm> // provides: std::swap
+#include <algorithm> // provides: ::std::swap
 #include <cstddef> // int32_t, available on all platforms
 
-// provides: std::tr1::is_empty
+// provides: ::std::tr1::is_empty
 #ifdef __GLIBCXX__
 #  include <tr1/type_traits>
 #else
@@ -37,30 +38,35 @@ namespace spatial
   namespace details
   {
     /**
-     *  @brief  Uses the empty base class optimization in order to compress a
+     *  Uses the empty base class optimization in order to compress a
      *  potentially empty base class with a member of a class.
      *
-     *  Provide the base() function to access the base class.
-     *
-     *  Provide the operator() has a quick accessor to member, and the
-     *  possibility to cast the class into the Base class has an empty
-     *  constructor.
+     *  Provide the \c base() function to access the base class. Provide the
+     *  \c operator() to quickly access the stored member.
+     *  \tparam Base The base class that will be compressed through empty member
+     *  optimization by the compiler, hopefully.
+     *  \tparam Member The member class that will be used as a value for the
+     *  compression, this class should not be an empty member class.
      */
     template<typename Base, typename Member>
     struct Compress
       : private Base // Empty member optimization
     {
+      //! Uninitialized compressed base.
       Compress() { }
 
+      //! Compressed member with uninitialized base.
+      //! \param member The value of the \c Member type.
       Compress(const Member& member)
         : Base(), member_(member) { }
 
+      //!
       Compress(const Base& compressed_base, const Member& member)
         : Base(compressed_base), member_(member) { }
 
       //@{
       /**
-       *  @brief  Accessor to the base class.
+       *  Accessor to the base class.
        */
       const Base&
       base() const
@@ -71,9 +77,9 @@ namespace spatial
       { return *static_cast<Base*>(this); }
       //@}
 
+      //@{
       /**
-       *  @brief  Quick accessor to the member.
-       *  @{
+       *  Quick accessor to the member.
        */
       const Member&
       operator()() const
@@ -85,35 +91,44 @@ namespace spatial
       //@}
 
     private:
+      //! Storage for the member value.
       Member member_;
     };
 
     /**
-     *  @brief  The dimension value is set by a template value, thus consuming
+     *  The dimension value is set by a template value, thus consuming
      *  no memory.
+     *
+     *  \tparam The dimension of the rank.
      */
     template <dimension_type Value>
     struct Static_rank
     {
+      //! Returns the dimension for the rank specified in the template parameter
+      //! \c Value.
       dimension_type operator()() const
       { return Value; }
     };
 
     /**
-     *  @brief  The dimension value is stored by a member of the object, but can
-     *  be modified at run time.
+     *  The dimension value is stored by a member of the object, but can be
+     *  modified at run time.
      */
     struct Dynamic_rank
     {
+      //! Returns the dimension for the rank stored in \c rank_
       dimension_type operator()() const
       { return rank_; }
 
+      //! Build a rank with a default dimension of 1.
+      //! \param rank The specified rank dimension.
       explicit
       Dynamic_rank(dimension_type rank = 1)
         : rank_(rank)
       { }
 
     private:
+      //! The value that stores the rank dimension.
       dimension_type rank_;
     };
 
@@ -147,7 +162,7 @@ namespace spatial
     {
       static void do_it(Tp& left, Tp& right)
       {
-        using std::swap;
+        using ::std::swap;
         swap(left, right);
       }
     };
@@ -163,28 +178,37 @@ namespace spatial
     //@}
 
     /**
-     *  @brief  Increment dimension @c node_dim, given @c key_dim.
+     *  Increment dimension \c node_dim, given \c rank.
+     *  \tparam Rank The model of \ref Rank used in this function.
+     *  \param rank An object that is a model of \ref Rank.
+     *  \param node_dim The value of the dimension for the node.
      */
-    template<typename KeyDimension>
+    template<typename Rank>
     inline dimension_type
-    incr_dim(const KeyDimension& dim, dimension_type node_dim)
-    { return (node_dim + 1) % dim(); }
+    incr_dim(const Rank& rank, dimension_type node_dim)
+    { return (node_dim + 1) % rank(); }
 
     /**
-     *  @brief  Decrement dimension @c node_dim, given @c key_dim.
+     *  Decrement dimension \c node_dim, given \c rank.
+     *  \tparam Rank The model of \ref Rank used in this function.
+     *  \param rank An object that is a model of \ref Rank.
+     *  \param node_dim The value of the dimension for the node.
      */
-    template<typename KeyDimension>
+    template<typename Rank>
     inline dimension_type
-    decr_dim(const KeyDimension& dim, dimension_type node_dim)
-    { return node_dim ? node_dim - 1 : dim() - 1; }
+    decr_dim(const Rank& rank, dimension_type node_dim)
+    { return node_dim ? node_dim - 1 : rank() - 1; }
 
     /**
-     *  @brief  Return true if x coordinate is less than y coordinate over
-     *  dimension @node_dim, given @compare. If both coordinate are equal,
-     *  then return true if address of x is less than address of y.
+     *  Return true if \c x coordinate is less than \c y coordinate over
+     *  dimension \c node_dim, given \c compare. If both coordinate are equal,
+     *  then return true if address of \c x is less than address of \c y.
      *
-     *  This operator always discriminate x and y unless they are the same
-     *  object.
+     *  This operator always discriminate \c x and \c y unless they are
+     *  precisely the same object.
+     *  \tparam Key The key object to use in the comparison.
+     *  \tparam Compare The comparison object that is a model of
+     *  \ref TrivialComparison.
      */
     template <typename Key, typename Compare>
     inline bool
@@ -196,8 +220,18 @@ namespace spatial
     }
 
     /**
-     *  @brief  Return a boolean indicating whether all @c key coordinates are
+     *  Return a boolean indicating whether all of \c key's coordinates are
      *  within range or not.
+     *
+     *  The key is simply tested across all dimesions over the predicate.
+     *  \tparam Rank A type that is a model of \ref Rank.
+     *  \tparam Key The key type that is used in the comparison.
+     *  \tparam Predicate A type that is a model of \ref RangePredicate.
+     *  \param rank The object of type \c Rank.
+     *  \param key The key whose coordinates are verified to be within the
+     *  range.
+     *  \param predicate The \ref RangePredicate object used to represent the
+     *  range.
      */
     template <typename Rank, typename Key, typename Predicate>
     inline bool
@@ -212,8 +246,18 @@ namespace spatial
     }
 
     /**
-     *  @brief  Return a boolean indicating whether a single @c key coordinates
-     *  is within range or not.
+     *  Return a boolean indicating whether one of \c key's coordinates is
+     *  within range or not.
+     *
+     *  The key is simply tested across all dimesions over the predicate.
+     *  \tparam Rank A type that is a model of \ref Rank.
+     *  \tparam Key The key type that is used in the comparison.
+     *  \tparam Predicate A type that is a model of \ref RangePredicate.
+     *  \param rank The object of type \c Rank.
+     *  \param key The key whose coordinates are verified to be within the
+     *  range.
+     *  \param predicate The \ref RangePredicate object used to represent the
+     *  range.
      */
     template <typename Rank, typename Key, typename Predicate>
     inline bool
@@ -228,8 +272,20 @@ namespace spatial
     }
 
     /**
-     *  @brief  Return a boolean indicating whether all @c key coordinates are
-     *  within range or not, but without checking dimension @c exclude.
+     *  Return a boolean indicating whether all of \c key's coordinates are
+     *  within range or not, except for \c exlude_dim which is left out of the
+     *  test.
+     *
+     *  The key is simply tested across all dimesions over the predicate.
+     *  \tparam Rank A type that is a model of \ref Rank.
+     *  \tparam Key The key type that is used in the comparison.
+     *  \tparam Predicate A type that is a model of \ref RangePredicate.
+     *  \param rank The object of type \c Rank.
+     *  \param exclude_dim The dimension that will be skipped during the test.
+     *  \param key The key whose coordinates are verified to be within the
+     *  range.
+     *  \param predicate The \ref RangePredicate object used to represent the
+     *  range.
      */
     template <typename Rank, typename Key, typename Predicate>
     inline bool
@@ -245,31 +301,36 @@ namespace spatial
     }
 
     /**
-     *  Value compare functor for container storing pairs of Key, Value types,
-     *  such as @ref pointmap, @ref boxmap, etc. These container provide a
-     *  @c key_compare functor type that is being used for the comparison of the
+     *  Value compare functor for container storing pairs of (Key, Value) types,
+     *  such as in \ref pointmap, \ref boxmap, etc. These container provide a
+     *  \c key_compare functor type that is being used for the comparison of the
      *  value.
      *
-     *  In @ref pointmap, @ref boxmap and other containers, the value type
+     *  In \ref pointmap, \ref boxmap and other containers, the value type
      *  differs from the key type. Value type is a pair of key type and mapped
-     *  type. The @c KeyCompare functor, provided to the container is reused
+     *  type. The \c KeyCompare functor, provided to the container is reused
      *  to compare the value by using the first element of each value which is
      *  the key.
+     *
+     *  \tparam Value A ::std::pair of key and value type.
+     *  \tparam KeyCompare A type that is a model of \ref RegularComparison.
      */
     template <typename Value, typename KeyCompare>
     struct ValueCompare : private KeyCompare
     {
+      //! Comparator being initilized with a specific key comparison.
       ValueCompare(const KeyCompare& x) : KeyCompare(x) { }
 
+      //! Unintialized comparator.
       ValueCompare() : KeyCompare() { }
 
       /**
-       *  Compare 2 values @c a and @c b with the comparison operator provided
-       *  by @c KeyCompare.
+       *  Compare 2 values \c a and \c b with the comparison operator provided
+       *  by \c KeyCompare.
        *
-       *  @param a The left value to compare.
-       *  @param b The right value to compare.
-       *  @return The returned value is equivalent to <tt>KeyCompare()(a, b)</tt>.
+       *  \param a The left value to compare.
+       *  \param b The right value to compare.
+       *  \return The returned value is equivalent to <tt>KeyCompare()(a, b)</tt>.
        */
       bool operator()(const Value& a, const Value& b) const
       {

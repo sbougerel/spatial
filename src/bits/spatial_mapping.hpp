@@ -22,17 +22,19 @@
 #  error "Do not include this file directly in your project."
 #endif
 
+#include <utility> // provides ::std::pair<> and ::std::make_pair()
+
 namespace spatial
 {
-
-  /**
-   *
-   */
+  // Forward declaration...
   template <typename Container>
   struct mapping;
 
   /**
+   *  Returns the first value in \c container for mapping over the dimension \c dim.
    *
+   *
+   *  \see mapping
    */
   template <typename Container>
   typename mapping<Container>::iterator
@@ -44,12 +46,12 @@ namespace spatial
    */
   template <typename Container>
   inline typename mapping<Container>::const_iterator
-  begin_mapping(dimension_type dim, const Container& container);
+  begin_mapping(dimension_type dim, const Container& container)
   { return begin_mapping(dim, *const_cast<Container*>(&container)); }
 
   template <typename Container>
   inline typename mapping<Container>::const_iterator
-  cbegin_mapping(dimension_type dim, const Container& container)
+  const_begin_mapping(dimension_type dim, const Container& container)
   { return begin_mapping(dim, *const_cast<Container*>(&container)); }
   //@}
 
@@ -71,8 +73,40 @@ namespace spatial
 
   template <typename Container>
   inline typename mapping<Container>::const_iterator
-  cend_mapping(dimension_type dim, const Container& container);
+  const_end_mapping(dimension_type dim, const Container& container);
   { return end_mapping(dim, *const_cast<Container*>(&container)); }
+  //@}
+
+  /**
+   *
+   */
+  template <typename Container>
+  inline typename mapping<Container>::iterator_pair
+  make_mapping(dimension_type dim, Container& container)
+  {
+    return ::std::make_pair(begin_mapping(dim, container),
+                            end_mapping(dim, container));
+  }
+
+  //@{
+  /**
+   *
+   */
+  template <typename Container>
+  inline typename mapping<Container>::const_iterator_pair
+  make_mapping(dimension_type dim, const Container& container)
+  {
+    return ::std::make_pair(begin_mapping(dim, container),
+                            end_mapping(dim, container));
+  }
+
+  template <typename Container>
+  inline typename mapping<Container>::const_iterator_pair
+  const_make_mapping(dimension_type dim, const Container& container)
+  {
+    return ::std::make_pair(begin_mapping(dim, container),
+                            end_mapping(dim, container));
+  }
   //@}
 
   /**
@@ -149,24 +183,25 @@ namespace spatial
      *
      */
     template <typename Container>
-    struct Mapping_info
+    struct Mapping_data
       : typename Container::rank_type
     {
-      //! Build an uninitialized mapping info object.
-      Mapping_info()
+      //! Build an uninitialized mapping data object.
+      Mapping_data()
         : mapping_dim_(), node_dim_() { }
 
-      Mapping_info
-      (const typename Container::rank_type& rank,
-       const typename Container::key_comp& compare,
-       dimension_type mapping_dim,
-       dimension_type node_dim)
-        : Container::rank_type(rank), mapping_dim_(compare, mapping_dim),
+      //! Build required mapping data from the given container.
+      Mapping_data
+      (dimension_type mapping_dim, dimension_type node_dim,
+       const Container& container)
+        : Container::rank_type(container.rank()),
+          mapping_dim_(Container::key_compare(container.key_comp()),
+                       mapping_dim),
           node_dim_(node_dim)
       { }
 
       /**
-       *  @brief  The current dimension of iteration.
+       *  The current dimension of iteration.
        *
        *  You can modify this key if you suddenly want the iterator to change
        *  dimension of iteration. However this field must always satisfy:
@@ -175,87 +210,73 @@ namespace spatial
        *
        *  Rank being the template rank provider for the iterator.
        */
-      Compress<typename Container::key_comp, dimension_type> mapping_dim_;
+      Compress<typename Container::key_comp, dimension_type> mapping_dim;
 
       /**
-       *  @brief  The dimension for node.
+       *  The dimension for node.
        *
-       *  Modifing this key can potientially invalidate the iterator. Do not
-       *  modify this key unless you know what you're doing. See node.
+       *  Modifing this attribute can potientially invalidate the iterator. Do
+       *  not modify this attribute unless you know what you're doing.
        */
-      dimension_type node_dim_;
+      dimension_type node_dim;
     };
   } // namespace details
 
+  /**
+   *
+   */
   template <typename Container>
   struct mapping
   {
     /**
      *
      */
-    struct iterator : ::spatial::details::make_iterator
-    <Container, std::bidirectional_iterator_tag,
-     iterator, false>
+    struct iterator : ::spatial::details::bidirectional_iterator
+    <typename Container::mode_type, iterator, false>
     {
-      friend iterator begin_mapping(dimension_type, Container&);
-      friend iterator end_mapping(dimension_type, Container&);
-      friend iterator lower_mapping
-      (dimension_type, const typename Container::key_type&, Container&);
-      friend iterator upper_mapping
-      (dimension_type, const typename Container::key_type&, Container&);
-      friend iterator increment<Container>(iterator&);
-      friend iterator decrament<COntainer>(iterator&);
-      // Constructors..
+      using ::spatial::details::Mapping_data;
+      using ::spatial::details::bidirectional_iterator
+      <typename Container::mode_type, iterator, false>::node;
 
-      // iterator conversion
+      //! Uninitialized iterator.
+      iterator() { }
 
-      // node iterator conversion
+      //! Build a mapping iterator from a Container and a node.
+      //!
+      //! Striclty for use by the containers.
+      iterator(dimension_type dim, dimension_type node_dim,
+               typename Container::mode_type::link_ptr link,
+               Container& container)
+        : node(Container::mode_type::node(link)),
+          data(dim, node_dim, container) { }
 
-    private:
-      Mapping_info<Container> info_;
+      //! Build a mapping iterator from a container iterator
+      iterator(dimension_type dim,
+               typename Container::const_iterator iterator,
+               Container& container)
+        : node(Container::mode_type::node(link)),
+          data(dim, modulo(iterator.node, container.rank()), container) { }
 
+      //@{
       /**
-       *  @brief  The pointer to the current node.
+       *  This iterator can be casted silently into a container iterator. You can
+       *  therefore use this iterator as an argument to the erase function of
+       *  the container, for example.
        *
-       *  Modifying this key can potentially invalidate the iterator. Do not
-       *  modify this key unless you know what you're doing. This iterator must
-       *  always point to a node in the tree or to the end.
+       *  \warning When using this iterator as an argument to the erase function
+       *  of the container, this iterator will get invalidated after erase.
        */
-      node_ptr node_;
+      operator Container::iterator()
+      { return Container::iterator(link(node)); }
+
+      operator Container::const_iterator()
+      { return Container::const_iterator(link(node)); }
+      //@}
+
+      //! The related data for the iterator.
+      Mapping_data<Container> data;
     };
 
-    /**
-     *  Last part is for constant iterator.
-     */
-    struct const_iterator : ::spatial::details::make_iterator
-    <Container, std::bidirectional_iterator_tag,
-     const_iterator, true>
-    {
-      friend iterator begin_mapping(dimension_type, Container&);
-      friend iterator end_mapping(dimension_type, Container&);
-      friend iterator lower_mapping
-      (dimension_type, const typename Container::key_type&, Container&);
-      friend iterator upper_mapping
-      (dimension_type, const typename Container::key_type&, Container&);
-      friend iterator increment<Container>(iterator&);
-      friend iterator decrament<COntainer>(iterator&);
-
-      // Constructors..
-
-      // iterator conversion
-
-      // node iterator conversion
-
-    private:
-      /**
-       *
-       */
-      ::spatial::details::Mapping_info<Container, true> impl_;
-    };
-  };
-
-  namespace details
-  {
     /**
      *  @brief  A heavy iterator implementation meant to optimize transversal of
      *  all nodes in the tree when projected on a single dimension.
@@ -265,252 +286,34 @@ namespace spatial
      *  dimension K-d tree is very small by comparison to the number of objects,
      *  but pretty inefficient otherwise, by comparison to a set.
      */
-    template <typename Rank, typename Key, typename Value, typename Node,
-              typename Compare, bool Constant, typename Derived>
-    struct Mapping_iterator_base
+    struct const_iterator : ::spatial::details::bidirectional_iterator
+    <Container::mode_type, const_iterator, true>
     {
-      typedef Value                              value_type;
-      typedef typename condition
-      <Constant, const Value&, Value&>::type     reference;
-      typedef typename condition
-      <Constant, const Value*, Value*>::type     pointer;
-      typedef std::ptrdiff_t                     difference_type;
-      typedef std::bidirectional_iterator_tag    iterator_category;
+      using ::spatial::details::Mapping_data;
+      using ::spatial::details::bidirectional_iterator
+      <Container::mode_type, iterator, false>::node;
 
-    protected:
-      typedef typename condition
-      <Constant, typename Node::const_ptr,
-       typename Node::ptr>::type                 node_ptr;
-      typedef typename condition
-      <Constant, typename Node::const_link_ptr,
-       typename Node::link_ptr>::type            link_ptr;
-      typedef typename node_traits<Node>
-      ::invariant_category                       invariant_category;
+      //! Uninitialized constant iterator.
+      const_iterator() { }
 
-    public:
-      /**
-       *  @brief  The implementation that holds all members of the iterator.
-       *
-       *  To keep the iterator memory foot-print as low as possible, this class
-       *  goes the extra mile to provide empty member optimization on all template
-       *  paramerters.
-       */
-      struct Mapping_iterator_impl : Rank
-      {
-        Mapping_iterator_impl()
-          : mapping_dim_(), node_dim_(), node_() { }
+      //! Build a constant mapping iterator from a Container and a node, for use
+      //! by the containers.
+      const_iterator(dimension_type dim, dimension_type node_dim,
+                     typename Container::mode_type::const_link_ptr link,
+                     const Container& container)
+        : node(Container::mode_type::node(link)),
+          data(dim, node_dim, container) { }
 
-        Mapping_iterator_impl
-        (const Rank& rank, const Compare& compare,
-         dimension_type mapping_dim, dimension_type node_dim, node_ptr node)
-          : Rank(rank), mapping_dim_(compare, mapping_dim),
-            node_dim_(node_dim), node_(node)
-        { }
+      //! Build a constant mapping iterator from a container iterator
+      const_iterator(dimension_type dim,
+                     typename Container::const_iterator iterator,
+                     const Container& container)
+        : node(Container::mode_type::node(link)),
+          data(dim, modulo(iterator.node, container.rank()), container) { }
 
-        /**
-         *  @brief  The current dimension of iteration.
-         *
-         *  You can modify this key if you suddenly want the iterator to change
-         *  dimension of iteration. However this field must always satisfy:
-         *
-         *     mapping_dim() < Rank()
-         *
-         *  Rank being the template rank provider for the iterator.
-         */
-        Compress<Compare, dimension_type> mapping_dim_;
-
-        /**
-         *  @brief  The dimension for node.
-         *
-         *  Modifing this key can potientially invalidate the iterator. Do not
-         *  modify this key unless you know what you're doing. See node.
-         */
-        dimension_type node_dim_;
-
-        /**
-         *  @brief  The pointer to the current node.
-         *
-         *  Modifying this key can potentially invalidate the iterator. Do not
-         *  modify this key unless you know what you're doing. This iterator must
-         *  always point to a node in the tree or to the end.
-         */
-        node_ptr node_;
-      };
-
-      const Rank&
-      rank() const
-      { return *static_cast<const Rank*>(&impl_); }
-
-      const Compare&
-      compare() const
-      { return impl_.mapping_dim_.base(); }
-
-    private:
-      void increment();
-
-      void decrement();
-
-    protected:
-      Mapping_iterator_base() : impl_() { }
-
-      Mapping_iterator_base(const Mapping_iterator_impl& impl)
-        : impl_(impl)
-      { }
-
-    public:
-      /**
-       *  @brief  From @c node, find the node with the minimum value along the
-       *  dimension @c mapping_dim.
-       *  @param mapping_dim  The mapping dimension.
-       *  @param node_dim  The current dimension for the node x.
-       *  @param node  The node from which to find the minimum.
-       *  @param key_dimension  The number of dimensions of the key.
-       *  @param compare  The comparison function for the key.
-       *  @return  The iterator pointing the minimum, or to the parent of x.
-       *
-       *  @c node must be a tree node and not the header node or @c null.
-       */
-      static Derived
-      minimum(const Rank& rank, const Compare& compare,
-              dimension_type mapping_dim, dimension_type node_dim, node_ptr node);
-
-      /**
-       *  @brief  From x, find the node with the maximum value along the dimension
-       *  @c mapping_dim.
-       *  @param mapping_dim  The mapping dimension.
-       *  @param node_dim  The current dimension for the node x.
-       *  @param node  The node from which to find the maximum.
-       *  @param key_dimension  The number of dimensions of the key.
-       *  @param compare  The comparison function for the key.
-       *  @return  The iterator pointing the maximum, or to the parent of x.
-       *
-       *  @c node must be a tree node and not the header node or @c null.
-       */
-      static Derived
-      maximum(const Rank& rank, const Compare& compare,
-              dimension_type mapping_dim, dimension_type node_dim, node_ptr node);
-
-      /**
-       *  @brief  From x, find the node with the lower bound of y, along dimension
-       *  @c mapping_dim.
-       *  @param mapping_dim  The mapping dimension.
-       *  @param node_dim  The current dimension for the node x.
-       *  @param node  The node from which to find the lower bound.
-       *  @param flag  The key marking the limit of the lower bound.
-       *  @param key_dimension  The number of dimensions of the key.
-       *  @param compare  The comparison function for the key.
-       *  @return  The iterator to lower bound, or to the parent of @c node.
-       *
-       *  @c node must be a tree node and not the header node or @c null.
-       */
-      static Derived
-      lower_bound(const Rank& rank, const Compare& compare,
-                  dimension_type mapping_dim, dimension_type node_dim,
-                  node_ptr node, const Key& flag);
-
-      /**
-       *  @brief  From x, find the node with the upper bound of y, along dimension
-       *  @c mapping_dim.
-       *  @param mapping_dim  The mapping dimension.
-       *  @param node_dim  The current dimension for the node x.
-       *  @param node  The node from which to find the upper bound.
-       *  @param flag  The key marking the limit of the upper bound.
-       *  @param key_dimension  The number of dimensions of the key.
-       *  @param compare  The comparison function for the key.
-       *  @return  The iterator to upper bound, or to the parent of @c node.
-       *
-       *  @c node must be a tree node and not the header node or @c null.
-       */
-      static Derived
-      upper_bound(const Rank& rank, const Compare& compare,
-                  dimension_type mapping_dim, dimension_type node_dim,
-                  node_ptr node, const Key& flag);
-
-      reference
-      operator*() const
-      { return value(impl_.node_); }
-
-      pointer
-      operator->() const
-      { return &value(impl_.node_); }
-
-      Derived&
-      operator++()
-      {
-        increment();
-        return *static_cast<Derived*>(this);
-      }
-
-      Derived
-      operator++(int)
-      {
-        Derived tmp = *static_cast<Derived*>(this);
-        increment();
-        return tmp;
-      }
-
-      Derived&
-      operator--()
-      {
-        decrement();
-        return *static_cast<Derived*>(this);
-      }
-
-      Derived
-      operator--(int)
-      {
-        Derived tmp = *static_cast<Derived*>(this);
-        decrement();
-        return tmp;
-      }
-
-      Mapping_iterator_impl impl_;
-    };
-
-    template <typename Rank, typename Key, typename Value, typename Node,
-              typename Compare, bool Constant1, bool Constant2,
-              typename Derived1, typename Derived2>
-    inline bool
-    operator==(const Mapping_iterator_base
-               <Rank, Key, Value, Node, Compare, Constant1, Derived1>& x,
-               const Mapping_iterator_base
-               <Rank, Key, Value, Node, Compare, Constant2, Derived2>& y)
-    { return x.impl_.node_ == y.impl_.node_; }
-
-    template <typename Rank, typename Key, typename Value, typename Node,
-              typename Compare, bool Constant1, bool Constant2,
-              typename Derived1, typename Derived2>
-    inline bool
-    operator!=(const Mapping_iterator_base
-               <Rank, Key, Value, Node, Compare, Constant1, Derived1>& x,
-               const Mapping_iterator_base
-               <Rank, Key, Value, Node, Compare, Constant2, Derived2>& y)
-    { return !(x == y); }
-
-    /**
-     *  @brief  A mutable iterator based on Mapping_iterator_base.
-     */
-    template <typename Rank, typename Key, typename Value, typename Node,
-              typename Compare>
-    struct Mapping_iterator
-      : Mapping_iterator_base
-    <Rank, Key, Value, Node, Compare, false,
-     Mapping_iterator<Rank, Key, Value, Node, Compare> >
-    {
-    private:
-      typedef Mapping_iterator_base
-      <Rank, Key, Value, Node, Compare, false,
-       Mapping_iterator<Rank, Key, Value, Node, Compare> >   Base;
-
-    public:
-      Mapping_iterator(const Rank& r, const Compare& c,
-                       dimension_type mapping_dim, dimension_type node_dim,
-                       typename Base::Link_type link)
-        : Base(typename Base::Mapping_iterator_impl
-               (r, c, mapping_dim, node_dim, link))
-      { }
-
-      Mapping_iterator() { }
+      //! Allows to build a const_iterator from an iterator.
+      const_iterator(const iterator& iter)
+        : data(iter.data), node(iter.node) { }
 
       //@{
       /**
@@ -518,95 +321,30 @@ namespace spatial
        *  therefore use this iterator as an argument to the erase function of
        *  the container, for example.
        *
-       *  @warning When using this iterator as an argument to the erase function
+       *  \warning When using this iterator as an argument to the erase function
        *  of the container, this iterator will get invalidated after erase.
        */
-      operator Node_iterator<Node>()
-      {
-        return Node_iterator<Node>(link(Base::impl_.node_));
-      }
+      operator Container::const_iterator()
+      { return Container::const_iterator(link(node)); }
 
-      operator Const_node_iterator<Node>()
-      {
-        return Const_node_iterator<Node>(link(Base::impl_.node_));
-      }
-      //@}
+      //! The related data for the iterator.
+      Mapping_data<Container, true> data;
     };
 
     /**
-     *  @brief  A constant iterator based on Mapping_iterator_base.
+     *  A pair or iterator that represents a stride.
      */
-    template <typename Rank, typename Key, typename Value, typename Node,
-              typename Compare>
-    struct Const_Mapping_iterator
-      : Mapping_iterator_base
-    <Rank, Key, Value, Node, Compare, true,
-     Const_Mapping_iterator<Rank, Key, Value, Node, Compare> >
-    {
-    private:
-      typedef Mapping_iterator
-      <Rank, Key, Value, Node, Compare>    iterator;
+    typedef ::std::pair<iterator, iterator>             iterator_pair;
 
-      typedef Mapping_iterator_base
-      <Rank, Key, Value, Node, Compare, true,
-       Const_Mapping_iterator<Rank, Key, Value, Node, Compare> > Base;
+    /**
+     *  A pair or constant iterator used to represent a range, that is used by
+     *  several range function.
+     */
+    typedef ::std::pair<const_iterator, const_iterator> const_iterator_pair;
+  };
 
-    public:
-      Const_Mapping_iterator
-      (const Rank& r, const Compare& c, dimension_type mapping_dim,
-       dimension_type node_dim, typename Base::Link_type link)
-        : Base(typename Base::Mapping_iterator_impl
-               (r, c, mapping_dim, node_dim, link))
-      { }
-
-      Const_Mapping_iterator() { }
-
-      Const_Mapping_iterator(const iterator& i)
-        : Base(typename Base::Mapping_iterator_impl
-               (i.rank(), i.compare(), i.impl_.mapping_dim_(),
-                i.impl_.node_dim_, i.impl_.node_))
-      { }
-
-      /**
-       *  This iterator can be casted silently into a container iterator. You can
-       *  therefore use this iterator as an argument to the erase function of
-       *  the container, for example.
-       *
-       *  @warning When using this iterator as an argument to the erase function
-       *  of the container, this iterator will get invalidated after erase.
-       */
-      operator Const_node_iterator<Node>()
-      {
-        return Const_node_iterator<Node>(link(Base::impl_.node_));
-      }
-    };
-
-    namespace mapping
-    {
-      template<typename Container>
-      struct iterator
-      {
-        typedef spatial::details::Mapping_iterator
-        <typename container_traits<Container>::rank_type,
-         typename container_traits<Container>::key_type,
-         typename container_traits<Container>::value_type,
-         typename container_traits<Container>::node_type,
-         typename container_traits<Container>::key_compare>
-        type;
-      };
-
-      template<typename Container>
-      struct const_iterator
-      {
-        typedef spatial::details::Const_Mapping_iterator
-        <typename container_traits<Container>::rank_type,
-         typename container_traits<Container>::key_type,
-         typename container_traits<Container>::value_type,
-         typename container_traits<Container>::node_type,
-         typename container_traits<Container>::key_compare>
-        type;
-      };
-
+  namespace details
+  {
       template <typename Container>
       inline typename iterator<Container>::type
       end(Container& container, dimension_type mapping_dim)
@@ -709,217 +447,6 @@ namespace spatial
 
     } // namespace mapping
   } // namespace details
-
-  /**
-   *  @brief  View of the Kdtree that provides standard iterator accessors for
-   *  kdtree types that inherit from @c Mapping_iterable<KdtreeType>. Types
-   *  using this view must provide the type definition mapping_iterable, that
-   *  links back to the type itself.
-   *
-   *  This is a poor man's way to implement simple concept checking using
-   *  traits, until one day, it create a dependancy on Boost.
-   *  @see details::mapping_iterable_traits
-   */
-  template <typename Container>
-  class mapping_view
-  {
-    typedef typename spatial::container_traits<Container>      traits_type;
-
-  public:
-    // Container traits
-    typedef typename traits_type::key_type            key_type;
-    typedef typename traits_type::value_type          value_type;
-    typedef typename traits_type::pointer             pointer;
-    typedef typename traits_type::const_pointer       const_pointer;
-    typedef typename traits_type::reference           reference;
-    typedef typename traits_type::const_reference     const_reference;
-    typedef typename traits_type::node_type           node_type;
-    typedef typename traits_type::size_type           size_type;
-    typedef typename traits_type::difference_type     difference_type;
-    typedef typename traits_type::allocator_type      allocator_type;
-    typedef typename traits_type::key_compare         key_compare;
-    typedef typename traits_type::value_compare       value_compare;
-    typedef typename traits_type::rank_type           rank_type;
-
-    // Iterator types
-    typedef typename spatial::details::condition
-    <std::tr1::is_same<key_type, value_type>::value,
-     typename details::mapping::const_iterator<Container>::type,
-     typename details::mapping::iterator<Container>::type
-     >::type                                          iterator;
-    typedef typename
-    details::mapping::const_iterator<Container>::type const_iterator;
-    typedef std::reverse_iterator<iterator>           reverse_iterator;
-    typedef std::reverse_iterator<const_iterator>     const_reverse_iterator;
-
-    iterator
-    begin()
-    { return details::mapping::begin(*container_, mapping_dim_); }
-
-    const_iterator
-    begin() const
-    { return details::mapping::const_begin(*container_, mapping_dim_); }
-
-    const_iterator
-    cbegin() const
-    { return details::mapping::const_begin(*container_, mapping_dim_); }
-
-    iterator
-    end()
-    { return details::mapping::end(*container_, mapping_dim_); }
-
-    const_iterator
-    end() const
-    { return details::mapping::const_end(*container_, mapping_dim_); }
-
-    const_iterator
-    cend() const
-    { return details::mapping::const_end(*container_, mapping_dim_); }
-
-    reverse_iterator
-    rbegin()
-    { return reverse_iterator(end()); }
-
-    const_reverse_iterator
-    rbegin() const
-    { return reverse_iterator(cend()); }
-
-    const_reverse_iterator
-    crbegin() const
-    { return reverse_iterator(cend()); }
-
-    reverse_iterator
-    rend()
-    { return reverse_iterator(begin()); }
-
-    const_reverse_iterator
-    rend() const
-    { return reverse_iterator(cbegin()); }
-
-    const_reverse_iterator
-    crend() const
-    { return reverse_iterator(cbegin()); }
-
-    iterator
-    lower_bound(const key_type& key)
-    { return details::mapping::lower_bound(*container_, mapping_dim_, key); }
-
-    const_iterator
-    lower_bound(const key_type& key) const
-    { return details::mapping::const_lower_bound(*container_, mapping_dim_, key); }
-
-    const_iterator
-    clower_bound(const key_type& key) const
-    { return details::mapping::const_lower_bound(*container_, mapping_dim_, key); }
-
-    iterator
-    upper_bound(const key_type& key)
-    { return details::mapping::upper_bound(*container_, mapping_dim_, key); }
-
-    const_iterator
-    upper_bound(const key_type& key) const
-    { return details::mapping::const_upper_bound(*container_, mapping_dim_, key); }
-
-    const_iterator
-    cupper_bound(const key_type& key) const
-    { return details::mapping::const_upper_bound(*container_, mapping_dim_, key); }
-
-    mapping_view(Container& iterable, dimension_type mapping_dim)
-      : mapping_dim_(mapping_dim), container_(&iterable)
-    { }
-
-  private:
-    dimension_type mapping_dim_;
-    Container* container_;
-  };
-
-  /**
-   *  @brief  Specialization of the view for constant containers
-   */
-  template <typename Container>
-  class mapping_view<const Container>
-  {
-    typedef typename spatial::container_traits<Container>    traits_type;
-
-  public:
-    // Container traits
-    typedef typename traits_type::key_type            key_type;
-    typedef typename traits_type::value_type          value_type;
-    typedef typename traits_type::pointer             pointer;
-    typedef typename traits_type::const_pointer       const_pointer;
-    typedef typename traits_type::reference           reference;
-    typedef typename traits_type::const_reference     const_reference;
-    typedef typename traits_type::node_type           node_type;
-    typedef typename traits_type::size_type           size_type;
-    typedef typename traits_type::difference_type     difference_type;
-    typedef typename traits_type::allocator_type      allocator_type;
-    typedef typename traits_type::key_compare         key_compare;
-    typedef typename traits_type::value_compare       value_compare;
-    typedef typename traits_type::rank_type           rank_type;
-
-    // Iterator types
-    typedef typename
-    details::mapping::const_iterator<Container>::type const_iterator;
-    typedef const_iterator                            iterator;
-    typedef std::reverse_iterator<const_iterator>     const_reverse_iterator;
-    typedef const_reverse_iterator                    reverse_iterator;
-
-    const_iterator
-    begin() const
-    { return details::mapping::const_begin(*container_, mapping_dim_); }
-
-    const_iterator
-    cbegin() const
-    { return details::mapping::const_begin(*container_, mapping_dim_); }
-
-    const_iterator
-    end() const
-    { return details::mapping::const_end(*container_, mapping_dim_); }
-
-    const_iterator
-    cend() const
-    { return details::mapping::const_end(*container_, mapping_dim_); }
-
-    const_reverse_iterator
-    rbegin() const
-    { return reverse_iterator(cend()); }
-
-    const_reverse_iterator
-    crbegin() const
-    { return reverse_iterator(cend()); }
-
-    const_reverse_iterator
-    rend() const
-    { return reverse_iterator(cbegin()); }
-
-    const_reverse_iterator
-    crend() const
-    { return reverse_iterator(cbegin()); }
-
-    const_iterator
-    lower_bound(const key_type& key) const
-    { return details::mapping::const_lower_bound(*container_, mapping_dim_, key); }
-
-    const_iterator
-    clower_bound(const key_type& key) const
-    { return details::mapping::const_lower_bound(*container_, mapping_dim_, key); }
-
-    const_iterator
-    upper_bound(const key_type& key) const
-    { return details::mapping::const_upper_bound(*container_, mapping_dim_, key); }
-
-    const_iterator
-    cupper_bound(const key_type& key) const
-    { return details::mapping::const_upper_bound(*container_, mapping_dim_, key); }
-
-    mapping_view(const Container& iterable, dimension_type mapping_dim)
-      : mapping_dim_(mapping_dim), container_(&iterable)
-    { }
-
-  private:
-    dimension_type mapping_dim_;
-    const Container* container_;
-  };
 
 } // namespace spatial
 

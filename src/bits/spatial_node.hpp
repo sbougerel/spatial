@@ -209,6 +209,28 @@ namespace spatial
     preorder_increment(typename Node<Mode>::const_ptr x);
 
     /**
+     *  Returns the modulo of a node's heigth by a container's rank. This, in
+     *  effect, gives the current dimension along which the node's invarient is
+     *  evaluated.
+     *
+     *  If \c x points to the header, by convention the highest dimension for a
+     *  node invariant is returned.
+     *
+     *  \tparam Mode A model of \ref LinkMode.
+     *  \tparam Rank A model of \ref Rank.
+     *  \param x A constant pointer to a node.
+     *  \param r An object of type Rank.
+     */
+    template <typename Mode, typename Rank>
+    inline dimension_type
+    modulo(typename node<Mode>::const_ptr x, const Rank& r)
+    {
+      dimension_type d = r() - 1;
+      while(!header(x)) { d = incr_dim(r, d); x = x->parent; }
+      return d;
+    }
+
+    /**
      *  Define the link type for a Kdtree that contains the value member.
      *
      *  This link also contains the linking information, so it is a model of the
@@ -221,16 +243,26 @@ namespace spatial
     struct Kdtree_link : Node<Kdtree_link<Key, Value> >
     {
       //! The link to the key type.
-      typedef Key                     key_type;
+      typedef Key                         key_type;
       //! The link to the value type.
-      typedef Value                   value_type;
+      typedef Value                       value_type;
       //! The link to the node type, which is the node itself, since link
       //! information are also contained in this node.
-      typedef Kdtree_link<Key, Value> link_type;
+      typedef Kdtree_link<Key, Value>     link_type;
       //! The link pointer which is often used, has a dedicated type.
-      typedef link_type*              link_ptr;
+      typedef link_type*                  link_ptr;
       //! The constant link pointer which is often used, has a dedicated type.
-      typedef const link_type*        const_link_ptr;
+      typedef const link_type*            const_link_ptr;
+      //! The node pointer type deduced from the mode.
+      typedef Node<link_type>::ptr        node_ptr;
+      //! The constant node pointer deduced from the mode.
+      typedef Node<link_type>::const_ptr  const_node_ptr;
+      //! Convert a given link pointer into a node.
+      static node_ptr node(link_ptr x)
+      { return static_cast<node_ptr>(x); }
+      //! Convert a given link pointer into a node.
+      static const_node_ptr node(const_link_ptr x)
+      { return static_cast<const_node_ptr>(x); }
 
       /**
        *  The value of the node, required by the @ref Link concept.
@@ -265,8 +297,18 @@ namespace spatial
       typedef link_type*                      link_ptr;
       //! The constant link pointer which is often used, has a dedicated type.
       typedef const link_type*                const_link_ptr;
+      //! The node pointer type deduced from the mode.
+      typedef Node<link_type>::ptr            ptr;
+      //! The constant node pointer deduced from the mode.
+      typedef Node<link_type>::const_ptr      const_ptr;
+      //! Convert a given link pointer into a node.
+      static node_ptr node(link_ptr x)
+      { return static_cast<node_ptr>(x); }
+      //! Convert a given link pointer into a node.
+      static const_node_ptr node(const_link_ptr x)
+      { return static_cast<const_node_ptr>(x); }
 
-      //! The weight is equal to 1 plus the amount of children node below the
+      //! The weight is equal to 1 plus the amount of child nodes below the
       //! current node. It is always equal to 1 at least.
       weight_type weight;
 
@@ -286,7 +328,7 @@ namespace spatial
      *  containing a known mode type can be converted in a link.
      *
      *  This function is not implemented and it should not be used in this
-     *  form: only specialized types for know \ref LinkMode models should
+     *  form: only specialized types for known \ref LinkMode models should
      *  be used.
      *
      *  \tparam T A type that is not a known \ref LinkMode.
@@ -302,7 +344,7 @@ namespace spatial
      *  containing a known mode type converted in a key.
      *
      *  This function is not implemented and it should not be used in this
-     *  form: only specialized types for know \ref LinkMode models should
+     *  form: only specialized types for known \ref LinkMode models should
      *  be used.
      *
      *  \tparam T A type that is not a known \ref LinkMode.
@@ -318,7 +360,7 @@ namespace spatial
      *  containing a known mode type converted in a key.
      *
      *  This function is not implemented and it should not be used in this
-     *  form: only specialized types for know \ref LinkMode models should
+     *  form: only specialized types for known \ref LinkMode models should
      *  be used.
      *
      *  \tparam T A type that is not a known \ref LinkMode.
@@ -821,7 +863,129 @@ namespace spatial
       node_ptr node;
     };
 
+    /**
+     *  A common template for bidirectional iterators that work on identical
+     *  mode of linking.
+     *
+     *  This template defines all the necessary features of a bidirectional
+     *  iterator. It relies on 2 pre-existing functions, \c increment and \c
+     *  decrement to be implemented for the type of \c Iterator.
+     *
+     *  \tparam Mode      The mode used to link nodes for the iterator.
+     *  \tparam Iterator  The real type of iterator.
+     *  \tparam Constant  True if the iterator is a constant iterator, false
+     *  otherwise.
+     */
+    template <typename Mode, typename Iterator, bool Constant>
+    struct bidirectional_iterator
+    {
+      //! The \c value_type can receive a copy of the reference pointed to be
+      //! the iterator.
+      typedef typename Mode::value_type                value_type;
+
+      //! The reference type of the object pointed to by the iterator.
+      typedef typename condition
+      <Constant, const value_type&, value_type&>::type reference;
+
+      //! The pointer type of the object pointed to by the iterator.
+      typedef typename condition
+      <Constant, const value_type*, value_type*>::type pointer;
+
+      //! The difference_type returned by the distance between 2 iterators.
+      typedef std::ptrdiff_t                           difference_type;
+
+      //! The iterator category that is always \c bidirectional_iterator_tag.
+      typedef std::bidirectional_iterator_tag          iterator_category;
+
+      //! The type for the node pointed to by the iterator.
+      typedef typename condition
+      <Constant, typename Mode::const_node_ptr,
+       typename Mode::node_ptr>::type                  node_ptr;
+
+      //! Returns the reference to the value pointed to by the iterator.
+      reference
+      operator*() const
+      { return value(node); }
+
+      //! Returns a pointer to the value pointed to by the iterator.
+      pointer
+      operator->() const
+      { return &value(node); }
+
+      //! Increments the iterator and returns the incremented value. Prefer to
+      //! use this form in \c for loops.
+      Iterator&
+      operator++()
+      {
+        Iterator& x = *static_cast<Interator*>(this);
+        increment(x); return x;
+      }
+
+      //! Increments the iterator but returns the value of the iterator before
+      //! the increment. Prefer to use the other form in \c for loops.
+      Iterator
+      operator++(int)
+      {
+        Iterator& x = *static_cast<Interator*>(this);
+        Iterator y(x); increment(x); return y;
+      }
+
+      //! Decrements the iterator and returns the decremented value. Prefer to
+      //! use this form in \c for loops.
+      Iterator&
+      operator--()
+      {
+        Iterator& x = *static_cast<Interator*>(this);
+        decrement(x); return x;
+      }
+
+      //! Decrements the iterator but returns the value of the iterator before
+      //! the decrement. Prefer to use the other form in \c for loops.
+      Iterator
+      operator--(int)
+      {
+        Iterator& x = *static_cast<Interator*>(this);
+        Iterator y(x); decrement(x); return y;
+      }
+
+      /**
+       *  Two bidirectional iterators can always be compared for equility if
+       *  they belong to identical containers.
+       *
+       *  \tparam IteratorX The type of iterator on the right.
+       *  \tparam ConstantX The constness of the iterator on the right.
+       *  \param x The iterator on the right.
+       */
+      template <typename IteratorX, bool ConstantX>
+      bool operator==
+      (const bidirectional_iterator<Mode, IteratorX, ConstantX>& x) const
+      { return node == x.node; }
+
+      /**
+       *  Two bidirectional iterators can always be compared for inequility if
+       *  they belong to identical containers.
+       *
+       *  \tparam IteratorX The type of iterator on the right.
+       *  \tparam ConstantX The constness of the iterator on the right.
+       *  \param x The iterator on the right.
+       */
+      template <typename IteratorX, bool ConstantX>
+      bool operator!=
+      (const bidirectional_iterator<Mode, IteratorX, ConstantX>& x) const
+      { return node != x.node; }
+
+      /**
+       *  The pointer to the current node.
+       *
+       *  Modifying this attribute can potentially invalidate the iterator. Do
+       *  not modify this attribute unless you know what you're doing. This
+       *  iterator must always point to a valid node in the tree or to the end.
+       */
+      node_ptr node;
+    };
+
   } // namespace details
+
 } // namespace spatial
 
 #include "spatial_node.tpp"

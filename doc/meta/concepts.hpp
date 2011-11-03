@@ -29,6 +29,16 @@
  *  \concept_des A pointer to a mutable value of \c T::link_type.
  *  \concept_req typename T::const_link_ptr
  *  \concept_des A pointer to a contant value of \c T::link_type.
+ *  \concept_req typename T::node_ptr
+ *  \concept_des An alias to the type of \c Node<T>::ptr.
+ *  \concept_req typename T::const_node_ptr
+ *  \concept_des An alias to the type of \c Node<T>::const_ptr.
+ *  \concept_req static T::node_ptr node(T::link_ptr);
+ *  \concept_des A static member function \c node that returns the node
+ *  information from a given \c link_ptr must exists.
+ *  \concept_req static T::const_node_ptr node(T::const_link_ptr);
+ *  \concept_des A static member function \c node that returns the constant node
+ *  information from a given \c const_link_ptr must exists.
  *  \concept_req T::key_type& key(Node<T>::ptr);
  *  \concept_des A function to return a \c T::key_type reference from a node
  *  pointer must exists.
@@ -50,11 +60,11 @@
  *
  *  This level of abstraction allows the same algorithms to be used for regular
  *  and intrusive containers, without loss of performance and without the use of
- *  a cumbersome syntax.
+ *  an otherwise cumbersome syntax.
  *
- *  Currently, \ref Kdtree_link and \ref Relaxed_kdtree_link are models of
- *  LinkMode. These two types have the peculiarity to be both the link and the
- *  linking mode.
+ *  Currently, \ref Kdtree_link and \ref Relaxed_kdtree_link types are models of
+ *  LinkMode. These two types have the peculiarity to be both a type of link and
+ *  a type of linking mode at the same time.
  */
 struct LinkMode { };
 
@@ -136,7 +146,7 @@ struct TrivialComparison { };
  *  provide the following interface:
  *  \concept_tab
  *  \concept_leg T
- *  \concept_des A model of RegularComparison
+ *  \concept_des A model of \ref RegularComparison and \ref TrivialComparision.
  *  \concept_leg V
  *  \concept_des The key of a spatial container. E.g. in
  *  <tt>spatial::pointset<3, point></tt>, \c point is the value type.
