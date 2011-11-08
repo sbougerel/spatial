@@ -1,21 +1,27 @@
 // -*- C++ -*-
+//
+// Copyright Sylvain Bougerel 2009 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial.hpp
- *  @brief  Type defines and base operations
- *
- *  Change Log:
- *
- *  - 2009-09-03 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
- *
- *  - (next change goes here)
+ *  \file   spatial.hpp
+ *  \brief  Introduces the spatial namespace, defines base types used throughout
+ *  the library.
  */
 
 #ifndef SPATIAL_HPP
 #define SPATIAL_HPP
 
 // For compatibility with older environments
+/**
+ *  \def SPATIAL_BAD_CSTDDEF
+ *  If you encounter too many mistakes due to undefined \mono{std::size_t} or
+ *  \mono{std::ptrdiff_t} during compilation, set this variable in order to
+ *  prevent compilation to fail. This will artificially but back \mono{size_t}
+ *  and \mono{ptrdiff_t} in the namespace \c std.
+ */
 #ifdef SPATIAL_BAD_CSTDDEF
 #include <stddef.h>
 namespace std
@@ -27,6 +33,18 @@ namespace std
 #include <cstddef>
 #endif
 
+/**
+ *  The main namespace used in the library. All types, functions and variables
+ *  defined in the library are contained within this namespace. Declaring
+ *  \mono{using ::spatial} in the source of your program gives you access to all
+ *  features of the library at once.
+ *
+ *  The main reason to access the \c spatial namespace is to access one of its
+ *  containers, such as \ref pointset, \ref boxmap, or \ref
+ *  frozen_pointset. There are many others.
+ *
+ *  \see Containers
+ */
 namespace spatial
 {
 

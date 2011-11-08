@@ -35,6 +35,18 @@
 
 namespace spatial
 {
+  /**
+   *  Defines the namespace that contains all implementation-level
+   *  utilities needed by the component of the library.
+   *
+   *  The types and functions defined within this namespace should not normally
+   *  be needed by end-users of the library. If you are currently using one of
+   *  them, please refer to the documentation for these functions or object as
+   *  there may be more appropriate functions for you to use.
+   *
+   *  If you do not find a more appropriate function to use, then you may
+   *  suggest a feature improvement to the library author.
+   */
   namespace details
   {
     //@{
