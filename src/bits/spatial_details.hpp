@@ -21,9 +21,9 @@
 #endif
 
 #include <algorithm> // provides: ::std::swap
-#include <cstddef> // int32_t, available on all platforms
+#include <utility> // for std::pair
 
-// provides: ::std::tr1::is_empty
+// provides: ::std::tr1::is_empty, std::tr1::false_type and std::tr1::true_type
 #ifdef __GLIBCXX__
 #  include <tr1/type_traits>
 #else
@@ -37,6 +37,18 @@ namespace spatial
 {
   namespace details
   {
+    //@{
+    /*
+     *  A type trait that choses between 2 types
+     */
+    template<bool, typename Tp1, typename Tp2>
+    struct condition
+    { typedef Tp1 type; };
+    template<typename Tp1, typename Tp2>
+    struct condition<false, Tp1, Tp2>
+    { typedef Tp2 type; };
+    //@}
+
     /**
      *  Uses the empty base class optimization in order to compress a
      *  potentially empty base class with a member of a class.

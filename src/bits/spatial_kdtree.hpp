@@ -39,71 +39,6 @@ namespace spatial
   namespace details
   {
 
-    // Forward decl.
-    template <typename Rank, typename Key, typename Value, typename Compare,
-              typename Alloc>
-    class Kdtree;
-
-    //@{
-    /**
-     *  Accessor to the header node of the Kdtree container. These functions are
-     *  necessary to initialize iterators external to the container.
-     */
-    template <typename Rank, typename Key, typename Value, typename Compare,
-              typename Alloc>
-    inline
-    typename Kdtree<Rank, Key, Value, Compare, Alloc>
-    ::node_type*
-    get_end(Kdtree<Rank, Key, Value, Compare, Alloc>& value)
-    {
-      return static_cast
-        <typename Kdtree<Rank, Key, Value, Compare, Alloc>::node_type*>
-        (value.get_header());
-    }
-
-    template <typename Rank, typename Key, typename Value, typename Compare,
-              typename Alloc>
-    inline const
-    typename Kdtree<Rank, Key, Value, Compare, Alloc>
-    ::node_type*
-    get_end(const Kdtree<Rank, Key, Value, Compare, Alloc>& value)
-    {
-      return static_cast
-        <const typename Kdtree<Rank, Key, Value, Compare, Alloc>::node_type*>
-        (value.get_header());
-    }
-    //@}
-
-    //@{
-    /**
-     *  Accessor to the root node of the Kdtree container. These functions are
-     *  necessary to initialize iterators external to the container.
-     */
-    template <typename Rank, typename Key, typename Value, typename Compare,
-              typename Alloc>
-    inline
-    typename Kdtree<Rank, Key, Value, Compare, Alloc>
-    ::node_type*
-    get_begin(Kdtree<Rank, Key, Value, Compare, Alloc>& value)
-    {
-      return static_cast
-        <typename Kdtree<Rank, Key, Value, Compare, Alloc>::node_type*>
-        (value.get_root());
-    }
-
-    template <typename Rank, typename Key, typename Value, typename Compare,
-              typename Alloc>
-    inline const
-    typename Kdtree<Rank, Key, Value, Compare, Alloc>
-    ::node_type*
-    get_begin(const Kdtree<Rank, Key, Value, Compare, Alloc>& value)
-    {
-      return static_cast
-        <const typename Kdtree<Rank, Key, Value, Compare, Alloc>::node_type*>
-        (value.get_root());
-    }
-    //@}
-
     /**
      *  Detailed implementation of the kd-tree. Used by point_set,
      *  point_multiset, point_map, point_multimap, box_set, box_multiset and
@@ -119,49 +54,47 @@ namespace spatial
     {
       typedef Kdtree<Rank, Key, Value, Compare, Alloc>  Self;
 
+      using ::spatial::details::condition;
     public:
       // Container intrincsic types
-      typedef Rank                                       rank_type;
-      typedef Key                                        key_type;
-      typedef Value                                      value_type;
-      typedef Kdtree_node<value_type>                    node_type;
-      typedef Compare                                    key_compare;
-      typedef typename details::condition
+      typedef Rank                                    rank_type;
+      typedef Key                                     key_type;
+      typedef Value                                   value_type;
+      typedef Kdtree_node<value_type>                 mode_type;
+      typedef Compare                                 key_compare;
+      typedef typename condition
       <std::tr1::is_same<Key, Value>::value, key_compare,
-       ValueCompare<value_type, key_compare> >::type     value_compare;
-      typedef Alloc                                      allocator_type;
+       ValueCompare<value_type, key_compare> >::type  value_compare;
+      typedef Alloc                                   allocator_type;
 
       // Container iterator related types
-      typedef typename details::condition
+      typedef typename condition
       <std::tr1::is_same<Key, Value>::value,
-       const value_type*, value_type*>::type             pointer;
-      typedef const value_type*                          const_pointer;
-      typedef typename details::condition
+       const value_type*, value_type*>::type   pointer;
+      typedef const value_type*                const_pointer;
+      typedef typename condition
       <std::tr1::is_same<Key, Value>::value,
-       const value_type&,
-       value_type&>::type                                reference;
-      typedef const Key&                                 const_reference;
-      typedef std::size_t                                size_type;
-      typedef std::ptrdiff_t                             difference_type;
+       const value_type&, value_type&>::type   reference;
+      typedef const Key&                       const_reference;
+      typedef std::size_t                      size_type;
+      typedef std::ptrdiff_t                   difference_type;
 
       // Container iterators
       // Conformant to C++ ISO standard, if Key and Value are the same type then
       // iterator and const_iterator shall be the same.
-      typedef typename details::condition
+      typedef typename condition
       <std::tr1::is_same<Key, Value>::value,
-       Const_Node_iterator<value_type, node_type>,
-       Node_iterator<value_type, node_type> >::type      iterator;
-      typedef Const_Node_iterator<value_type, node_type> const_iterator;
+       Const_node_iterator<mode_type>,
+       Node_iterator<mode_type> >::type                  iterator;
+      typedef Const_node_iterator<mode_type>             const_iterator;
       typedef std::reverse_iterator<iterator>            reverse_iterator;
       typedef std::reverse_iterator
       <const_iterator>                                   const_reverse_iterator;
-      typedef typename details::condition
+      typedef typename condition
       <std::tr1::is_same<Key, Value>::value,
-       typename details::const_equal_iterator<Self>::type,
-       typename details::equal_iterator<Self>::type >
-      ::type                                             equal_iterator;
-      typedef typename
-      details::const_equal_iterator<Self>::type          const_equal_iterator;
+       typename equal_range<Self>::const_iterator,
+       typename equal_range<Self>::iterator>::type       equal_iterator;
+      typedef typename equal_range<Self>::const_iterator const_equal_iterator;
 
     private:
       typedef typename Alloc::template rebind
@@ -170,20 +103,12 @@ namespace spatial
       <value_type>::other                         Value_allocator;
 
       // The types used to deal with nodes
-      typedef Node_base::Base_ptr                 Base_ptr;
-      typedef Node_base::Const_Base_ptr           Const_Base_ptr;
-      typedef node_type*                          Link_type;
-      typedef const node_type*                    Const_Link_type;
-      typedef Linker<key_type, value_type,
-                     node_type>                   Link_;
+      typedef mode_type::node_ptr                 node_ptr;
+      typedef mode_type::const_node_ptr           const_node_ptr;
+      typedef mode_type::link_ptr                 link_ptr;
+      typedef mode_type::const_link_ptr           const_link_ptr;
 
     private:
-      // External accessor
-      friend Link_type get_end<>(Self&);
-      friend Const_Link_type get_end<>(const Self&);
-      friend Link_type get_begin<>(Self&);
-      friend Const_Link_type get_begin<>(const Self&);
-
       /**
        *  @brief The tree header.
        *
@@ -194,109 +119,97 @@ namespace spatial
        */
       struct Implementation : Rank
       {
+        using ::spatial::details::Compress;
+
         Implementation(const rank_type& rank, const key_compare& compare,
                        const Node_allocator& alloc)
-          : Rank(rank), count_(compare, 0), header_(alloc, Header_node())
-        { initialize(); }
+          : Rank(rank), count_(compare, 0),
+            header_(alloc, Node<mode_type>()) { initialize(); }
 
         Implementation(const Implementation& impl)
           : Rank(impl), count_(impl.count_.base(), impl.count_()),
-            header_(impl.header_.base(), impl.header_())
-        { initialize(); }
+            header_(impl.header_.base(), impl.header_()) { initialize(); }
 
         void initialize()
         {
-          header_().parent = &header_();
-          header_().left = &header_();     // the end marker, *must* not change!
-          header_().right = &header_();
-          header_().leftmost = &header_(); // the substitute left most pointer
           count_() = 0;
+          header_().parent = &header_();
+          header_().left = &header_(); // the end marker, *must* not change!
+          header_().right = &header_();
+          leftmost_ = &header_();      // the substitute left most pointer
         }
 
-        details::Compress<key_compare, size_type> count_;
-        details::Compress<Node_allocator, Header_node> header_;
+        Compress<key_compare, size_type> count_;
+        Compress<Node_allocator, Node<mode_type> > header_;
+        Node<mode_type>::ptr leftmost_;
       } impl_;
 
     private:
       // Internal accessors
-      Base_ptr
-      get_header()
-      { return static_cast<Base_ptr>(&impl_.header_()); }
+      node_ptr get_header()
+      { return static_cast<node_ptr>(&impl_.header_()); }
 
-      Const_Base_ptr
-      get_header() const
-      { return static_cast<Const_Base_ptr>(&impl_.header_()); }
+      const_node_ptr get_header() const
+      { return static_cast<const_node_ptr>(&impl_.header_()); }
 
-      Base_ptr
-      get_leftmost()
-      { return impl_.header_().leftmost; }
+      node_ptr get_leftmost()
+      { return impl_.leftmost_; }
 
-      Const_Base_ptr
-      get_leftmost() const
-      { return impl_.header_().leftmost; }
+      const_node_ptr get_leftmost() const
+      { return impl_.leftmost_; }
 
-      void
-      set_leftmost(Base_ptr x)
-      { impl_.header_().leftmost = x; }
+      void set_leftmost(node_ptr x)
+      { impl_.leftmost_ = x; }
 
-      Base_ptr
-      get_rightmost()
+      node_ptr get_rightmost()
       { return impl_.header_().right; }
 
-      Const_Base_ptr
-      get_rightmost() const
+      const_node_ptr get_rightmost() const
       { return impl_.header_().right; }
 
-      void
-      set_rightmost(Base_ptr x)
+      void set_rightmost(node_ptr x)
       { impl_.header_().right = x; }
 
-      Base_ptr
-      get_root()
+      node_ptr get_root()
       { return impl_.header_().parent; }
 
-      Const_Base_ptr
-      get_root() const
+      const_node_ptr get_root() const
       { return impl_.header_().parent; }
 
-      void
-      set_root(Base_ptr x)
+      void set_root(node_ptr x)
       { impl_.header_().parent = x; }
 
-      rank_type&
-      get_rank()
+      rank_type& get_rank()
       { return *static_cast<Rank*>(&impl_); }
 
-      key_compare&
-      get_compare()
+      key_compare& get_compare()
       { return impl_.count_.base(); }
 
-      Node_allocator&
-      get_node_allocator()
+      Node_allocator& get_node_allocator()
       { return impl_.header_.base(); }
 
-      Value_allocator
-      get_value_allocator() const { return impl_.header_.base(); }
+      Value_allocator get_value_allocator() const
+      { return impl_.header_.base(); }
 
     private:
       // Allocation/Deallocation of nodes
       struct safe_allocator // RAII for exception-safe memory management
       {
         Node_allocator& alloc;
-        Link_type link;
+        link_ptr link;
 
         safe_allocator(Node_allocator& a) : alloc(a), link(0)
         { link = alloc.allocate(1); } // may throw
         ~safe_allocator() { if (link) { alloc.deallocate(link, 1); } }
-        Link_type release() { Link_type p = link; link=0; return p; }
+        link_ptr release() { link_ptr p = link; link=0; return p; }
       };
 
-      Link_type
+      link_ptr
       create_node(const value_type& value)
       {
         safe_allocator safe(get_node_allocator());
         get_value_allocator().construct(&safe.link->value, value); // may throw
-        Link_type node = safe.release();
+        link_ptr node = safe.release();
         // leave parent uninitialized: its value will change during insertion.
         node->left = 0;
         node->right = 0;
@@ -307,7 +220,7 @@ namespace spatial
        *  @brief  Destroy and deallocate @c node.
        */
       void
-      destroy_node(Link_type node)
+      destroy_node(link_ptr node)
       {
         get_value_allocator().destroy(&node->value);
         get_node_allocator().deallocate(node, 1);
@@ -323,7 +236,7 @@ namespace spatial
       /**
        *  @brief  Insert a node already allocated into the tree.
        */
-      iterator insert_node(Base_ptr target_node);
+      iterator insert_node(node_ptr target_node);
 
       /**
        *  @brief  Insert all the nodes in @p [first,last) into the tree, by
@@ -333,8 +246,8 @@ namespace spatial
        *  nodes and recurse when walking down right nodes.
        */
       void rebalance_node_insert
-      (typename std::vector<Base_ptr>::iterator first,
-       typename std::vector<Base_ptr>::iterator last, dimension_type dim);
+      (typename std::vector<node_ptr>::iterator first,
+       typename std::vector<node_ptr>::iterator last, dimension_type dim);
 
       /**
        *  @brief  Copy the exact sturcture of the sub-tree pointed to by @c
@@ -356,97 +269,75 @@ namespace spatial
        *  @brief  Erase the node located at @c node with current dimension
        *  @c node_dim.
        */
-      void erase_node(dimension_type node_dim, Base_ptr node);
+      void erase_node(dimension_type node_dim, node_ptr node);
 
     public:
       // Iterators standard interface
-      iterator
-      begin()
-      {
-        iterator it; it.node = get_leftmost();
-        return it;
-      }
+      iterator begin()
+      { iterator it; it.node = get_leftmost(); return it; }
 
-      const_iterator
-      begin() const
-      {
-        const_iterator it; it.node = get_leftmost();
-        return it;
-      }
+      const_iterator begin() const
+      { const_iterator it; it.node = get_leftmost(); return it; }
 
-      const_iterator
-      cbegin() const
-      { return begin(); }
+      const_iterator cbegin() const { return begin(); }
 
-      iterator
-      end()
-      {
-        iterator it; it.node = get_header();
-        return it;
-      }
+      iterator end()
+      { iterator it; it.node = get_header(); return it; }
 
-      const_iterator
-      end() const
-      {
-        const_iterator it; it.node = get_header();
-        return it;
-      }
+      const_iterator end() const
+      { const_iterator it; it.node = get_header(); return it; }
 
-      const_iterator
-      cend() const
-      { return end(); }
+      const_iterator cend() const { return end(); }
 
-      reverse_iterator
-      rbegin()
+      iterator top()
+      { iterator it; it.node = get_root(); return it; }
+
+      const_iterator top() const
+      { const_iterator it; it.node = get_root(); return it; }
+
+      const_iterator ctop() const { return top(); }
+
+      reverse_iterator rbegin()
       { return reverse_iterator(end()); }
 
-      const_reverse_iterator
-      rbegin() const
+      const_reverse_iterator rbegin() const
       { return const_reverse_iterator(end()); }
 
-      const_reverse_iterator
-      crbegin() const
+      const_reverse_iterator crbegin() const
       { return rbegin(); }
 
-      reverse_iterator
-      rend()
+      reverse_iterator rend()
       { return reverse_iterator(begin()); }
 
-      const_reverse_iterator
-      rend() const
+      const_reverse_iterator rend() const
       { return const_reverse_iterator(begin()); }
 
-      const_reverse_iterator
-      crend() const
+      const_reverse_iterator crend() const
       { return rend(); }
 
     public:
       /**
        *  Returns the rank used to create the tree.
        */
-      const rank_type&
-      rank() const
+      const rank_type& rank() const
       { return *static_cast<const Rank*>(&impl_); }
 
       /**
        *  Returns the dimension of the tree.
        */
-      dimension_type
-      dimension() const
+      dimension_type dimension() const
       { return rank()(); }
 
       /**
        *  Returns the compare function used for the key.
        */
-      const key_compare&
-      key_comp() const
+      const key_compare& key_comp() const
       { return impl_.count_.base(); }
 
       /**
        *  Returns the compare function used for the value.
        */
-      const value_compare&
-      value_comp() const
+      const value_compare& value_comp() const
       { return value_compare(impl_.count_.base()); }
 
       /**
@@ -458,70 +349,61 @@ namespace spatial
       /**
        *  @brief  True if the tree is empty.
        */
-      bool
-      empty() const
-      { return (get_header() == get_root()); }
+      bool empty() const { return (get_header() == get_root()); }
 
       /**
        *  @brief  Returns the number of elements in the K-d tree.
        */
-      size_type
-      size() const
-      { return impl_.count_(); }
+      size_type size() const { return impl_.count_(); }
 
       /**
        *  @brief  Returns the number of elements in the K-d tree. Same as size().
        *  @see size()
        */
-      size_type
-      count() const
-      { return impl_.count_(); }
+      size_type count() const { return impl_.count_(); }
 
       /**
        *  @brief  Erase all elements in the K-d tree.
        */
-      void
-      clear()
-      {
-        destroy_all_nodes();
-        impl_.initialize();
-      }
+      void clear()
+      { destroy_all_nodes(); impl_.initialize(); }
 
       /**
        *  @brief  The maximum number of elements that can be allocated.
        */
-      size_type
-      max_size() const
+      size_type max_size() const
       { return impl_.header_.base().max_size(); }
 
       //@{
       /**
-       *  @brief  Find the first node that matches with @c key and
-       *  returns an iterator to it found, otherwise it returns an iterator to
-       *  the element past the end of the container.
+       *  Find the first node that matches with \c key and returns an iterator
+       *  to it found, otherwise it returns an iterator to the element past the
+       *  end of the container.
        *
        *  Notice that this function returns an iterator only to one of the
        *  elements with that key. To obtain the entire range of elements with a
-       *  given value, you can use @ref equal_range().
+       *  given value, you can use \ref equal_range.
        *
-       *  @param key the value to be searched for.
-       *  @return An iterator to that value or an iterator to the element past
+       *  If this function is called on an empty container, returns an iterator
+       *  past the end of the container.
+       *
+       *  \fractime
+       *  \param key the value to be searched for.
+       *  \return An iterator to that value or an iterator to the element past
        *  the end of the container.
        */
       iterator
       find(const key_type& key)
       {
-        equal_bounds<key_type, key_compare> pred(key_comp(), key);
-        equal_iterator first = details::range::begin(*this, pred);
-        return iterator(static_cast<Link_type>(first.impl_.node_));
+        equal_iterator eq = begin_equal(*this, key);
+        iterator it; it.node = eq.node; return it;
       }
 
       const_iterator
       find(const key_type& key) const
       {
-        equal_bounds<key_type, key_compare> pred(key_comp(), key);
-        const_equal_iterator first = details::range::const_begin(*this, pred);
-        return const_iterator(static_cast<Const_Link_type>(first.impl_.node_));
+        const_equal_iterator eq = begin_equal(*this, key);
+        const_iterator it; it.node = eq.node; return it;
       }
       //@}
 
@@ -529,9 +411,10 @@ namespace spatial
       /**
        *  @brief  Return a pair of iterator around keys of similar coordinates.
        *
-       *  @attention These iterator are not similar to the other iterator, but
-       *  are special types of iterators that can only be used to list the equal
-       *  objects in the container.
+       *  @attention These iterators are not similar to the container's \c
+       *  iterator and \c const_iterator, but are special types of iterators
+       *  that can only be used to list objects equal to \c key in the
+       *  container.
        */
       std::pair<equal_iterator, equal_iterator>
       equal_range(const key_type& key)
@@ -576,15 +459,15 @@ namespace spatial
       { }
 
       /**
-       *  @brief  Deep copy of @c other into the new tree.
+       *  Deep copy of \c other into the new tree.
        *
-       *  If @p rebalancing is @c false, @c no_rebalance or unspecified, the copy
-       *  preserve the structure of the @p other tree. Therefore, all operations
-       *  should behave similarly to both trees after the copy.
+       *  If \c balancing is \c false or unspecified, the copy preserve the
+       *  structure of \c other tree. Therefore, all operations should behave
+       *  similarly to both trees after the copy.
        *
-       *  If @p rebalancing is @c true or @c rebalance, the new tree is a balanced
-       *  copy of a the @p other tree, resulting in @c log(n) order of complexity
-       *  on most search functions.
+       *  If \c balancing is @c true, the new tree is a balanced copy of a \c
+       *  other tree, resulting in \Ofrac order of complexity on most search
+       *  functions.
        */
       Kdtree(const Self& other, bool balancing = false) : impl_(other.impl_)
       {
@@ -647,17 +530,17 @@ namespace spatial
           {
             impl_.header_().parent = &other.impl_.header_();
             impl_.header_().right = &other.impl_.header_();
-            impl_.header_().leftmost = &other.impl_.header_();
+            impl_.leftmost_ = &other.impl_.header_();
           }
         else if (other.impl_.header_().parent == &other.impl_.header_())
           {
             other.impl_.header_().parent = &impl_.header_();
             other.impl_.header_().right = &impl_.header_();
-            other.impl_.header_().leftmost = &impl_.header_();
+            other.impl_.leftmost_ = &impl_.header_();
           }
         std::swap(impl_.header_().parent, other.impl_.header_().parent);
         std::swap(impl_.header_().right, other.impl_.header_().right);
-        std::swap(impl_.header_().leftmost, other.impl_.header_().leftmost);
+        std::swap(impl_.leftmost_, other.impl_.leftmost_);
         if (impl_.header_().parent != &impl_.header_())
           { impl_.header_().parent->parent = &impl_.header_(); }
         if (other.impl_.header_().parent != &other.impl_.header_())
@@ -689,7 +572,7 @@ namespace spatial
       iterator
       insert(const value_type& value)
       {
-        Link_type tmp = create_node(value); // may throw
+        link_ptr tmp = create_node(value); // may throw
         return insert_node(tmp);
       }
 

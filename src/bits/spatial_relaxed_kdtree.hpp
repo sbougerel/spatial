@@ -112,69 +112,6 @@ namespace spatial
 
   namespace details
   {
-    // Forward decl.
-    template <typename Rank, typename Key, typename Value, typename Compare,
-              typename Balancing, typename Alloc>
-    class Relaxed_kdtree;
-
-    //@{
-    /**
-     *  Accessor to header of the kd-tree. These functions are useful outside of
-     *  the \kdtree to initialize iterators.
-     */
-    template <typename Rank, typename Key, typename Value, typename Compare,
-              typename Balancing, typename Alloc>
-    inline
-    typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing,
-                            Alloc>::node_type*
-    get_end(Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>& value)
-    {
-      return static_cast
-        <typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing,
-                                 Alloc>::node_type*>(value.get_header());
-    }
-
-    template <typename Rank, typename Key, typename Value, typename Compare,
-              typename Balancing, typename Alloc>
-    inline const
-    typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::node_type*
-    get_end(const Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>& value)
-    {
-      return static_cast
-        <const typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing,
-                                       Alloc>::node_type*>(value.get_header());
-    }
-    //@}
-
-    //@{
-    /**
-     *  Accessor to the root value of the kd-tree. These functions are useful
-     *  outside of the k-d tree to initialize iterators.
-     */
-    template <typename Rank, typename Key, typename Value, typename Compare,
-              typename Balancing, typename Alloc>
-    inline
-    typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::node_type*
-    get_begin(Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>& value)
-    {
-      return static_cast
-        <typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::node_type*>
-        (value.get_root());
-    }
-
-    template <typename Rank, typename Key, typename Value, typename Compare,
-              typename Balancing, typename Alloc>
-    inline const
-    typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::node_type*
-    get_begin(const Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>& value)
-    {
-      return static_cast
-        <const typename
-        Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::node_type*>
-        (value.get_root());
-    }
-    //@}
-
     /**
      *  Detailed implementation of the kd-tree. Used by point_set,
      *  point_multiset, point_map, point_multimap, box_set, box_multiset and
@@ -191,49 +128,48 @@ namespace spatial
       typedef Relaxed_kdtree<Rank, Key, Value, Compare, Balancing,
                              Alloc>                   Self;
 
+      using ::spatial::details::condition;
     public:
       // Container intrincsic types
       typedef Rank                                    rank_type;
       typedef Key                                     key_type;
       typedef Value                                   value_type;
-      typedef Relaxed_kdtree_node<Key>                node_type;
+      typedef Relaxed_kdtree_node<value_type>         mode_type;
       typedef Compare                                 key_compare;
-      typedef typename details::condition
+      typedef typename condition
       <std::tr1::is_same<Key, Value>::value, key_compare,
        ValueCompare<value_type, key_compare> >::type  value_compare;
       typedef Alloc                                   allocator_type;
       typedef Balancing                               balancing_policy;
 
       // Container iterator related types
+      typedef typename condition
+      <std::tr1::is_same<Key, Value>::value,
+       const value_type*, value_type*>::type   pointer;
+      typedef const value_type*                const_pointer;
       typedef typename details::condition
       <std::tr1::is_same<Key, Value>::value,
-       const value_type*, value_type*>::type             pointer;
-      typedef const value_type*                          const_pointer;
-      typedef typename details::condition
-      <std::tr1::is_same<Key, Value>::value,
-       const value_type&, value_type&>::type             reference;
-      typedef const Key&                                 const_reference;
-      typedef std::size_t                                size_type;
-      typedef std::ptrdiff_t                             difference_type;
+       const value_type&, value_type&>::type   reference;
+      typedef const Key&                       const_reference;
+      typedef std::size_t                      size_type;
+      typedef std::ptrdiff_t                   difference_type;
 
       // Container iterators
       // Conformant to C++ standard, if Key and Value are the same type then
       // iterator and const_iterator shall be the same.
-      typedef typename details::condition
+      typedef typename condition
       <std::tr1::is_same<Key, Value>::value,
-       Const_Node_iterator<value_type, node_type>,
+       Const_node_iterator<value_type, node_type>,
        Node_iterator<value_type, node_type> >::type      iterator;
-      typedef Const_Node_iterator<value_type, node_type> const_iterator;
+      typedef Const_node_iterator<value_type, node_type> const_iterator;
       typedef std::reverse_iterator<iterator>            reverse_iterator;
       typedef std::reverse_iterator
       <const_iterator>                                   const_reverse_iterator;
-      typedef typename details::condition
+      typedef typename condition
       <std::tr1::is_same<Key, Value>::value,
-       typename details::const_equal_iterator<Self>::type,
-       typename details::equal_iterator<Self>::type >
-      ::type                                             equal_iterator;
-      typedef typename
-      details::const_equal_iterator<Self>::type          const_equal_iterator;
+       typename equal_range<Self>::const_iterator,
+       typename equal_range<Self>::iterator>::type       equal_iterator;
+      typedef typename equal_range<Self>::const_iterator const_equal_iterator;
 
     private:
       typedef typename Alloc::template rebind
@@ -242,20 +178,12 @@ namespace spatial
       <value_type>::other                         Value_allocator;
 
       // The types used to deal with nodes
-      typedef Node_base::Base_ptr                 Base_ptr;
-      typedef Node_base::Const_Base_ptr           Const_Base_ptr;
-      typedef node_type*                          Link_type;
-      typedef const node_type*                    Const_Link_type;
-      typedef Linker<key_type, value_type,
-                     node_type>                   Link_;
+      typedef mode_type::node_ptr                 node_ptr;
+      typedef mode_type::const_node_ptr           const_node_ptr;
+      typedef mode_type::link_ptr                 link_ptr;
+      typedef mode_type::const_link_ptr           const_link_ptr;
 
     private:
-      // External accessor
-      friend Link_type get_end<>(Self&);
-      friend Const_Link_type get_end<>(const Self&);
-      friend Link_type get_begin<>(Self&);
-      friend Const_Link_type get_begin<>(const Self&);
-
       /**
        *  @brief The tree header.
        *
@@ -266,112 +194,99 @@ namespace spatial
        */
       struct Implementation : rank_type
       {
+        using ::spatial::details::Compress;
+
         Implementation(const rank_type& rank, const key_compare& compare,
                        const Balancing& balance, const Node_allocator& alloc)
-          : Rank(rank), compare_(balance, compare), header_(alloc, Header_node())
-        { initialize(); }
+          : Rank(rank), compare_(balance, compare),
+            header_(alloc, Node<mode_type>()) { initialize(); }
 
         Implementation(const Implementation& impl)
           : Rank(impl), compare_(impl.compare_.base(), impl.compare_()),
-            header_(impl.header_.base(), Header_node())
-        { initialize(); }
+            header_(impl.header_.base(), Header_node()) { initialize(); }
 
         void initialize()
         {
           header_().parent = &header_();
-          header_().left = &header_();     // the end marker, *must* not change!
+          header_().left = &header_(); // the end marker, *must* not change!
           header_().right = &header_();
-          header_().leftmost = &header_(); // the substitute left most pointer
+          leftmost_ = &header_();      // the substitute left most pointer
         }
 
-        details::Compress<Balancing, key_compare> compare_;
-        details::Compress<Node_allocator, Header_node> header_;
+        Compress<Balancing, key_compare> compare_;
+        Compress<Node_allocator, Node<mode_type> > header_;
+        Node<mode_type>::ptr leftmost_;
       } impl_;
 
     private:
       // Internal mutable accessor
-      Base_ptr
-      get_header()
-      { return static_cast<Base_ptr>(&impl_.header_()); }
+      node_ptr get_header()
+      { return static_cast<node_ptr>(&impl_.header_()); }
 
-      Const_Base_ptr
-      get_header() const
-      { return static_cast<Const_Base_ptr>(&impl_.header_()); }
+      const_node_ptr get_header() const
+      { return static_cast<const_node_ptr>(&impl_.header_()); }
 
-      Base_ptr
-      get_leftmost()
-      { return impl_.header_().leftmost; }
+      node_ptr get_leftmost()
+      { return impl_.leftmost_; }
 
-      Const_Base_ptr
-      get_leftmost() const
-      { return impl_.header_().leftmost; }
+      const_node_ptr get_leftmost() const
+      { return impl_.leftmost_; }
 
-      void
-      set_leftmost(Base_ptr x)
-      { impl_.header_().leftmost = x; }
+      void set_leftmost(node_ptr x)
+      { impl_.leftmost_ = x; }
 
-      Base_ptr
-      get_rightmost()
+      node_ptr get_rightmost()
       { return impl_.header_().right; }
 
-      Const_Base_ptr
-      get_rightmost() const
+      const_node_ptr get_rightmost() const
       { return impl_.header_().right; }
 
-      void
-      set_rightmost(Base_ptr x)
+      void set_rightmost(node_ptr x)
       { impl_.header_().right = x; }
 
-      Base_ptr
-      get_root()
+      node_ptr get_root()
       { return impl_.header_().parent; }
 
-      Const_Base_ptr
-      get_root() const
+      const_node_ptr get_root() const
       { return impl_.header_().parent; }
 
-      void
-      set_root(Base_ptr x)
+      void set_root(node_ptr x)
       { impl_.header_().parent = x; }
 
-      rank_type&
-      get_rank()
+      rank_type& get_rank()
       { return *static_cast<Rank*>(&impl_); }
 
-      key_compare&
-      get_compare()
+      key_compare& get_compare()
       { return impl_.compare_(); }
 
-      balancing_policy&
-      get_balancing()
+      balancing_policy& get_balancing()
       { return impl_.compare_.base(); }
 
-      Node_allocator&
-      get_node_allocator()
+      Node_allocator& get_node_allocator()
       { return impl_.header_.base(); }
 
-      Value_allocator
-      get_value_allocator() const { return impl_.header_.base(); }
+      Value_allocator get_value_allocator() const
+      { return impl_.header_.base(); }
 
     private:
       // Allocation/Deallocation of nodes
       struct safe_allocator // RAII for exception-safe memory management
       {
         Node_allocator& alloc;
-        Link_type link;
+        link_ptr link;
 
         safe_allocator(Node_allocator& a) : alloc(a), link(0)
         { link = alloc.allocate(1); } // may throw
         ~safe_allocator() { if (link) { alloc.deallocate(link, 1); } }
-        Link_type release() { Link_type p = link; link=0; return p; }
+        link_ptr release() { link_ptr p = link; link=0; return p; }
       };
 
-      Link_type
+      link_ptr
       create_node(const value_type& value)
       {
         safe_allocator safe(get_node_allocator());
         get_value_allocator().construct(&safe.link->value, value); // may throw
-        Link_type node = safe.release();
+        link_ptr node = safe.release();
         // leave parent uninitialized: its value will change during insertion.
         node->left = 0;
         node->right = 0;
@@ -379,10 +294,10 @@ namespace spatial
         return node;
       }
 
-      Link_type
-      clone_node(Const_Base_ptr node)
+      link_ptr
+      clone_node(const_node_ptr node)
       {
-        Link_type new_node = create_node(Link_().val(node));
+        link_ptr new_node = create_node(Link_().val(node));
         new_node->weight = Link_().link(node)->weight;
         return new_node;
       }
@@ -391,7 +306,7 @@ namespace spatial
        *  @brief  Destroy and deallocate @c node.
        */
       void
-      destroy_node(Link_type node)
+      destroy_node(link_ptr node)
       {
         get_value_allocator().destroy(&node->value);
         get_node_allocator().deallocate(node, 1);
@@ -422,7 +337,7 @@ namespace spatial
        *  @param mew_node  The new node to insert
        */
       iterator
-      insert_node(dimension_type node_dim, Base_ptr node, Base_ptr new_node);
+      insert_node(dimension_type node_dim, node_ptr node, node_ptr new_node);
 
       /**
        *  Erase the node pointed by @c node.
@@ -436,7 +351,7 @@ namespace spatial
        *  @return         The address of the node that has replaced the erased
        *                  one or @c node if it was a leaf.
        */
-      Base_ptr erase_node(dimension_type dim, Base_ptr node);
+      node_ptr erase_node(dimension_type dim, node_ptr node);
 
       /**
        *  Erase the node pointed by @c node and balance tree up to
@@ -449,7 +364,7 @@ namespace spatial
        *  @param dim      The current dimension for @c node
        *  @param node     The node to erase
        */
-      void erase_node_balance(dimension_type dim, Base_ptr node);
+      void erase_node_balance(dimension_type dim, node_ptr node);
 
       /**
        *  Attempt to balance the current node.
@@ -463,7 +378,7 @@ namespace spatial
        *  @return         The address of the node that has replaced the current
        *                  node.
        */
-      Base_ptr balance_node(dimension_type dim, Base_ptr node);
+      node_ptr balance_node(dimension_type dim, node_ptr node);
 
       /**
        *  @brief  Return true if the node is not balanced, false otherwise.
@@ -471,69 +386,54 @@ namespace spatial
        *  @param more_left  Add @c more_left to the weight of the left nodes
        *  @param more_right Add @c more_right to the weight of the right nodes
        */
-      bool is_node_unbalanced(Base_ptr node, weight_type more_left = 0,
+      bool is_node_unbalanced(node_ptr node, weight_type more_left = 0,
                               weight_type more_right = 0) const;
 
     public:
       // Iterators standard interface
-      iterator
-      begin()
-      {
-        iterator it; it.node = get_leftmost();
-        return it;
-      }
+      iterator begin()
+      { iterator it; it.node = get_leftmost(); return it; }
 
-      const_iterator
-      begin() const
-      {
-        const_iterator it; it.node = get_leftmost();
-        return it;
-      }
+      const_iterator begin() const
+      { const_iterator it; it.node = get_leftmost(); return it; }
 
-      const_iterator
-      cbegin() const
+      const_iterator cbegin() const
       { return begin(); }
 
-      iterator
-      end()
-      {
-        iterator it; it.node = get_header();
-        return it;
-      }
+      iterator end()
+      { iterator it; it.node = get_header(); return it; }
 
-      const_iterator
-      end() const
-      {
-        const_iterator it; it.node = get_header();
-        return it;
-      }
+      const_iterator end() const
+      { const_iterator it; it.node = get_header(); return it; }
 
-      const_iterator
-      cend() const
+      const_iterator cend() const
       { return end(); }
 
-      reverse_iterator
-      rbegin()
+      iterator top()
+      { iterator it; it.node = get_root(); return it; }
+
+      const_iterator top() const
+      { const_iterator it; it.node = get_root(); return it; }
+
+      const_iterator ctop() const
+      { return top(); }
+
+      reverse_iterator rbegin()
       { return reverse_iterator(end()); }
 
-      const_reverse_iterator
-      rbegin() const
+      const_reverse_iterator rbegin() const
       { return const_reverse_iterator(end()); }
 
-      const_reverse_iterator
-      crbegin() const
+      const_reverse_iterator crbegin() const
       { return rbegin(); }
 
-      reverse_iterator
-      rend()
+      reverse_iterator rend()
       { return reverse_iterator(begin()); }
 
-      const_reverse_iterator
-      rend() const
+      const_reverse_iterator rend() const
       { return const_reverse_iterator(begin()); }
 
-      const_reverse_iterator
-      crend() const
+      const_reverse_iterator crend() const
       { return rend(); }
 
     public:
@@ -594,7 +494,7 @@ namespace spatial
       size() const
       {
         return empty() ? 0
-          : static_cast<Const_Link_type>(get_root())->weight;
+          : static_cast<const_link_ptr>(get_root())->weight;
       }
 
       /**
@@ -629,17 +529,15 @@ namespace spatial
       iterator
       find(const key_type& key)
       {
-        equal_bounds<key_type, key_compare> pred(key_comp(), key);
-        equal_iterator first = range::begin(*this, pred);
-        return iterator(static_cast<Link_type>(first.impl_.node_));
+        equal_iterator eq = begin_equal(*this, key);
+        iterator it; it.node = eq.node; return it;
       }
 
       const_iterator
       find(const key_type& key) const
       {
-        equal_bounds<key_type, key_compare> pred(key_comp(), key);
-        const_equal_iterator first = details::range::const_begin(*this, pred);
-        return const_iterator(static_cast<Const_Link_type>(first.impl_.node_));
+        const_equal_iterator eq = begin_equal(*this, key);
+        const_iterator it; it.node = eq.node; return it;
       }
       //@}
 
@@ -761,17 +659,17 @@ namespace spatial
           {
             impl_.header_().parent = &other.impl_.header_();
             impl_.header_().right = &other.impl_.header_();
-            impl_.header_().leftmost = &other.impl_.header_();
+            impl_.leftmost_ = &other.impl_.header_();
           }
         else if (other.impl_.header_().parent == &other.impl_.header_())
           {
             other.impl_.header_().parent = &impl_.header_();
             other.impl_.header_().right = &impl_.header_();
-            other.impl_.header_().leftmost = &impl_.header_();
+            other.impl_.leftmost_ = &impl_.header_();
           }
         std::swap(impl_.header_().parent, other.impl_.header_().parent);
         std::swap(impl_.header_().right, other.impl_.header_().right);
-        std::swap(impl_.header_().leftmost, other.impl_.header_().leftmost);
+        std::swap(impl_.leftmost_, other.impl_.leftmost_);
         if (impl_.header_().parent != &impl_.header_())
           { impl_.header_().parent->parent = &impl_.header_(); }
         if (other.impl_.header_().parent != &other.impl_.header_())
@@ -794,8 +692,8 @@ namespace spatial
       iterator
       insert(const value_type& value)
       {
-        Link_type target_node = create_node(value); // may throw
-        Base_ptr node = get_root();
+        link_ptr target_node = create_node(value); // may throw
+        node_ptr node = get_root();
         if (Node_base::header(node))
           {
             // insert root node in empty tree

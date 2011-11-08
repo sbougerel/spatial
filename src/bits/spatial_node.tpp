@@ -50,7 +50,7 @@ namespace spatial
     {
       SPATIAL_ASSERT_CHECK((!header(x) || x->parent != 0));
       if (header(x))
-        { x = x->right; }
+        { x = x->right; } // At header, 'right' points to the right-most node
       else if (x->left != 0)
         {
           typename Node<Mode>::ptr y = x->left;

@@ -1,15 +1,13 @@
 // -*- C++ -*-
+//
+// Copyright Sylvain Bougerel 2009 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_node.hpp
- *  @brief  Defines the basic nodes and associated iterators.
- *
- *  Change Log:
- *
- *  - 2009-10-19 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
- *
- *  - (next change goes here)
+ *  \file   spatial_node.hpp
+ *  \brief  Defines the basic nodes and associated iterators.
  */
 
 #ifndef SPATIAL_NODE_HPP
@@ -29,14 +27,16 @@ namespace spatial
      *  well as access the values of a node. However it does not link to the
      *  value by itself.
      *
-     *  All trees in the library have the following invariant: at the head, the
-     *  left pointer points to the node itself, always, by convention. This way,
-     *  the header node can be identified readily. It is a very important
+     *  All nodes in all containers in the library obey the invariant: if at the
+     *  head, the \c left points to the head itself, always, by convention. This
+     *  way, the header node can be identified readily. It is a very important
      *  feature of the library that only by looking at a node, one can tell
-     *  whether the head of the tree has been reached or not. Once at the head,
-     *  the parent pointer will point to the root of the tree, while the right
-     *  pointer will point to the right most node in the tree. To find the left
-     *  most node in the tree, an additional pointer is required.
+     *  whether the head of the tree has been reached or not.
+     *
+     *  Once at the head, the parent pointer will point to the root of the tree,
+     *  while the right pointer will point to the right most node in the
+     *  tree. Therefore, to store the left-most node in the tree, an additional
+     *  pointer is required in each container.
      *
      *  This class also holds a model of \ref LinkMode to access the key
      *  and values of the node, without holding these values. It deliberately
@@ -114,18 +114,12 @@ namespace spatial
     template <typename Mode>
     inline typename Node<Mode>::ptr
     minimum(typename Node<Mode>::ptr x)
-    {
-      while (x->left != 0) x = x->left;
-      return x;
-    }
+    { while (x->left != 0) x = x->left; return x; }
 
     template <typename Mode>
     inline typename Node<Mode>::const_ptr
     minimum(typename Node<Mode>::const_ptr x)
-    {
-      while (x->left != 0) x = x->left;
-      return x;
-    }
+    { while (x->left != 0) x = x->left; return x; }
     //@}
 
     //@{
@@ -170,9 +164,7 @@ namespace spatial
     template <typename Mode>
     inline typename Node<Mode>::const_ptr
     increment(typename Node<Mode>::const_ptr x)
-    {
-      return increment(const_cast<typename Node<Mode>::ptr>(x));
-    }
+    { return increment(const_cast<typename Node<Mode>::ptr>(x)); }
     //@}
 
     //@{
@@ -191,9 +183,7 @@ namespace spatial
     template <typename Mode>
     inline typename Node<Mode>::const_ptr
     decrement(typename Node<Mode>::const_ptr x)
-    {
-      return decrement(const_cast<typename Node<Mode>::ptr>(x));
-    }
+    { return decrement(const_cast<typename Node<Mode>::ptr>(x)); }
     //@}
 
     /**
@@ -257,6 +247,8 @@ namespace spatial
       typedef Node<link_type>::ptr        node_ptr;
       //! The constant node pointer deduced from the mode.
       typedef Node<link_type>::const_ptr  const_node_ptr;
+      //! The category of invariant with associated with this mode.
+      typedef strict_invariant_tag        invariant_category;
       //! Convert a given link pointer into a node.
       static node_ptr node(link_ptr x)
       { return static_cast<node_ptr>(x); }
@@ -301,6 +293,8 @@ namespace spatial
       typedef Node<link_type>::ptr            ptr;
       //! The constant node pointer deduced from the mode.
       typedef Node<link_type>::const_ptr      const_ptr;
+      //! The category of invariant with associated with this mode.
+      typedef strict_invariant_tag            invariant_category;
       //! Convert a given link pointer into a node.
       static node_ptr node(link_ptr x)
       { return static_cast<node_ptr>(x); }
@@ -634,63 +628,40 @@ namespace spatial
       Node_iterator() : node() { }
 
       //! Build and assign an interator to a link pointer.
-      explicit
-      Node_iterator(link_ptr x) : node(x) { }
+      explicit Node_iterator(link_ptr x) : node(x) { }
 
       //! Dereferance the iterator: return the value of the node.
-      reference
-      operator*() const
+      reference operator*() const
       { return value(node); }
 
       //! Dereferance the iterator: return the pointer to the value of the node.
-      pointer
-      operator->() const
+      pointer operator->() const
       { return &value(node); }
 
       //! Moves the iterator to the next node in inorder transversal.
-      Self&
-      operator++()
-      {
-        node = increment(node);
-        return *this;
-      }
+      Self& operator++()
+      { node = increment(node); return *this; }
 
       //! Moves the iterator to the next node in inorder transversal and returns
       //! the iterator value before the move.
-      Self
-      operator++(int)
-      {
-        Self tmp = *this;
-        node = increment(node);
-        return tmp;
-      }
+      Self operator++(int)
+      { Self tmp = *this; node = increment(node); return tmp; }
 
       //! Moves the iterator to the previous node in inorder transversal.
-      Self&
-      operator--()
-      {
-        node = decrement(node);
-        return *this;
-      }
+      Self& operator--()
+      { node = decrement(node); return *this; }
 
       //! Moves the iterator to the previous node in inorder transversal and
       //! returns the iterator value before the move.
-      Self
-      operator--(int)
-      {
-        Self tmp = *this;
-        node = decrement(node);
-        return tmp;
-      }
+      Self operator--(int)
+      { Self tmp = *this; node = decrement(node); return tmp; }
 
       //! Check if 2 iterators are equal: pointing at the same node.
-      bool
-      operator==(const Self& x) const
+      bool operator==(const Self& x) const
       { return node == x.node; }
 
       //! Check if 2 iterators are different: pointing at different nodes.
-      bool
-      operator!=(const Self& x) const
+      bool operator!=(const Self& x) const
       { return node != x.node; }
 
       //! The node pointed to by the iterator.
@@ -732,59 +703,37 @@ namespace spatial
       Const_node_iterator(const iterator& it) : node(it.node) { }
 
       //! Dereferance the iterator: return the value of the node.
-      reference
-      operator*() const
+      reference operator*() const
       { return value(node); }
 
       //! Dereferance the iterator: return the pointer to the value of the node.
-      pointer
-      operator->() const
+      pointer operator->() const
       { return &value(node); }
 
       //! Moves the iterator to the next node in inorder transversal.
-      Self&
-      operator++()
-      {
-        node = increment(node);
-        return *this;
-      }
+      Self& operator++()
+      { node = increment(node); return *this; }
 
       //! Moves the iterator to the next node in inorder transversal and returns
       //! the iterator value before the move.
-      Self
-      operator++(int)
-      {
-        Self tmp = *this;
-        node = increment(node);
-        return tmp;
-      }
+      Self operator++(int)
+      { Self tmp = *this; node = increment(node); return tmp; }
 
       //! Moves the iterator to the previous node in inorder transversal.
-      Self&
-      operator--()
-      {
-        node = decrement(node);
-        return *this;
-      }
+      Self& operator--()
+      { node = decrement(node); return *this; }
 
       //! Moves the iterator to the previous node in inorder transversal and
       //! returns the iterator value before the move.
-      Self
-      operator--(int)
-      {
-        Self tmp = *this;
-        node = decrement(node);
-        return tmp;
-      }
+      Self operator--(int)
+      { Self tmp = *this; node = decrement(node); return tmp; }
 
       //! Check if 2 iterators are equal: pointing at the same node.
-      bool
-      operator==(const Self& x) const
+      bool operator==(const Self& x) const
       { return node == x.node; }
 
       //! Check if 2 iterators are different: pointing at different nodes.
-      bool
-      operator!=(const Self& x) const
+      bool operator!=(const Self& x) const
       { return node != x.node; }
 
       //! The node pointed to by the iterator.
@@ -822,41 +771,28 @@ namespace spatial
       Preorder_node_iterator(link_ptr x) : node(x) { }
 
       //! Dereferance the iterator: return the value of the node.
-      reference
-      operator*()
+      reference operator*()
       { return value(node); }
 
       //! Dereferance the iterator: return the pointer to the value of the node.
-      pointer
-      operator->()
+      pointer operator->()
       { return &value(node); }
 
       //! Moves the iterator to the next node in preorder transversal.
-      Self&
-      operator++()
-      {
-        node = preorder_increment(node);
-        return *this;
-      }
+      Self& operator++()
+      { node = preorder_increment(node); return *this; }
 
       //! Moves the iterator to the next node in preorder transversal and returns
       //! the iterator value before the move.
-      Self
-      operator++(int)
-      {
-        Self tmp = *this;
-        node = preorder_increment(node);
-        return tmp;
-      }
+      Self operator++(int)
+      { Self tmp = *this; node = preorder_increment(node); return tmp; }
 
       //! Check if 2 iterators are equal: pointing at the same node.
-      bool
-      operator==(const Self& x) const
+      bool operator==(const Self& x) const
       { return node == x.node; }
 
       //! Check if 2 iterators are different: pointing at different nodes.
-      bool
-      operator!=(const Self& x) const
+      bool operator!=(const Self& x) const
       { return node != x.node; }
 
       //! The node pointed to by the iterator.
@@ -865,13 +801,13 @@ namespace spatial
 
     /**
      *  A common template for bidirectional iterators that work on identical
-     *  mode of linking.
+     *  \ref LinkMode "modes of linking".
      *
      *  This template defines all the necessary features of a bidirectional
      *  iterator. It relies on 2 pre-existing functions, \c increment and \c
      *  decrement to be implemented for the type of \c Iterator.
      *
-     *  \tparam Mode      The mode used to link nodes for the iterator.
+     *  \tparam Mode      The mode used to \ref LinkMode "link nodes to their values".
      *  \tparam Iterator  The real type of iterator.
      *  \tparam Constant  True if the iterator is a constant iterator, false
      *  otherwise.
@@ -903,54 +839,52 @@ namespace spatial
        typename Mode::node_ptr>::type                  node_ptr;
 
       //! Returns the reference to the value pointed to by the iterator.
-      reference
-      operator*() const
+      reference operator*() const
       { return value(node); }
 
       //! Returns a pointer to the value pointed to by the iterator.
-      pointer
-      operator->() const
+      pointer operator->() const
       { return &value(node); }
 
       //! Increments the iterator and returns the incremented value. Prefer to
       //! use this form in \c for loops.
-      Iterator&
-      operator++()
+      Iterator& operator++()
       {
-        Iterator& x = *static_cast<Interator*>(this);
-        increment(x); return x;
+        Iterator& x = *static_cast<Iterator*>(this);
+        ::spatial::details::increment(x); return x;
       }
 
       //! Increments the iterator but returns the value of the iterator before
       //! the increment. Prefer to use the other form in \c for loops.
-      Iterator
-      operator++(int)
+      Iterator operator++(int)
       {
         Iterator& x = *static_cast<Interator*>(this);
-        Iterator y(x); increment(x); return y;
+        Iterator y(x);
+        ::spatial::details::increment(x);
+        return y;
       }
 
       //! Decrements the iterator and returns the decremented value. Prefer to
       //! use this form in \c for loops.
-      Iterator&
-      operator--()
+      Iterator& operator--()
       {
         Iterator& x = *static_cast<Interator*>(this);
-        decrement(x); return x;
+        ::spatial::details::decrement(x); return x;
       }
 
       //! Decrements the iterator but returns the value of the iterator before
       //! the decrement. Prefer to use the other form in \c for loops.
-      Iterator
-      operator--(int)
+      Iterator operator--(int)
       {
         Iterator& x = *static_cast<Interator*>(this);
-        Iterator y(x); decrement(x); return y;
+        Iterator y(x);
+        ::spatial::details::decrement(x);
+        return y;
       }
 
       /**
        *  Two bidirectional iterators can always be compared for equility if
-       *  they belong to identical containers.
+       *  they work on identical \ref LinkMode "link modes".
        *
        *  \tparam IteratorX The type of iterator on the right.
        *  \tparam ConstantX The constness of the iterator on the right.
@@ -962,8 +896,17 @@ namespace spatial
       { return node == x.node; }
 
       /**
+       *  A bidirectional iterator can be compared with a node iterator if they
+       *  work on identical \ref LinkMode "linking modes".
+       *
+       *  \param x The iterator on the right.
+       */
+      bool operator==(const Const_node_iterator<Mode>& x) const
+      { return node == x.node; }
+
+      /**
        *  Two bidirectional iterators can always be compared for inequility if
-       *  they belong to identical containers.
+       *  they work on identical \ref LinkMode "linking modes".
        *
        *  \tparam IteratorX The type of iterator on the right.
        *  \tparam ConstantX The constness of the iterator on the right.
@@ -972,6 +915,15 @@ namespace spatial
       template <typename IteratorX, bool ConstantX>
       bool operator!=
       (const bidirectional_iterator<Mode, IteratorX, ConstantX>& x) const
+      { return node != x.node; }
+
+      /**
+       *  A bidirectional iterator can be compared for inequality with a node
+       *  iterator if they work on identical \ref LinkMode "linking modes".
+       *
+       *  \param x The iterator on the right.
+       */
+      bool operator!=(const Const_node_iterator<Mode>& x) const
       { return node != x.node; }
 
       /**

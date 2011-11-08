@@ -26,14 +26,14 @@ namespace spatial
 
   template<dimension_type Rank, typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
-           typename Alloc = std::allocator<std::pair<Key, Mapped> > >
+           typename Alloc = std::allocator<std::pair<const Key, Mapped> > >
   struct frozen_pointmap
     : details::Kdtree<details::Static_rank<Rank>, Key,
-                      std::pair<Key, Mapped>, Compare, Alloc>
+                      std::pair<const Key, Mapped>, Compare, Alloc>
   {
   private:
     typedef details::Kdtree<details::Static_rank<Rank>, Key,
-                            std::pair<Key, Mapped>, Compare,
+                            std::pair<const Key, Mapped>, Compare,
                             Alloc>            base_type;
     typedef frozen_pointmap<Rank, Key, Mapped,
                             Compare, Alloc>   Self;
@@ -83,12 +83,12 @@ namespace spatial
    */
   template<typename Key, typename Mapped, typename Compare, typename Alloc>
   struct frozen_pointmap<0, Key, Mapped, Compare, Alloc>
-    : details::Kdtree<details::Dynamic_rank, Key, std::pair<Key, Mapped>,
+    : details::Kdtree<details::Dynamic_rank, Key, std::pair<const Key, Mapped>,
                       Compare, Alloc>
   {
   private:
     typedef details::Kdtree<details::Dynamic_rank, Key,
-                            std::pair<Key, Mapped>,
+                            std::pair<const Key, Mapped>,
                             Compare,Alloc>    base_type;
     typedef frozen_pointmap<0, Key, Mapped,
                             Compare, Alloc>   Self;
@@ -136,14 +136,14 @@ namespace spatial
    */
   template<typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
-           typename Alloc = std::allocator<std::pair<Key, Mapped> > >
+           typename Alloc = std::allocator<std::pair<const Key, Mapped> > >
   struct runtime_frozen_pointmap
-    : details::Kdtree<details::Dynamic_rank, Key, std::pair<Key, Mapped>,
+    : details::Kdtree<details::Dynamic_rank, Key, std::pair<const Key, Mapped>,
                       Compare, Alloc>
   {
   private:
     typedef details::Kdtree<details::Dynamic_rank, Key,
-                            std::pair<Key, Mapped>,
+                            std::pair<const Key, Mapped>,
                             Compare, Alloc>   base_type;
     typedef runtime_frozen_pointmap<Key, Mapped, Compare,
                                     Alloc>    Self;

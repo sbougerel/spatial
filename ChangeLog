@@ -1,3 +1,16 @@
+2011-11-08  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * task_3432355 Adding more documentation on complexity of mapping function.
+
+        * task_3432355 Rewriting spatial_mapping.hpp is now
+        done. spatial_mapping.tpp is now being adapted to fit the new
+        interface. Other iterator will follow soon. The newer interface is a big
+        departure from the former one, however it provides a much cleaner
+        approach.
+
+        * task_3432355 Rewriting spatial_node.hpp is now done. Fixed constness
+        of Key object in links with pairs of key, value types.
+
 2011-07-27  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * Fix an issue with allocator, where the user defined allocator was used

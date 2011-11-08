@@ -201,13 +201,13 @@ TAB_SIZE               = 4
 # put the command \sideeffect (or @sideeffect) in the documentation, which
 # will result in a user-defined paragraph with heading "Side Effects:".
 # You can put \n's in the value part of an alias to insert newlines.
-'
+
 ALIASES = "ul=<ul><li>" \
-	  "l=</li><li>" \
-	  "lu=</li></ul>" \
-	  "ol=<ol><li>" \
-	  "lo=</li></ol>" \
-	  "libkdtree=<a href=\"http://libkdtree.alioth.debian.org/\"><b>libkdtree++</b></a>" \
+          "l=</li><li>" \
+          "lu=</li></ul>" \
+          "ol=<ol><li>" \
+          "lo=</li></ol>" \
+          "libkdtree=<a href=\"http://libkdtree.alioth.debian.org/\"><b>libkdtree++</b></a>" \
           "Boost=<a href=\"http://www.boost.org/\"><b>Boost</b></a>" \
           "quote=<div style=\"text-align:right\"><i>" \
           "endquote=</i></div>" \
@@ -226,9 +226,22 @@ ALIASES = "ul=<ul><li>" \
           "concept=\xrefitem concept \"Concept\" \"Concepts\"" \
           "concept_tab=<table><tr><td></td><td>Signature/Typedef</td><td>Description" \
           "concept_leg=</td></tr><tr><td>Legend</td><td><tt>" \
-	  "concept_req=</td></tr><tr><td>Require</td><td><tt>" \
-	  "concept_des=</tt></td><td>" \
-	  "concept_end=</td></tr></table>"
+          "concept_req=</td></tr><tr><td>Require</td><td><tt>" \
+          "concept_des=</tt></td><td>" \
+          "concept_end=</td></tr></table>" \
+          "O1=\f$O(1)\,\f$" \
+          "On=\f$O(O(n)\,\f$" \
+          "Olog=\f$O(O(\log n)\,\f$" \
+          "Onlog=\f$O(O(n \log n)\,\f$" \
+          "Odfrac=\f$O(n^{1\,-\,1/d})\,\f$" \
+          "complex=\xrefitem complex \"Function Complexity\" \"Functions with Explicit Complexity\"" \
+          "consttime=\complex This function has guarenteed \ref ConstTime \"constant time complexity\": \O1" \
+          "lintime=\complex This function has average \ref LinearTime \"linear time complexity\": \On" \
+          "logtime=\complex This function has average \ref LogTime \"logarithmic time complexity\": \Olog" \
+          "bestlogtime=\complex This function has best-case \ref LogTime \"logarithmic time complexity\": \Olog" \
+          "dfractime=\complex This function has average \ref DimFracTime \"fractional time complexity\" in dimension \f$d\f$: \Odfrac" \
+          "worstdfractime=\complex This function has worst-case \ref DimFracTime \"fractional time complexity\" in dimension \f$d\f$: \Odfrac" \
+          "mono{1}=<tt>\\1</tt>"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C
 # sources only. Doxygen will then generate output that is more tailored for C.
@@ -894,13 +907,13 @@ HTML_STYLESHEET        =
 # 180 is cyan, 240 is blue, 300 purple, and 360 is red again.
 # The allowed range is 0 to 359.
 
-HTML_COLORSTYLE_HUE    = 
+HTML_COLORSTYLE_HUE    =
 
 # The HTML_COLORSTYLE_SAT tag controls the purity (or saturation) of
 # the colors in the HTML output. For a value of 0 the output will use
 # grayscales only. A value of 255 will produce the most vivid colors.
 
-HTML_COLORSTYLE_SAT    = 
+HTML_COLORSTYLE_SAT    =
 
 # The HTML_COLORSTYLE_GAMMA tag controls the gamma correction applied to
 # the luminance component of the colors in the HTML output. Values below
@@ -909,7 +922,7 @@ HTML_COLORSTYLE_SAT    =
 # so 80 represents a gamma of 0.8, The value 220 represents a gamma of 2.2,
 # and 100 does not change the gamma.
 
-HTML_COLORSTYLE_GAMMA  = 
+HTML_COLORSTYLE_GAMMA  =
 
 # If the HTML_TIMESTAMP tag is set to YES then the footer of each generated HTML
 # page will contain the date and time when the page was generated. Setting

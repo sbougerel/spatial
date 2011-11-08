@@ -26,14 +26,14 @@ namespace spatial
 
   template<dimension_type Rank, typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
-           typename Alloc = std::allocator<std::pair<Key, Mapped> > >
+           typename Alloc = std::allocator<std::pair<const Key, Mapped> > >
   struct frozen_boxmap
     : details::Kdtree<details::Static_rank<Rank << 1>, Key,
-                      std::pair<Key, Mapped>, Compare, Alloc>
+                      std::pair<const Key, Mapped>, Compare, Alloc>
   {
   private:
     typedef details::Kdtree
-    <details::Static_rank<Rank << 1>, Key, std::pair<Key, Mapped>,
+    <details::Static_rank<Rank << 1>, Key, std::pair<const Key, Mapped>,
      Compare, Alloc>                          base_type;
     typedef frozen_boxmap<Rank, Key, Mapped, Compare, Alloc> Self;
 
@@ -83,10 +83,10 @@ namespace spatial
   template<typename Key, typename Mapped, typename Compare, typename Alloc>
   struct frozen_boxmap<0, Key, Mapped, Compare, Alloc>
     : details::Kdtree<details::Dynamic_rank, Key,
-                      std::pair<Key, Mapped>, Compare, Alloc>
+                      std::pair<const Key, Mapped>, Compare, Alloc>
   {
   private:
-    typedef details::Kdtree<details::Dynamic_rank, Key, std::pair<Key, Mapped>,
+    typedef details::Kdtree<details::Dynamic_rank, Key, std::pair<const Key, Mapped>,
                             Compare, Alloc>   base_type;
     typedef frozen_boxmap<0, Key, Mapped, Compare, Alloc>  Self;
 
@@ -133,13 +133,13 @@ namespace spatial
    */
   template<typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
-           typename Alloc = std::allocator<std::pair<Key, Mapped> > >
+           typename Alloc = std::allocator<std::pair<const Key, Mapped> > >
   struct runtime_frozen_boxmap
-    : details::Kdtree<details::Dynamic_rank, Key, std::pair<Key, Mapped>,
+    : details::Kdtree<details::Dynamic_rank, Key, std::pair<const Key, Mapped>,
                       Compare, Alloc>
   {
   private:
-    typedef details::Kdtree<details::Dynamic_rank, Key, std::pair<Key, Mapped>,
+    typedef details::Kdtree<details::Dynamic_rank, Key, std::pair<const Key, Mapped>,
                             Compare, Alloc>   base_type;
     typedef runtime_frozen_boxmap<Key, Mapped, Compare, Alloc> Self;
 

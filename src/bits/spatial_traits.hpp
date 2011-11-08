@@ -1,15 +1,14 @@
 // -*- C++ -*-
+//
+// Copyright Sylvain Bougerel 2009 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 /**
  *  @file   spatial_traits.hpp
- *  @brief
- *
- *  Change Log:
- *
- *  - 2009-09-10 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
- *
- *  - (next change goes here)
+ *  @brief  Define several trait classes for types in the library, including
+ *  containers and geometry types.
  */
 
 #ifndef SPATIAL_TRAITS_HPP
@@ -19,68 +18,31 @@
 #  error "Do not include this file directly in your project."
 #endif
 
-#include <utility> // for std::pair
-
-// for std::tr1::false_type and std::tr1::true_type
-#ifdef __GLIBCXX__
-#  include <tr1/type_traits>
-#else
-#  ifdef __IBMCPP__
-#    define __IBMCPP_TR1__
-#  endif
-#  include <type_traits>
-#endif
-
 namespace spatial
 {
-  namespace details
+  /*
+   *  The category of invariants for a k-d tree: strict or relaxed.
+   */
+  struct relaxed_invariant_tag { };
+  struct strict_invariant_tag { };
+
+  /*
+   *  The linking mode traits of the trees in spatial.
+   *
+   *  The linking mode represents how nodes are related to the link. The link
+   *  binds together in the same object the node information, the key and the
+   *  value type. The linking mode allows to retrieve each of these objects from
+   *  the node, and allows to retrieve the node from the link itself.
+   */
+  template<typename Mode>
+  struct mode_traits
   {
-    //@{
-    /*
-     *  A type trait that choses between 2 types
-     */
-    template<bool, typename Tp1, typename Tp2>
-    struct condition
-    { typedef Tp1 type; };
-    template<typename Tp1, typename Tp2>
-    struct condition<false, Tp1, Tp2>
-    { typedef Tp2 type; };
-    //@}
-
-    /*
-     *  The category of invariants for a k-d tree: strict or relaxed.
-     */
-    struct relaxed_invariant_tag { };
-    struct strict_invariant_tag { };
-
-    // Forward declaration needed for the traits
-    template<typename Key> struct Kdtree_node;
-
-    //@{
-    /*
-     *  The node traits of the trees in spatial.
-     */
-    template<typename>
-    struct node_traits
-    { typedef relaxed_invariant_tag invariant_category; };
-
-    template<typename Key>
-    struct node_traits<Kdtree_node<Key> >
-    { typedef strict_invariant_tag invariant_category; };
-    //@}
-
-    /*
-     *  Help to retrieve the invariant category for a node type.
-     */
-    template<typename Node>
-    typename node_traits<Node>::invariant_category
-    invariant_category(const Node&)
-    { return typename node_traits<Node>::invariant_category(); }
-
-  } // namespace details
+    //! The invarient category for the linking mode.
+    typedef typename Mode::relaxed_invariant_tag invariant_category;
+  };
 
   /**
-   *  @brief  The traits type for all containers in the spatial
+   *  \brief  The traits type for all containers in the spatial
    *  namespace. Defines all the types that must be published or resolved from
    *  the spatial container types.
    */
@@ -88,7 +50,7 @@ namespace spatial
   struct container_traits
   {
     /**
-     *  The type representing the key managed by the container. @c key_type
+     *  The type representing the key managed by the container. \c key_type
      *  holds the coordinates that keeps its instances ordered in the container.
      */
     typedef typename Tp::key_type               key_type;
@@ -96,14 +58,14 @@ namespace spatial
     /**
      *  When mapped_type and key_type are different, value_type holds a pair
      *  formed by key_type (first) and mapped_type (second); this is the case
-     *  for @ref pointmap or @ref boxmap containers. In @ref pointset and @ref
-     *  boxset containers, @c key_type, @c mapped_type and @c value_type are all
+     *  for \ref pointmap or \ref boxmap containers. In \ref pointset and \ref
+     *  boxset containers, \c key_type, \c mapped_type and \c value_type are all
      *  similar types.
      */
     typedef typename Tp::value_type             value_type;
 
     /**
-     *  Represent a pointer to a @c value_type. This type is used by the
+     *  Represent a pointer to a \c value_type. This type is used by the
      *  iterators of the container.
      */
     typedef typename Tp::pointer                pointer;
@@ -113,7 +75,7 @@ namespace spatial
 
     /**
      *  Represent a reference to a key_type. May or may not be mutable,
-     *  depending on the type of key_type.
+     *  depending on the type of \c key_type.
      */
     typedef typename Tp::reference              reference;
 
@@ -137,14 +99,14 @@ namespace spatial
     typedef typename Tp::allocator_type         allocator_type;
 
     /**
-     *  Comparison functor used to compare two instances of @c key_type. It is
-     *  also the type provided by the user in the various containers, @ref
-     *  pointset, @ref boxset, @ref pointmap or @ref boxmap.
+     *  Comparison functor used to compare two instances of \c key_type. It is
+     *  also the type provided by the user in the various containers, \ref
+     *  pointset, \ref boxset, \ref pointmap or \ref boxmap.
      */
     typedef typename Tp::key_compare            key_compare;
 
     /**
-     *  Comparison functor used to compare two instances of @c value_type. This
+     *  Comparison functor used to compare two instances of \c value_type. This
      *  type is deduced from the key_compare in all containers.
      */
     typedef typename Tp::value_compare          value_compare;
@@ -152,13 +114,13 @@ namespace spatial
     /**
      *  The type used to represent the rank of the container. It is not a number
      *  but a wrapper around a dimension_type value. A rank_type is a model of
-     *  @ref Rank.
+     *  \ref Rank.
      */
     typedef typename Tp::rank_type              rank_type;
   };
 
   /**
-   *  @brief  The traits type for all geometries in the spatial
+   *  \brief  The traits type for all geometries in the spatial
    *  namespace. Defines all the types that must be published or resolved from a
    *  geometry.
    */
@@ -166,7 +128,7 @@ namespace spatial
   struct geometry_traits
   {
     /**
-     *  @brief  The type used by the geometry to represent distances.
+     *  \brief  The type used by the geometry to represent distances.
      *
      *  Distance may be user defined in some geometry such as
      *  spatial::manhathan, but in this case, the type must follow specific
@@ -174,7 +136,6 @@ namespace spatial
      */
     typedef typename Tp::distance_type         distance_type;
   };
-
 } //namespace spatial
 
 #endif // SPATIAL_TRAITS_HPP
