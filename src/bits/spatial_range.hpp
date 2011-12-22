@@ -19,6 +19,8 @@
 #  error "Do not include this file directly in your project."
 #endif
 
+#include <utility> // provides ::std::pair<> and ::std::make_pair()
+
 namespace spatial
 {
 
@@ -163,7 +165,7 @@ namespace spatial
    const typename container_traits<Tp>::key_type& lower,
    const typename container_traits<Tp>::key_type& upper)
   {
-    except::check_open_range_bounds(container, lower, upper);
+    ::spatial::except::check_open_range_bounds(container, lower, upper);
     return open_range_bounds
       <typename container_traits<Tp>::key_type,
       typename container_traits<Tp>::key_compare>
@@ -242,7 +244,7 @@ namespace spatial
    const typename container_traits<Tp>::key_type& lower,
    const typename container_traits<Tp>::key_type& upper)
   {
-    except::check_range_bounds(container, lower, upper);
+    ::spatial::except::check_range_bounds(container, lower, upper);
     return range_bounds
       <typename container_traits<Tp>::key_type,
       typename container_traits<Tp>::key_compare>
@@ -324,7 +326,7 @@ namespace spatial
    const typename container_traits<Tp>::key_type& lower,
    const typename container_traits<Tp>::key_type& upper)
   {
-    except::check_closed_range_bounds(container, lower, upper);
+    ::spatial::except::check_closed_range_bounds(container, lower, upper);
     return closed_range_bounds
       <typename container_traits<Tp>::key_type,
       typename container_traits<Tp>::key_compare>
@@ -447,7 +449,7 @@ namespace spatial
    const typename container_traits<Tp>::key_type& target,
    Layout tag)
   {
-    except::check_box_argument(container, target, tag);
+    ::spatial::except::check_box(container, target, tag);
     return overlap_bounds
       <typename container_traits<Tp>::key_type,
       typename container_traits<Tp>::key_compare, Layout>
@@ -592,7 +594,7 @@ namespace spatial
    const typename container_traits<Tp>::key_type& target,
    Layout tag)
   {
-    except::check_box_argument(container, target, tag);
+    ::spatial::except::check_box(container, target, tag);
     return enclose_bounds
       <typename container_traits<Tp>::key_type,
       typename container_traits<Tp>::key_compare, Layout>
@@ -611,232 +613,122 @@ namespace spatial
 
   namespace details
   {
-
     /**
-     *  @brief  Iterates over keys contained within an orthogonal range with
-     *  in-order tree transveral.
+     *  Extra information needed by the range iterator. This information is
+     *  stored in the iterator is copied for each iterator.
      *
-     *  Uses @c Predicate to find all matching keys. @c Predicate must be a
-     *  model of RangePredicate. See the RangePredicate concept for more
-     *  information on writing a range predicates.
+     *  Although it may be possible to modify this information directly from
+     *  it's members, it may be unwise to do so, as it could invalidate the
+     *  iterator and cause the program to behave unexpectedly. If any of this
+     *  information needs to be modified, it is probably recommended to create a
+     *  new iterator altogether.
      */
-    template <typename Rank, typename Key, typename Value, typename Node,
-              typename Predicate, bool Constant, typename Derived>
-    struct Range_iterator_base
+    typename <typename Container, typename Predicate>
+    struct Range_data : ::spatial::container_trait<Container>::rank_type
     {
-      typedef Value                           value_type;
-      typedef typename condition
-      <Constant, const Value&, Value&>::type  reference;
-      typedef typename details::condition
-      <Constant, const Value*, Value*>::type  pointer;
-      typedef std::ptrdiff_t                  difference_type;
-      typedef std::bidirectional_iterator_tag iterator_category;
+      //! Build an uninitialized range data object.
+      Range_data() : node_dim_(), node_() { }
 
-    protected:
-      typedef typename condition
-      <Constant, typename Node::const_ptr,
-       typename Node::ptr>::type              node_ptr;
-      typedef typename condition
-      <Constant, typename Node::const_link_type,
-       typename Node::link_type>::type        link_ptr;
-
-    public:
       /**
-       *  @brief  The implementation that holds all members of the iterator.
+       *  Builds required range data from a given container, dimension, and a
+       *  predicate.
        *
-       *  To keep the iterator memory foot-print as low as possible, this class
-       *  goes the extra mile to provide empty member optimization on all template
-       *  paramerters.
+       *  \param p The model of \ref RangePredicate.
+       *  \param d The node dimension for the node pointed to by the iterator.
+       *  \param c The container being iterated.
        */
-      struct Range_iterator_impl : Rank
-      {
-        Range_iterator_impl() : node_dim_(), node_() { }
-
-        Range_iterator_impl
-        (const Rank& rank, const Predicate& predicate,
-         dimension_type node_dim, node_ptr node)
-          : Rank(rank), node_dim_(predicate, node_dim), node_(node)
+      Range_data
+      (const Predicate& p, dimension_type d, const Container& c)
+        : ::spatial::container_trait<Container>::rank_type(c.rank()),
+          node_dim(p, d)
         { }
 
-        /**
-         *  @brief  The dimension for node.
-         *
-         *  Modifing this key can potientially invalidate the iterator. Do not
-         *  modify this key unless you know what you're doing. See node.
-         */
-        Compress<Predicate, dimension_type> node_dim_;
-
-        /**
-         *  @brief  The pointer to the current node for the iterator.
-         *
-         *  Modify this key can invalidate the iterator. Do not modify this key
-         *  unless you know what you're doing. The key for node must always point
-         *  to end() or to a node that statisfies:
-         *
-         *     Predicate(key) == matching
-         */
-        node_ptr node_;
-      };
-
-      const Rank&
-      rank() const
-      { return *static_cast<const Rank*>(&impl_); }
-
-      const Predicate&
-      predicate() const
-      { return impl_.node_dim_.base(); }
-
-    private:
-      void increment();
-
-      void decrement();
-
-    protected:
-      Range_iterator_base() : impl_() { }
-
-      Range_iterator_base(const Range_iterator_impl& impl)
-        : impl_(impl)
-      { }
-
-    public:
       /**
-       *  @brief  From @c x, find the node with the minimum value in the range
-       *  delimited by p. If multiple nodes are matching, return the first
-       *  matching node in in-order transversal.
+       *  The dimension for node.
        *
-       *  @param node_dim  The current dimension for @c node.
-       *  @param node  The node from which to find the minimum.
-       *  @param key_dimension  The number of dimensions of key.
-       *  @param predicate  The predicate for the orthogonal range query.
-       *  @return  An iterator pointing the minimum, or to the parent of @c node.
-       *
-       *  If @c node is a header node, the search will stop immediately.
+       *  \Warning Modifing this key can potientially invalidate the
+       *  iterator. Do not modify this key unless you know what you're
+       *  doing.
        */
-      static Derived
-      minimum(const Rank& rank, const Predicate& predicate,
-              dimension_type node_dim, node_ptr node);
-
-      /**
-       *  @brief  From @c x, find the node with the maximum value in the range
-       *  delimited by p. If multiple nodes are matching, return the last
-       *  matching node in in-order transversal.
-       *
-       *  @param node_dim  The current dimension for @c node.
-       *  @param node  The node from which to find the minimum.
-       *  @param key_dimension  The number of dimensions of key.
-       *  @param predicate  The predicate for the orthogonal range query.
-       *  @return  An iterator pointing the maximum, or to the parent of @c node.
-       *
-       *  If @c node is a header node, the search will stop immediately.
-       */
-      static Derived
-      maximum(const Rank& rank, const Predicate& predicate,
-              dimension_type node_dim, node_ptr node);
-
-      reference
-      operator*() const
-      { return value(impl_.node_); }
-
-      pointer
-      operator->() const
-      { return &value(impl_.node_); }
-
-      /**
-       *  @brief  Find the next matching node in in-order transversal or
-       *  return end. If the iterator is already at end, behavior is
-       *  undertermined.
-       */
-      Derived&
-      operator++()
-      {
-        increment();
-        return *static_cast<Derived*>(this);
-      }
-
-      /**
-       *  @brief  Find the next matching node in in-order transversal or
-       *  point at end. If the iterator is already at end, behavior is
-       *  undertermined.
-       */
-      Derived
-      operator++(int)
-      {
-        Derived tmp = *static_cast<Derived*>(this);
-        increment();
-        return tmp;
-      }
-
-      /**
-       *  @brief  Find the previous matching node in in-order transversal or
-       *  return end. If the iterator is already at end, behavior is
-       *  undertermined.
-       */
-      Derived&
-      operator--()
-      {
-        decrement();
-        return *static_cast<Derived*>(this);
-      }
-
-      /**
-       *  @brief  Find the previous matching node in in-order transversal or
-       *  point at end. If the iterator is already at end, behavior is
-       *  undertermined.
-       */
-      Derived
-      operator--(int)
-      {
-        Derived tmp = *static_cast<Derived*>(this);
-        decrement();
-        return tmp;
-      }
-
-      Range_iterator_impl impl_;
+      Compress<Predicate, dimension_type> node_dim;
     };
+  } // namespace details
 
-    template <typename Rank, typename Key, typename Value, typename Node,
-              typename Predicate, bool Constant1, bool Constant2,
-              typename Derived1, typename Derived2>
-    inline bool
-    operator==(const Range_iterator_base
-               <Rank, Key, Value, Node, Predicate, Constant1, Derived1>& x,
-               const Range_iterator_base
-               <Rank, Key, Value, Node, Predicate, Constant2, Derived2>& y)
-    { return x.impl_.node_ == y.impl_.node_; }
-
-    template <typename Rank, typename Key, typename Value, typename Node,
-              typename Predicate, bool Constant1, bool Constant2,
-              typename Derived1, typename Derived2>
-    inline bool
-    operator!=(const Range_iterator_base
-               <Rank, Key, Value, Node, Predicate, Constant1, Derived1>& x,
-               const Range_iterator_base
-               <Rank, Key, Value, Node, Predicate, Constant2, Derived2>& y)
-    { return !(x == y); }
-
+  /**
+   *  The define_range type provides an iterator and a constant iterator to
+   *  iterate through all element of a tree that match a particular user defined
+   *  range through a predicate.
+   *
+   *  \tparam Container The container upon which these iterator relate to.
+   *  \tparam Predicate A model of \ref RangePredicate.
+   *  \see range_query<>::iterator
+   *  \see range_query<>::const_iterator
+   */
+  template <typename Container, typename Predicate>
+  struct specify_range
+  {
     /**
-     *  @brief  A mutable iterator based on Range_iterator_base.
+     *  Iterates over values contained within the orthogonal range expressed
+     *  in the \ref RangePredicate. The elements returned by this iterator are
+     *  not ordered, but are guarrented to fall within the given Predicate
+     *  provided.
+     *
+     *  Uses \ref Predicate to find all matching values. \ref Predicate must
+     *  be a model of \ref RangePredicate. See the \ref RangePredicate concept
+     *  for more information on writing a range predicates.
      */
-    template <typename Rank, typename Key, typename Value, typename Node,
-              typename Predicate>
-    struct Range_iterator
-      : public Range_iterator_base
-    <Rank, Key, Value, Node, Predicate, false,
-     Range_iterator<Rank, Key, Value, Node, Predicate> >
+    struct iterator : ::spatial::details::bidirectional_iterator
+    <typename Container::mode_type, iterator,
+     ::std::tr1::is_same<typename Container::key_type,
+                         typename Container::value_type>::value>
     {
     private:
-      typedef Range_iterator_base
-      <Rank, Key, Value, Node, Predicate, false,
-       Range_iterator<Rank, Key, Value, Node, Predicate> > Base;
+      typedef typename ::spatial::details::bidirectional_iterator
+      <typename Container::mode_type, iterator,
+       ::std::tr1::is_same<typename Container::key_type,
+                           typename Container::value_type>::value> Base;
 
     public:
-      explicit
-      Range_iterator(const Rank& r, const Predicate& p,
-                     dimension_type node_dim, typename Base::Link_type link)
-        : Base(typename Base::Range_iterator_impl(r, p, node_dim, link))
-      { }
+      //! Uninitialized iterator.
+      iterator() { }
 
-      Range_iterator() { }
+      /**
+       *  Build an iterator from another iterator of the same container type.
+       *
+       *  This constructor should be used in the general case where the
+       *  dimension for the node pointed to by \c iter is not known. The
+       *  dimension of the node will be recomputed from the given iterator by
+       *  iterating through all parents until the header node has been
+       *  reached. This iteration is bounded by \Olog in case the tree is
+       *  perfectly balanced.
+       *
+       *  \param predicate A model of the \ref RangePredicate concept.
+       *  \param iter An iterator on the type Container.
+       *  \param container The container being iterated.
+       */
+      iterator(const Predicate& predicate, typename Container::iterator iter,
+               Container& container)
+        : Base(iter.node),
+          data(predicate, modulo(iter.node, container.rank()), container) { }
+
+      /**
+       *  Build an iterator from another iterator of the same container type.
+       *
+       *  This constructor should be used only when the dimension of the node
+       *  pointed to by iter is known. If in doubt, use the other
+       *  constructor. This constructor perform slightly faster than the other,
+       *  since the dimension does not have to be calculated. Note however that
+       *  the calculation of the dimension in the other iterator takes slightly
+       *  longer than \Olog in general, and so it is not likely to affect the
+       *  performance of your application in any major way.
+       *
+       *  \param predicate A model of the \ref RangePredicate concept.
+       *  \param iter An iterator on the type Container.
+       *  \param container The container being iterated.
+       */
+      iterator(const Predicate& predicate, dimension_type node_dim,
+               typename Container::iterator iter, Container& container)
+        : Base(iter.node), data(predicate, node_dim, container) { }
 
       //@{
       /**
@@ -844,1023 +736,263 @@ namespace spatial
        *  therefore use this iterator as an argument to the erase function of
        *  the container, for example.
        *
-       *  @warning When using this iterator as an argument to the erase function
+       *  \warning When using this iterator as an argument to the erase function
        *  of the container, this iterator will get invalidated after erase.
        */
-      operator Node_iterator<Node>()
-      {
-        return Node_iterator<Node>
-          (static_cast<typename Base::Link_type>(Base::impl_.node_));
-      }
+      operator typename Container::iterator()
+      { return Container::iterator(link(Base::node)); }
 
-      operator Const_Node_iterator<Node>()
-      {
-        return Const_Node_iterator<Value, Node>
-          (static_cast<typename Base::Link_type>(Base::impl_.node_));
-      }
+      operator typename Container::const_iterator()
+      { return Container::const_iterator(link(Base::node)); }
       //@}
+
+      //! The related data for the iterator.
+      ::spatial::details::Range_data<Container, Predicate> data;
     };
 
     /**
-     *  @brief  A constant iterator based on Range_iterator_base.
+     *  Iterates over values contained within the orthogonal range expressed
+     *  in the \ref RangePredicate. The elements returned by this iterator are
+     *  not ordered, but are guarrented to fall within the given Predicate
+     *  provided.
+     *
+     *  Uses \ref Predicate to find all matching values. \ref Predicate must
+     *  be a model of \ref RangePredicate. See the \ref RangePredicate concept
+     *  for more information on writing a range predicates.
      */
-    template <typename Rank, typename Key, typename Value, typename Node,
-              typename Predicate>
-    struct Const_Range_iterator
-      : public Range_iterator_base
-    <Rank, Key, Value, Node, Predicate, true,
-     Const_Range_iterator<Rank, Key, Value, Node, Predicate> >
+    struct const_iterator : ::spatial::details::bidirectional_iterator
+    <typename Container::mode_type, const_iterator,
+     ::std::tr1::is_same<typename Container::key_type, true> >
     {
     private:
-      typedef Range_iterator
-      <Rank, Key, Value, Node, Predicate>    iterator;
-
-      typedef Range_iterator_base
-      <Rank, Key, Value, Node, Predicate, true,
-       Const_Range_iterator<Rank, Key, Value, Node, Predicate> > Base;
+      typedef typename ::spatial::details::bidirectional_iterator
+      <typename Container::mode_type, const_iterator,
+       ::std::tr1::is_same<typename Container::key_type, true> > Base;
 
     public:
-      explicit
-      Const_Range_iterator
-      (const Rank& r, const Predicate& p, dimension_type node_dim,
-       typename Base::Link_type link)
-        : Base(typename Base::Range_iterator_impl(r, p, node_dim, link))
-      { }
+      //! Uninitialized iterator.
+      const_iterator() { }
 
-      Const_Range_iterator() { }
+      /**
+       *  Build an iterator from another iterator of the same container type.
+       *
+       *  This constructor should be used in the general case where the
+       *  dimension for the node pointed to by \c iter is not known. The
+       *  dimension of the node will be recomputed from the given iterator by
+       *  iterating through all parents until the header node has been
+       *  reached. This iteration is bounded by \Olog in case the tree is
+       *  perfectly balanced.
+       *
+       *  \param predicate A model of the \ref RangePredicate concept.
+       *  \param iter An iterator on the type Container.
+       *  \param container The container being iterated.
+       */
+      const_iterator(const Predicate& predicate,
+                     typename Container::const_iterator iter,
+                     Container& container)
+        : Base(iter.node),
+          data(predicate, modulo(iter.node, container.rank()), container) { }
 
-      Const_Range_iterator(const iterator& i)
-        : Base(typename Base::Range_iterator_impl
-               (i.rank(), i.predicate(), i.impl_.node_dim_(), i.impl_.node_))
-      { }
+      /**
+       *  Build an iterator from another iterator of the same container type.
+       *
+       *  This constructor should be used only when the dimension of the node
+       *  pointed to by iter is known. If in doubt, use the other
+       *  constructor. This constructor perform slightly faster than the other,
+       *  since the dimension does not have to be calculated. Note however that
+       *  the calculation of the dimension in the other iterator takes slightly
+       *  longer than \Olog in general, and so it is not likely to affect the
+       *  performance of your application in any major way.
+       *
+       *  \param predicate A model of the \ref RangePredicate concept.
+       *  \param iter An iterator on the type Container.
+       *  \param container The container being iterated.
+       */
+      const_iterator(const Predicate& predicate, dimension_type node_dim,
+                     typename Container::const_iterator iter,
+                     Container& container)
+        : Base(iter.node), data(predicate, node_dim, container) { }
+
+      //! Convertion of an iterator into a const_iterator is permitted.
+      const_iterator(const iterator& iter)
+        : Base(iter.node), data(iter.data) { }
 
       /**
        *  This iterator can be casted silently into a container iterator. You can
        *  therefore use this iterator as an argument to the erase function of
        *  the container, for example.
        *
-       *  @warning When using this iterator as an argument to the erase function
+       *  \warning When using this iterator as an argument to the erase function
        *  of the container, this iterator will get invalidated after erase.
        */
-      operator Const_Node_iterator<Value, Node>()
-      {
-        return Const_Node_iterator<Value, Node>
-          (static_cast<typename Base::Link_type>(Base::impl_.node_));
-      }
+      operator typename Container::const_iterator()
+      { return Container::const_iterator(link(Base::node)); }
+
+      //! The related data for the iterator.
+      ::spatial::details::Range_data<Container, Predicate> data;
     };
 
     /**
-     * Define the equal_iterator type that is used in the base tree structures
-     * to search through a set of object of equivalent coordinates.
+     *  A pair of iterators that represents a range of elements to
+     *  iterates. These elements are the results of the orthogonal range search.
      */
-    template<typename Container>
-    struct equal_iterator
-    {
-      typedef spatial::details::Range_iterator
-      <typename container_traits<Container>::rank_type,
-       typename container_traits<Container>::key_type,
-       typename container_traits<Container>::value_type,
-       typename container_traits<Container>::node_type,
-       equal_bounds<typename container_traits<Container>::key_type,
-                    typename container_traits<Container>::key_compare> >
-      type;
-    };
+    typedef ::std::pair<iterator, iterator>             iterator_pair;
 
     /**
-     * Define the const_equal_iterator type that is used in the base tree
-     * structures to search through a set of object of equivalent coordinates.
+     *  A pair of constant iterators that represents a range of elements to
+     *  iterates. These elements are the results of the orthogonal range search.
      */
-    template<typename Container>
-    struct const_equal_iterator
-    {
-      typedef spatial::details::Const_Range_iterator
-      <typename container_traits<Container>::rank_type,
-       typename container_traits<Container>::key_type,
-       typename container_traits<Container>::value_type,
-       typename container_traits<Container>::node_type,
-       equal_bounds<typename container_traits<Container>::key_type,
-                    typename container_traits<Container>::key_compare> >
-        type;
-    };
+    typedef ::std::pair<const_iterator, const_iterator> const_iterator_pair;
+  };
 
-    namespace range
-    {
+# define SPATIAL_RANGE_SIMPLE_DECL(Name, Predicate)                     \
+  template<typename Ct>                                                 \
+  class Name                                                            \
+  {                                                                     \
+    typedef typename specify_range                                       \
+      <Ct, Predicate<typename container_traits<Ct>::key_type,           \
+                     typename container_traits<Ct>::key_compare> Range; \
+  public:                                                               \
+    typedef typename Range::iterator            iterator;               \
+    typedef typename Range::const_iterator      const_iterator;         \
+    typedef typename Range::iterator_pair       iterator_pair;          \
+    typedef typename Range::const_iterator_pair const_iterator_pair;    \
+  }
 
-      template<typename Container, typename Predicate>
-      struct iterator
-      {
-        typedef Range_iterator
-        <typename container_traits<Container>::rank_type,
-         typename container_traits<Container>::key_type,
-         typename container_traits<Container>::value_type,
-         typename container_traits<Container>::node_type,
-         Predicate> type;
-      };
+# define SPATIAL_RANGE_LAYOUT_DECL(Name, Predicate)                     \
+  template<typename Ct, typename Layout = llhh_layout_tag>              \
+  class Name                                                            \
+  {                                                                     \
+    typedef typename specify_range                                       \
+      <Ct, Predicate<typename container_traits<Ct>::rank_type,          \
+                     typename container_traits<Ct>::key_type,           \
+                     typename container_traits<Ct>::key_compare,        \
+                     Layout> Range;                                     \
+  public:                                                               \
+    typedef typename Range::iterator            iterator;               \
+    typedef typename Range::const_iterator      const_iterator;         \
+    typedef typename Range::iterator_pair       iterator_pair;          \
+    typedef typename Range::const_iterator_pair const_iterator_pair;    \
+  }
 
-      template<typename Container, typename Predicate>
-      struct const_iterator
-      {
-        typedef Const_Range_iterator
-        <typename container_traits<Container>::rank_type,
-         typename container_traits<Container>::key_type,
-         typename container_traits<Container>::value_type,
-         typename container_traits<Container>::node_type,
-         Predicate> type;
-      };
+  SPATIAL_RANGE_SIMPLE_DECL(equal_range, equal_bounds);
+  SPATIAL_RANGE_SIMPLE_DECL(open_range, open_range_bounds);
+  SPATIAL_RANGE_SIMPLE_DECL(closed_range, closed_range_bounds);
+  SPATIAL_RANGE_SIMPLE_DECL(range, range_bounds);
+  SPATIAL_RANGE_LAYOUT_DECL(overlap_range, overlap_bounds);
+  SPATIAL_RANGE_LAYOUT_DECL(enclose_range, enclose_bounds);
 
-      template <typename Container, typename Predicate>
-      inline typename iterator<Container, Predicate>::type
-      end(Container& container, const Predicate& predicate)
-      {
-        return typename iterator<Container, Predicate>::type
-          (container.rank(), predicate, container.dimension() - 1,
-           static_cast<typename container_traits<Container>::node_type*>
-           (get_end(container)));
-      }
+# undef SPATIAL_RANGE_SIMPLE_DECL
+# undef SPATIAL_RANGE_LAYOUT_DECL
 
-      template <typename Container, typename Predicate>
-      inline typename const_iterator<Container, Predicate>::type
-      const_end(const Container& container, const Predicate& predicate)
-      {
-        return end(*const_cast<Container*>(&container), predicate);
-      }
+  namespace details
+  {
+    template <typename Container, typename Predicate>
+    typename specify_range<Container, Predicate>::iterator&
+    increment(typename specify_range<Container, Predicate>::iterator& iter);
 
-      template <typename Container, typename Predicate>
-      inline typename iterator<Container, Predicate>::type
-      begin(Container& container, const Predicate& predicate)
-      {
-        // Guarentees begin(n) == end(n) if tree is empty
-        if (container.empty())
-        { return end(container, predicate); }
-      else
-        {
-          return iterator<Container, Predicate>::type::minimum
-            (container.rank(), predicate, 0,
-             container.end().node->parent);
-        }
-      }
+    template <typename Container, typename Predicate>
+    typename specify_range<Container, Predicate>::iterator&
+    decrement(typename specify_range<Container, Predicate>::iterator& iter);
 
-      template <typename Container, typename Predicate>
-      inline typename const_iterator<Container, Predicate>::type
-      const_begin(const Container& container, const Predicate& predicate)
-      {
-        return begin(*const_cast<Container*>(&container), predicate);
-      }
+    /**
+     *  @brief  From @c x, find the node with the minimum value in the range
+     *  delimited by p. If multiple nodes are matching, return the first
+     *  matching node in in-order transversal.
+     *
+     *  @param node_dim  The current dimension for @c node.
+     *  @param node  The node from which to find the minimum.
+     *  @param key_dimension  The number of dimensions of key.
+     *  @param predicate  The predicate for the orthogonal range query.
+     *  @return  An iterator pointing the minimum, or to the parent of @c node.
+     *
+     *  If @c node is a header node, the search will stop immediately.
+     */
+    template <typename Container, typename Predicate>
+    typename specify_range<Container, Predicate>::iterator&
+    minimum(typename specify_range<Container, Predicate>::iterator& iter);
 
-    } // namespace range
+    /**
+     *  @brief  From @c x, find the node with the maximum value in the range
+     *  delimited by p. If multiple nodes are matching, return the last
+     *  matching node in in-order transversal.
+     *
+     *  @param node_dim  The current dimension for @c node.
+     *  @param node  The node from which to find the minimum.
+     *  @param key_dimension  The number of dimensions of key.
+     *  @param predicate  The predicate for the orthogonal range query.
+     *  @return  An iterator pointing the maximum, or to the parent of @c node.
+     *
+     *  If @c node is a header node, the search will stop immediately.
+     */
+    template <typename Container, typename Predicate>
+    typename specify_range<Container, Predicate>::iterator&
+    maximum(typename specify_range<Container, Predicate>::iterator& iter);
+
   } // namespace details
 
-  //@{
-  /**
-   *  @brief  View of the container that uses a predicate to control the
-   *  orthogonal range search and provides standard iterator to access the
-   *  results of the search. The predicate must be a model of @ref
-   *  RangePredicate.
-   *
-   *  The following example shows how to define a predicate for a type called
-   *  point3d. The predicate shall satisfy the following conditions:
-   *
-   *  @f[
-   *  -1 < x _0 < 1, -\infty < x _1 < \infty, -\infty < x _2 < 2
-   *  @f]
-   *
-   *  Supposing that @c point3d overloads the bracket operator to access its
-   *  coordinates, the following predicate can satisfy the requirement above:
-   *
-   *  @code
-   *  struct predicate
-   *  {
-   *    spatial::relative_order
-   *    operator()(dimension_type dim, const point3d& x) const
-   *    {
-   *      switch(dim)
-   *        {
-   *        // for dimension 0, only the interval ]-1, 1[ matches...
-   *        case 0: return x[0] <= -1 ? spatial::below
-   *                       : (x[0] >= 1 ? spatial::above : spatial::matching );
-   *        // for dimension 1, it's always a match...
-   *        case 1: return spatial::matching;
-   *        // for dimension 2, matches unless it's equal or above 2...
-   *        case 2: return x[2] < 2 ? spatial::matching : spatial::above;
-   *        // else we must be out of range...
-   *        default: throw std::out_of_range();
-   *        }
-   *    }
-   *  };
-   *  @endcode
-   *
-   *  More information on predicate are provided in the tutorial section and the
-   *  description of the RangePredicate concept.
-   */
   template <typename Container, typename Predicate>
-  class range_predicate_view
+  inline typename specify_range<Container, Predicate>::iterator
+  begin_range(const Predicate& pred, Container& container)
   {
-    typedef typename spatial::container_traits<Container>   traits_type;
-
-  public:
-    // Container traits
-    typedef typename traits_type::key_type            key_type;
-    typedef typename traits_type::value_type          value_type;
-    typedef typename traits_type::pointer             pointer;
-    typedef typename traits_type::const_pointer       const_pointer;
-    typedef typename traits_type::reference           reference;
-    typedef typename traits_type::const_reference     const_reference;
-    typedef typename traits_type::node_type           node_type;
-    typedef typename traits_type::size_type           size_type;
-    typedef typename traits_type::difference_type     difference_type;
-    typedef typename traits_type::allocator_type      allocator_type;
-    typedef typename traits_type::key_compare         key_compare;
-    typedef typename traits_type::value_compare       value_compare;
-    typedef typename traits_type::rank_type           rank_type;
-
-    // Iterator types
-    typedef typename spatial::details::condition
-    <std::tr1::is_same<key_type, value_type>::value,
-     typename details::range::const_iterator<Container, Predicate>::type,
-     typename details::range::iterator<Container, Predicate>::type
-     >::type                                         iterator;
-    typedef typename details::range::const_iterator
-    <Container, Predicate>::type                     const_iterator;
-
-    iterator begin()
-    { return details::range::begin(*container_, predicate_); }
-
-    const_iterator begin() const
-    { return details::range::const_begin(*container_, predicate_); }
-
-    const_iterator cbegin() const
-    { return details::range::const_begin(*container_, predicate_); }
-
-    iterator end()
-    { return details::range::end(*container_, predicate_); }
-
-    const_iterator end() const
-    { return details::range::const_end(*container_, predicate_); }
-
-    const_iterator cend() const
-    { return details::range::const_end(*container_, predicate_); }
-
-    /**
-     *  Container must be a model of RangeIterable container.
-     *  @see RangeIterable
-     */
-    range_predicate_view(Container& container, const Predicate& predicate)
-      : predicate_(predicate), container_(&container)
-    { }
-
-  private:
-    const Predicate predicate_;
-    Container* container_;
-  };
-
-  // specialization for constant containers.
-  template <typename Container, typename Predicate>
-  class range_predicate_view<const Container, Predicate>
-  {
-    typedef typename spatial::container_traits<Container>   traits_type;
-
-  public:
-    // Container traits
-    typedef typename traits_type::key_type            key_type;
-    typedef typename traits_type::value_type          value_type;
-    typedef typename traits_type::pointer             pointer;
-    typedef typename traits_type::const_pointer       const_pointer;
-    typedef typename traits_type::reference           reference;
-    typedef typename traits_type::const_reference     const_reference;
-    typedef typename traits_type::node_type           node_type;
-    typedef typename traits_type::size_type           size_type;
-    typedef typename traits_type::difference_type     difference_type;
-    typedef typename traits_type::allocator_type      allocator_type;
-    typedef typename traits_type::key_compare         key_compare;
-    typedef typename traits_type::value_compare       value_compare;
-    typedef typename traits_type::rank_type           rank_type;
-
-    // Iterator types
-    typedef typename details::range::const_iterator
-    <Container, Predicate>::type                     iterator;
-    typedef iterator                                 const_iterator;
-
-    const_iterator begin() const
-    { return details::range::const_begin(*container_, predicate_); }
-
-    const_iterator cbegin() const
-    { return details::range::const_begin(*container_, predicate_); }
-
-    const_iterator end() const
-    { return details::range::const_end(*container_, predicate_); }
-
-    const_iterator cend() const
-    { return details::range::const_end(*container_, predicate_); }
-
-    range_predicate_view(const Container& container, const Predicate& predicate)
-      : predicate_(predicate), container_(&container)
-    { }
-
-  private:
-    const Predicate predicate_;
-    const Container* container_;
-  };
-  //@}
-
-  //@{
-  /**
-   *  A quick helper to return a range expressed through a pair of iterators.
-   *  Uses the iterator types from @ref range_predicate_view.
-   *
-   *  Container must be a model of @ref RangeIterable. Predicate must be a model
-   *  of @ref RangePredicate.
-   */
-  template <typename Container, typename Predicate>
-  inline
-  std::pair<typename range_predicate_view<Container, Predicate>::iterator,
-            typename range_predicate_view<Container, Predicate>::iterator>
-  range_predicate(Container& container, const Predicate& predicate)
-  {
-    return std::make_pair(details::range::begin(container, predicate),
-                          details::range::end(container, predicate));
+    if (container.empty()) return end_range(pred, container);
+    typename specify_range<Container, Predicate>::iterator
+      it(pred, 0, container.top(), container); // At root, dim = 0
+    return ::spatial::details::minimum(it);
   }
 
   template <typename Container, typename Predicate>
-  inline
-  std::pair<typename range_predicate_view<Container, Predicate>::const_iterator,
-            typename range_predicate_view<Container, Predicate>::const_iterator>
-  range_predicate(const Container& container, const Predicate& predicate)
+  inline typename specify_range<Container, Predicate>::const_iterator
+  begin_range(const Predicate& pred, const Container& container)
+  { return begin_range(pred, *const_cast<Container*>(&container)); }
+
+  template <typename Container, typename Predicate>
+  inline typename specify_range<Container, Predicate>::const_iterator
+  const_begin_range(const Predicate& pred, const Container& container)
+  { return begin_range(pred, *const_cast<Container*>(&container)); }
+
+  template <typename Container, typename Predicate>
+  inline typename specify_range<Container, Predicate>::iterator
+  end_range(const Predicate& pred, Container& container)
   {
-    return std::make_pair(details::range::const_begin(container, predicate),
-                          details::range::const_end(container, predicate));
+    return specify_range<Container, Predicate>::iterator
+      (pred, container.dimension() - 1, container.end(),
+       container); // At header, dim = rank - 1
   }
 
   template <typename Container, typename Predicate>
-  inline
-  std::pair<typename range_predicate_view<Container, Predicate>::const_iterator,
-            typename range_predicate_view<Container, Predicate>::const_iterator>
-  const_range_predicate(const Container& container, const Predicate& predicate)
-  {
-    return std::make_pair(details::range::const_begin(container, predicate),
-                          details::range::const_end(container, predicate));
-  }
-  //@}
+  inline typename specify_range<Container, Predicate>::const_iterator
+  end_range(const Predicate& pred, const Container& container)
+  { return end_range(pred, *const_cast<Container*>(&container)); }
 
-  //@{
-  /**
-   *  @brief  View of the Container that give access to all points whose
-   *  coordinates are within the orthogonal area defined by the 2 points @p
-   *  lower and @p upper, exluding @p upper. Provides iterators to get all
-   *  results of the orthogonal range search.
-   *
-   *  The following condition is statisfied by the point returned as the
-   *  result of the iteration of the view. This condition is the
-   *  multi-dimension equivalent of an half closed interval, commonly used
-   *  when programing, and thus, it is the one you are most likely to be
-   *  using.
-   *
-   *  @f[
-   *  \forall _{i = 0 \to n} , low _i \leq x _i < high _i
-   *  @f]
-   *
-   *  The above invarient also implies that @p lower and @p upper bounds must
-   *  not overlap on any dimension. An exception of the type
-   *  spatial::invalid_range_bounds will be thrown otherwise.
-   */
-  template <typename Container>
-  struct range_view
-    : range_predicate_view
-  <Container,
-   range_bounds<typename spatial::container_traits<Container>::key_type,
-                typename spatial::container_traits<Container>::key_compare> >
-  {
-    range_view
-    (Container& container,
-     const typename spatial::container_traits<Container>::key_type& lower,
-     const typename spatial::container_traits<Container>::key_type& upper)
-      : range_predicate_view
-        <Container,
-         range_bounds<typename spatial::container_traits<Container>::key_type,
-                      typename spatial::container_traits<Container>::key_compare> >
-        (container, make_range_bounds(container, lower, upper))
-    { }
-  };
+  template <typename Container, typename Predicate>
+  inline typename specify_range<Container, Predicate>::const_iterator
+  const_end_range(const Predicate& pred, const Container& container)
+  { return end_range(pred, *const_cast<Container*>(&container)); }
 
-  // specialization for constant containers.
-  template <typename Container>
-  struct range_view<const Container>
-    : range_predicate_view
-  <const Container,
-   range_bounds<typename spatial::container_traits<Container>::key_type,
-                typename spatial::container_traits<Container>::key_compare> >
+  template <typename Container, typename Predicate>
+  inline typename specify_range<Container, Predicate>::iterator_pair
+  make_range(const Predicate& pred, Container& container)
   {
-    range_view
-    (const Container& container,
-     const typename spatial::container_traits<Container>::key_type& lower,
-     const typename spatial::container_traits<Container>::key_type& upper)
-      : range_predicate_view
-        <const Container,
-         range_bounds<typename spatial::container_traits<Container>::key_type,
-                      typename spatial::container_traits<Container>::key_compare> >
-        (container, make_range_bounds(container, lower, upper))
-    { }
-  };
-  //@}
-
-  //@{
-  /**
-   *  A quick helper to return a range expressed through a pair of iterators.
-   *  Uses the iterator types from @ref range_view.
-   *
-   *  Container must be a model of @ref RangeIterable.
-   */
-  template <typename Container>
-  inline
-  std::pair<typename range_view<Container>::iterator,
-            typename range_view<Container>::iterator>
-  range(Container& container,
-        const typename spatial::container_traits<Container>::key_type& lower,
-        const typename spatial::container_traits<Container>::key_type& upper)
-  {
-    range_bounds<typename container_traits<Container>::key_type,
-                 typename container_traits<Container>::key_compare>
-    bounds = make_range_bounds(container, lower, upper);
-    return std::make_pair(details::range::begin(container, bounds),
-                          details::range::end(container, bounds));
+    return ::std::make_pair(begin_range(pred, container),
+                            end_range(pred, container));
   }
 
-  template <typename Container>
-  inline
-  std::pair<typename range_view<Container>::const_iterator,
-            typename range_view<Container>::const_iterator>
-  range(const Container& container,
-        const typename spatial::container_traits<Container>::key_type& lower,
-        const typename spatial::container_traits<Container>::key_type& upper)
+  template <typename Container, typename Predicate>
+  inline typename specify_range<Container, Predicate>::const_iterator_pair
+  make_range(const Predicate& pred, const Container& container)
   {
-    range_bounds<typename container_traits<Container>::key_type,
-                 typename container_traits<Container>::key_compare>
-    bounds = make_range_bounds(container, lower, upper);
-    return std::make_pair(details::range::const_begin(container, bounds),
-                          details::range::const_end(container, bounds));
+    return ::std::make_pair(begin_range(pred, container),
+                            end_range(pred, container));
   }
 
-  template <typename Container>
-  inline
-  std::pair<typename range_view<Container>::const_iterator,
-            typename range_view<Container>::const_iterator>
-  const_range(const Container& container,
-              const typename spatial::container_traits<Container>::key_type& lower,
-              const typename spatial::container_traits<Container>::key_type& upper)
+  template <typename Container, typename Predicate>
+  inline typename specify_range<Container, Predicate>::const_iterator_pair
+  make_range(const Predicate& pred, const Container& container)
   {
-    range_bounds<typename container_traits<Container>::key_type,
-                 typename container_traits<Container>::key_compare>
-    bounds = make_range_bounds(container, lower, upper);
-    return std::make_pair(details::range::const_begin(container, bounds),
-                          details::range::const_end(container, bounds));
+    return ::std::make_pair(begin_range(pred, container),
+                            end_range(pred, container));
   }
-  //@}
-
-  //@{
-  /**
-   *  @brief  View of the Container that give access to all points whose
-   *  coordinates are within the orthogonal area defined by the 2 points @p
-   *  lower and @p upper, included. Provides iterators to get all results of
-   *  the orthogonal range search.
-   *
-   *  The following condition is statisfied by the points returned as the
-   *  result of the iteration of the view. This condition is the
-   *  multi-dimension equivalent of a closed interval.
-   *
-   *  @f[
-   *  \forall_{i = 0 \to n} \left( low_i \le x_i \le high_i \right)
-   *  @f]
-   *
-   *  The above invarient also implies that @p lower and @p upper bounds must
-   *  not overlap on any dimension. An exception of the type
-   *  spatial::invalid_closed_range_bounds will be thrown otherwise.
-   */
-  template <typename Container>
-  struct closed_range_view
-    : range_predicate_view
-  <Container,
-   closed_range_bounds
-   <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::key_compare> >
-  {
-    closed_range_view
-    (Container& container,
-     const typename spatial::container_traits<Container>::key_type& lower,
-     const typename spatial::container_traits<Container>::key_type& upper)
-      : range_predicate_view
-        <Container,
-         closed_range_bounds
-         <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::key_compare> >
-        (container, make_closed_range_bounds(container, lower, upper))
-    { }
-  };
-
-  // specialization for constant containers.
-  template <typename Container>
-  struct closed_range_view<const Container>
-    : range_predicate_view
-  <const Container,
-   closed_range_bounds
-   <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::key_compare> >
-  {
-    closed_range_view
-    (const Container& container,
-     const typename spatial::container_traits<Container>::key_type& lower,
-     const typename spatial::container_traits<Container>::key_type& upper)
-      : range_predicate_view
-        <const Container,
-         closed_range_bounds
-         <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::key_compare> >
-        (container, make_closed_range_bounds(container, lower, upper))
-    { }
-  };
-  //@}
-
-  //@{
-  /**
-   *  A quick helper to return a closed_range expressed through a pair of
-   *  iterators. Uses the iterator types from @ref closed_range_view.
-   *
-   *  Container must be a model of @ref RangeIterable.
-   */
-  template <typename Container>
-  inline
-  std::pair<typename closed_range_view<Container>::iterator,
-            typename closed_range_view<Container>::iterator>
-  closed_range
-  (Container& container,
-   const typename spatial::container_traits<Container>::key_type& lower,
-   const typename spatial::container_traits<Container>::key_type& upper)
-  {
-    closed_range_bounds<typename container_traits<Container>::key_type,
-                        typename container_traits<Container>::key_compare>
-    bounds = make_closed_range_bounds(container, lower, upper);
-    return std::make_pair(details::range::begin(container, bounds),
-                          details::range::end(container, bounds));
-  }
-
-  template <typename Container>
-  inline
-  std::pair<typename closed_range_view<Container>::const_iterator,
-            typename closed_range_view<Container>::const_iterator>
-  closed_range
-  (const Container& container,
-   const typename spatial::container_traits<Container>::key_type& lower,
-   const typename spatial::container_traits<Container>::key_type& upper)
-  {
-    closed_range_bounds<typename container_traits<Container>::key_type,
-                        typename container_traits<Container>::key_compare>
-    bounds = make_closed_range_bounds(container, lower, upper);
-    return std::make_pair(details::range::const_begin(container, bounds),
-                          details::range::const_end(container, bounds));
-  }
-
-  template <typename Container>
-  inline
-  std::pair<typename closed_range_view<Container>::const_iterator,
-            typename closed_range_view<Container>::const_iterator>
-  const_closed_range
-  (const Container& container,
-   const typename spatial::container_traits<Container>::key_type& lower,
-   const typename spatial::container_traits<Container>::key_type& upper)
-  {
-    closed_range_bounds<typename container_traits<Container>::key_type,
-                        typename container_traits<Container>::key_compare>
-    bounds = make_closed_range_bounds(container, lower, upper);
-    return std::make_pair(details::range::const_begin(container, bounds),
-                          details::range::const_end(container, bounds));
-  }
-  //@}
-
-  //@{
-  /**
-   *  @brief  View of the Container that give access to all points whose
-   *  coordinates are within the orthogonal area defined by the 2 points @p
-   *  lower and @p upper, excluded. Provides iterators to get all results of
-   *  the orthogonal range search.
-   *
-   *  The following condition is statisfied by the points returned as the
-   *  result of the iteration of the view. This condition is the
-   *  multi-dimension equivalent of a open interval.
-   *
-   *  @f[
-   *  \forall _{i = 0 \to n} , low _i < x _i < high _i
-   *  @f]
-   *
-   *  The above invarient also implies that @p lower and @p upper bounds must
-   *  not overlap on any dimension. An exception of the type
-   *  spatial::invalid_open_range_bounds will be thrown otherwise.
-   */
-  template <typename Container>
-  struct open_range_view
-    : range_predicate_view
-  <Container,
-   open_range_bounds
-   <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::key_compare> >
-  {
-    open_range_view
-    (Container& container,
-     const typename spatial::container_traits<Container>::key_type& lower,
-     const typename spatial::container_traits<Container>::key_type& upper)
-      : range_predicate_view
-        <Container,
-         open_range_bounds
-         <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::key_compare> >
-        (container, make_open_range_bounds(container, lower, upper))
-    { }
-  };
-
-  // specialization for constant containers.
-  template <typename Container>
-  struct open_range_view<const Container>
-    : range_predicate_view
-  <const Container,
-   open_range_bounds
-   <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::key_compare> >
-  {
-    open_range_view
-    (const Container& container,
-     const typename spatial::container_traits<Container>::key_type& lower,
-     const typename spatial::container_traits<Container>::key_type& upper)
-      : range_predicate_view
-        <const Container,
-         open_range_bounds
-         <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::key_compare> >
-        (container, make_open_range_bounds(container, lower, upper))
-    { }
-  };
-  //@}
-
-  //@{
-  /**
-   *  A quick helper to return an open_range expressed through a pair of
-   *  iterators. Uses the iterator types from @ref open_range_view.
-   *
-   *  Container must be a model of @ref RangeIterable.
-   */
-  template <typename Container>
-  inline
-  std::pair<typename open_range_view<Container>::iterator,
-            typename open_range_view<Container>::iterator>
-  open_range
-  (Container& container,
-   const typename spatial::container_traits<Container>::key_type& lower,
-   const typename spatial::container_traits<Container>::key_type& upper)
-  {
-    open_range_bounds<typename container_traits<Container>::key_type,
-                      typename container_traits<Container>::key_compare>
-    bounds = make_open_range_bounds(container, lower, upper);
-    return std::make_pair(details::range::begin(container, bounds),
-                          details::range::end(container, bounds));
-  }
-
-  template <typename Container>
-  inline
-  std::pair<typename open_range_view<Container>::const_iterator,
-            typename open_range_view<Container>::const_iterator>
-  open_range
-  (const Container& container,
-   const typename spatial::container_traits<Container>::key_type& lower,
-   const typename spatial::container_traits<Container>::key_type& upper)
-  {
-    open_range_bounds<typename container_traits<Container>::key_type,
-                      typename container_traits<Container>::key_compare>
-    bounds = make_open_range_bounds(container, lower, upper);
-    return std::make_pair(details::range::const_begin(container, bounds),
-                          details::range::const_end(container, bounds));
-  }
-
-  template <typename Container>
-  inline
-  std::pair<typename open_range_view<Container>::const_iterator,
-            typename open_range_view<Container>::const_iterator>
-  const_open_range
-  (const Container& container,
-   const typename spatial::container_traits<Container>::key_type& lower,
-   const typename spatial::container_traits<Container>::key_type& upper)
-  {
-    open_range_bounds<typename container_traits<Container>::key_type,
-                      typename container_traits<Container>::key_compare>
-    bounds = make_open_range_bounds(container, lower, upper);
-    return std::make_pair(details::range::const_begin(container, bounds),
-                          details::range::const_end(container, bounds));
-  }
-  //@}
-
-  //@{
-  /**
-   *  @brief  View of the Container that give access to all boxes whose
-   *  coordinates overlap with that of a target box. Provides iterators to get
-   *  all results of the search.
-   *
-   *  This view uses the @ref overlap_bounds predicate to perform the search.
-   */
-  template <typename Container, typename Layout = llhh_layout_tag>
-  struct overlap_view
-    : range_predicate_view
-  <Container,
-   overlap_bounds
-   <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::key_compare, Layout> >
-  {
-    overlap_view
-    (Container& container,
-     const typename spatial::container_traits<Container>::key_type& target)
-      : range_predicate_view
-        <Container,
-         overlap_bounds
-         <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::key_compare, Layout> >
-        (container, make_overlap_bounds(container, target, Layout()))
-    { }
-  };
-
-  // specialization for constant containers.
-  template <typename Container, typename Layout>
-  struct overlap_view<const Container, Layout>
-    : range_predicate_view
-  <const Container,
-   overlap_bounds
-   <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::key_compare, Layout> >
-  {
-    overlap_view
-    (const Container& container,
-     const typename spatial::container_traits<Container>::key_type& target)
-      : range_predicate_view
-        <const Container,
-         overlap_bounds
-         <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::key_compare, Layout> >
-        (container, make_overlap_bounds(container, target, Layout()))
-    { }
-  };
-  //@}
-
-  //@{
-  /**
-   *  A quick helper to return an overlap expressed through a pair of
-   *  iterators. Uses the iterator types from @ref overlap_view.
-   *
-   *  Container must be a model of @ref RangeIterable.
-   */
-  template <typename Container, typename Layout>
-  inline
-  std::pair<typename overlap_view<Container, Layout>::iterator,
-            typename overlap_view<Container, Layout>::iterator>
-  overlap
-  (Container& container,
-   const typename spatial::container_traits<Container>::key_type& target,
-   Layout)
-  {
-    overlap_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::key_compare, Layout>
-    bounds = make_overlap_bounds(container, target, Layout());
-    return std::make_pair(details::range::begin(container, bounds),
-                          details::range::end(container, bounds));
-  }
-
-  template <typename Container>
-  inline
-  std::pair<typename overlap_view<Container, llhh_layout_tag>::iterator,
-            typename overlap_view<Container, llhh_layout_tag>::iterator>
-  overlap
-  (Container& container,
-   const typename spatial::container_traits<Container>::key_type& target)
-  {
-    overlap_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::key_compare,
-                   llhh_layout_tag>
-      bounds = make_overlap_bounds(container, target, llhh_layout_tag());
-    return std::make_pair(details::range::begin(container, bounds),
-                          details::range::end(container, bounds));
-  }
-
-  template <typename Container, typename Layout>
-  inline
-  std::pair<typename overlap_view<Container, Layout>::const_iterator,
-            typename overlap_view<Container, Layout>::const_iterator>
-  overlap
-  (const Container& container,
-   const typename spatial::container_traits<Container>::key_type& target,
-   Layout)
-  {
-    overlap_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::key_compare, Layout>
-    bounds = make_overlap_bounds(container, target, Layout());
-    return std::make_pair(details::range::const_begin(container, bounds),
-                          details::range::const_end(container, bounds));
-  }
-
-  template <typename Container>
-  inline
-  std::pair<typename overlap_view<Container, llhh_layout_tag>::iterator,
-            typename overlap_view<Container, llhh_layout_tag>::iterator>
-  overlap
-  (const Container& container,
-   const typename spatial::container_traits<Container>::key_type& target)
-  {
-    overlap_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::key_compare,
-                   llhh_layout_tag>
-      bounds = make_overlap_bounds(container, target, llhh_layout_tag());
-    return std::make_pair(details::range::begin(container, bounds),
-                          details::range::end(container, bounds));
-  }
-
-  template <typename Container, typename Layout>
-  inline
-  std::pair<typename overlap_view<Container, Layout>::const_iterator,
-            typename overlap_view<Container, Layout>::const_iterator>
-  const_overlap
-  (const Container& container,
-   const typename spatial::container_traits<Container>::key_type& target,
-   Layout)
-  {
-    overlap_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::key_compare, Layout>
-    bounds = make_overlap_bounds(container, target, Layout());
-    return std::make_pair(details::range::const_begin(container, bounds),
-                          details::range::const_end(container, bounds));
-  }
-
-  template <typename Container>
-  inline
-  std::pair<typename overlap_view<Container, llhh_layout_tag>::iterator,
-            typename overlap_view<Container, llhh_layout_tag>::iterator>
-  const_overlap
-  (const Container& container,
-   const typename spatial::container_traits<Container>::key_type& target)
-  {
-    overlap_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::key_compare,
-                   llhh_layout_tag>
-      bounds = make_overlap_bounds(container, target, llhh_layout_tag());
-    return std::make_pair(details::range::begin(container, bounds),
-                          details::range::end(container, bounds));
-  }
-  //@}
-
-  //@{
-  /**
-   *  @brief  View of the Container that give access to all boxes whose
-   *  coordinates enclosed with that of a target box. Provides iterators to get
-   *  all results of the search.
-   *
-   *  This view uses the @ref enclose_bounds predicate to perform the search.
-   */
-  template <typename Container, typename Layout = llhh_layout_tag>
-  struct enclose_view
-    : range_predicate_view
-  <Container,
-   enclose_bounds
-   <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::key_compare, Layout> >
-  {
-    enclose_view
-    (Container& container,
-     const typename spatial::container_traits<Container>::key_type& target)
-      : range_predicate_view
-        <Container,
-         enclose_bounds
-         <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::key_compare, Layout> >
-        (container, make_enclose_bounds(container, target, Layout()))
-    { }
-  };
-
-  // specialization for constant containers.
-  template <typename Container, typename Layout>
-  struct enclose_view<const Container, Layout>
-    : range_predicate_view
-  <const Container,
-   enclose_bounds
-   <typename spatial::container_traits<Container>::key_type,
-    typename spatial::container_traits<Container>::key_compare, Layout> >
-  {
-    enclose_view
-    (const Container& container,
-     const typename spatial::container_traits<Container>::key_type& target)
-      : range_predicate_view
-        <const Container,
-         enclose_bounds
-         <typename spatial::container_traits<Container>::key_type,
-          typename spatial::container_traits<Container>::key_compare, Layout> >
-        (container, make_enclose_bounds(container, target, Layout()))
-    { }
-  };
-  //@}
-
-  //@{
-  /**
-   *  A quick helper to return an enclosed expressed through a pair of
-   *  iterators. Uses the iterator types from @ref enclose_view.
-   *
-   *  Container must be a model of @ref RangeIterable.
-   */
-  template <typename Container, typename Layout>
-  inline
-  std::pair<typename enclose_view<Container, Layout>::iterator,
-            typename enclose_view<Container, Layout>::iterator>
-  enclose
-  (Container& container,
-   const typename spatial::container_traits<Container>::key_type& target,
-   Layout)
-  {
-    enclose_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::key_compare, Layout>
-    bounds = make_enclose_bounds(container, target, Layout());
-    return std::make_pair(details::range::begin(container, bounds),
-                          details::range::end(container, bounds));
-  }
-
-  template <typename Container>
-  inline
-  std::pair<typename enclose_view<Container, llhh_layout_tag>::iterator,
-            typename enclose_view<Container, llhh_layout_tag>::iterator>
-  enclose
-  (Container& container,
-   const typename spatial::container_traits<Container>::key_type& target)
-  {
-    enclose_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::key_compare,
-                   llhh_layout_tag>
-    bounds = make_enclose_bounds(container, target, llhh_layout_tag());
-    return std::make_pair(details::range::begin(container, bounds),
-                          details::range::end(container, bounds));
-  }
-
-  template <typename Container, typename Layout>
-  inline
-  std::pair<typename enclose_view<Container, Layout>::const_iterator,
-            typename enclose_view<Container, Layout>::const_iterator>
-  enclose
-  (const Container& container,
-   const typename spatial::container_traits<Container>::key_type& target,
-   Layout)
-  {
-    enclose_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::key_compare, Layout>
-    bounds = make_enclose_bounds(container, target, Layout());
-    return std::make_pair(details::range::const_begin(container, bounds),
-                          details::range::const_end(container, bounds));
-  }
-
-  template <typename Container>
-  inline
-  std::pair<typename enclose_view<Container, llhh_layout_tag>::const_iterator,
-            typename enclose_view<Container, llhh_layout_tag>::const_iterator>
-  enclose
-  (const Container& container,
-   const typename spatial::container_traits<Container>::key_type& target)
-  {
-    enclose_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::key_compare,
-                   llhh_layout_tag>
-    bounds = make_enclose_bounds(container, target, llhh_layout_tag());
-    return std::make_pair(details::range::const_begin(container, bounds),
-                          details::range::const_end(container, bounds));
-  }
-
-  template <typename Container, typename Layout>
-  inline
-  std::pair<typename enclose_view<Container, Layout>::const_iterator,
-            typename enclose_view<Container, Layout>::const_iterator>
-  const_enclose
-  (const Container& container,
-   const typename spatial::container_traits<Container>::key_type& target,
-   Layout)
-  {
-    enclose_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::key_compare,
-                   Layout>
-    bounds = make_enclose_bounds(container, target, Layout());
-    return std::make_pair(details::range::const_begin(container, bounds),
-                          details::range::const_end(container, bounds));
-  }
-
-  template <typename Container>
-  inline
-  std::pair<typename enclose_view<Container, llhh_layout_tag>::const_iterator,
-            typename enclose_view<Container, llhh_layout_tag>::const_iterator>
-  const_enclose
-  (const Container& container,
-   const typename spatial::container_traits<Container>::key_type& target)
-  {
-    enclose_bounds<typename container_traits<Container>::key_type,
-                   typename container_traits<Container>::key_compare,
-                   llhh_layout_tag>
-    bounds = make_enclose_bounds(container, target, llhh_layout_tag());
-    return std::make_pair(details::range::const_begin(container, bounds),
-                          details::range::const_end(container, bounds));
-  }
-  //@}
 
 } // namespace spatial
 

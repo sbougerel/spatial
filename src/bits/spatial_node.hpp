@@ -213,12 +213,44 @@ namespace spatial
      */
     template <typename Mode, typename Rank>
     inline dimension_type
-    modulo(typename node<Mode>::const_ptr x, const Rank& r)
+    modulo(typename Node<Mode>::const_ptr x, const Rank& r)
     {
       dimension_type d = r() - 1;
       while(!header(x)) { d = incr_dim(r, d); x = x->parent; }
       return d;
     }
+
+    //@{
+    /*
+     *  The category of invariants for a \kdtree node: strict or relaxed.
+     *
+     *  This tag is an indicator for one of the library's most central concepts:
+     *  different types of node use different sets of invariant, or "rules" on
+     *  their nodes.
+     *
+     *  With \f$N\f$ the current node, \f$d\f$ the current dimension of
+     *  comparison for the node (or: the node's dimension), \f$k(N)\f$ the
+     *  function that associate a node to its key, \f$l(N)\f$ and \f$r(N)\f$ the
+     *  functions that associate a node to its left node and right node
+     *  respectively, then for each tag, the following invarient rules are
+     *  respected: \f[ \begin{Bmatrix} k(N)_d \geq  k(l(N))_d \\ k(N)_d \leq
+     *  k(r(N))_d \end{Bmatrix} \f] for relaxed invarient tags, and: \f[
+     *  \begin{Bmatrix} k(N)_d \gt  k(l(N))_d \\ k(N)_d \leq k(r(N))_d
+     *  \end{Bmatrix} \f] for strict invarient tags.
+     *
+     *  In other words, in relaxed invarient \kdtree, values equal to the node's
+     *  value can be found both in the left and right sub-trees of the node,
+     *  while in strict invarient \kdtree, value equal to the node's value can
+     *  only be found on the right side of the node. This allows strict
+     *  invarient \kdtree to be slightly faster during search if many similar
+     *  values are present in the nodes. But it on the contrary, it makes them
+     *  much harder to rebalance.
+     *
+     *  \see LibraryInternals
+     */
+    struct relaxed_invariant_tag { };
+    struct strict_invariant_tag { };
+    //@}
 
     /**
      *  Define the link type for a Kdtree that contains the value member.
@@ -233,22 +265,22 @@ namespace spatial
     struct Kdtree_link : Node<Kdtree_link<Key, Value> >
     {
       //! The link to the key type.
-      typedef Key                         key_type;
+      typedef Key                                  key_type;
       //! The link to the value type.
-      typedef Value                       value_type;
+      typedef Value                                value_type;
       //! The link to the node type, which is the node itself, since link
       //! information are also contained in this node.
-      typedef Kdtree_link<Key, Value>     link_type;
+      typedef Kdtree_link<Key, Value>              link_type;
       //! The link pointer which is often used, has a dedicated type.
-      typedef link_type*                  link_ptr;
+      typedef link_type*                           link_ptr;
       //! The constant link pointer which is often used, has a dedicated type.
-      typedef const link_type*            const_link_ptr;
+      typedef const link_type*                     const_link_ptr;
       //! The node pointer type deduced from the mode.
-      typedef Node<link_type>::ptr        node_ptr;
+      typedef typename Node<link_type>::ptr        node_ptr;
       //! The constant node pointer deduced from the mode.
-      typedef Node<link_type>::const_ptr  const_node_ptr;
+      typedef typename Node<link_type>::const_ptr  const_node_ptr;
       //! The category of invariant with associated with this mode.
-      typedef strict_invariant_tag        invariant_category;
+      typedef strict_invariant_tag                 invariant_category;
       //! Convert a given link pointer into a node.
       static node_ptr node(link_ptr x)
       { return static_cast<node_ptr>(x); }
@@ -279,22 +311,22 @@ namespace spatial
     struct Relaxed_kdtree_link : Node<Relaxed_kdtree_link<Key, Value> >
     {
       //! The link to the key type.
-      typedef Key                             key_type;
+      typedef Key                                 key_type;
       //! The link to the value type.
-      typedef Value                           value_type;
+      typedef Value                               value_type;
       //! The link type, which is also itself, since mode are also
       //! contained in this type.
-      typedef Relaxed_kdtree_link<Key, Value> link_type;
+      typedef Relaxed_kdtree_link<Key, Value>     link_type;
       //! The link pointer which is often used, has a dedicated type.
-      typedef link_type*                      link_ptr;
+      typedef link_type*                          link_ptr;
       //! The constant link pointer which is often used, has a dedicated type.
-      typedef const link_type*                const_link_ptr;
+      typedef const link_type*                    const_link_ptr;
       //! The node pointer type deduced from the mode.
-      typedef Node<link_type>::ptr            ptr;
+      typedef typename Node<link_type>::ptr       node_ptr;
       //! The constant node pointer deduced from the mode.
-      typedef Node<link_type>::const_ptr      const_ptr;
+      typedef typename Node<link_type>::const_ptr const_node_ptr;
       //! The category of invariant with associated with this mode.
-      typedef strict_invariant_tag            invariant_category;
+      typedef relaxed_invariant_tag               invariant_category;
       //! Convert a given link pointer into a node.
       static node_ptr node(link_ptr x)
       { return static_cast<node_ptr>(x); }
@@ -838,6 +870,12 @@ namespace spatial
       <Constant, typename Mode::const_node_ptr,
        typename Mode::node_ptr>::type                  node_ptr;
 
+      //! Build an uninitialized iterator
+      bidirectional_iterator() { }
+
+      //! Initialize the node at construction time
+      bidirectional_iterator(node_ptr x) : node(x) { }
+
       //! Returns the reference to the value pointed to by the iterator.
       reference operator*() const
       { return value(node); }
@@ -858,7 +896,7 @@ namespace spatial
       //! the increment. Prefer to use the other form in \c for loops.
       Iterator operator++(int)
       {
-        Iterator& x = *static_cast<Interator*>(this);
+        Iterator& x = *static_cast<Iterator*>(this);
         Iterator y(x);
         ::spatial::details::increment(x);
         return y;
@@ -868,7 +906,7 @@ namespace spatial
       //! use this form in \c for loops.
       Iterator& operator--()
       {
-        Iterator& x = *static_cast<Interator*>(this);
+        Iterator& x = *static_cast<Iterator*>(this);
         ::spatial::details::decrement(x); return x;
       }
 
@@ -876,7 +914,7 @@ namespace spatial
       //! the decrement. Prefer to use the other form in \c for loops.
       Iterator operator--(int)
       {
-        Iterator& x = *static_cast<Interator*>(this);
+        Iterator& x = *static_cast<Iterator*>(this);
         Iterator y(x);
         ::spatial::details::decrement(x);
         return y;

@@ -21,12 +21,6 @@
 namespace spatial
 {
   /*
-   *  The category of invariants for a k-d tree: strict or relaxed.
-   */
-  struct relaxed_invariant_tag { };
-  struct strict_invariant_tag { };
-
-  /*
    *  The linking mode traits of the trees in spatial.
    *
    *  The linking mode represents how nodes are related to the link. The link
@@ -117,6 +111,18 @@ namespace spatial
      *  \ref Rank.
      */
     typedef typename Tp::rank_type              rank_type;
+
+    /**
+     *  The type used to iterate a container. Every container must have an
+     *  iterator.
+     */
+    typedef typename Tp::iterator               iterator;
+
+    /**
+     *  The type used to iterate a constant container. Every container must have
+     *  a constant iterator.
+     */
+    typedef typename Tp::const_iterator         const_iterator;
   };
 
   /**
@@ -136,6 +142,7 @@ namespace spatial
      */
     typedef typename Tp::distance_type         distance_type;
   };
+
 } //namespace spatial
 
 #endif // SPATIAL_TRAITS_HPP
