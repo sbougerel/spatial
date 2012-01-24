@@ -69,7 +69,7 @@ namespace spatial
 
     template <typename Mode>
     inline void swap_node
-    (typename Node<Mode>& a, typename Node<Mode>& b)
+    (Node<Mode>& a, Node<Mode>& b)
     {
       typedef typename Node<Mode>::ptr node_ptr;
       if (&a == &b) return;

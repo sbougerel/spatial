@@ -623,7 +623,7 @@ namespace spatial
      */
     template<typename Ct, typename Predicate>
     struct Region_data
-      : ::spatial::container_traits<Ct>::rank_type
+      : container_traits<Ct>::rank_type
     {
       //! Build an uninitialized region data object.
       Region_data() : pred(), node_dim() { }
@@ -638,8 +638,7 @@ namespace spatial
        */
       Region_data
       (const Ct& c, const Predicate& p, dimension_type d)
-        : ::spatial::container_trait<Ct>::rank_type(c.rank()),
-          pred(p), node_dim(d)
+        : container_traits<Ct>::rank_type(c.rank()), pred(p), node_dim(d)
         { }
 
       /**
@@ -718,7 +717,7 @@ namespace spatial
        *  \param iter An iterator on the type Ct.
        */
       iterator(Ct& container, const Predicate& predicate,
-	       typename container_traits<Ct>::iterator iter)
+               typename container_traits<Ct>::iterator iter)
         : Base(iter.node),
           data(predicate, modulo(iter.node, container.rank()), container) { }
 
@@ -739,8 +738,8 @@ namespace spatial
        *  \param container The container being iterated.
        */
       iterator(Ct& container, const Predicate& predicate,
-	       dimension_type node_dim,
-	       typename container_traits<Ct>::mode_type::node_ptr node)
+               dimension_type node_dim,
+               typename container_traits<Ct>::mode_type::node_ptr node)
         : Base(node), data(container, predicate, node_dim) { }
 
       //@{
@@ -762,7 +761,7 @@ namespace spatial
       //! The related data for the iterator.
       ::spatial::details::Region_data<Ct, Predicate> data;
     };
-    
+
     /**
      *  A pair of iterators that represents a region of elements to
      *  iterates. These elements are the results of the orthogonal region search.
@@ -844,7 +843,7 @@ namespace spatial
        */
       iterator(const Ct& container, const Predicate& predicate,
                dimension_type node_dim,
-	       typename container_traits<Ct>::mode_type::node_ptr node)
+               typename container_traits<Ct>::mode_type::node_ptr node)
         : Base(node), data(container, predicate, node_dim) { }
 
       //! Convertion of an iterator into a const_iterator is permitted.
@@ -993,7 +992,7 @@ namespace spatial
 
 /*  MACRO CLASS GENERATORS START HERE
  *
- *  The following part of the file contains macros definition in order to 
+ *  The following part of the file contains macros definition in order to
  *  easily create classes such as \ref equal<Ct>, \ref open_region<Ct> or
  *  \ref enclosed<Ct> that are designed to facilitate expressions of iterators
  *  for these ranges.
@@ -1003,7 +1002,7 @@ namespace spatial
   template<typename Ct>                                                  \
   class Name                                                             \
   {                                                                      \
-    typedef typename region                                              \
+    typedef region                                                       \
       <Ct, Predicate<typename container_traits<Ct>::key_type,            \
                      typename container_traits<Ct>::key_compare> >       \
       Region;                                                            \
@@ -1014,7 +1013,7 @@ namespace spatial
   template<typename Ct>                                                  \
   class Name<const Ct>                                                   \
   {                                                                      \
-    typedef typename region                                              \
+    typedef region                                                       \
       <const Ct, Predicate<typename container_traits<Ct>::key_type,      \
                            typename container_traits<Ct>::key_compare> > \
       Region;                                                            \
@@ -1027,7 +1026,7 @@ namespace spatial
   template<typename Ct, typename Layout = llhh_layout_tag>               \
   class Name                                                             \
   {                                                                      \
-    typedef typename region                                              \
+    typedef region                                                       \
       <Ct, Predicate<typename container_traits<Ct>::key_type,            \
                      typename container_traits<Ct>::key_compare,         \
                      Layout> > Region;                                   \
@@ -1040,7 +1039,7 @@ namespace spatial
   template<typename Ct, typename Layout>                                 \
   class Name<const Ct, Layout>                                           \
   {                                                                      \
-    typedef typename region                                              \
+    typedef region                                                       \
       <const Ct, Predicate<typename container_traits<Ct>::key_type,      \
                            typename container_traits<Ct>::key_compare,   \
                            Layout> > Region;                             \
@@ -1060,7 +1059,7 @@ namespace spatial
 
 /*  MACRO FUNCTION GENERATORS START HERE
  *
- *  The following part of the file contains macros definition in order to 
+ *  The following part of the file contains macros definition in order to
  *  easily create functions such as begin_closed_region, end_closed_region,
  *  begin_equal, const_begin_enclosed, etc, as well as preset region types such
  *  as closed_region, enclosed, etc, that only take a container into account and
@@ -1070,7 +1069,7 @@ namespace spatial
 # define SPATIAL_REGION_MAKE_UNARY(Iter, Type, Region, Bounds)                 \
   template <typename Ct>                                                       \
   inline typename region<Ct,                                                   \
-	                 Bounds<typename container_traits<Ct>::key_type,       \
+                         Bounds<typename container_traits<Ct>::key_type,       \
                                 typename container_traits<Ct>::key_compare>    \
                          >::Iter                                               \
   Region##_##Type(Ct& container,                                               \
@@ -1079,7 +1078,7 @@ namespace spatial
 # define SPATIAL_REGION_MAKE_UNARY_CONST(Iter, Type, Region, Bounds)           \
   template <typename Ct>                                                       \
   inline typename region<const Ct,                                             \
-	                 Bounds<typename container_traits<Ct>::key_type,       \
+                         Bounds<typename container_traits<Ct>::key_type,       \
                                 typename container_traits<Ct>::key_compare>    \
                          >::Iter                                               \
   Region##_##Type(const Ct& container,                                         \
@@ -1102,7 +1101,7 @@ SPATIAL_REGION_MAKE_UNARY_CONST(const_iterator_pair, crange, equal, equal_bounds
 # define SPATIAL_REGION_MAKE_BINARY(Iter, Type, Region, Bounds)                \
   template <typename Ct>                                                       \
   inline typename region<Ct,                                                   \
-	                 Bounds<typename container_traits<Ct>::key_type,       \
+                         Bounds<typename container_traits<Ct>::key_type,       \
                                 typename container_traits<Ct>::key_compare>    \
                          >::Iter                                               \
   Region##_##Type(Ct& container,                                               \
@@ -1113,7 +1112,7 @@ SPATIAL_REGION_MAKE_UNARY_CONST(const_iterator_pair, crange, equal, equal_bounds
 # define SPATIAL_REGION_MAKE_BINARY_CONST(Iter, Type, Region, Bounds)          \
   template <typename Ct>                                                       \
   inline typename region<const Ct,                                             \
-	                 Bounds<typename container_traits<Ct>::key_type,       \
+                         Bounds<typename container_traits<Ct>::key_type,       \
                                 typename container_traits<Ct>::key_compare>    \
                          >::Iter                                               \
   Region##_##Type(const Ct& container,                                         \
@@ -1124,13 +1123,13 @@ SPATIAL_REGION_MAKE_UNARY_CONST(const_iterator_pair, crange, equal, equal_bounds
 # define SPATIAL_REGION_MAKE_BINARY_LAYOUT(Iter, Type, Region, Bounds)         \
   template <typename Ct, typename Layout>                                      \
   inline typename region<Ct,                                                   \
-	                 Bounds<typename container_traits<Ct>::key_type,       \
+                         Bounds<typename container_traits<Ct>::key_type,       \
                                 typename container_traits<Ct>::key_compare,    \
                                 Layout> >::Iter                                \
   Region##_##Type(Ct& container,                                               \
                  typename container_traits<Ct>::key_type lower,                \
                  typename container_traits<Ct>::key_type upper,                \
-		 Layout layout)                                                \
+                 Layout layout)                                                \
   {                                                                            \
     return region_##Type(container,                                            \
                          make_##Bounds(container, lower, upper, layout));      \
@@ -1139,13 +1138,13 @@ SPATIAL_REGION_MAKE_UNARY_CONST(const_iterator_pair, crange, equal, equal_bounds
 # define SPATIAL_REGION_MAKE_BINARY_CLAYOUT(Iter, Type, Region, Bounds)        \
   template <typename Ct, typename Layout>                                      \
   inline typename region<const Ct,                                             \
-	                 Bounds<typename container_traits<Ct>::key_type,       \
+                         Bounds<typename container_traits<Ct>::key_type,       \
                                 typename container_traits<Ct>::key_compare,    \
                                 Layout> >::Iter                                \
   Region##_##Type(const Ct& container,                                         \
                   typename container_traits<Ct>::key_type lower,               \
                   typename container_traits<Ct>::key_type upper,               \
-		  Layout layout)                                               \
+                  Layout layout)                                               \
   { return region_##Type(container, make_##Bounds(container, lower, upper, layout)); }
 
 # define SPATIAL_REGION_MAKE_BINARY_SET(region, bounds)                        \

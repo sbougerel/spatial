@@ -322,7 +322,7 @@ namespace spatial
     {
       if ((::std::numeric_limits<Tp>::max() - x) < y)
         throw arithmetic_error
-	  ("Addition of two elements has resulted in an arithmetic error");
+          ("Addition of two elements has resulted in an arithmetic error");
       return x + y;
     }
 
@@ -343,11 +343,11 @@ namespace spatial
       Tp abs_x = x > 0 ? x : -x;
       // Computing -x might overflow if x is at the limit of the range
       if (abs_x < 0)
-        throw overflow_error
-	  ("Square value of element has resulted in an arithmetic error");
+        throw arithmetic_error
+          ("Square value of element has resulted in an arithmetic error");
       if ((::std::numeric_limits<Tp>::max() / abs_x) < abs_x)
-        throw overflow_error
-	  ("Square value of element has resulted in an arithmetic error");
+        throw arithmetic_error
+          ("Square value of element has resulted in an arithmetic error");
       return x * x;
     }
 
@@ -367,7 +367,7 @@ namespace spatial
     inline Tp check_positive_mul(const Tp& x, const Tp& y)
     {
       if ((::std::numeric_limits<Tp>::max() / y) < x)
-        throw overflow_error
+        throw arithmetic_error
           ("Multiplication of two elements has resulted in an arithmetic error");
       return x * y;
     }

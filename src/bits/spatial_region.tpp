@@ -39,7 +39,7 @@ namespace spatial
         {
           if (iter.node->right != 0
               && pred(iter.data.node_dim, rank(),
-	              const_key(*iter.node)) != above)
+                      const_key(*iter.node)) != above)
             {
               iter.node = iter.node->right;
               iter.data.node_dim = incr_dim(rank, iter.data.node_dim);
@@ -53,7 +53,7 @@ namespace spatial
             }
           else
             {
-              Base_ptr p = iter.node->parent;
+              node_ptr p = iter.node->parent;
               while (!header(p) && iter.node == p->right)
                 {
                   iter.node = p;
@@ -68,7 +68,7 @@ namespace spatial
              && match_all(rank, const_key(*iter.node), pred) == false);
       SPATIAL_ASSERT_CHECK(iter.data.node_dim < rank());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
-	  return iter;
+          return iter;
     }
 
     template <typename Container, typename Predicate>
@@ -86,13 +86,13 @@ namespace spatial
         {
           if (iter.node->left != 0
               && pred(iter.data.node_dim, rank(),
-	              const_key(*iter.node)) != below)
+                      const_key(*iter.node)) != below)
             {
               iter.node = iter.node->left;
               iter.data.node_dim = incr_dim(rank, iter.data.node_dim);
               while (iter.node->right != 0
                      && pred(iter.data.node_dim, rank(),
-		             const_key(*iter.node)) != above)
+                             const_key(*iter.node)) != above)
                 {
                   iter.node = iter.node->right;
                   iter.data.node_dim = incr_dim(rank, iter.data.node_dim);
@@ -115,7 +115,7 @@ namespace spatial
              && match_all(rank, const_key(*iter.node), pred) == false);
       SPATIAL_ASSERT_CHECK(iter.data.node_dim < rank());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
-	  return iter;
+          return iter;
     }
 
     template <typename Container, typename Predicate>
@@ -149,13 +149,13 @@ namespace spatial
           if (match_all(rank, const_key(*iter.node), pred) == true) { break; }
           if (iter.node->right != 0
               && pred(iter.data.node_dim, rank(),
-	              const_key(*iter.node)) != above)
+                      const_key(*iter.node)) != above)
             {
               iter.node = iter.node->right;
               iter.data.node_dim = incr_dim(rank, iter.data.node_dim);
               while (iter.node->left != 0
                      && pred(iter.data.node_dim, rank(),
-		             const_key(*iter.node)) != below)
+                             const_key(*iter.node)) != below)
                 {
                   iter.node = iter.node->left;
                   iter.data.node_dim = incr_dim(rank, iter.data.node_dim);
@@ -195,14 +195,14 @@ namespace spatial
       // Quick positioning according to in-order transversal.
       while (iter.node->left != 0
              && pred(iter.data.node_dim, rank(),
-	             const_key(*iter.node)) == above)
+                     const_key(*iter.node)) == above)
         {
           iter.node = iter.node->left;
           iter.data.node_dim = incr_dim(rank, iter.data.node_dim);
         }
       while (iter.node->right != 0
              && pred(iter.data.node_dim, rank(),
-	             const_key(*iter.node)) != above)
+                     const_key(*iter.node)) != above)
         {
           iter.node = iter.node->right;
           iter.data.node_dim = incr_dim(rank, iter.data.node_dim);
@@ -213,13 +213,13 @@ namespace spatial
           if (match_all(rank, key(iter.node), pred) == true) { break; }
           if (iter.node->left != 0
               && pred(iter.data.node_dim, rank(),
-	              const_key(*iter.node)) != below)
+                      const_key(*iter.node)) != below)
             {
               iter.node = iter.node->left;
               iter.data.node_dim = incr_dim(rank, iter.data.node_dim);
               while (iter.node->right != 0
                      && pred(iter.data.node_dim, rank(),
-		             const_key(*iter.node)) != above)
+                             const_key(*iter.node)) != above)
                 {
                   iter.node = iter.node->right;
                   iter.data.node_dim = incr_dim(rank, iter.data.node_dim);

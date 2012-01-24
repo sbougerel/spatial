@@ -335,17 +335,17 @@ namespace spatial
      *  \param node the node to convert to a link.
      */
     template <typename Key, typename Value>
-    inline typename Kdtree_link<Key, Value>&
-    link(typename Node<Kdtree_link<Key, Value> >& node)
+    inline Kdtree_link<Key, Value>&
+    link(Node<Kdtree_link<Key, Value> >& node)
     {
-      return *static_cast<typename Kdtree_link<Key, Value>*>(&node);
+      return *static_cast<Kdtree_link<Key, Value>*>(&node);
     }
 
     template <typename Key, typename Value>
-    inline const typename Kdtree_link<Key, Value>&
-    const_link(const typename Node<Kdtree_link<Key, Value> >& node)
+    inline const Kdtree_link<Key, Value>&
+    const_link(const Node<Kdtree_link<Key, Value> >& node)
     {
-      return *static_cast<const typename Kdtree_link<Key, Value>*>(&node);
+      return *static_cast<const Kdtree_link<Key, Value>*>(&node);
     }
     //@}
 
@@ -361,16 +361,16 @@ namespace spatial
      */
     template <typename Value>
     inline typename Kdtree_link<Value, Value>::key_type&
-    key(typename Node<Kdtree_link<Value, Value> >& node)
+    key(Node<Kdtree_link<Value, Value> >& node)
     {
-      return static_cast<typename Kdtree_link<Key, Value>*>(&node)->value;
+      return static_cast<Kdtree_link<Value, Value>*>(&node)->value;
     }
 
     template <typename Value>
     inline const typename Kdtree_link<Value, Value>::key_type&
-    const_key(const typename Node<Kdtree_link<Value, Value> >& node)
+    const_key(const Node<Kdtree_link<Value, Value> >& node)
     {
-      return static_cast<const typename Kdtree_link<Key, Value>*>(&node)->value;
+      return static_cast<const Kdtree_link<Value, Value>*>(&node)->value;
     }
     //@}
 
@@ -384,18 +384,16 @@ namespace spatial
      */
     template <typename Key, typename Value>
     inline typename Kdtree_link<Key, Value>::key_type&
-    key(typename Node<Kdtree_link<Key, Value> >& node)
+    key(Node<Kdtree_link<Key, Value> >& node)
     {
-      return static_cast<typename Kdtree_link<Key, Value>*>
-        (&node)->value.first;
+      return static_cast<Kdtree_link<Key, Value>*>(&node)->value.first;
     }
 
     template <typename Key, typename Value>
     inline const typename Kdtree_link<Key, Value>::key_type&
-    const_key(const typename Node<Kdtree_link<Key, Value> >& node)
+    const_key(const Node<Kdtree_link<Key, Value> >& node)
     {
-      return static_cast<const typename Kdtree_link<Key, Value>*>
-        (&node)->value.first;
+      return static_cast<const Kdtree_link<Key, Value>*>(&node)->value.first;
     }
     //@}
 
@@ -409,16 +407,16 @@ namespace spatial
      */
     template <typename Key, typename Value>
     inline typename Kdtree_link<Key, Value>::value_type&
-    value(typename Node<Kdtree_link<Key, Value> >& node)
+    value(Node<Kdtree_link<Key, Value> >& node)
     {
-      return static_cast<typename Kdtree_link<Key, Value>*>(&node)->value;
+      return static_cast<Kdtree_link<Key, Value>*>(&node)->value;
     }
 
     template <typename Key, typename Value>
     inline const typename Kdtree_link<Key, Value>::value_type&
-    const_value(const typename Node<Kdtree_link<Key, Value> >& node)
+    const_value(const Node<Kdtree_link<Key, Value> >& node)
     {
-      return static_cast<const typename Kdtree_link<Key, Value>*>(&node)->value;
+      return static_cast<const Kdtree_link<Key, Value>*>(&node)->value;
     }
     //@}
 
@@ -431,18 +429,17 @@ namespace spatial
      *  \param node the node to convert to a key.
      */
     template <typename Key, typename Value>
-    inline typename Relaxed_kdtree_link<Key, Value>&
-    link(typename Node<Relaxed_kdtree_link<Key, Value> >& node)
+    inline Relaxed_kdtree_link<Key, Value>&
+    link(Node<Relaxed_kdtree_link<Key, Value> >& node)
     {
-      return *static_cast<typename Relaxed_kdtree_link<Key, Value>*>(&node);
+      return *static_cast<Relaxed_kdtree_link<Key, Value>*>(&node);
     }
 
     template <typename Key, typename Value>
-    inline const typename Relaxed_kdtree_link<Key, Value>&
-    const_link(const typename Node<Relaxed_kdtree_link<Key, Value> >& node)
+    inline const Relaxed_kdtree_link<Key, Value>&
+    const_link(const Node<Relaxed_kdtree_link<Key, Value> >& node)
     {
-      return *static_cast
-	<const typename Relaxed_kdtree_link<Key, Value>*>(&node);
+      return *static_cast<const Relaxed_kdtree_link<Key, Value>*>(&node);
     }
     //@}
 
@@ -457,18 +454,17 @@ namespace spatial
      */
     template <typename Value>
     inline typename Relaxed_kdtree_link<Value, Value>::key_type&
-    key(typename Node<Relaxed_kdtree_link<Value, Value> >& node)
+    key(Node<Relaxed_kdtree_link<Value, Value> >& node)
     {
-      return static_cast
-	<typename Relaxed_kdtree_link<Value, Value>*>(&node)->value;
+      return static_cast<Relaxed_kdtree_link<Value, Value>*>(&node)->value;
     }
 
     template <typename Value>
     inline const typename Relaxed_kdtree_link<Value, Value>::key_type&
-    const_key(const typename Node<Relaxed_kdtree_link<Value, Value> >& node)
+    const_key(const Node<Relaxed_kdtree_link<Value, Value> >& node)
     {
       return static_cast
-	<const typename Relaxed_kdtree_link<Value, Value>*>(&node)->value;
+        <const Relaxed_kdtree_link<Value, Value>*>(&node)->value;
     }
     //@}
 
@@ -482,17 +478,16 @@ namespace spatial
      */
     template <typename Key, typename Value>
     inline typename Relaxed_kdtree_link<Key, Value>::key_type&
-    key(typename Node<Relaxed_kdtree_link<Key, Value> >& node)
+    key(Node<Relaxed_kdtree_link<Key, Value> >& node)
     {
-      return static_cast<typename Relaxed_kdtree_link<Key, Value>*>
-        (&node)->value.first;
+      return static_cast<Relaxed_kdtree_link<Key, Value>*>(&node)->value.first;
     }
 
     template <typename Key, typename Value>
     inline const typename Relaxed_kdtree_link<Key, Value>::key_type&
-    const_key(const typename Node<Relaxed_kdtree_link<Key, Value> >& node)
+    const_key(const Node<Relaxed_kdtree_link<Key, Value> >& node)
     {
-      return static_cast<const typename Relaxed_kdtree_link<Key, Value>*>
+      return static_cast<const Relaxed_kdtree_link<Key, Value>*>
         (&node)->value.first;
     }
     //@}
@@ -507,18 +502,16 @@ namespace spatial
      */
     template <typename Key, typename Value>
     inline typename Relaxed_kdtree_link<Key, Value>::value_type&
-    value(typename Node<Relaxed_kdtree_link<Key, Value> >& node)
+    value(Node<Relaxed_kdtree_link<Key, Value> >& node)
     {
-      return static_cast
-        <typename Relaxed_kdtree_link<Key, Value>*>(&node)->value;
+      return static_cast<Relaxed_kdtree_link<Key, Value>*>(&node)->value;
     }
 
     template <typename Key, typename Value>
     inline const typename Relaxed_kdtree_link<Key, Value>::value_type&
-    const_value(const typename Node<Relaxed_kdtree_link<Key, Value> >& node)
+    const_value(const Node<Relaxed_kdtree_link<Key, Value> >& node)
     {
-      return static_cast<const typename Relaxed_kdtree_link<Key, Value>*>
-        (&node)->value;
+      return static_cast<const Relaxed_kdtree_link<Key, Value>*>(&node)->value;
     }
     //@}
 
@@ -534,16 +527,16 @@ namespace spatial
      *  \see Relaxed_kdtree_link
      */
     template <typename Mode>
-    void swap_node(typename Node<Mode>& a, typename Node<Mode>& b);
+    void swap_node(Node<Mode>& a, Node<Mode>& b);
 
     template<typename Key, typename Value>
-    inline void swap(typename Node<Kdtree_link<Key, Value> >& a,
-	             typename Node<Kdtree_link<Key, Value> >& b)
+    inline void swap(Node<Kdtree_link<Key, Value> >& a,
+                     Node<Kdtree_link<Key, Value> >& b)
     { swap_node(a, b); }
 
     template<typename Key, typename Value>
-    inline void swap(typename Node<Relaxed_kdtree_link<Key, Value> >& a,
-		     typename Node<Relaxed_kdtree_link<Key, Value> >& b)
+    inline void swap(Node<Relaxed_kdtree_link<Key, Value> >& a,
+                     Node<Relaxed_kdtree_link<Key, Value> >& b)
     {
       std::swap(link(a).weight, link(b).weight);
       swap_node(a, b);

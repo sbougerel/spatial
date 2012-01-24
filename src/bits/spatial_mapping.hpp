@@ -175,8 +175,8 @@ namespace spatial
        *  iteration.
        */
       iterator(Ct& container, dimension_type mapping_dim,
-	       dimension_type node_dim,
-	       typename container_traits<Ct>::mode_type::node_ptr node)
+               dimension_type node_dim,
+               typename container_traits<Ct>::mode_type::node_ptr node)
         : Base(node), data(container, mapping_dim, node_dim) { }
 
       //@{
@@ -282,8 +282,8 @@ namespace spatial
        *  iteration.
        */
       iterator(const Ct& container,
-	       dimension_type mapping_dim, dimension_type node_dim,
-	       typename container_traits<Ct>::mode_type::node_ptr node)
+               dimension_type mapping_dim, dimension_type node_dim,
+               typename container_traits<Ct>::mode_type::node_ptr node)
         : Base(node), data(container, mapping_dim, node_dim) { }
 
       //! Convertion of mutable iterator into a constant iterator is permitted.
@@ -716,7 +716,7 @@ namespace spatial
   inline typename mapping<Container>::iterator
   mapping_lower_bound(Container& container, dimension_type mapping_dim,
                       const typename container_traits<Container>::key_type&
-		      bound)
+                      bound)
   {
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
@@ -747,8 +747,9 @@ namespace spatial
    */
   template <typename Container>
   inline typename mapping<const Container>::iterator
-  mapping_lower_bound(const Container& container, dimension_type dim,
-                const typename container_traits<Container>::key_type& bound)
+  mapping_lower_bound
+  (const Container& container, dimension_type mapping_dim,
+   const typename container_traits<Container>::key_type& bound)
   {
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
@@ -759,11 +760,11 @@ namespace spatial
 
   template <typename Container>
   inline typename mapping<const Container>::iterator
-  mapping_clower_bound(const Container& container, dimension_type dim,
-                       const typename container_traits<Container>::key_type&
-		       bound)
+  mapping_clower_bound
+  (const Container& container, dimension_type mapping_dim,
+   const typename container_traits<Container>::key_type& bound)
   {
-    return mapping_lower_bound(container, dim, bound);
+    return mapping_lower_bound(container, mapping_dim, bound);
   }
   //@}
 
@@ -794,9 +795,9 @@ namespace spatial
    */
   template <typename Container>
   inline typename mapping<Container>::iterator
-  mapping_upper_bound(Container& container, dimension_type mapping_dim,
-                      const typename container_traits<Container>::key_type&
-		      bound)
+  mapping_upper_bound
+  (Container& container, dimension_type mapping_dim,
+   const typename container_traits<Container>::key_type& bound)
   {
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
@@ -827,9 +828,9 @@ namespace spatial
    */
   template <typename Container>
   inline typename mapping<const Container>::iterator
-  mapping_upper_bound(const Container& container, dimension_type mapping_dim,
-                      const typename container_traits<Container>::key_type&
-		      bound)
+  mapping_upper_bound
+  (const Container& container, dimension_type mapping_dim,
+   const typename container_traits<Container>::key_type& bound)
   {
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
@@ -840,8 +841,9 @@ namespace spatial
 
   template <typename Container>
   inline typename mapping<Container>::iterator
-  mapping_cupper_bound(const Container& container, dimension_type mapping_dim,
-                 const typename container_traits<Container>::key_type& bound)
+  mapping_cupper_bound
+  (const Container& container, dimension_type mapping_dim,
+   const typename container_traits<Container>::key_type& bound)
   {
     return mapping_upper_bound(container, mapping_dim, bound);
   }
