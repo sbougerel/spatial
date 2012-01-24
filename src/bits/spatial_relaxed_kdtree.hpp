@@ -43,8 +43,8 @@
 #include "spatial_function.hpp"
 #include "spatial_node.hpp"
 #include "spatial_mapping.hpp"
-#include "spatial_range.hpp"
-#include "spatial_neighbor.hpp"
+#include "spatial_region.hpp"
+//#include "spatial_neighbor.hpp"
 
 namespace spatial
 {
@@ -128,60 +128,59 @@ namespace spatial
       typedef Relaxed_kdtree<Rank, Key, Value, Compare, Balancing,
                              Alloc>                   Self;
 
-      using ::spatial::details::condition;
     public:
       // Container intrincsic types
       typedef Rank                                    rank_type;
       typedef Key                                     key_type;
       typedef Value                                   value_type;
-      typedef Relaxed_kdtree_node<value_type>         mode_type;
+      typedef Relaxed_kdtree_link<Key, Value>         mode_type;
       typedef Compare                                 key_compare;
-      typedef typename condition
+      typedef typename ::spatial::details::condition
       <std::tr1::is_same<Key, Value>::value, key_compare,
        ValueCompare<value_type, key_compare> >::type  value_compare;
       typedef Alloc                                   allocator_type;
       typedef Balancing                               balancing_policy;
 
       // Container iterator related types
-      typedef typename condition
+      typedef typename ::spatial::details::condition
       <std::tr1::is_same<Key, Value>::value,
-       const value_type*, value_type*>::type   pointer;
-      typedef const value_type*                const_pointer;
-      typedef typename details::condition
+       const value_type*, value_type*>::type          pointer;
+      typedef const value_type*                       const_pointer;
+      typedef typename ::spatial::details::condition
       <std::tr1::is_same<Key, Value>::value,
-       const value_type&, value_type&>::type   reference;
-      typedef const Key&                       const_reference;
-      typedef std::size_t                      size_type;
-      typedef std::ptrdiff_t                   difference_type;
+       const value_type&, value_type&>::type          reference;
+      typedef const Key&                              const_reference;
+      typedef std::size_t                             size_type;
+      typedef std::ptrdiff_t                          difference_type;
 
       // Container iterators
       // Conformant to C++ standard, if Key and Value are the same type then
       // iterator and const_iterator shall be the same.
-      typedef typename condition
+      typedef typename ::spatial::details::condition
       <std::tr1::is_same<Key, Value>::value,
-       Const_node_iterator<value_type, node_type>,
-       Node_iterator<value_type, node_type> >::type      iterator;
-      typedef Const_node_iterator<value_type, node_type> const_iterator;
+       Const_node_iterator<mode_type>,
+       Node_iterator<mode_type> >::type                  iterator;
+      typedef Const_node_iterator<mode_type>             const_iterator;
       typedef std::reverse_iterator<iterator>            reverse_iterator;
       typedef std::reverse_iterator
       <const_iterator>                                   const_reverse_iterator;
-      typedef typename condition
+      typedef typename ::spatial::details::condition
       <std::tr1::is_same<Key, Value>::value,
-       typename equal_range<Self>::const_iterator,
-       typename equal_range<Self>::iterator>::type       equal_iterator;
-      typedef typename equal_range<Self>::const_iterator const_equal_iterator;
+       typename equal<const Self>::iterator,
+       typename equal<Self>::iterator>::type             equal_iterator;
+      typedef typename equal<const Self>::iterator       const_equal_iterator;
 
     private:
       typedef typename Alloc::template rebind
-      <Relaxed_kdtree_node<value_type> >::other   Node_allocator;
+      <Relaxed_kdtree_link<key_type, value_type> >::other Link_allocator;
       typedef typename Alloc::template rebind
-      <value_type>::other                         Value_allocator;
+      <value_type>::other                                 Value_allocator;
 
       // The types used to deal with nodes
-      typedef mode_type::node_ptr                 node_ptr;
-      typedef mode_type::const_node_ptr           const_node_ptr;
-      typedef mode_type::link_ptr                 link_ptr;
-      typedef mode_type::const_link_ptr           const_link_ptr;
+      typedef typename mode_type::node_ptr                node_ptr;
+      typedef typename mode_type::const_node_ptr          const_node_ptr;
+      typedef typename mode_type::link_ptr                link_ptr;
+      typedef typename mode_type::const_link_ptr          const_link_ptr;
 
     private:
       /**
@@ -194,10 +193,8 @@ namespace spatial
        */
       struct Implementation : rank_type
       {
-        using ::spatial::details::Compress;
-
         Implementation(const rank_type& rank, const key_compare& compare,
-                       const Balancing& balance, const Node_allocator& alloc)
+                       const Balancing& balance, const Link_allocator& alloc)
           : Rank(rank), compare_(balance, compare),
             header_(alloc, Node<mode_type>()) { initialize(); }
 
@@ -213,9 +210,9 @@ namespace spatial
           leftmost_ = &header_();      // the substitute left most pointer
         }
 
-        Compress<Balancing, key_compare> compare_;
-        Compress<Node_allocator, Node<mode_type> > header_;
-        Node<mode_type>::ptr leftmost_;
+        ::spatial::details::Compress<Balancing, key_compare> compare_;
+        ::spatial::details::Compress<Link_allocator, Node<mode_type> > header_;
+        typename mode_type::node_ptr leftmost_;
       } impl_;
 
     private:
@@ -262,7 +259,7 @@ namespace spatial
       balancing_policy& get_balancing()
       { return impl_.compare_.base(); }
 
-      Node_allocator& get_node_allocator()
+      Link_allocator& get_link_allocator()
       { return impl_.header_.base(); }
 
       Value_allocator get_value_allocator() const
@@ -272,44 +269,44 @@ namespace spatial
       // Allocation/Deallocation of nodes
       struct safe_allocator // RAII for exception-safe memory management
       {
-        Node_allocator& alloc;
+        Link_allocator& alloc;
         link_ptr link;
 
-        safe_allocator(Node_allocator& a) : alloc(a), link(0)
+        safe_allocator(Link_allocator& a) : alloc(a), link(0)
         { link = alloc.allocate(1); } // may throw
         ~safe_allocator() { if (link) { alloc.deallocate(link, 1); } }
         link_ptr release() { link_ptr p = link; link=0; return p; }
       };
 
-      link_ptr
+      node_ptr
       create_node(const value_type& value)
       {
-        safe_allocator safe(get_node_allocator());
+        safe_allocator safe(get_link_allocator());
         get_value_allocator().construct(&safe.link->value, value); // may throw
         link_ptr node = safe.release();
         // leave parent uninitialized: its value will change during insertion.
         node->left = 0;
         node->right = 0;
         node->weight = 1;
-        return node;
+        return node; // silently cast into base type node_ptr.
       }
 
-      link_ptr
+      node_ptr
       clone_node(const_node_ptr node)
       {
-        link_ptr new_node = create_node(Link_().val(node));
-        new_node->weight = Link_().link(node)->weight;
-        return new_node;
+        node_ptr new_node = create_node(const_value(*node));
+        link(*new_node).weight = const_link(*node).weight;
+        return new_node; // silently cast into base type node_ptr.
       }
 
       /**
        *  @brief  Destroy and deallocate @c node.
        */
       void
-      destroy_node(link_ptr node)
+      destroy_node(node_ptr node)
       {
-        get_value_allocator().destroy(&node->value);
-        get_node_allocator().deallocate(node, 1);
+        get_value_allocator().destroy(value(*node));
+        get_link_allocator().deallocate(&link(*node), 1);
       }
 
       /**
@@ -571,19 +568,19 @@ namespace spatial
     public:
       Relaxed_kdtree()
         : impl_(rank_type(), key_compare(), balancing_policy(),
-                Node_allocator()) { }
+                Link_allocator()) { }
 
       explicit Relaxed_kdtree(const rank_type& r)
-        : impl_(r, Compare(), Balancing(), Node_allocator())
+        : impl_(r, Compare(), Balancing(), Link_allocator())
       { }
 
       Relaxed_kdtree(const rank_type& r, const key_compare& c)
-        : impl_(r, c, Balancing(), Node_allocator())
+        : impl_(r, c, Balancing(), Link_allocator())
       { }
 
       Relaxed_kdtree(const rank_type& r, const key_compare& c,
                      const balancing_policy& b)
-        : impl_(r, c, b, Node_allocator())
+        : impl_(r, c, b, Link_allocator())
       { }
 
       Relaxed_kdtree(const rank_type& r, const key_compare& c,
@@ -653,8 +650,8 @@ namespace spatial
           (get_compare(), other.get_compare());
         template_member_swap<balancing_policy>::do_it
           (get_balancing(), other.get_balancing());
-        template_member_swap<Node_allocator>::do_it
-          (get_node_allocator(), other.get_node_allocator());
+        template_member_swap<Link_allocator>::do_it
+          (get_link_allocator(), other.get_link_allocator());
         if (impl_.header_().parent == &impl_.header_())
           {
             impl_.header_().parent = &other.impl_.header_();
@@ -692,7 +689,7 @@ namespace spatial
       iterator
       insert(const value_type& value)
       {
-        link_ptr target_node = create_node(value); // may throw
+        node_ptr target_node = create_node(value); // may throw
         node_ptr node = get_root();
         if (Node_base::header(node))
           {

@@ -1,14 +1,17 @@
 // -*- C++ -*-
+//
+// Copyright Sylvain Bougerel 2009 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 /**
  *  @file   spatial_neighbor.hpp
- *  @brief
+ *  @brief  Contains the definition of the neighbor iterators. These iterators
+ *  walk through all items in the container in order from the closest to the
+ *  furthest away from a given key.
  *
- *  Change log:
- *
- *  - 03-05-2010 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
- *
+ *  \see neighbor
  */
 
 #ifndef SPATIAL_NEIGHBOR_HPP
@@ -26,9 +29,8 @@ namespace spatial
   {
 
     /**
-     *  @brief A heavy iterator implementation meant to find nearest and
-     *  furthest neighbors in a k-D tree where distances are applied in an
-     *  arbitrary geometry space.
+     *  An iterator implementation meant to find nearest and furthest neighbors
+     *  in a \kdtree where distances are applied in an arbitrary geometric space.
      *
      *  The Geometry type is a complex type that must comply to the following
      *  interface:
@@ -53,25 +55,27 @@ namespace spatial
      *  - [1] is the definition of the type used for the computation of the
      *  distance, generally defined as double.
      *
-     *  - [2] is the general understanding of a distance: the amount of space
-     *  that separates two points 'origin' and 'key' in the current frame of
-     *  reference of dimension 'rank'.
+     *  - [2] is the general understanding of a \em{distance}: the quantity
+     *  that separates two points \c origin and \c key in the current metric
+     *  space.
      *
      *  - [3] represents the shortest possible distance between a point named
-     *  'origin' and the plane that is orthogonal to the axis along the
-     *  dimension 'dim' and that contains the point 'key'. While this may seem
+     *  \c origin and the plane that is orthogonal to the axis along the
+     *  dimension \c dim and that contains the point \c key. While this may seem
      *  difficult to understand, in euclidian space, this operation is
-     *  equivalent to the difference of the coordinate of 'origin' and 'key'
-     *  along the dimension 'dim'.
+     *  equivalent to computing the difference in coordinates of \c origin and
+     *  \c key along the dimension \c dim.
      *
-     *  - [4] for any 2 points 'origin' and 'key', [3] must always return a
+     *  - [4] for any 2 points \c origin and \c key, [3] must always return a
      *  result that is lower or equal to [2], regardless of the dimension being
-     *  considered. If rule [4] is not enforced in the geometry, the iterator
-     *  will not work properly and skip some nodes.
+     *  considered. If rule [4] is not enforced in the geometry (because of
+     *  errors in approximations during the calculation, for example), then the
+     *  iterator would not work properly and would skip some items in the
+     *  container.
      *
-     *  Geometry are generally not defined by the user of the library given
-     *  their complexity. Rather, the user of the library uses views or
-     *  ready-made model of Geometry such as @c view::euclidian_double and @c
+     *  Geometries are generally not defined by the user of the library, given
+     *  their complexity. Rather, the user of the library uses ready-made models
+     *  of Geometry such as @c view::euclidian_double and @c
      *  view::manhattan. If another Geometry needs to be defined, the
      *  documentation should provide extensive help to design custom geometry
      *  types.

@@ -24,6 +24,80 @@
 
 namespace spatial
 {
+  /**
+   *  @brief  This functor uses the minus operator to calculate the difference
+   *  between 2 elements of Tp along the dimension \c n accessed through a
+   *  custom accessor. The returned value is cast into the type \c Unit.
+   *  @concept bracket_minus is a concept of \ref ElementDifference.
+   */
+  template <typename Accessor, typename Tp, typename Unit>
+  struct accessor_minus
+    : private Accessor // empty member optimization
+  {
+    typedef Unit difference_type;
+
+    accessor_minus(const Accessor& accessor = Accessor())
+      : Accessor(accessor)
+    { }
+
+    difference_type
+    operator() (dimension_type n, const Tp& x, const Tp& y) const
+    { return Accessor::operator()(n, x) - Accessor::operator()(n, y); }
+  };
+
+  /**
+   *  @brief  This functor uses the minus operator to calculate the difference
+   *  between 2 elements of Tp along the dimension \c n accessed through the
+   *  bracket operator. The returned value is cast into the type \c Unit.
+   *  @concept bracket_minus is a concept of \ref ElementDifference.
+   */
+  template <typename Tp, typename Unit>
+  struct bracket_minus
+  {
+    typedef Unit difference_type;
+
+    difference_type
+    operator() (dimension_type n, const Tp& x, const Tp& y) const
+    { return x[n] - y[n]; }
+  };
+
+  /**
+   *  @brief  This functor uses the minus operator to calculate the difference
+   *  between 2 elements of Tp along the dimension \c n accessed through the
+   *  parenthesis operator. The returned value is cast into the type \c
+   *  Unit.
+   *  @concept bracket_minus is a concept of \ref ElementDifference.
+   */
+  template <typename Tp, typename Unit>
+  struct paren_minus
+  {
+    typedef Unit difference_type;
+
+    difference_type
+    operator() (dimension_type n, const Tp& x, const Tp& y) const
+    { return x(n) - y(n); }
+  };
+
+  /**
+   *  @brief  This functor uses the minus operator to calculate the difference
+   *  between 2 elements of Tp along the dimension \c n accessed through an
+   *  iterator. The returned value is cast into the type \c Unit.
+   *  @concept bracket_minus is a concept of \ref ElementDifference.
+   */
+  template <typename Tp, typename Unit>
+  struct iterator_minus
+  {
+    typedef Unit difference_type;
+
+    difference_type
+    operator() (dimension_type n, const Tp& x, const Tp& y) const
+    {
+      typename Tp::const_iterator ix = x.begin();
+      typename Tp::const_iterator iy = y.begin();
+      {	using namespace ::std; advance(ix, n); advance(iy, n); }
+      return *ix - *iy;
+    }
+  };
 
   /**
    *  @brief  A comparator that simplifies using the spatial containers with a
@@ -116,9 +190,7 @@ namespace spatial
     {
       typename Tp::const_iterator ix = x.begin();
       typename Tp::const_iterator iy = y.begin();
-      {
-	using namespace ::std; advance(ix, n); advance(iy, n);
-      }
+      {	using namespace ::std; advance(ix, n); advance(iy, n); }
       return (*ix < *iy);
     }
 
@@ -127,9 +199,7 @@ namespace spatial
     {
       typename Tp::const_iterator ix = x.begin();
       typename Tp::const_iterator iy = y.begin();
-      {
-	using namespace ::std; advance(ix, a); advance(iy, b);
-      }
+      {	using namespace ::std; advance(ix, a); advance(iy, b); }
       return (*ix < *iy);
     }
   };

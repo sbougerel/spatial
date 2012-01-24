@@ -33,30 +33,27 @@
  *  \concept_des An alias to the type of \c Node<T>::ptr.
  *  \concept_req typename T::const_node_ptr
  *  \concept_des An alias to the type of \c Node<T>::const_ptr.
- *  \concept_req static T::node_ptr node(T::link_ptr);
- *  \concept_des A static member function \c node that returns the node
- *  information from a given \c link_ptr must exists.
- *  \concept_req static T::const_node_ptr node(T::const_link_ptr);
- *  \concept_des A static member function \c node that returns the constant node
- *  information from a given \c const_link_ptr must exists.
- *  \concept_req T::key_type& key(Node<T>::ptr);
+ *  \concept_req T::key_type& key(Node<T>&);
  *  \concept_des A function to return a \c T::key_type reference from a node
- *  pointer must exists.
- *  \concept_req const T::key_type& key(Node<T>::const_ptr);
+ *  must exists.
+ *  \concept_req const T::key_type& const key(const Node<T>&);
  *  \concept_des A function to return a const \c T::key_type reference from a
- *  constant node pointer must exists.
- *  \concept_req T::value_type& value(Node<T>::ptr);
+ *  constant node must exists.
+ *  \concept_req T::value_type& value(Node<T>&);
  *  \concept_des A function to return a \c T::value_type reference from a node
- *  pointer must exists.
- *  \concept_req const T::value_type& value(Node<T>::const_ptr);
+ *  must exists.
+ *  \concept_req const T::value_type& value(const Node<T>&);
  *  \concept_des A function to return a const \c T::value_type reference from a
- *  constant node pointer must exists.
- *  \concept_req T::link_ptr link(Node<T>::ptr);
- *  \concept_des A function to return a \c T::link_ptr from a node pointer must
+ *  constant node must exists.
+ *  \concept_req T::link_type& link(Node<T>&);
+ *  \concept_des A function to return a \c T::link_type from a node must exists.
+ *  \concept_req const T::link_type& link(const Node<T>&);
+ *  \concept_des A function to return a \c const \c T::link_type from a constant
+ *  node must exists.
+ *  \concept_req void swap(Node<T>&, Node<T>&);
+ *  \concept_des A function to swap two instances of \c T::link_type must
  *  exists.
- *  \concept_req T::const_link_ptr link(Node<T>::const_ptr);
- *  \concept_des A function to return a \c T::const_link_type from a constant
- *  node pointer must exists.
+ *  \concept_end
  *
  *  This level of abstraction allows the same algorithms to be used for regular
  *  and intrusive containers, without loss of performance and without the use of
@@ -160,7 +157,7 @@ struct TrivialComparison { };
  *  \c y.
  *  \concept_end
  *
- *  When comparing boxes during tree traversal for overlap or enclose ranges,
+ *  When comparing boxes during tree traversal for overlap or enclose regions,
  *  the library often need to compare the lower bound of a box against the
  *  higher bound of a box over a particular axis. Since lower bounds and higher
  *  bounds are stored on different dimensions in the library, the functor need
@@ -172,18 +169,19 @@ struct TrivialComparison { };
 struct RegularComparison : TrivialComparison { };
 
 /**
- *  This concept defines the requirements for a predicate to be used in range
- *  queries. Range queries are used for orthogonal range search, overlaping or
- *  enclosing searches. The model of RangePredicate are used to match keys of
- *  the spatial containers against predefined intervals along each dimensions.
+ *  This concept defines the requirements for a predicate to be used in region
+ *  queries. Region queries are used for orthogonal searches in sets of point and
+ *  overlaping or enclosing orthogonal searches in set of boxes. The models of
+ *  RegionPredicate are used to match points and boxes in the spatial containers
+ *  against predefined intervals along each dimensions.
  *
- *  @concept Definition of the RangePredicate concept.
+ *  \concept Definition of the RegionPredicate concept.
  *
- *  The models of RangePredicate shall publicly provide the following
+ *  The models of RegionPredicate shall publicly provide the following
  *  interfaces:
  *  \concept_tab
  *  \concept_leg P
- *  \concept_des A model of RangePredicate
+ *  \concept_des A model of RegionPredicate
  *  \concept_leg V
  *  \concept_des The key of a spatial container. E.g. in
  *  \concept_req spatial::relative_order P::operator()(spatial::dimension_type
@@ -195,15 +193,15 @@ struct RegularComparison : TrivialComparison { };
  *  the detailed description.
  *  \concept_end
  *
- *  The definition of a RangePredicate functor is generally not required. Before
- *  you define such predicate, consider using spatial::range(),
- *  spatial::open_range(), spatial::close_range(), spatial::overlapping(), or
- *  spatial::enclosing().
+ *  The definition of a RegionPredicate functor is generally not required.
+ *  Before you define such predicate, consider using \ref bounds, \ref
+ *  open_bounds, \ref closed_bounds, \ref overlap_bounds, or \ref
+ *  enclosed_bounds.
  *
- *  A model of RangePredicate generally represents an multi-dimension continuous
- *  interval which is going to be used for orthogonal range search. In order to
- *  provide a generic model of iteration over interval, \Spatial provides a
- *  tribool value spatial::relative_order to represent whether any key of the
+ *  A model of RegionPredicate generally represents a multi-dimension continuous
+ *  interval which is going to be used for orthogonal search. In order to
+ *  provide a generic model of iteration over an interval, \Spatial provides a
+ *  tribool value spatial::relative_order to represent whether any value of the
  *  container is situated above, below or in the interval, for a given
  *  dimension.
  *
@@ -232,7 +230,7 @@ struct RegularComparison : TrivialComparison { };
  *  of \c key is more than 10, the return value is spatial::above.
  *
  *  It may not be appearing immediately from the example above, but there are
- *  several limitation, by design, for a model a RangePredicate:
+ *  several limitation, by design, for a model a RegionPredicate:
  *  \ul Comparison have to be along the axes of your spaces, you can't compare
  *  along a complicated polygon or a circle: i.e. for an euclidian space of rank
  *  2, if the interval is closed, then the shape of the interval will be a box.
@@ -264,9 +262,99 @@ struct RegularComparison : TrivialComparison { };
  *  \endcode
  *
  *  The value of \c rank is equal to the rank of the container used for the
- *  orthogonal range search. The value of \c dim is the current dimension being
+ *  orthogonal search. The value of \c dim is the current dimension being
  *  considered. It is always in the interval [0, rank).
  *
  *  More examples of predicates can be found in the example and the tutorial.
  */
-struct RangePredicate { };
+struct RegionPredicate { };
+
+/**
+ *  This concept defines the requirements for a Geometry to be used with
+ *  neighbor iterators. Neighbor iterators implement the nearest neighbor search
+ *  algorithm on the container. Initializing the iterator to its begining makes
+ *  it stop at the nearest neighbor of the given point of origin.
+ *
+ *  \concept Definition of the Geometry concept.
+ *
+ *  The models of RegionPredicate shall publicly provide the following
+ *  interfaces:
+ *  \concept_tab
+ *  \concept_leg P
+ *  \concept_des A type that is a model of Geometry
+ *  \concept_leg V
+ *  \concept_des A type that is the key of the spatial container.
+ *  \concept_leg D
+ *  \concept_des A type that is the distance used for calculation. D itself must
+ *  must mimic numeric types (it must be comparable, it must support addition,
+ *  substraction, multiplication, division, etc).
+ *  \concept_req typedef D distance_type
+ *  \concept_des The type used to express the distance between 2 element of the
+ *  container.
+ *  \concept_req distance_type A::distance_to_key(dimension_type rank,
+ *  const V& origin, const V& key) const
+ *  \concept_des Compute the distance between \c origin and \c key in a space of
+ *  dimension \c rank.
+ *  \concept_req distance_type A::distance_to_plane(dimension_type rank,
+ *  dimension_type dim, const V& origin, const V& key) const
+ *  \concept_des Compute the distance between \c key and the plane orthogonal to
+ *  the axis along dimension \c dim and containing \c origin, in a space of
+ *  dimension \c rank.
+ *  \concept_end
+ *
+ *  The purpose of the Geometry itself is to represent the metric space in which
+ *  the metric calculation in between elements of the container take place.
+ *  Because of the way Geometries are defined, any metric space that is a
+ *  continous space topology can be expressed. And so, it is possible to write a
+ *  Geometry where calculation for \c distance_to_key and \c distance_to_plane
+ *  take place in a Manifold, and not just a regular Euclidean space. (However
+ *  the Geomerty provided by default only represent more simple Euclidean
+ *  spaces.)
+ *
+ *  If you were to write a Geometry on your own, you would start from the stub
+ *  below:
+ *
+ *  @code
+ *  struct Geometry
+ *  {
+ *    typedef my_distance_type distance_type;                     // [1]
+ *
+ *    distance_type
+ *    distance_to_key(dimension_type rank,
+ *                    const Key& origin, const Key& key) const;   // [2]&[4]
+ *
+ *    distance_type
+ *    distance_to_plane(dimension_type rank, dimension_type dim,
+ *                      const Key& origin, const Key& key) const; // [3]&[4]
+ *  };
+ *  @code
+ *
+ *  The details of the Geometry type are as follow:
+ *
+ *  - [1] is the definition of the type used for the computation of the
+ *  distance, generally defined as double.
+ *
+ *  - [2] is the general understanding of a \em{distance}: the quantity
+ *  that separates two points \c origin and \c key in the current metric
+ *  space.
+ *
+ *  - [3] represents the shortest possible distance between a point named
+ *  \c origin and the plane that is orthogonal to the axis along the
+ *  dimension \c dim and that contains the point \c key. While this may seem
+ *  difficult to understand, in euclidian space, this operation is
+ *  equivalent to computing the difference in coordinates of \c origin and
+ *  \c key along the dimension \c dim.
+ *
+ *  - [4] for any 2 points \c origin and \c key, [3] must always return a
+ *  result that is lower or equal to [2], regardless of the dimension being
+ *  considered. If rule [4] is not enforced in the geometry (because of
+ *  errors in approximations during the calculation, for example), then the
+ *  iterator would not work properly and would skip some items in the
+ *  container. When writing Geometries for Manifolds or Riemanean spaces,
+ *  you must pay special attention to this rule, since the shortest distance
+ *  between the key and the plane is not always easy to represent mentally.
+ *
+ *  Spatial provides ready-made models of Geometry such as \ref euclidian_geom
+ *  and \ref manhattan_geom.
+ */
+struct Geometry { };

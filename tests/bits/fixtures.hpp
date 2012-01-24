@@ -14,10 +14,8 @@
 #ifndef SPATIAL_FIXTURES_HPP
 #define SPATIAL_FIXTURES_HPP
 
-using details::Node_base;
-using details::Relaxed_kdtree_node;
-using details::Kdtree
-using details::Kdtree_node;
+using namespace ::spatial;
+using namespace ::spatial::details;
 
 typedef std::tr1::array<int, 2> point2d;
 typedef std::pair<int, int> pair_type;
@@ -62,7 +60,7 @@ struct closed_test_range
 
 struct Node_basic_empty_fixture
 {
-  Node_base header;
+  Node<Kdtree_link<int, int> > header;
   Node_basic_empty_fixture()
   {
     header.parent = &header;
@@ -73,19 +71,21 @@ struct Node_basic_empty_fixture
 
 struct Five_Node_basic_fixture
 {
-  /*         H
-             |
+  /*          H
+              |
              Root
              /   \
              L     R
-             /  \
-             LL    LR       */
-  Node_base header;
-  Node_base node_root;
-  Node_base node_left;
-  Node_base node_left_left;
-  Node_base node_left_right;
-  Node_base node_right;
+            /  \
+          LL    LR       */
+  typedef Node<Kdtree_link<int, int> > node_type;
+  node_type header;
+  node_type node_root;
+  node_type node_left;
+  node_type node_left_left;
+  node_type node_left_right;
+  node_type node_right;
+
   Five_Node_basic_fixture()
   {
     header.parent = &node_root;
@@ -111,20 +111,22 @@ struct Five_Node_basic_fixture
 
 struct Five_Kdtree_node_fixture
 {
-  /*         H
-             |
+  /*           H
+               |
              (2,2)
              /   \
-             (1,1)   (3,3)
-             /  \
-             (0,0)  (1,1)   */
-  Node_base header;
-  Node_base::Base_ptr leftmost;
-  Kdtree_node<point2d> node_root;
-  Kdtree_node<point2d> node_left;
-  Kdtree_node<point2d> node_left_left;
-  Kdtree_node<point2d> node_left_right;
-  Kdtree_node<point2d> node_right;
+         (1,1)   (3,3)
+         /  \
+     (0,0)  (1,1)   */
+  typedef Node<Kdtree_link<point2d, point2d> > node_type;
+  node_type header;
+  node_type::ptr leftmost;
+  node_type node_root;
+  node_type node_left;
+  node_type node_left_left;
+  node_type node_left_right;
+  node_type node_right;
+
   Five_Kdtree_node_fixture()
   {
     header.parent = &node_root;
@@ -134,23 +136,23 @@ struct Five_Kdtree_node_fixture
     node_root.parent = &header;
     node_root.left = &node_left;
     node_root.right = &node_right;
-    node_root.value = twos;
+    value(node_root) = twos;
     node_left.parent = &node_root;
     node_left.left = &node_left_left;
     node_left.right = &node_left_right;
-    node_left.value = ones;
+    value(node_left) = ones;
     node_right.parent = &node_root;
     node_right.left = 0;
     node_right.right = 0;
-    node_right.value = threes;
+    value(node_right) = threes;
     node_left_right.parent = &node_left;
     node_left_right.left = 0;
     node_left_right.right = 0;
-    node_left_right.value = ones;
+    value(node_left_right) = ones;
     node_left_left.parent = &node_left;
     node_left_left.left = 0;
     node_left_left.right = 0;
-    node_left_left.value = zeros;
+    value(node_left_left) = zeros;
   }
 };
 
@@ -163,13 +165,14 @@ struct Five_Relaxed_kdtree_node_fixture
       (1,1)3  (3,3)1
        /  \
   (0,0)1  (1,1)1       */
-  Node_base header;
-  Node_base::Base_ptr leftmost;
-  Relaxed_kdtree_node<point2d> node_root;
-  Relaxed_kdtree_node<point2d> node_left;
-  Relaxed_kdtree_node<point2d> node_left_left;
-  Relaxed_kdtree_node<point2d> node_left_right;
-  Relaxed_kdtree_node<point2d> node_right;
+  typedef Node<Relaxed_kdtree_link<point2d, point2d> > node_type;
+  node_type header;
+  node_type::ptr leftmost;
+  node_type node_root;
+  node_type node_left;
+  node_type node_left_left;
+  node_type node_left_right;
+  node_type node_right;
   Five_Relaxed_kdtree_node_fixture()
   {
     header.parent = &node_root;
@@ -179,28 +182,28 @@ struct Five_Relaxed_kdtree_node_fixture
     node_root.parent = &header;
     node_root.left = &node_left;
     node_root.right = &node_right;
-    node_root.weight = 5;
-    node_root.value = twos;
+    link(node_root).weight = 5;
+    value(node_root) = twos;
     node_left.parent = &node_root;
     node_left.left = &node_left_left;
     node_left.right = &node_left_right;
-    node_left.weight = 3;
-    node_left.value = ones;
+    link(node_left).weight = 3;
+    value(node_left) = ones;
     node_right.parent = &node_root;
     node_right.left = 0;
     node_right.right = 0;
-    node_right.weight = 1;
-    node_right.value = threes;
+    link(node_right).weight = 1;
+    value(node_right) = threes;
     node_left_right.parent = &node_left;
     node_left_right.left = 0;
     node_left_right.right = 0;
-    node_left_right.weight = 1;
-    node_left_right.value = ones;
+    link(node_left_right).weight = 1;
+    value(node_left_right) = ones;
     node_left_left.parent = &node_left;
     node_left_left.left = 0;
     node_left_left.right = 0;
-    node_left_left.weight = 1;
-    node_left_left.value = zeros;
+    link(node_left_left).weight = 1;
+    value(node_left_left) = zeros;
   }
 };
 
@@ -228,11 +231,9 @@ struct at_accessor
 
 struct Empty_Kdtree_2D_fixture
 {
-  typedef Kdtree<details::Dynamic_rank, point2d, point2d,
-                 bracket_less<point2d>,
-                 std::allocator<point2d> > kdtree_type;
+  typedef runtime_frozen_pointset<point2d> kdtree_type;
   kdtree_type kdtree;
-  Empty_Kdtree_2D_fixture() : kdtree(details::Dynamic_rank(2)) { }
+  Empty_Kdtree_2D_fixture() : kdtree(2) { }
 };
 
 struct pair_less

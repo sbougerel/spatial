@@ -1,14 +1,16 @@
 // -*- C++ -*-
+//
+// Copyright Sylvain Bougerel 2009 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 /**
  *  @file   spatial_geometry.hpp
- *  @brief  
+ *  @brief  Contains the definition of the default geometries available to use
+ *  with the neighbor iterators.
  *
- *  Change log:
- *
- *  - 08-08-2010 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
- *
+ *  \see neighbor
  */
 
 #ifndef SPATIAL_GEOMETRY_HPP
@@ -20,143 +22,11 @@
 
 namespace spatial
 {
-  namespace details
-  {
-    namespace geometry
-    {
-      /**
-       *  @brief  This functor wraps an accessor providing an extra level of
-       *  indirection to cast the Tp's component into Distance or assign the
-       *  coordinate of one parameter to the other along the same dimension.
-       */
-      template <typename Tp, typename Distance, typename Accessor>
-      struct cast_accessor
-	: Accessor
-      {
-	explicit cast_accessor(const Accessor& accessor = Accessor())
-	  : Accessor(accessor)
-	{ }
-
-	Distance
-	operator() (dimension_type n, const Tp& x) const
-	{ return static_cast<Distance>(Accessor::operator()(n, x)); }
-
-	void
-	operator() (dimension_type n, const Tp& x, Tp& y) const
-	{ Accessor::operator()(n, y) = Accessor::operator()(n, x); }
-      };
-
-      /**
-       *  @brief  This functor accesses the coordinates of Tp via a bracket
-       *  operator and casts them into Distance or assign the coordinate of one
-       *  parameter to the other along the same dimension.
-       */
-      template <typename Tp, typename Distance, typename Compare = int>
-      struct bracket_cast_accessor
-      {
-	bracket_cast_accessor() { }
-	explicit bracket_cast_accessor(const Compare&) { }
-
-	Distance
-	operator() (dimension_type n, const Tp& x) const
-	{ return static_cast<Distance>(x[n]); }
-
-	void
-	operator() (dimension_type n, const Tp& x, Tp& y) const
-	{ y[n] = x[n]; }
-      };
-
-      /**
-       *  @brief  This functor accesses the coordinates of Tp via a parenthesis
-       *  operator and casts them into Distance or assign the coordinate of one
-       *  parameter to the other along the same dimension.
-       */
-      template <typename Tp, typename Distance, typename Compare = int>
-      struct paren_cast_accessor
-      {
-	paren_cast_accessor() { }
-	explicit paren_cast_accessor(const Compare&) { }
-
-	Distance
-	operator() (dimension_type n, const Tp& x)
-	{ return static_cast<Distance>(x(n)); }
-
-	void
-	operator() (dimension_type n, const Tp& x, Tp& y) const
-	{ y(n) = x(n); }
-      };
-
-      /**
-       *  @brief  This functor accesses the coordinates of Tp via a iteration
-       *  operator and casts them into Distance or assign the coordinate of one
-       *  parameter to the other along the same dimension.
-       */
-      template <typename Tp, typename Distance, typename Compare = int>
-      struct iterator_cast_accessor
-      {
-	iterator_cast_accessor() { }
-	explicit iterator_cast_accessor(const Compare&) { }
-
-	Distance
-	operator() (dimension_type n, const Tp& x)
-	{
-	  typename Tp::const_iterator i = x.begin();
-	  { using namespace ::std; advance(i, n); }
-	  return static_cast<Distance>(*i);
-	}
-
-	void
-	operator() (dimension_type n, const Tp& x, Tp& y) const
-	{
-	  typename Tp::const_iterator i = x.begin();
-	  typename Tp::iterator j = y.begin();
-	  { using namespace ::std; advance(i, n); advance(j, n); }
-	  *j = *i;
-	}
-      };
-
-      /**
-       *  @brief  Rebind the accessor to the an accessor that can cast the
-       *  internal components of Key into the Distance type. Also helps to
-       *  change standards comparators into accessors using the same
-       *  operations.
-       *
-       *  @{
-       */
-      template <typename Key, typename Distance, typename Accessor>
-      struct rebind
-      { typedef cast_accessor<Key, Distance, Accessor> type; };
-
-      template <typename Key, typename Distance>
-      struct rebind<Key, Distance, bracket_less<Key> >
-      {
-	typedef bracket_cast_accessor
-	<Key, Distance, bracket_less<Key> > type;
-      };
-
-      template <typename Key, typename Distance>
-      struct rebind<Key, Distance, paren_less<Key> >
-      {
-	typedef paren_cast_accessor
-	<Key, Distance, paren_less<Key> > type;
-      };
-
-      template <typename Key, typename Distance>
-      struct rebind<Key, Distance, iterator_less<Key> >
-      {
-	typedef iterator_cast_accessor
-	<Key, Distance, iterator_less<Key> > type;
-      };
-      // @}
-
-    } // namespace geometry
-  } // namespace details
-
   namespace math
   {
     /**
      *  @brief  Uses hypot algorithm in order to compute the distance: minimize
-     *  possibilities to overflow and underflow.
+     *  possibilities of loss of precision due to overflow and underflow.
      *  @test   test_euclidian_distance_to_key
      *
      *  The trick is to find the maximum value among all the component of the
@@ -168,24 +38,22 @@ namespace spatial
      *  Providing x statisfies x>y, x>z, etc, the second form is less likely to
      *  overflow or underflow than the first form.
      */
-    template <typename Key, typename Accessor, typename Distance>
+    template <typename Key, typename Difference, typename Distance>
     inline Distance
-    euclidian_distance_to_key
-    (dimension_type rank, Key origin, Key key, Accessor access)
+    euclid_distance_to_key
+    (dimension_type rank, Key origin, Key key, Difference diff)
     {
-      Distance zero = static_cast<Distance>(0);
-      Distance one = static_cast<Distance>(1);
+      const Distance zero = static_cast<Distance>(0);
+      const Distance one = static_cast<Distance>(1);
       // Find a non zero maximum or return 0
       Distance max = zero;
-      dimension_type max_dim;
+      dimension_type max_dim; // uninitialized on purpose
       using namespace ::std;
       for (dimension_type i=0; i<rank; ++i)
 	{
-	  Distance diff
-        = abs(static_cast<Distance>(access(i, origin) - access(i, key)));
-	  if (diff == zero) continue;
-	  if (max == zero || diff > max)
-	    { max = diff; max_dim = i; }
+	  Distance d = abs(difference(i, origin, key));
+	  if (d == zero) continue;
+	  if (max == zero || d > max) { max = d; max_dim = i; }
 	}
       if (max == zero) return zero; // they're all zero!
       // Compute the distance
@@ -193,54 +61,14 @@ namespace spatial
       for (dimension_type i=0; i<rank; ++i)
 	{
 	  if (i == max_dim) continue;
-	  Distance diff = static_cast<Distance>(access(i, origin) - access(i, key));
-	  Distance div = diff/max;
+	  Distance div = diff(i, origin, key) / max;
 	  sum += div * div;
 	}
+#ifdef SPATIAL_SAFER_ARITHMETICS
+      return ::spatial::except::check_positive_mul(max, sqrt(one + sum));
+#elif
       return max * sqrt(one + sum);
-    }
-
-    /**
-     *  @brief  Compute the distance between @p origin and the further edge of
-     *  the box formed by @p low and @p high.
-     *
-     *  Uses the hyoth algorithm to minimize risk of overflow or underflow.
-     */
-    template <typename Key, typename Accessor, typename Distance>
-    inline Distance
-    euclidian_distance_to_box_edge
-    (dimension_type rank, Key origin, Key low, Key high, Accessor access)
-    {
-      Distance zero = static_cast<Distance>(0);
-      Distance one = static_cast<Distance>(1);
-      Distance two = static_cast<Distance>(2);
-      // Find a non zero maximum or return 0
-      Distance max = zero;
-      dimension_type max_dim = 0;
-      using namespace ::std;
-      for (dimension_type i=0; i<rank; ++i)
-	{
-	  Distance diff = abs(access(i, origin)
-			      - ((access(i, high) + access(i, low)) / two));
-	  if (diff == zero) continue;
-	  if (max == zero || diff > max)
-	    { max = diff; max_dim = i; }
-	}
-      max += (access(max_dim, high) - access(max_dim, low)) / two;
-      if (max == zero) return zero; // they're all zero!
-      // Compute the distance
-      Distance sum = zero;
-      for (dimension_type i=0; i<rank; ++i)
-	{
-	  SPATIAL_ASSERT_CHECK(access(i, high) >= access(i, low));
-	  if (i == max_dim) continue;
-	  Distance diff = abs(access(i, origin)
-			      - ((access(i, high) + access(i, low)) / two));
-	  Distance radius = (access(i, high) - access(i, low)) / two;
-	  Distance div = (radius + diff) / max;
-	  sum += div * div;
-	}
-      return max * sqrt(one + sum);
+#endif
     }
 
     /**
@@ -248,13 +76,13 @@ namespace spatial
      *  to the plane orthogonal to the axis of dimension @c dim and passing by
      *  @c key.
      */
-    template <typename Key, typename Accessor, typename Distance>
+    template <typename Key, typename Difference, typename Distance>
     inline Distance
-    euclidian_distance_to_plane
-    (dimension_type dim, Key origin, Key key, Accessor access)
+    euclid_distance_to_plane
+    (dimension_type dim, Key origin, Key key, Difference diff)
     {
       using namespace ::std;
-      return abs(static_cast<Distance>(access(dim, origin) - access(dim, key)));
+      return abs(diff(dim, origin, key));
     }
 
     /**
@@ -262,73 +90,40 @@ namespace spatial
      *  to the plane orthogonal to the axis of dimension @c dim and passing by
      *  @c key.
      */
-    template <typename Key, typename Accessor, typename Distance>
+    template <typename Key, typename Difference, typename Distance>
     inline Distance
-    euclidian_square_distance_to_plane
-    (dimension_type dim, Key origin, Key key, Accessor access)
+    sqeuclid_distance_to_plane
+    (dimension_type dim, Key origin, Key key, Difference diff)
     {
-      Distance diff = static_cast<Distance>
-        (access(dim, origin) - access(dim, key));
-      return diff*diff;
+#ifdef SPATIAL_SAFER_ARITHMETICS
+      Distance d = diff(dim, origin, key);
+      return ::spatial::except::check_square(d);
+#elif
+      Distance d = diff(dim, origin, key);
+      return d * d;
+#endif
     }
 
     /**
      *  @brief  Compute the square value of the distance between @p origin and
      *  @p key.
-     *
-     *  The computation of the square value is much faster than the computation
-     *  of the distance, but it tends to overflow quickly if large values are
-     *  being used in the computation. On the contrary, if small values are
-     *  being used at all times, and if you can guarentee that the square
-     *  distance will not overflow, this method of computation should be
-     *  preferred over the regular distance computation. Remember to compute the
-     *  square root of the square distance if you want to read the actual
-     *  distance.
      */
-    template <typename Key, typename Accessor, typename Distance>
+    template <typename Key, typename Difference, typename Distance>
     inline Distance
-    euclidian_square_distance_to_key
-    (dimension_type rank, Key origin, Key key, Accessor access)
+    sqeuclid_distance_to_key
+    (dimension_type rank, Key origin, Key key, Difference diff)
     {
       Distance sum = static_cast<Distance>(0);
       for (dimension_type i=0; i<rank; ++i)
 	{
-	  sum += euclidian_square_distance_to_plane
-	    <Key, Accessor, Distance>(i, origin, key, access);
-	}
-      return sum;
-    }
-
-
-    /**
-     *  @brief  Compute the square value of the distance between @p origin and
-     *  the further edge of the box formed by @p low and @p high.
-     *
-     *  The computation of the square value is much faster than the computation
-     *  of the distance, but it tends to overflow quickly if large values are
-     *  being used in the computation. On the contrary, if small values are
-     *  being used at all times, and if you can guarentee that the square
-     *  distance will not overflow, this method of computation should be
-     *  preferred over the regular distance computation. Remember to compute the
-     *  square root of the square distance if you want to read the actual
-     *  distance.
-     */
-    template <typename Key, typename Accessor, typename Distance>
-    inline Distance
-    euclidian_square_distance_to_box_edge
-    (dimension_type rank, Key origin, Key low, Key high, Accessor access)
-    {
-      Distance sum = static_cast<Distance>(0);
-      Distance two = static_cast<Distance>(2);
-      for (dimension_type i=0; i<rank; ++i)
-	{
-	  SPATIAL_ASSERT_CHECK(access(i, high) >= access(i, low));
-	  using namespace ::std;
-	  Distance diff = abs(access(i, origin)
-			      - ((access(i, low) + access(i, high)) / two));
-	  Distance radius = (access(i, high) - access(i, low)) / two;
-	  Distance diff_radius = diff + radius;
-	  sum += diff_radius * diff_radius;
+#ifdef SPATIAL_SAFER_ARITHMETICS
+	  sum = ::spatial::except::check_positive_add
+	    (sqeuclid_distance_to_plane<Key, Difference, Distance>
+	     (i, origin, key, diff), sum);
+#elif
+	  sum += sqeuclid_distance_to_plane
+	    <Key, Difference, Distance>(i, origin, key, diff);
+#endif
 	}
       return sum;
     }
@@ -338,62 +133,34 @@ namespace spatial
      *  to the plane orthogonal to the axis of dimension @c dim and passing by
      *  @c key.
      */
-    template <typename Key, typename Accessor, typename Distance>
+    template <typename Key, typename Difference, typename Distance>
     inline Distance
     manhattan_distance_to_plane
-    (dimension_type dim, Key origin, Key key, Accessor access)
+    (dimension_type dim, Key origin, Key key, Difference diff)
     {
       using namespace ::std;
-      Distance diff = abs(static_cast<Distance>
-                          (access(dim, origin) - access(dim, key)));
-      return diff;
+      return abs(diff(dim, origin, key));
     }
 
     /**
      *  @brief  Compute the manhattan distance between @p origin and @p key.
      */
-    template <typename Key, typename Accessor, typename Distance>
+    template <typename Key, typename Difference, typename Distance>
     inline Distance
     manhattan_distance_to_key
-    (dimension_type rank, Key origin, Key key, Accessor access)
+    (dimension_type rank, Key origin, Key key, Difference diff)
     {
       Distance sum = static_cast<Distance>(0);
       for (dimension_type i=0; i<rank; ++i)
 	{
+#ifdef SPATIAL_SAFER_ARITHMETICS
+	  sum = ::spatial::except::check_positive_add
+	    (manhattan_distance_to_plane<Key, Difference, Distance>
+	     (i, origin, key, diff), sum);
+#elif
 	  sum += manhattan_distance_to_plane
-	    <Key, Accessor, Distance>(i, origin, key, access);
-	}
-      return sum;
-    }
-
-    /**
-     *  @brief  Compute the manhattan distance between @p origin and the further
-     *  edge of the box formed by @p low and @p high.  @test
-     *
-     *  The computation of the square value is much faster than the computation
-     *  of the distance, but it tends to overflow quickly if large values are
-     *  being used in the computation. On the contrary, if small values are
-     *  being used at all times, and if you can guarentee that the square
-     *  distance will not overflow, this method of computation should be
-     *  preferred over the regular distance computation. Remember to compute the
-     *  square root of the square distance if you want to read the actual
-     *  distance.
-     */
-    template <typename Key, typename Accessor, typename Distance>
-    inline Distance
-    manhattan_distance_to_box_edge
-    (dimension_type rank, Key origin, Key low, Key high, Accessor access)
-    {
-      Distance two = static_cast<Distance>(2);
-      Distance sum = static_cast<Distance>(0);
-      for (dimension_type i=0; i<rank; ++i)
-	{
-	  SPATIAL_ASSERT_CHECK(access(i, high) >= access(i, low));
-	  using namespace ::std;
-	  Distance diff = abs(access(i, origin)
-			      - ((access(i, low) + access(i, high)) / two));
-	  Distance radius = (access(i, high) - access(i, low)) / two;
-	  sum += diff + radius;
+	    <Key, Difference, Distance>(i, origin, key, diff);
+#endif
 	}
       return sum;
     }
@@ -402,49 +169,121 @@ namespace spatial
       // For a future implementation where we take earth-like spheroid as an
       // example for non-euclidian spaces, or manifolds.
 
-      math::great_circle_distance_to_origin
-      (rank, origin, dim, key, accumulator)
-
-      math::great_circle_distance_to_axis
-      (rank, origin, dim, key, accumulator)
-
-      math::vincenty_distance_to_origin
-      (rank, origin, dim, key, accumulator)
-
-      math::vincenty_distance_to_axis
-      (rank, origin, dim, key, accumulator)
+      math::great_circle_distance_to_key
+      math::great_circle_distance_to_plane
+      math::vincenty_distance_to_key
+      math::vincenty_distance_to_plane
     */
   } // namespace math
 
-  /**
-   *  @brief  Defines the geometry for the euclidian space where the distance can
-   *  be computed from a double or a type that can be casted into a double.
-   *
-   *  The type @c Accessor type should provide read/write access on its
-   *  components along each dimensions.
-   *
-   *  struct Accessor
-   *  {
-   *    const component_type& operator()(dimension_type dim, const Key& key);
-   *    component_type& operator()(dimension_type dim, Key& key);
-   *  };
-   */
-  template<typename Key, typename Accessor>
-  class euclidian_double
-    : details::geometry::rebind<Key, double, Accessor>::type
+  namespace details
   {
-    typedef typename details::geometry::rebind<Key, double, Accessor>
-    ::type access_type;
+    /**
+     *  An internal type used by auto_difference to resolve a compare
+     *  functor into a difference functor.
+     */
+    //@{
+    template<typename Compare, typename Unit>
+    struct auto_difference_resolver { typedef void type; };
 
-  public:
+    template<typename Tp, typename Unit>
+    struct auto_difference_resolver<bracket_less<Tp>, Unit>
+    {
+      typedef bracket_minus<Tp, Unit> type;
+      type make(const bracket_less<Tp>&) const { return type(); }
+    };
+
+    template<typename Tp, typename Unit>
+    struct auto_difference_resolver<paren_less<Tp>, Unit>
+    {
+      typedef paren_minus<Tp, Unit> type;
+      type make(const paren_less<Tp>&) const { return type(); }
+    };
+
+    template<typename Tp, typename Unit>
+    struct auto_difference_resolver<iterator_less<Tp>, Unit>
+    {
+      typedef iterator_minus<Tp, Unit> type;
+      type make(const iterator_less<Tp>&) const { return type(); }
+    };
+
+    template<typename Accessor, typename Tp, typename Unit>
+    struct auto_difference_resolver<accessor_less<Accessor, Tp>, Unit>
+    {
+      typedef accessor_minus<Accessor, Tp, Unit> type;
+      type make(const accessor_less<Accessor, Tp>& cmp) const
+      { return type(static_cast<const Accessor&>(cmp)); }
+    };
+    //@}
+
+  } // namespace details
+
+  /**
+   *  The type auto_difference resolve the appropriate difference functor to
+   *  use if the container Ct was created with one of the comparators provided
+   *  by the library:
+   *  \ul \ref bracket_less is resolved to \ref bracket_minus,
+   *  \li \ref paren_less is resolved to \ref paren_minus,
+   *  \li \ref iterator_less is resolved to \ref iterator_minus,
+   *  \li \ref accessor_less is resolved to \ref accessor_minus with the
+   *  appropriate accessor functor.
+   *  \lu
+   *
+   *  If the comparator used for the container is not one of the comparators
+   *  provided, by the library, the auto_difference function resolves into void.
+   */
+  template <typename Ct, typename Unit>
+  struct auto_difference
+  {
+    //! The \c type that is resolved into the difference functor.
+    typedef typename auto_difference_resolver
+      <typename container_traits<Ct>::key_compare, Unit> type;
+
+    //! A factory that builds the difference functor from the compare functor.
+    static type make(const typename container_traits<Ct>::key_compare& cmp)
+    {
+       auto_difference_resolver<typename container_traits<Ct>::key_compare,
+	                        Unit> res;
+       return res.make(cmp);
+    }
+  };
+
+  /**
+   *  @brief  Defines a geometry working on the Euclidian space where distances
+   *  are expressed in \c double and the distance between 2 points is calculated
+   *  via the functor \c Difference, a concept of \ref ElementDifference.
+   *
+   *  @concept euclid_geometry is a concept of \ref Geometry.
+   *
+   *  @attention The type returned by \c Difference shall allow casting into the
+   *  plain old data type \c double.
+   *
+   *  @attention \c euclid_geo is written to work on doubles. It will not work
+   *  on integral types, not even approximately. If you are looking computing
+   *  distances in Euclidian geometry using integers, consider using \ref
+   *  sqeuclid_geo. It is very fast because it omits the square root calculation
+   *  and it is as precise as the integral types permits.
+   *
+   *  \c euclid_geo attempts to compute distances while limitting loss of
+   *  precision due to overflow during the computation. For the \c double type,
+   *  \c euclid_geo could be more precise than \ref sqeuclid_geo in some cases,
+   *  but it will be slower in all cases.
+   *
+   *  \c euclid_geo computes distances that are expressed in \c double. If you
+   *  need to express your distances in \c float, the geometry \ref euclidf_geo
+   *  is working on \c float.
+   */
+  template<typename Tp, typename Difference>
+  struct euclid_geo
+    : Difference // empty member optimization
+  {
     /**
      *  @brief  The distance type being used for distance calculations.
      */
     typedef double distance_type;
 
-    euclidian_double(const Accessor& access = Accessor())
-      : access_type(access)
-    { }
+    //! The constructors allows you to specify a custom difference type.
+    euclid_geo(const Difference& diff = Difference()) : Difference(diff) { }
 
     /**
      *  @brief  Compute the distance between the point of @c origin and the @c
@@ -453,10 +292,10 @@ namespace spatial
      */
     distance_type
     distance_to_key(dimension_type rank,
-		    const Key& origin, const Key& key) const
+		    const Tp& origin, const Tp& key) const
     {
-      return math::euclidian_distance_to_key<Key, access_type, double>
-	(rank, origin, key, static_cast<const access_type>(*this));
+      return math::euclid_distance_to_key<Tp, Difference, double>
+	(rank, origin, key, *static_cast<const Difference*>(this));
     }
 
     /**
@@ -470,39 +309,74 @@ namespace spatial
      */
     distance_type
     distance_to_plane(dimension_type, dimension_type dim,
-		      const Key& origin, const Key& key) const
+		      const Tp& origin, const Tp& key) const
     {
-      return math::euclidian_distance_to_plane<Key, access_type, double>
-	(dim, origin, key, static_cast<const access_type>(*this));
+      return math::euclid_distance_to_plane<Tp, Difference, double>
+	(dim, origin, key, *static_cast<const Difference*>(this));
     }
   };
 
   /**
-   *  @brief  Defines the geometry for the euclidian space where the distance can
-   *  be computed from a float or a type that can be casted into a float.
-   *
-   *  The type @c Accessor type should provide read/write access on its
-   *  components along each dimensions.
-   *
-   *  struct Accessor
-   *  {
-   *    const component_type& operator()(dimension_type dim, const Key& key);
-   *    component_type& operator()(dimension_type dim, Key& key);
-   *  };
+   *  Facilitates creation of a type \ref euclid_geo from an existing container.
    */
-  template<typename Key, typename Accessor>
-  class euclidian_float
-    : details::geometry::rebind<Key, float, Accessor>::type
+  template<typename Ct, typename Difference>
+  euclid_geo<typename container_traits<Ct>::key_type, Difference>
+  make_euclid_geo(const Ct& container, const Difference& diff)
   {
-    typedef typename details::geometry::rebind<Key, float, Accessor>
-    ::type access_type;
+    return euclid_geo<typename container_traits<Ct>::key_type,
+                      Difference>(diff);
+  }
 
-  public:
+  /**
+   *  Facilitates creation of a type \ref euclid_geo from an existing container.
+   */
+  template<typename Ct>
+  euclid_geo<typename container_traits<Ct>::key_type,
+             typename auto_difference<Ct, double>::type>
+  make_euclid_geo_auto(const Ct& container)
+  {
+    return euclid_geo<typename container_traits<Ct>::key_type,
+                      typename auto_difference<Ct, double>::type>
+		      (auto_difference<Ct, double>::make(diff));
+  }
+
+  /**
+   *  @brief  Defines a geometry working on the Euclidian space where distances
+   *  are expressed in \c float and the distance between 2 points is calculated
+   *  via the functor \c Difference, a concept of \ref ElementDifference.
+   *
+   *  @concept euclidf_geo is a concept of \ref Geometry.
+   *
+   *  @attention The type returned by \c Difference shall allow casting into the
+   *  plain old data type \c float.
+   *
+   *  @attention \c euclidf_geo is written to work on floats. It will not work
+   *  on integral types, not even approximately. If you are looking computing
+   *  distances in Euclidian geometry using integers, consider using \ref
+   *  sqeuclid_geo. It is very fast because it omits the square root calculation
+   *  and it is as precise as the integral types permits, also it may overflow
+   *  during calculation.
+   *
+   *  \c euclidf_geo attempts to compute distances while limitting loss of
+   *  precision due to overflow during the computation. For the \c float type,
+   *  \c euclid_geo could be more precise than \ref sqeuclid_geo in some cases,
+   *  but it will be slower in all cases.
+   *
+   *  \c euclidf_geo computes distances that are expressed in \c float. If you
+   *  need to express your distances in \c double, the geometry \ref euclid_geo
+   *  is working on \c double.
+   */
+  template<typename Tp, typename Difference>
+  struct euclidf_geo
+    : Difference
+  {
+    /**
+     *  @brief  The distance type being used for distance calculations.
+     */
     typedef float distance_type;
 
-    euclidian_float(const Accessor& access = Accessor())
-      : access_type(access)
-    { }
+    //! The constructor allows you to specify a custom difference type.
+    euclidf_geo(const Difference& diff = Difference()) : Difference(diff) { }
 
     /**
      *  @brief  Compute the distance between the point of @c origin and the @c
@@ -511,10 +385,10 @@ namespace spatial
      */
     distance_type
     distance_to_key(dimension_type rank,
-		    const Key& origin, const Key& key) const
+		    const Tp& origin, const Tp& key) const
     {
-      return math::euclidian_distance_to_key<Key, access_type, float>
-	(rank, origin, key, static_cast<const access_type>(*this));
+      return math::euclid_distance_to_key<Tp, Difference, float>
+	(rank, origin, key, *static_cast<const Difference*>(this));
     }
 
     /**
@@ -522,43 +396,73 @@ namespace spatial
      *  point to the plane orthogonal to the axis of dimension @c dim and
      *  crossing @c key.
      *  @return The resulting distance.
+     *
+     *  Given any 2 points 'origin' and 'key', the result of distance_to_plane
+     *  must always be less or equal to the result of distance_to_key.
      */
     distance_type
     distance_to_plane(dimension_type, dimension_type dim,
-		      const Key& origin, const Key& key) const
+		      const Tp& origin, const Tp& key) const
     {
-      return math::euclidian_distance_to_plane<Key, access_type, float>
-	(dim, origin, key, static_cast<const access_type>(*this));
+      return math::euclid_distance_to_plane<Tp, Difference, float>
+	(dim, origin, key, *static_cast<const Difference*>(this));
     }
   };
+
+  /**
+   *  Facilitates creation of a type \ref euclid_geo from an existing container.
+   */
+  template<typename Ct, typename Difference>
+  euclidf_geo<typename container_traits<Ct>::key_type, Difference>
+  make_euclidf_geo(const Ct& container, const Difference& diff)
+  {
+    return euclidf_geo<typename container_traits<Ct>::key_type,
+                       Difference>(diff);
+  }
+
+  /**
+   *  Facilitates creation of a type \ref euclid_geo from an existing container.
+   */
+  template<typename Ct>
+  euclidf_geo<typename container_traits<Ct>::key_type,
+              typename auto_difference<Ct, float>::type>
+  make_euclidf_geo_auto(const Ct& container)
+  {
+    return euclidf_geo<typename container_traits<Ct>::key_type,
+                       typename auto_difference<Ct, float>::type>
+		       (auto_difference<Ct, float>::make(diff));
+  }
 
   /**
    *  @brief  Defines the geometry for the euclidian space where only the square
    *  of the distances are being computed into a scalar value expressed as a
    *  double.
    *
-   *  The type @c Accessor type should provide read/write access on its
-   *  components along each dimensions.
+   *  This method of distance calculation is very portable: it works with
+   *  all signed and unsigned base types, as well as any user-defined type for
+   *  which the basic operations substraction, addition and multiplication have
+   *  been defined.
    *
-   *  struct Accessor
-   *  {
-   *    const component_type& operator()(dimension_type dim, const Key& key);
-   *    component_type& operator()(dimension_type dim, Key& key);
-   *  };
+   *  When using this geometry, if you must read the distance value, you must
+   *  remember that you are reading the square of the distance, and not the
+   *  real distance. Thus, you should use square root to recover the real
+   *  distance.
+   *
+   *  This geometry has one important drawback: if you are working with large
+   *  value over the entire range permissible by the value type, then chances
+   *  that the computation overflows is non-negligible. To receive an
+   *  \ref arithmetic_error exception upon overflow, compile your application
+   *  with \c #define \c SPATIAL_SAFER_ARITHEMTICS.
    */
-  template<typename Key, typename Accessor>
-  class euclidian_square_double
-    : details::geometry::rebind<Key, double, Accessor>::type
+  template<typename Tp, template Difference,
+           typename Distance = Difference::difference_type>
+  struct sqeuclid_geo
+      : Difference // empty-member optimization
   {
-    typedef typename details::geometry::rebind<Key, double, Accessor>
-    ::type access_type;
+    typedef Distance distance_type;
 
-  public:
-    typedef double distance_type;
-
-    euclidian_square_double(const Accessor& access = Accessor())
-      : access_type(access)
-    { }
+    //! The constructor allows you to specify a custom difference type.
+    sqeuclid_geo(const Difference& diff = Difference()) : Difference(diff) { }
 
     /**
      *  @brief  Compute the distance between the point of @c origin and the @c
@@ -567,10 +471,10 @@ namespace spatial
      */
     distance_type
     distance_to_key(dimension_type rank,
-		    const Key& origin, const Key& key) const
+		    const Tp& origin, const Tp& key) const
     {
-      return math::euclidian_square_distance_to_key<Key, access_type, double>
-	(rank, origin, key, static_cast<const access_type>(*this));
+      return math::sqeuclid_distance_to_key<Tp, Difference, Distance>
+	(rank, origin, key, *static_cast<const Difference*>(this));
     }
 
     /**
@@ -581,95 +485,85 @@ namespace spatial
      */
     distance_type
     distance_to_plane(dimension_type, dimension_type dim,
-		      const Key& origin, const Key& key) const
+		      const Tp& origin, const Tp& key) const
     {
-      return math::euclidian_square_distance_to_plane<Key, access_type, double>
-	(dim, origin, key, static_cast<const access_type>(*this));
+      return math::sqeuclid_distance_to_plane<Tp, Difference, Distance>
+	(dim, origin, key, *static_cast<const Difference*>(this));
     }
   };
 
   /**
-   *  @brief  Defines the geometry for the euclidian space where only the square
-   *  of the distances are being computed into a scalar value expressed as a
-   *  double.
-   *
-   *  The type @c Accessor type should provide read/write access on its
-   *  components along each dimensions.
-   *
-   *  struct Accessor
-   *  {
-   *    const component_type& operator()(dimension_type dim, const Key& key);
-   *    component_type& operator()(dimension_type dim, Key& key);
-   *  };
+   *  Facilitates creation of a type \ref sqeuclid_geo from an existing
+   *  container.
    */
-  template<typename Key, typename Accessor>
-  class euclidian_square_float
-    : details::geometry::rebind<Key, float, Accessor>::type
+  template<typename Ct, typename Difference>
+  sqeuclid_geo<typename container_traits<Ct>::key_type, Difference>
+  make_sqeuclid_geo(const Ct& container, const Difference& diff)
   {
-    typedef typename details::geometry::rebind<Key, float, Accessor>
-    ::type access_type;
+    return sqeuclid_geo<typename container_traits<Ct>::key_type,
+                        Difference>(diff);
+  }
 
-  public:
-    typedef float distance_type;
+  /**
+   *  Facilitates creation of a type \ref sqeuclid_geo from an existing
+   *  container and if you want to use a type for distance that is different
+   *  from the type given in the \c Difference functor.
+   *
+   *  Use of function is a little particular. It needs a value of type
+   *  \c Distance in order to guess what type is Distance, but it does not use
+   *  the value. By convention just put 1, 1.0, 1.f, 1u, 1l, 1ll or any other
+   *  expression of "one" as an input to this function.
+   */
+  template<typename Ct, typename Difference, typename Distance>
+  sqeuclid_geo<typename container_traits<Ct>::key_type, Difference, Distance>
+  make_sqeuclid_geo(const Ct& container, const Difference& diff, Distance)
+  {
+    return sqeuclid_geo<typename container_traits<Ct>::key_type,
+                        Difference, Distance>(diff);
+  }
 
-    euclidian_square_float(const Accessor& access = Accessor())
-      : access_type(access)
-    { }
-
-    /**
-     *  @brief  Compute the distance between the point of @c origin and the @c
-     *  key.
-     *  @return The resulting square distance.
-     */
-    distance_type
-    distance_to_key(dimension_type rank,
-		    const Key& origin, const Key& key) const
-    {
-      return math::euclidian_square_distance_to_key<Key, access_type, float>
-	(rank, origin, key, static_cast<const access_type>(*this));
-    }
-
-    /**
-     *  @brief  The distance between the point of @c origin and the closest
-     *  point to the plane orthogonal to the axis of dimension @c dim and
-     *  crossing @c key.
-     *  @return The resulting square distance.
-     */
-    distance_type
-    distance_to_plane(dimension_type, dimension_type dim,
-		      const Key& origin, const Key& key) const
-    {
-      return math::euclidian_square_distance_to_plane<Key, access_type, float>
-	(dim, origin, key, static_cast<const access_type>(*this));
-    }
-  };
+  /**
+   *  Facilitates creation of a type \ref sqeuclid_geo from an existing
+   *  container.
+   *
+   *  Use of function is a little particular. It needs a value of type
+   *  \c Distance in order to guess what type is Distance, but it does not use
+   *  the value. By convention just put 1, 1.0, 1.f, 1u, 1l, 1ll or any other
+   *  expression of "one" as an input to this function.
+   */
+  template<typename Ct, typename Distance>
+  sqeuclid_geo<typename container_traits<Ct>::key_type,
+               typename auto_difference<Ct, Distance>::type, Distance>
+  make_sqeuclid_geo_auto(const Ct& container, Distance)
+  {
+    return sqeuclid_geo<typename container_traits<Ct>::key_type,
+                        typename auto_difference<Ct, Distance>::type, Distance>
+		        (auto_difference<Ct, Distance>::make(diff));
+  }
 
   /**
    *  @brief  Defines a geometry for the euclidian space where distances are the
    *  sum of all the elements of a vector. Also known as the taxicab geometry.
    *
-   *  The type @c Accessor type should provide read/write access on its
-   *  components along each dimensions.
+   *  This method of distance calculation is very portable: it works with
+   *  all signed and unsigned base types, as well as any user-defined type for
+   *  which the basic operations substraction and addition have been defined.
    *
-   *  struct Accessor
-   *  {
-   *    const component_type& operator()(dimension_type dim, const Key& key);
-   *    component_type& operator()(dimension_type dim, Key& key);
-   *  };
+   *  This geometry has one important drawback: if you are working with large
+   *  values over the entire range permissible by the value type, then chances
+   *  that the computation overflows is non-negligible. To receive an
+   *  \ref arithmetic_error exception upon overflow, compile your application
+   *  with \c #define \c SPATIAL_SAFER_ARITHEMTICS.
    */
-  template<typename Key, typename Accessor, typename Distance>
+  template<typename Tp, typename Difference,
+           typename Distance = Difference::difference_type>
   struct manhattan
-    : details::geometry::rebind<Key, Distance, Accessor>::type
+    : Distance // empty-member optimization
   {
-    typedef typename details::geometry::rebind<Key, Distance, Accessor>
-    ::type access_type;
-
-  public:
     typedef Distance distance_type;
 
-    manhattan (const Accessor& access = Accessor())
-      : access_type(access)
-    { }
+    //! A constructor that allows you to specify the Difference type.
+    manhattan (const Difference& diff = Difference()) : Difference(diff) { }
 
     /**
      *  @brief  Compute the distance between the point of @c origin and the @c
@@ -678,10 +572,10 @@ namespace spatial
      */
     distance_type
     distance_to_key(dimension_type rank,
-		    const Key& origin, const Key& key) const
+		    const Tp& origin, const Tp& key) const
     {
-      return math::manhattan_distance_to_key<Key, access_type, Distance>
-	(rank, origin, key, static_cast<const access_type>(*this));
+      return math::manhattan_distance_to_key<Key, Difference, Distance>
+	(rank, origin, key, *static_cast<const Difference*>(this));
     }
 
     /**
@@ -692,12 +586,61 @@ namespace spatial
      */
     distance_type
     distance_to_plane(dimension_type, dimension_type dim,
-		      const Key& origin, const Key& key) const
+		      const Tp& origin, const Tp& key) const
     {
-      return math::manhattan_distance_to_plane<Key, access_type, Distance>
-	(dim, origin, key, static_cast<const access_type>(*this));
+      return math::manhattan_distance_to_plane<Key, Difference, Distance>
+	(dim, origin, key, *static_cast<const Difference*>(this));
     }
   };
+
+  /**
+   *  Facilitates creation of a type \ref manhattan_geo from an existing
+   *  container.
+   */
+  template<typename Ct, typename Difference>
+  manhattan_geo<typename container_traits<Ct>::key_type, Difference>
+  make_manhattan_geo(const Ct& container, const Difference& diff)
+  {
+    return manhattan_geo<typename container_traits<Ct>::key_type,
+                         Difference>(diff);
+  }
+
+  /**
+   *  Facilitates creation of a type \ref manhattan_geo from an existing
+   *  container and if you want to use a type for distance that is different
+   *  from the type given in the \c Difference functor.
+   *
+   *  Use of function is a little particular. It needs a value of type
+   *  \c Distance in order to guess what type is Distance, but it does not use
+   *  the value. By convention just put 1, 1.0, 1.f, 1u, 1l, 1ll or any other
+   *  expression of "one" as an input to this function.
+   */
+  template<typename Ct, typename Difference, typename Distance>
+  manhattan_geo<typename container_traits<Ct>::key_type, Difference, Distance>
+  make_manhattan_geo(const Ct& container, const Difference& diff, Distance)
+  {
+    return manhattan_geo<typename container_traits<Ct>::key_type,
+                         Difference, Distance>(diff);
+  }
+
+  /**
+   *  Facilitates creation of a type \ref manhattan_geo from an existing
+   *  container.
+   *
+   *  Use of function is a little particular. It needs a value of type
+   *  \c Distance in order to guess what type is Distance, but it does not use
+   *  the value. By convention just put 1, 1.0, 1.f, 1u, 1l, 1ll or any other
+   *  expression of "one" as an input to this function.
+   */
+  template<typename Ct, typename Distance>
+  manhattan_geo<typename container_traits<Ct>::key_type,
+                typename auto_difference<Ct, Distance>::type, Distance>
+  make_manhattan_geo_auto(const Ct& container, Distance)
+  {
+    return manhattan_geo<typename container_traits<Ct>::key_type,
+                         typename auto_difference<Ct, Distance>::type, Distance>
+		         (auto_difference<Ct, Distance>::make(diff));
+  }
 
 } // namespace spatial
 

@@ -14,10 +14,10 @@
 #define SPATIAL_EXCEPTIONS_HPP
 
 #include <stdexcept>
+#include <limits>
 
 namespace spatial
 {
-
   /**
    *  \brief  Thrown to report that an invalid rank was passed as an argument.
    *  Generally thrown because 0 was passed as an argument for the rank.
@@ -25,7 +25,7 @@ namespace spatial
   struct invalid_rank : std::logic_error
   {
     explicit invalid_rank(const std::string& arg)
-      : logic_error(arg) { }
+      : std::logic_error(arg) { }
   };
 
   /**
@@ -35,7 +35,7 @@ namespace spatial
   struct invalid_dimension : std::logic_error
   {
     explicit invalid_dimension(const std::string& arg)
-      : logic_error(arg) { }
+      : std::logic_error(arg) { }
   };
 
   /**
@@ -44,7 +44,7 @@ namespace spatial
   struct invalid_node : std::logic_error
   {
     explicit invalid_node(const std::string& arg)
-      : logic_error(arg) { }
+      : std::logic_error(arg) { }
   };
 
   /**
@@ -53,7 +53,7 @@ namespace spatial
   struct invalid_iterator : std::logic_error
   {
     explicit invalid_iterator(const std::string& arg)
-      : logic_error(arg) { }
+      : std::logic_error(arg) { }
   };
 
   /**
@@ -63,22 +63,22 @@ namespace spatial
   struct invalid_empty_container : std::logic_error
   {
     explicit invalid_empty_container(const std::string& arg)
-      : logic_error(arg) { }
+      : std::logic_error(arg) { }
   };
 
   /**
    *  \brief  Thrown to report that an invalid range bound has been given as
    *  argument.
-   *  \see check_invalid_range_bounds()
-   *  \see range_bounds
+   *  \see check_invalid_bounds()
+   *  \see bounds
    *
    *  Generally, this means that the lower bound has a value that overlaps with
    *  the upper bound over one dimension, at least.
    */
-  struct invalid_range_bounds : std::logic_error
+  struct invalid_bounds : std::logic_error
   {
-    explicit invalid_range_bounds(const std::string& arg)
-      : logic_error(arg) { }
+    explicit invalid_bounds(const std::string& arg)
+      : std::logic_error(arg) { }
   };
 
   /**
@@ -89,7 +89,19 @@ namespace spatial
   struct invalid_box : std::logic_error
   {
     explicit invalid_box(const std::string& arg)
-      : logic_error(arg) { }
+      : std::logic_error(arg) { }
+  };
+
+  /**
+   *  Thrown to report that an arithmetic error has occured during a
+   *  calculation. It could be an overflow, or another kind of error.
+   *
+   *  \see check_addition(), check_multiplication()
+   */
+  struct arithmetic_error : std::logic_error
+  {
+    explicit arithmetic_error(const std::string& arg)
+      : std::logic_error(arg) { }
   };
 
   namespace except
@@ -173,23 +185,23 @@ namespace spatial
      *  Checks if all coordinates of \c lower are strictly less than these of
      *  \c higher along the same dimensions. The number of dimensions is limited
      *  by the rank of \c container.
-     *  \exception invalid_range_bounds is thrown if the check fails.
+     *  \exception invalid_bounds is thrown if the check fails.
      *  \param container providing type information, comparison and rank.
      *  \param lower the lower bound of the interval considered.
      *  \param upper the upper bound of the interval considered.
      *
-     *  This check is performed mainly upon creation of a \ref open_range_bounds
+     *  This check is performed mainly upon creation of a \ref open_bounds
      *  predicate.
      */
     template<typename Tp>
-    inline void check_open_range_bounds
+    inline void check_open_bounds
     (const Tp& container,
      const typename container_traits<Tp>::key_type& lower,
      const typename container_traits<Tp>::key_type& upper)
     {
       for (dimension_type dim = 0; dim < container.dimension(); ++dim)
         if (!container.key_comp()(dim, lower, upper))
-          throw invalid_range_bounds
+          throw invalid_bounds
             ("lower is greater or equal to upper over one dimension at least");
     }
 
@@ -197,38 +209,38 @@ namespace spatial
      *  Checks if all coordinates of \c lower are strictly less than these of
      *  \c higher along the same dimensions. The number of dimensions is limited
      *  by the rank of \c container.
-     *  \exception invalid_range_bounds is thrown if the check fails.
+     *  \exception invalid_bounds is thrown if the check fails.
      *
-     *  This check is performed mainly upon creation of a \ref range_bounds
+     *  This check is performed mainly upon creation of a \ref bounds
      *  predicate.
      */
     template<typename Tp>
-    inline void check_range_bounds
+    inline void check_bounds
     (const Tp& container,
      const typename container_traits<Tp>::key_type& lower,
      const typename container_traits<Tp>::key_type& upper)
     {
-        return check_open_range_bounds(container, lower, upper);
+        return check_open_bounds(container, lower, upper);
     }
 
     /**
      *  Checks if all coordinates of \c lower are less or equal to these of
      *  \c higher along the same dimensions. The number of dimensions is limited
      *  by the rank of \c container.
-     *  \throw invalid_closed_range_bounds is thrown if the check fails.
+     *  \throw invalid_closed_bounds is thrown if the check fails.
      *
      *  This check is performed mainly upon creation of a \ref
-     *  closed_range_bounds predicate.
+     *  closed_bounds predicate.
      */
     template<typename Tp>
-    inline void check_closed_range_bounds
+    inline void check_closed_bounds
     (const Tp& container,
      const typename container_traits<Tp>::key_type& lower,
      const typename container_traits<Tp>::key_type& upper)
     {
       for (dimension_type dim = 0; dim < container.dimension(); ++dim)
         if (container.key_comp()(dim, upper, lower))
-          throw invalid_range_bounds
+          throw invalid_bounds
             ("upper is stricly less than lower over one dimension at least");
     }
 
@@ -293,6 +305,72 @@ namespace spatial
     }
     //@}
 
+    /**
+     *  Check that the addtion of 2 elements of positive value has not led to an
+     *  error such as an overflow, by forcing the error itself.
+     *
+     *  This check will only work for 2 positive element x and y. This check is
+     *  not the best check for arithmetic errors. There are ways to make it
+     *  better, but it's hard to make it more portable.
+     *
+     *  In particular, if \c Tp is not a base type, the author of the type must
+     *  define the numeric limits \c ::std::numeric_limits<Tp>::max() for that
+     *  type.
+     */
+    template <typename Tp>
+    inline Tp check_positive_add(const Tp& x, const Tp& y)
+    {
+      if ((::std::numeric_limits<Tp>::max() - x) < y)
+        throw arithmetic_error
+	  ("Addition of two elements has resulted in an arithmetic error");
+      return x + y;
+    }
+
+    /**
+     *  Check that the computation of the square of an element has not
+     *  overflown.
+     *
+     *  This check is not the best check for arithmetic errors. There are ways
+     *  to make it better, but it's hard to make it more portable.
+     *
+     *  In particular, if \c Tp is not a base type, the author of the type must
+     *  define the numeric limits \c ::std::numeric_limits<Tp>::max() for that
+     *  type.
+     */
+    template <typename Tp>
+    inline Tp check_square(const Tp& x)
+    {
+      Tp abs_x = x > 0 ? x : -x;
+      // Computing -x might overflow if x is at the limit of the range
+      if (abs_x < 0)
+        throw overflow_error
+	  ("Square value of element has resulted in an arithmetic error");
+      if ((::std::numeric_limits<Tp>::max() / abs_x) < abs_x)
+        throw overflow_error
+	  ("Square value of element has resulted in an arithmetic error");
+      return x * x;
+    }
+
+    /**
+     *  Check that the multiplication of 2 positive elements has not resulted
+     *  into an arithmetic error such as overflown.
+     *
+     *  This check will only work for 2 positive element x and y. This check is
+     *  not the best check for arithmetic errors. There are ways to make it
+     *  better, but it's hard to make it more portable.
+     *
+     *  In particular, if \c Tp is not a base type, the author of the type must
+     *  define the numeric limits \c ::std::numeric_limits<Tp>::max() for that
+     *  type.
+     */
+    template <typename Tp>
+    inline Tp check_positive_mul(const Tp& x, const Tp& y)
+    {
+      if ((::std::numeric_limits<Tp>::max() / y) < x)
+        throw overflow_error
+          ("Multiplication of two elements has resulted in an arithmetic error");
+      return x * y;
+    }
   } // namespace except
 
 } // namespace spatial

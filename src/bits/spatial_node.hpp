@@ -62,16 +62,6 @@ namespace spatial
       //! The mode type that indicate how to reach the key and/or the
       //! value from the link.
       typedef Mode              mode_type;
-      //! Shortcut to the link_type stored in the mode_type.
-      typedef typename mode_type::link_type      link_type;
-      //! Shortcut to the link_ptr stored in the mode_type.
-      typedef typename mode_type::link_ptr       link_ptr;
-      //! Shortcut to the const_link_ptr stored in the mode_type.
-      typedef typename mode_type::const_link_ptr const_link_ptr;
-      //! Shortcut to the key_type stored in the mode_type
-      typedef typename mode_type::key_type       key_type;
-      //! Shortcut to the value_type stored in the mode_type
-      typedef typename mode_type::value_type     value_type;
 
       /**
        *  A pointer to the parent of the current node. When we are at head, the
@@ -279,14 +269,8 @@ namespace spatial
       typedef typename Node<link_type>::ptr        node_ptr;
       //! The constant node pointer deduced from the mode.
       typedef typename Node<link_type>::const_ptr  const_node_ptr;
-      //! The category of invariant with associated with this mode.
+      //! The category of invariant associated with this mode.
       typedef strict_invariant_tag                 invariant_category;
-      //! Convert a given link pointer into a node.
-      static node_ptr node(link_ptr x)
-      { return static_cast<node_ptr>(x); }
-      //! Convert a given link pointer into a node.
-      static const_node_ptr node(const_link_ptr x)
-      { return static_cast<const_node_ptr>(x); }
 
       /**
        *  The value of the node, required by the @ref Link concept.
@@ -327,12 +311,6 @@ namespace spatial
       typedef typename Node<link_type>::const_ptr const_node_ptr;
       //! The category of invariant with associated with this mode.
       typedef relaxed_invariant_tag               invariant_category;
-      //! Convert a given link pointer into a node.
-      static node_ptr node(link_ptr x)
-      { return static_cast<node_ptr>(x); }
-      //! Convert a given link pointer into a node.
-      static const_node_ptr node(const_link_ptr x)
-      { return static_cast<const_node_ptr>(x); }
 
       //! The weight is equal to 1 plus the amount of child nodes below the
       //! current node. It is always equal to 1 at least.
@@ -350,54 +328,6 @@ namespace spatial
 
     //@{
     /**
-     *  This function converts a pointer on a node into a link. Only nodes
-     *  containing a known mode type can be converted in a link.
-     *
-     *  This function is not implemented and it should not be used in this
-     *  form: only specialized types for known \ref LinkMode models should
-     *  be used.
-     *
-     *  \tparam T A type that is not a known \ref LinkMode.
-     *  \param node the node to convert to a link.
-     */
-    template <typename T> void link(typename Node<T>::ptr node);
-    template <typename T> void link(typename Node<T>::const_ptr node);
-    //@}
-
-    //@{
-    /**
-     *  This function converts a pointer on a node into a key. Only nodes
-     *  containing a known mode type converted in a key.
-     *
-     *  This function is not implemented and it should not be used in this
-     *  form: only specialized types for known \ref LinkMode models should
-     *  be used.
-     *
-     *  \tparam T A type that is not a known \ref LinkMode.
-     *  \param node the node to convert to a link.
-     */
-    template <typename T> void key(typename Node<T>::ptr node);
-    template <typename T> void key(typename Node<T>::const_ptr node);
-    //@}
-
-    //@{
-    /**
-     *  This function converts a pointer on a node into a key. Only nodes
-     *  containing a known mode type converted in a key.
-     *
-     *  This function is not implemented and it should not be used in this
-     *  form: only specialized types for known \ref LinkMode models should
-     *  be used.
-     *
-     *  \tparam T A type that is not a known \ref LinkMode.
-     *  \param node the node to convert to a link.
-     */
-    template <typename T> void value(typename Node<T>::ptr node);
-    template <typename T> void value(typename Node<T>::const_ptr node);
-    //@}
-
-    //@{
-    /**
      *  This function converts a pointer on a node into a link for a \ref
      *  Kdtree_link type.
      *  \tparam Key the key type for the \ref Kdtree_link.
@@ -405,18 +335,17 @@ namespace spatial
      *  \param node the node to convert to a link.
      */
     template <typename Key, typename Value>
-    inline typename Kdtree_link<Key, Value>::link_ptr
-    link(typename Node<Kdtree_link<Key, Value> >::ptr node)
+    inline typename Kdtree_link<Key, Value>&
+    link(typename Node<Kdtree_link<Key, Value> >& node)
     {
-      return static_cast<typename Kdtree_link<Key, Value>::link_ptr>(node);
+      return *static_cast<typename Kdtree_link<Key, Value>*>(&node);
     }
 
     template <typename Key, typename Value>
-    inline typename Kdtree_link<Key, Value>::const_link_ptr
-    link(typename Node<Kdtree_link<Key, Value> >::const_ptr node)
+    inline const typename Kdtree_link<Key, Value>&
+    const_link(const typename Node<Kdtree_link<Key, Value> >& node)
     {
-      return static_cast
-        <typename Kdtree_link<Key, Value>::const_link_ptr>(node);
+      return *static_cast<const typename Kdtree_link<Key, Value>*>(&node);
     }
     //@}
 
@@ -432,18 +361,16 @@ namespace spatial
      */
     template <typename Value>
     inline typename Kdtree_link<Value, Value>::key_type&
-    key(typename Node<Kdtree_link<Value, Value> >::ptr node)
+    key(typename Node<Kdtree_link<Value, Value> >& node)
     {
-      return static_cast<typename Kdtree_link<Value, Value>::link_ptr>
-        (node)->value;
+      return static_cast<typename Kdtree_link<Key, Value>*>(&node)->value;
     }
 
     template <typename Value>
     inline const typename Kdtree_link<Value, Value>::key_type&
-    key(typename Node<Kdtree_link<Value, Value> >::const_ptr node)
+    const_key(const typename Node<Kdtree_link<Value, Value> >& node)
     {
-      return static_cast<typename Kdtree_link<Value, Value>::const_link_ptr>
-        (node)->value;
+      return static_cast<const typename Kdtree_link<Key, Value>*>(&node)->value;
     }
     //@}
 
@@ -457,18 +384,18 @@ namespace spatial
      */
     template <typename Key, typename Value>
     inline typename Kdtree_link<Key, Value>::key_type&
-    key(typename Node<Kdtree_link<Key, Value> >::ptr node)
+    key(typename Node<Kdtree_link<Key, Value> >& node)
     {
-      return static_cast<typename Kdtree_link<Key, Value>::link_ptr>
-        (node)->value.first;
+      return static_cast<typename Kdtree_link<Key, Value>*>
+        (&node)->value.first;
     }
 
     template <typename Key, typename Value>
     inline const typename Kdtree_link<Key, Value>::key_type&
-    key(typename Node<Kdtree_link<Key, Value> >::const_ptr node)
+    const_key(const typename Node<Kdtree_link<Key, Value> >& node)
     {
-      return static_cast<typename Kdtree_link<Key, Value>::const_link_ptr>
-        (node)->value.first;
+      return static_cast<const typename Kdtree_link<Key, Value>*>
+        (&node)->value.first;
     }
     //@}
 
@@ -482,18 +409,16 @@ namespace spatial
      */
     template <typename Key, typename Value>
     inline typename Kdtree_link<Key, Value>::value_type&
-    value(typename Node<Kdtree_link<Key, Value> >::ptr node)
+    value(typename Node<Kdtree_link<Key, Value> >& node)
     {
-      return static_cast<typename Kdtree_link<Key, Value>::link_ptr>
-        (node)->value;
+      return static_cast<typename Kdtree_link<Key, Value>*>(&node)->value;
     }
 
     template <typename Key, typename Value>
     inline const typename Kdtree_link<Key, Value>::value_type&
-    value(typename Node<Kdtree_link<Key, Value> >::const_ptr node)
+    const_value(const typename Node<Kdtree_link<Key, Value> >& node)
     {
-      return static_cast<typename Kdtree_link<Key, Value>::const_link_ptr>
-        (node)->value;
+      return static_cast<const typename Kdtree_link<Key, Value>*>(&node)->value;
     }
     //@}
 
@@ -506,19 +431,18 @@ namespace spatial
      *  \param node the node to convert to a key.
      */
     template <typename Key, typename Value>
-    inline typename Relaxed_kdtree_link<Key, Value>::link_ptr
-    link(typename Node<Relaxed_kdtree_link<Key, Value> >::ptr node)
+    inline typename Relaxed_kdtree_link<Key, Value>&
+    link(typename Node<Relaxed_kdtree_link<Key, Value> >& node)
     {
-      return static_cast
-        <typename Relaxed_kdtree_link<Key, Value>::link_ptr>(node);
+      return *static_cast<typename Relaxed_kdtree_link<Key, Value>*>(&node);
     }
 
     template <typename Key, typename Value>
-    inline typename Relaxed_kdtree_link<Key, Value>::const_link_ptr
-    link(typename Node<Relaxed_kdtree_link<Key, Value> >::const_ptr node)
+    inline const typename Relaxed_kdtree_link<Key, Value>&
+    const_link(const typename Node<Relaxed_kdtree_link<Key, Value> >& node)
     {
-      return static_cast
-        <typename Relaxed_kdtree_link<Key, Value>::const_link_ptr>(node);
+      return *static_cast
+	<const typename Relaxed_kdtree_link<Key, Value>*>(&node);
     }
     //@}
 
@@ -533,19 +457,18 @@ namespace spatial
      */
     template <typename Value>
     inline typename Relaxed_kdtree_link<Value, Value>::key_type&
-    key(typename Node<Relaxed_kdtree_link<Value, Value> >::ptr node)
+    key(typename Node<Relaxed_kdtree_link<Value, Value> >& node)
     {
       return static_cast
-        <typename Relaxed_kdtree_link<Value, Value>::link_ptr>(node)->value;
+	<typename Relaxed_kdtree_link<Value, Value>*>(&node)->value;
     }
 
     template <typename Value>
     inline const typename Relaxed_kdtree_link<Value, Value>::key_type&
-    key(typename Node<Relaxed_kdtree_link<Value, Value> >::const_ptr node)
+    const_key(const typename Node<Relaxed_kdtree_link<Value, Value> >& node)
     {
       return static_cast
-        <typename Relaxed_kdtree_link<Value, Value>::const_link_ptr>
-        (node)->value;
+	<const typename Relaxed_kdtree_link<Value, Value>*>(&node)->value;
     }
     //@}
 
@@ -559,19 +482,18 @@ namespace spatial
      */
     template <typename Key, typename Value>
     inline typename Relaxed_kdtree_link<Key, Value>::key_type&
-    key(typename Node<Relaxed_kdtree_link<Key, Value> >::ptr node)
+    key(typename Node<Relaxed_kdtree_link<Key, Value> >& node)
     {
-      return static_cast<typename Relaxed_kdtree_link<Key, Value>::link_ptr>
-        (node)->value.first;
+      return static_cast<typename Relaxed_kdtree_link<Key, Value>*>
+        (&node)->value.first;
     }
 
     template <typename Key, typename Value>
     inline const typename Relaxed_kdtree_link<Key, Value>::key_type&
-    key(typename Node<Relaxed_kdtree_link<Key, Value> >::const_ptr node)
+    const_key(const typename Node<Relaxed_kdtree_link<Key, Value> >& node)
     {
-      return static_cast
-        <typename Relaxed_kdtree_link<Key, Value>::const_link_ptr>
-        (node)->value.first;
+      return static_cast<const typename Relaxed_kdtree_link<Key, Value>*>
+        (&node)->value.first;
     }
     //@}
 
@@ -585,19 +507,18 @@ namespace spatial
      */
     template <typename Key, typename Value>
     inline typename Relaxed_kdtree_link<Key, Value>::value_type&
-    value(typename Node<Relaxed_kdtree_link<Key, Value> >::ptr node)
+    value(typename Node<Relaxed_kdtree_link<Key, Value> >& node)
     {
       return static_cast
-        <typename Relaxed_kdtree_link<Key, Value>::link_ptr>(node)->value;
+        <typename Relaxed_kdtree_link<Key, Value>*>(&node)->value;
     }
 
     template <typename Key, typename Value>
     inline const typename Relaxed_kdtree_link<Key, Value>::value_type&
-    value(typename Node<Relaxed_kdtree_link<Key, Value> >::const_ptr node)
+    const_value(const typename Node<Relaxed_kdtree_link<Key, Value> >& node)
     {
-      return static_cast
-        <typename Relaxed_kdtree_link<Key, Value>::const_link_ptr>
-        (node)->value;
+      return static_cast<const typename Relaxed_kdtree_link<Key, Value>*>
+        (&node)->value;
     }
     //@}
 
@@ -613,23 +534,27 @@ namespace spatial
      *  \see Relaxed_kdtree_link
      */
     template <typename Mode>
-    void swap(Node<Mode>& a, Node<Mode>& b);
+    void swap_node(typename Node<Mode>& a, typename Node<Mode>& b);
 
     template<typename Key, typename Value>
-    inline void swap(Kdtree_link<Key, Value>& a, Kdtree_link<Key, Value>& b)
-    {
-      typedef Kdtree_link<Key, Value> info;
-      swap(*static_cast<typename Node<info>::ptr>(&a),
-           *static_cast<typename Node<info>::ptr>(&b));
-    }
+    inline void swap(typename Node<Kdtree_link<Key, Value> >& a,
+	             typename Node<Kdtree_link<Key, Value> >& b)
+    { swap_node(a, b); }
+
     template<typename Key, typename Value>
-    inline void swap(Relaxed_kdtree_link<Key, Value>& a,
-                     Relaxed_kdtree_link<Key, Value>& b)
+    inline void swap(typename Node<Relaxed_kdtree_link<Key, Value> >& a,
+		     typename Node<Relaxed_kdtree_link<Key, Value> >& b)
     {
-      typedef Relaxed_kdtree_link<Key, Value> info;
-      std::swap(a.weight, b.weight);
-      swap(*static_cast<typename Node<info>::ptr>(&a),
-           *static_cast<typename Node<info>::ptr>(&b));
+      std::swap(link(a).weight, link(b).weight);
+      swap_node(a, b);
+    }
+
+    template <typename Mode>
+    inline void swap
+    (typename Node<Mode>::ptr& a, typename Node<Mode>::ptr& b)
+    {
+      swap(*a, *b);
+      std::swap(a, b);
     }
     //@}
 
@@ -648,11 +573,10 @@ namespace spatial
       typedef value_type*                        pointer;
       typedef std::ptrdiff_t                     difference_type;
       typedef std::bidirectional_iterator_tag    iterator_category;
-      typedef typename Mode::link_ptr            link_ptr;
+      typedef typename Node<Mode>::ptr           node_ptr;
 
     private:
       typedef Node_iterator<Mode>                Self;
-      typedef typename Node<Mode>::ptr           node_ptr;
 
     public:
       //! Create an uninintialized iterator. This iterator should not be used
@@ -660,7 +584,7 @@ namespace spatial
       Node_iterator() : node() { }
 
       //! Build and assign an interator to a link pointer.
-      explicit Node_iterator(link_ptr x) : node(x) { }
+      explicit Node_iterator(node_ptr x) : node(x) { }
 
       //! Dereferance the iterator: return the value of the node.
       reference operator*() const
@@ -715,11 +639,10 @@ namespace spatial
       typedef const value_type*                  pointer;
       typedef std::ptrdiff_t                     difference_type;
       typedef std::bidirectional_iterator_tag    iterator_category;
-      typedef typename Mode::const_link_ptr      link_ptr;
+      typedef typename Node<Mode>::const_ptr     node_ptr;
 
     private:
       typedef Const_node_iterator<Mode>          Self;
-      typedef typename Node<Mode>::const_ptr     node_ptr;
       typedef Node_iterator<Mode>                iterator;
 
     public:
@@ -729,7 +652,7 @@ namespace spatial
 
       //! Build and assign an interator to a link pointer.
       explicit
-      Const_node_iterator(link_ptr x) : node(x) { }
+      Const_node_iterator(node_ptr x) : node(x) { }
 
       //! Convert an iterator into a constant iterator.
       Const_node_iterator(const iterator& it) : node(it.node) { }
@@ -787,11 +710,10 @@ namespace spatial
       typedef const value_type*             pointer;
       typedef std::ptrdiff_t                difference_type;
       typedef std::forward_iterator_tag     iterator_category;
-      typedef typename Mode::const_link_ptr link_ptr;
+      typedef typename Mode::const_ptr      node_ptr;
 
     private:
       typedef Preorder_node_iterator<Mode>  Self;
-      typedef typename Mode::const_ptr      node_ptr;
 
     public:
       //! Create an uninintialized iterator. This iterator should not be used
@@ -800,7 +722,7 @@ namespace spatial
 
       //! Build and assign an interator to a link pointer.
       explicit
-      Preorder_node_iterator(link_ptr x) : node(x) { }
+      Preorder_node_iterator(node_ptr x) : node(x) { }
 
       //! Dereferance the iterator: return the value of the node.
       reference operator*()

@@ -31,8 +31,8 @@
 #include "spatial_function.hpp"
 #include "spatial_node.hpp"
 #include "spatial_mapping.hpp"
-#include "spatial_range.hpp"
-#include "spatial_neighbor.hpp"
+#include "spatial_region.hpp"
+//#include "spatial_neighbor.hpp"
 
 namespace spatial
 {
@@ -54,59 +54,58 @@ namespace spatial
     {
       typedef Kdtree<Rank, Key, Value, Compare, Alloc>  Self;
 
-      using ::spatial::details::condition;
     public:
       // Container intrincsic types
       typedef Rank                                    rank_type;
       typedef Key                                     key_type;
       typedef Value                                   value_type;
-      typedef Kdtree_node<value_type>                 mode_type;
+      typedef Kdtree_link<key_type, value_type>       mode_type;
       typedef Compare                                 key_compare;
-      typedef typename condition
+      typedef typename ::spatial::details::condition
       <std::tr1::is_same<Key, Value>::value, key_compare,
        ValueCompare<value_type, key_compare> >::type  value_compare;
       typedef Alloc                                   allocator_type;
 
       // Container iterator related types
-      typedef typename condition
+      typedef typename ::spatial::details::condition
       <std::tr1::is_same<Key, Value>::value,
-       const value_type*, value_type*>::type   pointer;
-      typedef const value_type*                const_pointer;
-      typedef typename condition
+       const value_type*, value_type*>::type          pointer;
+      typedef const value_type*                       const_pointer;
+      typedef typename ::spatial::details::condition
       <std::tr1::is_same<Key, Value>::value,
-       const value_type&, value_type&>::type   reference;
-      typedef const Key&                       const_reference;
-      typedef std::size_t                      size_type;
-      typedef std::ptrdiff_t                   difference_type;
+       const value_type&, value_type&>::type          reference;
+      typedef const Key&                              const_reference;
+      typedef std::size_t                             size_type;
+      typedef std::ptrdiff_t                          difference_type;
 
       // Container iterators
       // Conformant to C++ ISO standard, if Key and Value are the same type then
       // iterator and const_iterator shall be the same.
-      typedef typename condition
+      typedef typename ::spatial::details::condition
       <std::tr1::is_same<Key, Value>::value,
        Const_node_iterator<mode_type>,
-       Node_iterator<mode_type> >::type                  iterator;
-      typedef Const_node_iterator<mode_type>             const_iterator;
-      typedef std::reverse_iterator<iterator>            reverse_iterator;
+       Node_iterator<mode_type> >::type               iterator;
+      typedef Const_node_iterator<mode_type>          const_iterator;
+      typedef std::reverse_iterator<iterator>         reverse_iterator;
       typedef std::reverse_iterator
-      <const_iterator>                                   const_reverse_iterator;
-      typedef typename condition
+      <const_iterator>                                const_reverse_iterator;
+      typedef typename ::spatial::details::condition
       <std::tr1::is_same<Key, Value>::value,
-       typename equal_range<Self>::const_iterator,
-       typename equal_range<Self>::iterator>::type       equal_iterator;
-      typedef typename equal_range<Self>::const_iterator const_equal_iterator;
+       typename equal<const Self>::iterator,
+       typename equal<Self>::iterator>::type          equal_iterator;
+      typedef typename equal<const Self>::iterator    const_equal_iterator;
 
     private:
       typedef typename Alloc::template rebind
-      <Kdtree_node<value_type> >::other           Node_allocator;
+      <Kdtree_link<key_type, value_type> >::other Link_allocator;
       typedef typename Alloc::template rebind
       <value_type>::other                         Value_allocator;
 
       // The types used to deal with nodes
-      typedef mode_type::node_ptr                 node_ptr;
-      typedef mode_type::const_node_ptr           const_node_ptr;
-      typedef mode_type::link_ptr                 link_ptr;
-      typedef mode_type::const_link_ptr           const_link_ptr;
+      typedef typename mode_type::node_ptr        node_ptr;
+      typedef typename mode_type::const_node_ptr  const_node_ptr;
+      typedef typename mode_type::link_ptr        link_ptr;
+      typedef typename mode_type::const_link_ptr  const_link_ptr;
 
     private:
       /**
@@ -119,10 +118,8 @@ namespace spatial
        */
       struct Implementation : Rank
       {
-        using ::spatial::details::Compress;
-
         Implementation(const rank_type& rank, const key_compare& compare,
-                       const Node_allocator& alloc)
+                       const Link_allocator& alloc)
           : Rank(rank), count_(compare, 0),
             header_(alloc, Node<mode_type>()) { initialize(); }
 
@@ -139,9 +136,9 @@ namespace spatial
           leftmost_ = &header_();      // the substitute left most pointer
         }
 
-        Compress<key_compare, size_type> count_;
-        Compress<Node_allocator, Node<mode_type> > header_;
-        Node<mode_type>::ptr leftmost_;
+	Compress<key_compare, size_type>           count_;
+	Compress<Link_allocator, Node<mode_type> > header_;
+	typename Node<mode_type>::ptr leftmost_;
       } impl_;
 
     private:
@@ -185,7 +182,7 @@ namespace spatial
       key_compare& get_compare()
       { return impl_.count_.base(); }
 
-      Node_allocator& get_node_allocator()
+      Link_allocator& get_link_allocator()
       { return impl_.header_.base(); }
 
       Value_allocator get_value_allocator() const
@@ -195,35 +192,35 @@ namespace spatial
       // Allocation/Deallocation of nodes
       struct safe_allocator // RAII for exception-safe memory management
       {
-        Node_allocator& alloc;
+        Link_allocator& alloc;
         link_ptr link;
 
-        safe_allocator(Node_allocator& a) : alloc(a), link(0)
+        safe_allocator(Link_allocator& a) : alloc(a), link(0)
         { link = alloc.allocate(1); } // may throw
         ~safe_allocator() { if (link) { alloc.deallocate(link, 1); } }
         link_ptr release() { link_ptr p = link; link=0; return p; }
       };
 
-      link_ptr
+      node_ptr
       create_node(const value_type& value)
       {
-        safe_allocator safe(get_node_allocator());
+        safe_allocator safe(get_link_allocator());
         get_value_allocator().construct(&safe.link->value, value); // may throw
         link_ptr node = safe.release();
         // leave parent uninitialized: its value will change during insertion.
         node->left = 0;
         node->right = 0;
-        return node;
+        return node; // silently casts into the parent node pointer
       }
 
       /**
        *  @brief  Destroy and deallocate @c node.
        */
       void
-      destroy_node(link_ptr node)
+      destroy_node(node_ptr node)
       {
-        get_value_allocator().destroy(&node->value);
-        get_node_allocator().deallocate(node, 1);
+        get_value_allocator().destroy(value(*node));
+        get_link_allocator().deallocate(&link(*node), 1);
       }
 
       /**
@@ -418,23 +415,11 @@ namespace spatial
        */
       std::pair<equal_iterator, equal_iterator>
       equal_range(const key_type& key)
-      {
-        equal_bounds<key_type, key_compare> pred(key_comp(), key);
-        equal_iterator first = details::range::begin(*this, pred);
-        equal_iterator last = details::range::end(*this, pred);
-        return std::make_pair(first, last);
-      }
+      {	return equal_range(*this, key); }
 
       std::pair<const_equal_iterator, const_equal_iterator>
       equal_range(const key_type& key) const
-      {
-        equal_bounds<key_type, key_compare> pred(key_comp(), key);
-        const_equal_iterator first
-          = details::range::const_begin(*this, pred);
-        const_equal_iterator last
-          = details::range::const_end(*this, pred);
-        return std::make_pair(first, last);
-      }
+      {	return equal_range(*this, key); }
       //@}
 
     public:
@@ -524,8 +509,8 @@ namespace spatial
           (get_rank(), other.get_rank());
         template_member_swap<key_compare>::do_it
           (get_compare(), other.get_compare());
-        template_member_swap<Node_allocator>::do_it
-          (get_node_allocator(), other.get_node_allocator());
+        template_member_swap<Link_allocator>::do_it
+          (get_link_allocator(), other.get_link_allocator());
         if (impl_.header_().parent == &impl_.header_())
           {
             impl_.header_().parent = &other.impl_.header_();

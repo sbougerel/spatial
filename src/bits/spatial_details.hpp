@@ -239,8 +239,7 @@ namespace spatial
     less_by_ref(const Compare& compare, dimension_type node_dim,
                 const Key& x, const Key& y)
     {
-      return (compare(node_dim, x, y)
-              || (&x < &y && !compare(node_dim, y, x)));
+      return (compare(node_dim, x, y) || (&x < &y && !compare(node_dim, y, x)));
     }
 
     /**
@@ -262,10 +261,7 @@ namespace spatial
     match_all(const Rank& rank, const Key& key, const Predicate& predicate)
     {
       for (dimension_type i = 0; i < rank(); ++i)
-        {
-          if (predicate(i, key, rank()) != matching)
-            { return false; }
-        }
+        { if (predicate(i, rank(), key) != matching) { return false; } }
       return true;
     }
 
@@ -288,10 +284,7 @@ namespace spatial
     match_any(const Rank& rank, const Key& key, const Predicate& predicate)
     {
       for (dimension_type i = 0; i < rank(); ++i)
-        {
-          if (predicate(i, key, rank()) == matching)
-            { return true; }
-        }
+        { if (predicate(i, rank(), key) == matching) { return true; } }
       return false;
     }
 
@@ -318,7 +311,7 @@ namespace spatial
     {
       for (dimension_type i = 0; i < rank(); ++i)
         {
-          if (i != exclude_dim && predicate(i, key, rank()) != matching)
+          if (i != exclude_dim && predicate(i, rank(), key) != matching)
             { return false; }
         }
       return true;
@@ -352,13 +345,14 @@ namespace spatial
        *  Compare 2 values \c a and \c b with the comparison operator provided
        *  by \c KeyCompare.
        *
+       *  \param dim The dimension of comparison.
        *  \param a The left value to compare.
        *  \param b The right value to compare.
        *  \return The returned value is equivalent to <tt>KeyCompare()(a, b)</tt>.
        */
-      bool operator()(const Value& a, const Value& b) const
+      bool operator()(dimension_type dim, const Value& a, const Value& b) const
       {
-        return KeyCompare::operator()(a.first, b.first);
+        return KeyCompare::operator()(dim, a.first, b.first);
       }
     };
 
