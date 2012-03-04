@@ -66,7 +66,7 @@ namespace spatial
 	}
 #ifdef SPATIAL_SAFER_ARITHMETICS
       return ::spatial::except::check_positive_mul(max, sqrt(one + sum));
-#elif
+#else
       return max * sqrt(one + sum);
 #endif
     }
@@ -98,7 +98,7 @@ namespace spatial
 #ifdef SPATIAL_SAFER_ARITHMETICS
       Distance d = diff(dim, origin, key);
       return ::spatial::except::check_square(d);
-#elif
+#else
       Distance d = diff(dim, origin, key);
       return d * d;
 #endif
@@ -120,7 +120,7 @@ namespace spatial
 	  sum = ::spatial::except::check_positive_add
 	    (sqeuclid_distance_to_plane<Key, Difference, Distance>
 	     (i, origin, key, diff), sum);
-#elif
+#else
 	  sum += sqeuclid_distance_to_plane
 	    <Key, Difference, Distance>(i, origin, key, diff);
 #endif
@@ -157,7 +157,7 @@ namespace spatial
 	  sum = ::spatial::except::check_positive_add
 	    (manhattan_distance_to_plane<Key, Difference, Distance>
 	     (i, origin, key, diff), sum);
-#elif
+#else
 	  sum += manhattan_distance_to_plane
 	    <Key, Difference, Distance>(i, origin, key, diff);
 #endif
@@ -236,15 +236,15 @@ namespace spatial
   struct auto_difference
   {
     //! The \c type that is resolved into the difference functor.
-    typedef typename auto_difference_resolver
+    typedef typename details::auto_difference_resolver
       <typename container_traits<Ct>::key_compare, Unit> type;
 
     //! A factory that builds the difference functor from the compare functor.
     static type make(const typename container_traits<Ct>::key_compare& cmp)
     {
-       auto_difference_resolver<typename container_traits<Ct>::key_compare,
-	                        Unit> res;
-       return res.make(cmp);
+      details::auto_difference_resolver
+      <typename container_traits<Ct>::key_compare, Unit> res;
+      return res.make(cmp);
     }
   };
 
@@ -253,29 +253,29 @@ namespace spatial
    *  are expressed in \c double and the distance between 2 points is calculated
    *  via the functor \c Difference, a concept of \ref ElementDifference.
    *
-   *  @concept euclid_geometry is a concept of \ref Geometry.
+   *  @concept euclid is a concept of \ref Geometry.
    *
    *  @attention The type returned by \c Difference shall allow casting into the
    *  plain old data type \c double.
    *
-   *  @attention \c euclid_geo is written to work on doubles. It will not work
+   *  @attention \c euclid is written to work on doubles. It will not work
    *  on integral types, not even approximately. If you are looking computing
    *  distances in Euclidian geometry using integers, consider using \ref
-   *  sqeuclid_geo. It is very fast because it omits the square root calculation
+   *  sqeuclid. It is very fast because it omits the square root calculation
    *  and it is as precise as the integral types permits.
    *
-   *  \c euclid_geo attempts to compute distances while limitting loss of
+   *  \c euclid attempts to compute distances while limitting loss of
    *  precision due to overflow during the computation. For the \c double type,
-   *  \c euclid_geo could be more precise than \ref sqeuclid_geo in some cases,
+   *  \c euclid could be more precise than \ref sqeuclid in some cases,
    *  but it will be slower in all cases.
    *
-   *  \c euclid_geo computes distances that are expressed in \c double. If you
-   *  need to express your distances in \c float, the geometry \ref euclidf_geo
+   *  \c euclid computes distances that are expressed in \c double. If you
+   *  need to express your distances in \c float, the geometry \ref euclidf
    *  is working on \c float.
    */
   template<typename Tp, typename Difference>
-  struct euclid_geo
-    : Difference // empty member optimization
+  struct euclid
+    : private Difference // empty member optimization
   {
     /**
      *  @brief  The distance type being used for distance calculations.
@@ -283,7 +283,7 @@ namespace spatial
     typedef double distance_type;
 
     //! The constructors allows you to specify a custom difference type.
-    euclid_geo(const Difference& diff = Difference()) : Difference(diff) { }
+    euclid(const Difference& diff = Difference()) : Difference(diff) { }
 
     /**
      *  @brief  Compute the distance between the point of @c origin and the @c
@@ -317,25 +317,25 @@ namespace spatial
   };
 
   /**
-   *  Facilitates creation of a type \ref euclid_geo from an existing container.
+   *  Facilitates creation of a type \ref euclid from an existing container.
    */
   template<typename Ct, typename Difference>
-  euclid_geo<typename container_traits<Ct>::key_type, Difference>
-  make_euclid_geo(const Ct& container, const Difference& diff)
+  euclid<typename container_traits<Ct>::key_type, Difference>
+  make_euclid(const Ct& container, const Difference& diff)
   {
-    return euclid_geo<typename container_traits<Ct>::key_type,
+    return euclid<typename container_traits<Ct>::key_type,
                       Difference>(diff);
   }
 
   /**
-   *  Facilitates creation of a type \ref euclid_geo from an existing container.
+   *  Facilitates creation of a type \ref euclid from an existing container.
    */
   template<typename Ct>
-  euclid_geo<typename container_traits<Ct>::key_type,
+  euclid<typename container_traits<Ct>::key_type,
              typename auto_difference<Ct, double>::type>
-  make_euclid_geo_auto(const Ct& container)
+  make_euclid_auto(const Ct& container)
   {
-    return euclid_geo<typename container_traits<Ct>::key_type,
+    return euclid<typename container_traits<Ct>::key_type,
                       typename auto_difference<Ct, double>::type>
 		      (auto_difference<Ct, double>::make(diff));
   }
@@ -345,30 +345,30 @@ namespace spatial
    *  are expressed in \c float and the distance between 2 points is calculated
    *  via the functor \c Difference, a concept of \ref ElementDifference.
    *
-   *  @concept euclidf_geo is a concept of \ref Geometry.
+   *  @concept euclidf is a concept of \ref Geometry.
    *
    *  @attention The type returned by \c Difference shall allow casting into the
    *  plain old data type \c float.
    *
-   *  @attention \c euclidf_geo is written to work on floats. It will not work
+   *  @attention \c euclidf is written to work on floats. It will not work
    *  on integral types, not even approximately. If you are looking computing
    *  distances in Euclidian geometry using integers, consider using \ref
-   *  sqeuclid_geo. It is very fast because it omits the square root calculation
+   *  sqeuclid. It is very fast because it omits the square root calculation
    *  and it is as precise as the integral types permits, also it may overflow
    *  during calculation.
    *
-   *  \c euclidf_geo attempts to compute distances while limitting loss of
+   *  \c euclidf attempts to compute distances while limitting loss of
    *  precision due to overflow during the computation. For the \c float type,
-   *  \c euclid_geo could be more precise than \ref sqeuclid_geo in some cases,
+   *  \c euclid could be more precise than \ref sqeuclid in some cases,
    *  but it will be slower in all cases.
    *
-   *  \c euclidf_geo computes distances that are expressed in \c float. If you
-   *  need to express your distances in \c double, the geometry \ref euclid_geo
+   *  \c euclidf computes distances that are expressed in \c float. If you
+   *  need to express your distances in \c double, the geometry \ref euclid
    *  is working on \c double.
    */
   template<typename Tp, typename Difference>
-  struct euclidf_geo
-    : Difference
+  struct euclidf
+    : private Difference
   {
     /**
      *  @brief  The distance type being used for distance calculations.
@@ -376,7 +376,7 @@ namespace spatial
     typedef float distance_type;
 
     //! The constructor allows you to specify a custom difference type.
-    euclidf_geo(const Difference& diff = Difference()) : Difference(diff) { }
+    euclidf(const Difference& diff = Difference()) : Difference(diff) { }
 
     /**
      *  @brief  Compute the distance between the point of @c origin and the @c
@@ -410,27 +410,27 @@ namespace spatial
   };
 
   /**
-   *  Facilitates creation of a type \ref euclid_geo from an existing container.
+   *  Facilitates creation of a type \ref euclidf from an existing container.
    */
   template<typename Ct, typename Difference>
-  euclidf_geo<typename container_traits<Ct>::key_type, Difference>
-  make_euclidf_geo(const Ct& container, const Difference& diff)
+  euclidf<typename container_traits<Ct>::key_type, Difference>
+  make_euclidf(const Ct& container, const Difference& diff)
   {
-    return euclidf_geo<typename container_traits<Ct>::key_type,
-                       Difference>(diff);
+    return euclidf<typename container_traits<Ct>::key_type,
+                   Difference>(diff);
   }
 
   /**
-   *  Facilitates creation of a type \ref euclid_geo from an existing container.
+   *  Facilitates creation of a type \ref euclidf from an existing container.
    */
   template<typename Ct>
-  euclidf_geo<typename container_traits<Ct>::key_type,
+  euclidf<typename container_traits<Ct>::key_type,
               typename auto_difference<Ct, float>::type>
-  make_euclidf_geo_auto(const Ct& container)
+  make_euclidf_auto(const Ct& container)
   {
-    return euclidf_geo<typename container_traits<Ct>::key_type,
-                       typename auto_difference<Ct, float>::type>
-		       (auto_difference<Ct, float>::make(diff));
+    return euclidf<typename container_traits<Ct>::key_type,
+                   typename auto_difference<Ct, float>::type>
+		   (auto_difference<Ct, float>::make(diff));
   }
 
   /**
@@ -454,15 +454,15 @@ namespace spatial
    *  \ref arithmetic_error exception upon overflow, compile your application
    *  with \c #define \c SPATIAL_SAFER_ARITHEMTICS.
    */
-  template<typename Tp, template Difference,
-           typename Distance = Difference::difference_type>
-  struct sqeuclid_geo
-      : Difference // empty-member optimization
+  template<typename Tp, typename Difference,
+           typename Distance = typename Difference::difference_type>
+  struct sqeuclid
+    : private Difference // empty-member optimization
   {
     typedef Distance distance_type;
 
     //! The constructor allows you to specify a custom difference type.
-    sqeuclid_geo(const Difference& diff = Difference()) : Difference(diff) { }
+    sqeuclid(const Difference& diff = Difference()) : Difference(diff) { }
 
     /**
      *  @brief  Compute the distance between the point of @c origin and the @c
@@ -493,19 +493,19 @@ namespace spatial
   };
 
   /**
-   *  Facilitates creation of a type \ref sqeuclid_geo from an existing
+   *  Facilitates creation of a type \ref sqeuclid from an existing
    *  container.
    */
   template<typename Ct, typename Difference>
-  sqeuclid_geo<typename container_traits<Ct>::key_type, Difference>
-  make_sqeuclid_geo(const Ct& container, const Difference& diff)
+  sqeuclid<typename container_traits<Ct>::key_type, Difference>
+  make_sqeuclid(const Ct& container, const Difference& diff)
   {
-    return sqeuclid_geo<typename container_traits<Ct>::key_type,
-                        Difference>(diff);
+    return sqeuclid<typename container_traits<Ct>::key_type,
+                    Difference>(diff);
   }
 
   /**
-   *  Facilitates creation of a type \ref sqeuclid_geo from an existing
+   *  Facilitates creation of a type \ref sqeuclid from an existing
    *  container and if you want to use a type for distance that is different
    *  from the type given in the \c Difference functor.
    *
@@ -515,15 +515,15 @@ namespace spatial
    *  expression of "one" as an input to this function.
    */
   template<typename Ct, typename Difference, typename Distance>
-  sqeuclid_geo<typename container_traits<Ct>::key_type, Difference, Distance>
-  make_sqeuclid_geo(const Ct& container, const Difference& diff, Distance)
+  sqeuclid<typename container_traits<Ct>::key_type, Difference, Distance>
+  make_sqeuclid(const Ct& container, const Difference& diff, Distance)
   {
-    return sqeuclid_geo<typename container_traits<Ct>::key_type,
-                        Difference, Distance>(diff);
+    return sqeuclid<typename container_traits<Ct>::key_type,
+                    Difference, Distance>(diff);
   }
 
   /**
-   *  Facilitates creation of a type \ref sqeuclid_geo from an existing
+   *  Facilitates creation of a type \ref sqeuclid from an existing
    *  container.
    *
    *  Use of function is a little particular. It needs a value of type
@@ -532,13 +532,13 @@ namespace spatial
    *  expression of "one" as an input to this function.
    */
   template<typename Ct, typename Distance>
-  sqeuclid_geo<typename container_traits<Ct>::key_type,
+  sqeuclid<typename container_traits<Ct>::key_type,
                typename auto_difference<Ct, Distance>::type, Distance>
-  make_sqeuclid_geo_auto(const Ct& container, Distance)
+  make_sqeuclid_auto(const Ct& container, Distance)
   {
-    return sqeuclid_geo<typename container_traits<Ct>::key_type,
-                        typename auto_difference<Ct, Distance>::type, Distance>
-		        (auto_difference<Ct, Distance>::make(diff));
+    return sqeuclid<typename container_traits<Ct>::key_type,
+                    typename auto_difference<Ct, Distance>::type, Distance>
+		    (auto_difference<Ct, Distance>::make(diff));
   }
 
   /**
@@ -556,9 +556,9 @@ namespace spatial
    *  with \c #define \c SPATIAL_SAFER_ARITHEMTICS.
    */
   template<typename Tp, typename Difference,
-           typename Distance = Difference::difference_type>
+           typename Distance = typename Difference::difference_type>
   struct manhattan
-    : Distance // empty-member optimization
+    : private Distance // empty-member optimization
   {
     typedef Distance distance_type;
 
@@ -594,19 +594,19 @@ namespace spatial
   };
 
   /**
-   *  Facilitates creation of a type \ref manhattan_geo from an existing
+   *  Facilitates creation of a type \ref manhattan from an existing
    *  container.
    */
   template<typename Ct, typename Difference>
-  manhattan_geo<typename container_traits<Ct>::key_type, Difference>
-  make_manhattan_geo(const Ct& container, const Difference& diff)
+  manhattan<typename container_traits<Ct>::key_type, Difference>
+  make_manhattan(const Ct& container, const Difference& diff)
   {
-    return manhattan_geo<typename container_traits<Ct>::key_type,
-                         Difference>(diff);
+    return manhattan<typename container_traits<Ct>::key_type,
+                     Difference>(diff);
   }
 
   /**
-   *  Facilitates creation of a type \ref manhattan_geo from an existing
+   *  Facilitates creation of a type \ref manhattan from an existing
    *  container and if you want to use a type for distance that is different
    *  from the type given in the \c Difference functor.
    *
@@ -616,15 +616,15 @@ namespace spatial
    *  expression of "one" as an input to this function.
    */
   template<typename Ct, typename Difference, typename Distance>
-  manhattan_geo<typename container_traits<Ct>::key_type, Difference, Distance>
-  make_manhattan_geo(const Ct& container, const Difference& diff, Distance)
+  manhattan<typename container_traits<Ct>::key_type, Difference, Distance>
+  make_manhattan(const Ct& container, const Difference& diff, Distance)
   {
-    return manhattan_geo<typename container_traits<Ct>::key_type,
-                         Difference, Distance>(diff);
+    return manhattan<typename container_traits<Ct>::key_type,
+                     Difference, Distance>(diff);
   }
 
   /**
-   *  Facilitates creation of a type \ref manhattan_geo from an existing
+   *  Facilitates creation of a type \ref manhattan from an existing
    *  container.
    *
    *  Use of function is a little particular. It needs a value of type
@@ -633,13 +633,13 @@ namespace spatial
    *  expression of "one" as an input to this function.
    */
   template<typename Ct, typename Distance>
-  manhattan_geo<typename container_traits<Ct>::key_type,
+  manhattan<typename container_traits<Ct>::key_type,
                 typename auto_difference<Ct, Distance>::type, Distance>
-  make_manhattan_geo_auto(const Ct& container, Distance)
+  make_manhattan_auto(const Ct& container, Distance)
   {
-    return manhattan_geo<typename container_traits<Ct>::key_type,
-                         typename auto_difference<Ct, Distance>::type, Distance>
-		         (auto_difference<Ct, Distance>::make(diff));
+    return manhattan<typename container_traits<Ct>::key_type,
+                     typename auto_difference<Ct, Distance>::type, Distance>
+		     (auto_difference<Ct, Distance>::make(diff));
   }
 
 } // namespace spatial

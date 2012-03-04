@@ -15,28 +15,59 @@
 #ifndef SPATIAL_TEST_TRAITS_HPP
 #define SPATIAL_TEST_TRAITS_HPP
 
-BOOST_AUTO_TEST_CASE( test_traits_condition )
+/**
+ *  Test that \c mode_traits returns the expected mode for 2 specific node
+ *  types.
+ */
+BOOST_AUTO_TEST_CASE(test_mode_traits)
 {
-  typedef details::condition<true, std::pair<int, int>,
-    std::allocator<int> >::type type1;
-  type1 must_compile_1 = std::pair<int, int>();
-  silence_unused(must_compile_1);
-  typedef details::condition<false, std::pair<int, int>,
-    std::allocator<int> >::type type2;
-  type2 must_compile_2 = std::allocator<int>();
-  silence_unused(must_compile_2);
+  typedef pointset<2, int2> container_type;
+  check_is_same
+    <mode_traits<container_type::mode_type>::invariant_category,
+    details::strict_invariant_tag>();
+  check_is_same
+    <mode_traits<container_type::mode_type>::invariant_category,
+    details::relaxed_invariant_tag>();
 }
 
-BOOST_AUTO_TEST_CASE( test_node_traits )
+/**
+ *  To test \c container_traits we use a real container and attempt to recover
+ *  every of its sub-defined types.
+ */
+BOOST_AUTO_TEST_CASE(test_container_traits)
 {
-  typedef details::node_traits<details::Kdtree_node<int> >
-    ::invariant_category type1;
-  type1 must_compile_1 = details::strict_invariant_tag();
-  silence_unused(must_compile_1);
-  typedef details::node_traits<details::Relaxed_kdtree_node<int> >
-    ::invariant_category type2;
-  type2 must_compile_2 = details::relaxed_invariant_tag();
-  silence_unused(must_compile_2);
+  typedef pointset<2, int2> container_type;
+# define SPATIAL_TRAIT_CHECK(Type)         \
+  check_is_same                            \
+  <container_traits<container_type>::Type, \
+   container_type::Type>()
+  SPATIAL_TRAIT_CHECK(key_type);
+  SPATIAL_TRAIT_CHECK(value_type);
+  SPATIAL_TRAIT_CHECK(pointer);
+  SPATIAL_TRAIT_CHECK(const_pointer);
+  SPATIAL_TRAIT_CHECK(reference);
+  SPATIAL_TRAIT_CHECK(const_reference);
+  SPATIAL_TRAIT_CHECK(mode_type);
+  SPATIAL_TRAIT_CHECK(size_type);
+  SPATIAL_TRAIT_CHECK(difference_type);
+  SPATIAL_TRAIT_CHECK(allocator_type);
+  SPATIAL_TRAIT_CHECK(key_compare);
+  SPATIAL_TRAIT_CHECK(value_compare);
+  SPATIAL_TRAIT_CHECK(rank_type);
+  SPATIAL_TRAIT_CHECK(iterator);
+  SPATIAL_TRAIT_CHECK(const_iterator);
+# undef SPATIAL_TRAIT_CHECK
+}
+
+/**
+ *  To test \c geometry_traits we use a real geometry and attempt to recover
+ *  every of its sub-defined types.
+ */
+BOOST_AUTO_TEST_CASE(test_geometry_trait)
+{
+  check_is_same
+    <geometry_traits<sqeuclid<int2, paren_minus<int2, int> > >::distance_type,
+     sqeuclid<int2, paren_minus<int2, int> >::distance_type>();
 }
 
 #endif // SPATIAL_TEST_TRAITS_HPP

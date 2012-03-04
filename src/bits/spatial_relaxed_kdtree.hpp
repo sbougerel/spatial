@@ -44,7 +44,7 @@
 #include "spatial_node.hpp"
 #include "spatial_mapping.hpp"
 #include "spatial_region.hpp"
-//#include "spatial_neighbor.hpp"
+#include "spatial_neighbor.hpp"
 
 namespace spatial
 {
@@ -159,16 +159,17 @@ namespace spatial
       typedef typename ::spatial::details::condition
       <std::tr1::is_same<Key, Value>::value,
        Const_node_iterator<mode_type>,
-       Node_iterator<mode_type> >::type                  iterator;
-      typedef Const_node_iterator<mode_type>             const_iterator;
-      typedef std::reverse_iterator<iterator>            reverse_iterator;
+       Node_iterator<mode_type> >::type               iterator;
+      typedef Const_node_iterator<mode_type>          const_iterator;
+      typedef std::reverse_iterator<iterator>         reverse_iterator;
       typedef std::reverse_iterator
-      <const_iterator>                                   const_reverse_iterator;
+      <const_iterator>                                const_reverse_iterator;
       typedef typename ::spatial::details::condition
       <std::tr1::is_same<Key, Value>::value,
-       typename equal<const Self>::iterator,
-       typename equal<Self>::iterator>::type             equal_iterator;
-      typedef typename equal<const Self>::iterator       const_equal_iterator;
+       typename equal_region<const Self>::iterator,
+       typename equal_region<Self>::iterator>::type   equal_iterator;
+      typedef typename equal_region<const Self>
+      ::iterator                                      const_equal_iterator;
 
     private:
       typedef typename Alloc::template rebind

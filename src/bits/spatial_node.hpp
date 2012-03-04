@@ -789,7 +789,8 @@ namespace spatial
       bidirectional_iterator() { }
 
       //! Initialize the node at construction time
-      bidirectional_iterator(node_ptr x) : node(x) { }
+      bidirectional_iterator(node_ptr x, dimension_type n)
+	: node(x), node_dim(n) { }
 
       //! Returns the reference to the value pointed to by the iterator.
       reference operator*() const
@@ -887,6 +888,15 @@ namespace spatial
        *  iterator must always point to a valid node in the tree or to the end.
        */
       node_ptr node;
+
+      /**
+       *  The dimension of the current node.
+       *
+       *  Modifying this attribute can potentially invalidate the iterator. Do
+       *  not modify this attribute unless you know what you're doing. This
+       *  iterator must always point to a valid node in the tree or to the end.
+       */
+      dimension_type node_dim;
     };
 
   } // namespace details

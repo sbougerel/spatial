@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(install_srand)
   srand((unsigned int)time(NULL));
 }
 
-#include "bits/fixtures.hpp"
+#include "bits/test_fixtures.hpp"
 #include "bits/spatial_test_traits.hpp"
 #include "bits/spatial_test_details.hpp"
 #include "bits/spatial_test_node.hpp"

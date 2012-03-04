@@ -32,7 +32,7 @@ namespace spatial
   struct mode_traits
   {
     //! The invarient category for the linking mode.
-    typedef typename Mode::relaxed_invariant_tag invariant_category;
+    typedef typename Mode::invariant_category invariant_category;
   };
 
   /**

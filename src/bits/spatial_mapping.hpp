@@ -53,13 +53,12 @@ namespace spatial
        *
        *  \param c The container being iterated.
        *  \param m The mapping dimension used in the iteration.
-       *  \param n The node dimension for the node pointed to by the iterator.
        */
       Mapping_data
-      (const Ct& c, dimension_type m, dimension_type n)
+      (const Ct& c, dimension_type m)
         : ::spatial::container_traits<Ct>::rank_type(c.rank()),
           mapping_dim(::spatial::container_traits<Ct>
-                      ::key_compare(c.key_comp()), m), node_dim(n)
+                      ::key_compare(c.key_comp()), m)
       { }
 
       /**
@@ -77,15 +76,6 @@ namespace spatial
        */
       Compress<typename ::spatial::container_traits<Ct>::key_compare,
                dimension_type> mapping_dim;
-
-      /**
-       *  The dimension for node.
-       *
-       *  \Warning Modifing this attribute can potientially invalidate the
-       *  iterator. Do not modify this attribute unless you know what you're
-       *  doing.
-       */
-      dimension_type node_dim;
     };
 
   } // namespace details
@@ -129,8 +119,17 @@ namespace spatial
       typedef typename ::spatial::details::bidirectional_iterator
       <typename container_traits<Ct>::mode_type, iterator,
        ::std::tr1::is_same<typename container_traits<Ct>::key_type,
-                           typename container_traits<Ct>::value_type>::value>
-      Base;
+                           typename container_traits<Ct>::value_type>
+			   ::value> Base;
+
+      template<typename Iterator> struct Rebind
+      {
+	typedef typename ::spatial::details::bidirectional_iterator
+        <typename container_traits<Ct>::mode_type, Iterator,
+         ::std::tr1::is_same<typename container_traits<Ct>::key_type,
+	                     typename container_traits<Ct>::value_type>
+	                     ::value> type;
+      };
 
     public:
       //! Uninitialized iterator.
@@ -149,8 +148,23 @@ namespace spatial
        */
       iterator(Ct& container, dimension_type mapping_dim,
                typename container_traits<Ct>::iterator iter)
-        : Base(iter.node),
-          data(container, mapping_dim, modulo(iter.node, container.rank())) { }
+        : Base(iter.node, modulo(iter.node, container.rank())),
+          data(container, mapping_dim) { }
+
+      /**
+       *  Build this iterator from another bidirectional iterator.
+       *
+       *  \param container The container to iterate.
+       *  \param mapping_dim The dimension used to order all nodes during the
+       *  iteration.
+       *  \param node_dim The dimension of the node pointed to by iterator.
+       *  \param iter Use the node currenly pointed to by iter as a staring
+       *  point of the iteration.
+       */
+      template<typename Iterator>
+      iterator(Ct& container, dimension_type mapping_dim,
+	       const typename Rebind<Iterator>::type& iter)
+        : Base(iter.node, iter.node_dim), data(container, mapping_dim) { }
 
       /**
        *  When the information of the dimension for the current node being
@@ -177,7 +191,7 @@ namespace spatial
       iterator(Ct& container, dimension_type mapping_dim,
                dimension_type node_dim,
                typename container_traits<Ct>::mode_type::node_ptr node)
-        : Base(node), data(container, mapping_dim, node_dim) { }
+        : Base(node, node_dim), data(container, mapping_dim) { }
 
       //@{
       /**
@@ -239,6 +253,12 @@ namespace spatial
       typedef typename ::spatial::details::bidirectional_iterator
       <typename container_traits<Ct>::mode_type, iterator, true> Base;
 
+      template<typename Iterator> struct Rebind
+      {
+	typedef typename ::spatial::details::bidirectional_iterator
+        <typename container_traits<Ct>::mode_type, Iterator, true> type;
+      };
+
     public:
       //! Build an uninitialized iterator.
       iterator() { }
@@ -256,8 +276,24 @@ namespace spatial
        */
       iterator(const Ct& container, dimension_type dim,
                typename container_traits<const Ct>::iterator iter)
-        : Base(iter.node),
-          data(dim, modulo(iter.node, container.rank()), container) { }
+        : Base(iter.node, modulo(iter.node, container.rank())),
+          data(dim, container) { }
+
+      /**
+       *  Build this iterator from another bidirectional iterator.
+       *
+       *  \param container The container to iterate.
+       *  \param mapping_dim The dimension used to order all nodes during the
+       *  iteration.
+       *  \param node_dim The dimension of the node pointed to by iterator.
+       *  \param iter Use the node currenly pointed to by iter as a staring
+       *  point of the iteration.
+       */
+      template<typename Iterator>
+      iterator(const Ct& container, dimension_type mapping_dim,
+	       const typename Rebind<Iterator>::type& iter)
+        : Base(iter.node, iter.node_dim),
+          data(container, mapping_dim) { }
 
       /**
        *  When the information of the dimension for the current node being
@@ -284,11 +320,11 @@ namespace spatial
       iterator(const Ct& container,
                dimension_type mapping_dim, dimension_type node_dim,
                typename container_traits<Ct>::mode_type::node_ptr node)
-        : Base(node), data(container, mapping_dim, node_dim) { }
+        : Base(node, node_dim), data(container, mapping_dim) { }
 
       //! Convertion of mutable iterator into a constant iterator is permitted.
       iterator(const typename mapping<Ct>::iterator& iter)
-        : Base(iter.node), data(iter.data) { }
+        : Base(iter.node, iter.node_dim), data(iter.data) { }
 
       /**
        *  This iterator can be casted silently into a container iterator. You can

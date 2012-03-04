@@ -80,11 +80,13 @@ namespace spatial
       Compress() { }
 
       //! Compressed member with uninitialized base.
-      //! \param member The value of the \c Member type.
-      Compress(const Member& member)
-        : Base(), member_(member) { }
+      //! \param compressed_base The value of the \c Base type.
+      explicit Compress(const Base& compressed_base)
+        : Base(compressed_base), member_() { }
 
-      //!
+      //! Standard initializer with \c Base and \c Member values
+      //! \param compressed_base The value of the \c Base type.
+      //! \param memeber The value of the \c Member type.
       Compress(const Base& compressed_base, const Member& member)
         : Base(compressed_base), member_(member) { }
 

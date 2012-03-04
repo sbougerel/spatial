@@ -15,44 +15,103 @@
 #ifndef SPATIAL_TEST_NODE_HPP
 #define SPATIAL_TEST_NODE_HPP
 
-BOOST_AUTO_TEST_CASE( test_empty_header )
+struct header_fixture
 {
-  Node_basic_empty_fixture fix;
-  BOOST_CHECK(Node_base::header(&fix.header));
+  Node<Kdtree_link<int, int> > header;
+  header_fixture()
+  {
+    header.parent = &header;
+    header.left = &header;
+    header.right = &header;
+  }
+};
+
+struct int_node_fixture
+{
+  /*          H
+              |
+             Root
+             /   \
+             L     R
+            /  \
+          LL    LR       */
+  typedef Node<Kdtree_link<int, int> > node_type;
+  node_type header;
+  node_type node_root;
+  node_type node_left;
+  node_type node_left_left;
+  node_type node_left_right;
+  node_type node_right;
+
+  int_node_fixture()
+  {
+    header.parent = &node_root;
+    header.left = &header;
+    header.right = &node_right;
+    node_root.parent = &header;
+    node_root.left = &node_left;
+    node_root.right = &node_right;
+    node_left.parent = &node_root;
+    node_left.left = &node_left_left;
+    node_left.right = &node_left_right;
+    node_right.parent = &node_root;
+    node_right.left = 0;
+    node_right.right = 0;
+    node_left_right.parent = &node_left;
+    node_left_right.left = 0;
+    node_left_right.right = 0;
+    node_left_left.parent = &node_left;
+    node_left_left.left = 0;
+    node_left_left.right = 0;
+  }
+};
+
+BOOST_AUTO_TEST_CASE( test_header )
+{
+  header_fixture fix1;
+  BOOST_CHECK(header(&fix1.header));
+  int_node_fixture fix2;
+  BOOST_CHECK(header(&fix2.header));
+  BOOST_CHECK(!header(&fix2.node_root));
+  BOOST_CHECK(!header(&fix2.node_left));
+  BOOST_CHECK(!header(&fix2.node_left_left));
+  BOOST_CHECK(!header(&fix2.node_left_right));
+  BOOST_CHECK(!header(&fix2.node_right));
+  BOOST_CHECK(!header(&fix2.node_right));
 }
 
 BOOST_AUTO_TEST_CASE( test_5_node )
 {
-  Five_Node_basic_fixture fix;
-  BOOST_CHECK(Node_base::header(&fix.header));
-  BOOST_CHECK(!Node_base::header(&fix.node_root));
-  BOOST_CHECK(!Node_base::header(&fix.node_left));
-  BOOST_CHECK(!Node_base::header(&fix.node_right));
-  BOOST_CHECK(!Node_base::header(&fix.node_left_right));
-  BOOST_CHECK(!Node_base::header(&fix.node_left_left));
-  BOOST_CHECK(Node_base::minimum(&fix.node_root) == &fix.node_left_left);
-  BOOST_CHECK(Node_base::maximum(&fix.node_root) == &fix.node_right);
-  Node_base::Base_ptr node = &fix.node_left_left;
-  BOOST_REQUIRE((node = Node_base::increment(node)) == &fix.node_left);
-  BOOST_REQUIRE((node = Node_base::increment(node)) == &fix.node_left_right);
-  BOOST_REQUIRE((node = Node_base::increment(node)) == &fix.node_root);
-  BOOST_REQUIRE((node = Node_base::increment(node)) == &fix.node_right);
-  BOOST_REQUIRE((node = Node_base::increment(node)) == &fix.header);
-  BOOST_REQUIRE((node = Node_base::decrement(node)) == &fix.node_right);
-  BOOST_REQUIRE((node = Node_base::decrement(node)) == &fix.node_root);
-  BOOST_REQUIRE((node = Node_base::decrement(node)) == &fix.node_left_right);
-  BOOST_REQUIRE((node = Node_base::decrement(node)) == &fix.node_left);
-  BOOST_REQUIRE((node = Node_base::decrement(node)) == &fix.node_left_left);
-  Node_base::Const_Base_ptr cnode = &fix.node_root;
-  BOOST_REQUIRE((cnode = Node_base::preorder_increment(cnode))
+  int_node_fixture fix;
+  BOOST_CHECK(header(&fix.header));
+  BOOST_CHECK(!header(&fix.node_root));
+  BOOST_CHECK(!header(&fix.node_left));
+  BOOST_CHECK(!header(&fix.node_right));
+  BOOST_CHECK(!header(&fix.node_left_right));
+  BOOST_CHECK(!header(&fix.node_left_left));
+  BOOST_CHECK(minimum(&fix.node_root) == &fix.node_left_left);
+  BOOST_CHECK(maximum(&fix.node_root) == &fix.node_right);
+  Base_ptr node = &fix.node_left_left;
+  BOOST_REQUIRE((node = increment(node)) == &fix.node_left);
+  BOOST_REQUIRE((node = increment(node)) == &fix.node_left_right);
+  BOOST_REQUIRE((node = increment(node)) == &fix.node_root);
+  BOOST_REQUIRE((node = increment(node)) == &fix.node_right);
+  BOOST_REQUIRE((node = increment(node)) == &fix.header);
+  BOOST_REQUIRE((node = decrement(node)) == &fix.node_right);
+  BOOST_REQUIRE((node = decrement(node)) == &fix.node_root);
+  BOOST_REQUIRE((node = decrement(node)) == &fix.node_left_right);
+  BOOST_REQUIRE((node = decrement(node)) == &fix.node_left);
+  BOOST_REQUIRE((node = decrement(node)) == &fix.node_left_left);
+  Const_Base_ptr cnode = &fix.node_root;
+  BOOST_REQUIRE((cnode = preorder_increment(cnode))
                 == &fix.node_left);
-  BOOST_REQUIRE((cnode = Node_base::preorder_increment(cnode))
+  BOOST_REQUIRE((cnode = preorder_increment(cnode))
                 == &fix.node_left_left);
-  BOOST_REQUIRE((cnode = Node_base::preorder_increment(cnode))
+  BOOST_REQUIRE((cnode = preorder_increment(cnode))
                 == &fix.node_left_right);
-  BOOST_REQUIRE((cnode = Node_base::preorder_increment(cnode))
+  BOOST_REQUIRE((cnode = preorder_increment(cnode))
                 == &fix.node_right);
-  BOOST_REQUIRE((cnode = Node_base::preorder_increment(cnode))
+  BOOST_REQUIRE((cnode = preorder_increment(cnode))
                 == &fix.header);
 }
 
@@ -60,8 +119,8 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
 {
   {
     Five_Node_basic_fixture fix; // swap with non-root
-    Node_base::Base_ptr left_left = &fix.node_left_left;
-    Node_base::Base_ptr right = &fix.node_right;
+    Base_ptr left_left = &fix.node_left_left;
+    Base_ptr right = &fix.node_right;
     swap(*left_left, *right);
     BOOST_CHECK(left_left == &fix.node_left_left);
     BOOST_CHECK(right == &fix.node_right);
@@ -80,8 +139,8 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
   }
   {
     Five_Node_basic_fixture fix; // swap with non-root, invert args
-    Node_base::Base_ptr left_left = &fix.node_left_left;
-    Node_base::Base_ptr right = &fix.node_right;
+    Base_ptr left_left = &fix.node_left_left;
+    Base_ptr right = &fix.node_right;
     swap(*right, *left_left);
     BOOST_CHECK(left_left == &fix.node_left_left);
     BOOST_CHECK(right == &fix.node_right);
@@ -100,8 +159,8 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
   }
   {
     Five_Node_basic_fixture fix; // swap with root
-    Node_base::Base_ptr left_left = &fix.node_left_left;
-    Node_base::Base_ptr root = &fix.node_root;
+    Base_ptr left_left = &fix.node_left_left;
+    Base_ptr root = &fix.node_root;
     swap(*left_left, *root);
     BOOST_CHECK(left_left == &fix.node_left_left);
     BOOST_CHECK(root == &fix.node_root);
@@ -123,8 +182,8 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
   }
   {
     Five_Node_basic_fixture fix; // swap with root, invert args
-    Node_base::Base_ptr left_left = &fix.node_left_left;
-    Node_base::Base_ptr root = &fix.node_root;
+    Base_ptr left_left = &fix.node_left_left;
+    Base_ptr root = &fix.node_root;
     swap(*root, *left_left);
     BOOST_CHECK(left_left == &fix.node_left_left);
     BOOST_CHECK(root == &fix.node_root);
@@ -146,8 +205,8 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
   }
   {
     Five_Node_basic_fixture fix; // swap with left child
-    Node_base::Base_ptr left_left = &fix.node_left_left;
-    Node_base::Base_ptr left = &fix.node_left;
+    Base_ptr left_left = &fix.node_left_left;
+    Base_ptr left = &fix.node_left;
     swap(*left_left, *left);
     BOOST_CHECK(left_left == &fix.node_left_left);
     BOOST_CHECK(left == &fix.node_left);
@@ -162,8 +221,8 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
   }
   {
     Five_Node_basic_fixture fix; // swap with left child, invert args
-    Node_base::Base_ptr left_left = &fix.node_left_left;
-    Node_base::Base_ptr left = &fix.node_left;
+    Base_ptr left_left = &fix.node_left_left;
+    Base_ptr left = &fix.node_left;
     swap(*left, *left_left);
     BOOST_CHECK(left_left == &fix.node_left_left);
     BOOST_CHECK(left == &fix.node_left);
@@ -178,8 +237,8 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
   }
   {
     Five_Node_basic_fixture fix; // swap with right child
-    Node_base::Base_ptr left_right = &fix.node_left_right;
-    Node_base::Base_ptr left = &fix.node_left;
+    Base_ptr left_right = &fix.node_left_right;
+    Base_ptr left = &fix.node_left;
     swap(*left_right, *left);
     BOOST_CHECK(left_right == &fix.node_left_right);
     BOOST_CHECK(left == &fix.node_left);
@@ -194,8 +253,8 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
   }
   {
     Five_Node_basic_fixture fix; // swap with right child, invert args
-    Node_base::Base_ptr left_right = &fix.node_left_right;
-    Node_base::Base_ptr left = &fix.node_left;
+    Base_ptr left_right = &fix.node_left_right;
+    Base_ptr left = &fix.node_left;
     swap(*left, *left_right);
     BOOST_CHECK(left_right == &fix.node_left_right);
     BOOST_CHECK(left == &fix.node_left);
@@ -210,8 +269,8 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
   }
   {
     Five_Node_basic_fixture fix; // swap root with left child
-    Node_base::Base_ptr root = &fix.node_root;
-    Node_base::Base_ptr left = &fix.node_left;
+    Base_ptr root = &fix.node_root;
+    Base_ptr left = &fix.node_left;
     swap(*left, *root);
     BOOST_CHECK(root == &fix.node_root);
     BOOST_CHECK(left == &fix.node_left);
@@ -227,8 +286,8 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
   }
   {
     Five_Node_basic_fixture fix; // swap root with left child, invert args
-    Node_base::Base_ptr root = &fix.node_root;
-    Node_base::Base_ptr left = &fix.node_left;
+    Base_ptr root = &fix.node_root;
+    Base_ptr left = &fix.node_left;
     swap(*root, *left);
     BOOST_CHECK(root == &fix.node_root);
     BOOST_CHECK(left == &fix.node_left);
@@ -244,8 +303,8 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
   }
   {
     Five_Node_basic_fixture fix; // swap root with right child
-    Node_base::Base_ptr root = &fix.node_root;
-    Node_base::Base_ptr right = &fix.node_right;
+    Base_ptr root = &fix.node_root;
+    Base_ptr right = &fix.node_right;
     swap(*right, *root);
     BOOST_CHECK(root == &fix.node_root);
     BOOST_CHECK(right == &fix.node_right);
@@ -260,8 +319,8 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
   }
   {
     Five_Node_basic_fixture fix; // swap root with right child, invert args
-    Node_base::Base_ptr root = &fix.node_root;
-    Node_base::Base_ptr right = &fix.node_right;
+    Base_ptr root = &fix.node_root;
+    Base_ptr right = &fix.node_right;
     swap(*root, *right);
     BOOST_CHECK(root == &fix.node_root);
     BOOST_CHECK(right == &fix.node_right);
