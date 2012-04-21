@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE( test_5_node )
   BOOST_CHECK(!header(&fix.node_left_left));
   BOOST_CHECK(minimum(&fix.node_root) == &fix.node_left_left);
   BOOST_CHECK(maximum(&fix.node_root) == &fix.node_right);
-  Base_ptr node = &fix.node_left_left;
+  Node<Kdtree_link<int, int> >* node = &fix.node_left_left;
   BOOST_REQUIRE((node = increment(node)) == &fix.node_left);
   BOOST_REQUIRE((node = increment(node)) == &fix.node_left_right);
   BOOST_REQUIRE((node = increment(node)) == &fix.node_root);
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE( test_5_node )
   BOOST_REQUIRE((node = decrement(node)) == &fix.node_left_right);
   BOOST_REQUIRE((node = decrement(node)) == &fix.node_left);
   BOOST_REQUIRE((node = decrement(node)) == &fix.node_left_left);
-  Const_Base_ptr cnode = &fix.node_root;
+  const Node<Kdtree_link<int, int> >* cnode = &fix.node_root;
   BOOST_REQUIRE((cnode = preorder_increment(cnode))
                 == &fix.node_left);
   BOOST_REQUIRE((cnode = preorder_increment(cnode))
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE( test_5_node )
 BOOST_AUTO_TEST_CASE( test_swap_node )
 {
   {
-    Five_Node_basic_fixture fix; // swap with non-root
+    int_node_fixture fix;
     Base_ptr left_left = &fix.node_left_left;
     Base_ptr right = &fix.node_right;
     swap(*left_left, *right);
@@ -338,8 +338,8 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
 BOOST_AUTO_TEST_CASE( test_swap_kdtree_node )
 { // swap only position (tested before). Do not swap values!
   Five_Kdtree_node_fixture fix;
-  Kdtree_node<point2d>* left_left = &fix.node_left_left;
-  Kdtree_node<point2d>* right = &fix.node_right;
+  Kdtree_node<int2>* left_left = &fix.node_left_left;
+  Kdtree_node<int2>* right = &fix.node_right;
   swap(*left_left, *right);
   BOOST_CHECK(fix.node_left_left.value == zeros);
   BOOST_CHECK(fix.node_right.value == threes);
@@ -348,8 +348,8 @@ BOOST_AUTO_TEST_CASE( test_swap_kdtree_node )
 BOOST_AUTO_TEST_CASE( test_swap_relaxed_kdtree_node )
 { // swap position and weight, but not values!
   Five_Relaxed_kdtree_node_fixture fix;
-  Relaxed_kdtree_node<point2d>* left = &fix.node_left;
-  Relaxed_kdtree_node<point2d>* right = &fix.node_right;
+  Relaxed_kdtree_node<int2>* left = &fix.node_left;
+  Relaxed_kdtree_node<int2>* right = &fix.node_right;
   swap(*left, *right);
   BOOST_CHECK_EQUAL(fix.node_left.weight, 1);
   BOOST_CHECK_EQUAL(fix.node_right.weight, 3);
@@ -398,13 +398,13 @@ BOOST_AUTO_TEST_CASE( test_Node_iterator )
   {
     // Make sure that constant iterator does not invalidate anything
     Five_Kdtree_node_fixture fix;
-    typedef details::Node_iterator<point2d, Kdtree_node<point2d> > iterator;
+    typedef details::Node_iterator<int2, Kdtree_node<int2> > iterator;
     iterator iter(&fix.node_root);
     BOOST_CHECK(*iter == twos);
   }
   {
     Five_Kdtree_node_fixture fix;
-    typedef details::Node_iterator<point2d, Kdtree_node<point2d> > iterator;
+    typedef details::Node_iterator<int2, Kdtree_node<int2> > iterator;
     iterator iter(&fix.node_root);
     BOOST_REQUIRE((++iter).node == &fix.node_right);
     BOOST_REQUIRE((--iter).node == &fix.node_root);
@@ -450,13 +450,13 @@ BOOST_AUTO_TEST_CASE( test_Const_Node_iterator )
   {
     // Make sure that constant iterator does not invalidate anything
     Five_Kdtree_node_fixture fix;
-    typedef details::Const_Node_iterator<point2d, Kdtree_node<point2d> > iterator;
+    typedef details::Const_Node_iterator<int2, Kdtree_node<int2> > iterator;
     iterator iter(&fix.node_root);
     BOOST_CHECK(*iter == twos);
   }
   {
     Five_Kdtree_node_fixture fix;
-    typedef details::Const_Node_iterator<point2d, Kdtree_node<point2d> > iterator;
+    typedef details::Const_Node_iterator<int2, Kdtree_node<int2> > iterator;
     iterator iter(&fix.node_root);
     BOOST_REQUIRE((++iter).node == &fix.node_right);
     BOOST_REQUIRE((--iter).node == &fix.node_root);
@@ -487,7 +487,7 @@ BOOST_AUTO_TEST_CASE( test_Preorder_node_iterator )
   }
   {
     Five_Kdtree_node_fixture fix;
-    typedef details::Preorder_node_iterator<point2d, Kdtree_node<point2d> > iterator;
+    typedef details::Preorder_node_iterator<int2, Kdtree_node<int2> > iterator;
     iterator iter(&fix.node_root);
     BOOST_REQUIRE((++iter).node == &fix.node_left);
     BOOST_REQUIRE((iter++).node == &fix.node_left);
@@ -495,7 +495,7 @@ BOOST_AUTO_TEST_CASE( test_Preorder_node_iterator )
   }
   {
     Five_Kdtree_node_fixture fix;
-    typedef details::Preorder_node_iterator<point2d, Kdtree_node<point2d> > iterator;
+    typedef details::Preorder_node_iterator<int2, Kdtree_node<int2> > iterator;
     iterator a(&fix.node_root);
     iterator b(&fix.node_root);
     BOOST_CHECK(a == b);
@@ -504,7 +504,7 @@ BOOST_AUTO_TEST_CASE( test_Preorder_node_iterator )
   }
   {
     Five_Kdtree_node_fixture fix;
-    typedef details::Preorder_node_iterator<point2d, Kdtree_node<point2d> > iterator;
+    typedef details::Preorder_node_iterator<int2, Kdtree_node<int2> > iterator;
     iterator a(&fix.node_root);
     iterator b(a);
     BOOST_CHECK(a == b);

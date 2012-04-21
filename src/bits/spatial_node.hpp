@@ -90,7 +90,7 @@ namespace spatial
      *  @brief  Check if node is a header node.
      */
     template <typename Mode>
-    inline bool header(typename Node<Mode>::const_ptr x)
+    inline bool header(const Node<Mode>* x)
     { return (x->left == x); }
 
     //@{
@@ -102,14 +102,18 @@ namespace spatial
      *  \param x a pointer to a node.
      */
     template <typename Mode>
-    inline typename Node<Mode>::ptr
-    minimum(typename Node<Mode>::ptr x)
-    { while (x->left != 0) x = x->left; return x; }
+    inline Node<Mode>* minimum(Node<Mode>* x)
+    {
+      SPATIAL_ASSERT_CHECK(!header(x));
+      while (x->left != 0) x = x->left; return x;
+    }
 
     template <typename Mode>
-    inline typename Node<Mode>::const_ptr
-    minimum(typename Node<Mode>::const_ptr x)
-    { while (x->left != 0) x = x->left; return x; }
+    inline const Node<Mode>* minimum(const Node<Mode>* x)
+    {
+      SPATIAL_ASSERT_CHECK(!header(x));
+      while (x->left != 0) x = x->left; return x;
+    }
     //@}
 
     //@{
@@ -121,21 +125,17 @@ namespace spatial
      *  \param x a pointer to a node.
      */
     template <typename Mode>
-    inline typename Node<Mode>::ptr
-    maximum(typename Node<Mode>::ptr x)
+    inline Node<Mode>* maximum(Node<Mode>* x)
     {
       SPATIAL_ASSERT_CHECK(!header(x));
-      while (x->right != 0) x = x->right;
-      return x;
+      while (x->right != 0) x = x->right; return x;
     }
 
     template <typename Mode>
-    inline typename Node<Mode>::const_ptr
-    maximum(typename Node<Mode>::const_ptr x)
+    inline const Node<Mode>* maximum(const Node<Mode>* x)
     {
       SPATIAL_ASSERT_CHECK(!header(x));
-      while (x->right != 0) x = x->right;
-      return x;
+      while (x->right != 0) x = x->right; return x;
     }
     //@}
 
@@ -147,14 +147,13 @@ namespace spatial
      *  \tparam Mode a model of \ref LinkMode.
      *  \param x a pointer to a node.
      */
-    template <typename Mode>
-    typename Node<Mode>::ptr
-    increment(typename Node<Mode>::ptr x);
+    template <typename Mode> Node<Mode>*
+    increment(Node<Mode>* x);
 
     template <typename Mode>
-    inline typename Node<Mode>::const_ptr
-    increment(typename Node<Mode>::const_ptr x)
-    { return increment(const_cast<typename Node<Mode>::ptr>(x)); }
+    inline const Node<Mode>*
+    increment(const Node<Mode>* x)
+    { return increment(const_cast<Node<Mode>*>(x)); }
     //@}
 
     //@{
@@ -184,9 +183,8 @@ namespace spatial
      *  \tparam Mode a model of \ref LinkMode.
      *  \param x a pointer to a node.
      */
-    template <typename Mode>
-    typename Node<Mode>::const_ptr
-    preorder_increment(typename Node<Mode>::const_ptr x);
+    template <typename Mode> typename const Node<Mode>*
+    preorder_increment(const Node<Mode>* x);
 
     /**
      *  Returns the modulo of a node's heigth by a container's rank. This, in

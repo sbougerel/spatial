@@ -24,9 +24,7 @@ namespace spatial
   namespace details
   {
 
-    template <typename Mode>
-    inline typename Node<Mode>::ptr
-    increment(typename Node<Mode>::ptr x)
+    template <typename Mode> inline Node<Mode>* increment(Node<Mode>* x)
     {
       SPATIAL_ASSERT_CHECK(!header(x));
       if (x->right != 0)
@@ -44,9 +42,7 @@ namespace spatial
       return x;
     }
 
-    template <typename Mode>
-    inline typename Node<Mode>::ptr
-    decrement(typename Node<Mode>::ptr x)
+    template <typename Mode> inline Node<Mode>* decrement(Node<Mode>* x)
     {
       SPATIAL_ASSERT_CHECK((!header(x) || x->parent != 0));
       if (header(x))
@@ -161,9 +157,8 @@ namespace spatial
         }
     }
 
-    template <typename Mode>
-    inline typename Node<Mode>::const_ptr
-    preorder_increment(typename Node<Mode>::const_ptr x)
+    template <typename Mode> inline const Node<Mode>*
+    preorder_increment(const Node<Mode>* x)
     {
       if (x->left != 0) { x = x->left; }
       else if (x->right != 0) { x = x->right; }
