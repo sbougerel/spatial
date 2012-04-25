@@ -34,6 +34,7 @@ drand()
   double out = static_cast<double>(rand())/static_cast<double>(RAND_MAX);
   out = (static_cast<double>(rand()) + out)/static_cast<double>(RAND_MAX);
   out = (static_cast<double>(rand()) + out)/static_cast<double>(RAND_MAX);
+  out = (static_cast<double>(rand()) + out)/static_cast<double>(RAND_MAX);
   return out;
 }
 
@@ -184,29 +185,6 @@ struct random
 };
 
 /**
- *  Creates a basic fixture for a spatial container that makes it possible to
- *  define the number of elements to insert in the container and to specify a
- *  manipulator to build the element in a certain fashion.
- */
-template<typename Tp, typename Container>
-struct basic_fixture
-{
-  typedef Container container_type;
-  container_type container;
-  basic_fixture() : container() { }
-  template<typename Manip>
-  basic_fixture(int n, const Manip& manip = pass()) : container()
-  {
-    for (int i = 0; i < n; ++i)
-    {
-      Tp tp;
-      container_type::const_iterator it = container.insert(manip(tp, i, n));
-      BOOST_CHECK(*it == tp);
-    }
-  }
-};
-
-/**
  *  Creates a special fixture for a spatial container that makes it possible to
  *  define the number of elements to insert in the container and to specify a
  *  manipulator to build the element in a certain fashion. This fixture also
@@ -214,15 +192,15 @@ struct basic_fixture
  *  construction via a record type.
  */
 template<typename Tp, typename Container>
-struct record_fixture
+struct basic_fixture
 {
   typedef Container container_type;
   container_type container;
   typedef std::vector<Tp> record_type;
   std::vector<Tp> record;
-  record_fixture() : container(), record() { }
+  basic_fixture() : container(), record() { }
   template<typename Manip>
-  record_fixture(int n, const Manip& manip = pass()) : container(), record()
+  basic_fixture(int n, const Manip& manip = pass()) : container(), record()
   {
     for (int i = 0; i < n; ++i)
     {
@@ -245,10 +223,12 @@ struct runtime_fixture
 {
   typedef Container container_type;
   container_type container;
-  runtime_fixture() : container(dimension_traits<Tp>::value) { }
+  typedef std::vector<Tp> record_type;
+  std::vector<Tp> record;
+  runtime_fixture() : container(dimension_traits<Tp>::value), record() { }
   template<typename Manip>
   runtime_fixture(int n, const Manip& manip = pass())
-    : container(dimension_traits<Tp>::value)
+    : container(dimension_traits<Tp>::value), record()
   {
     for (int i = 0; i < n; ++i)
     {
@@ -273,19 +253,6 @@ struct pointset_fix
 };
 
 /**
- *  Defines a pointset container with optionally a specific comparator.
- */
-template<typename Tp, typename Compare = bracket_less<Tp> >
-struct pointset_rec
-  : record_fixture<Tp, pointset<dimension_traits<Tp>::value, Tp, Compare> >
-{
-  pointset_rec() { }
-  template<typename Manip> pointset_rec(int n, const Manip& manip = pass())
-    : record_fixture<Tp, poinset<dimension_traits<Tp>::value, Tp, Compare> >
-    (n, manip) { }
-};
-
-/**
  *  Defines a pointset fixture that is tightly balanced.
  */
 template<typename Tp, typename Compare = bracket_less<Tp> >
@@ -297,21 +264,6 @@ struct tight_pointset_fix
   template<typename Manip>
   tight_pointset_fix(int n, const Manip& manip = identical())
     : basic_fixture<Tp, pointset<dimension_traits<Tp>::value, Tp, Compare,
-    tight_balancing> >(n, manip) { }
-};
-
-/**
- *  Defines a pointset recording fixture that is tightly balanced.
- */
-template<typename Tp, typename Compare = bracket_less<Tp> >
-struct tight_pointset_rec
-  : record_fixture<Tp, pointset<dimension_traits<Tp>::value, Tp, Compare,
-  tight_balancing> >
-{
-  tight_pointset_rec() { }
-  template<typename Manip>
-  tight_pointset_rec(int n, const Manip& manip = identical())
-    : record_fixture<Tp, pointset<dimension_traits<Tp>::value, Tp, Compare,
     tight_balancing> >(n, manip) { }
 };
 
