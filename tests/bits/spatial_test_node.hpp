@@ -115,12 +115,18 @@ BOOST_AUTO_TEST_CASE( test_5_node )
                 == &fix.header);
 }
 
+/**
+ *  In this test, we attempt to test all swapping combination possible in
+ *  the 5-node tree defined above. Everytime, after swapping all nodes shall
+ *  be reacheable, and the expected layout should be tested.
+ */
 BOOST_AUTO_TEST_CASE( test_swap_node )
 {
-  {
+  typedef int_node_fixture::node_type node_type;
+  { // Swap left_left with right
     int_node_fixture fix;
-    Base_ptr left_left = &fix.node_left_left;
-    Base_ptr right = &fix.node_right;
+    node_type* left_left = &fix.node_left_left;
+    node_type* right = &fix.node_right;
     swap(*left_left, *right);
     BOOST_CHECK(left_left == &fix.node_left_left);
     BOOST_CHECK(right == &fix.node_right);
@@ -137,10 +143,10 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
     BOOST_CHECK(fix.node_left.left == &fix.node_right);
     BOOST_CHECK(fix.node_left.parent == &fix.node_root);
   }
-  {
-    Five_Node_basic_fixture fix; // swap with non-root, invert args
-    Base_ptr left_left = &fix.node_left_left;
-    Base_ptr right = &fix.node_right;
+  { // Swap right with left_left (mirror procedure)
+    int_node_fixture fix; 
+    node_type* left_left = &fix.node_left_left;
+    node_type* right = &fix.node_right;
     swap(*right, *left_left);
     BOOST_CHECK(left_left == &fix.node_left_left);
     BOOST_CHECK(right == &fix.node_right);
@@ -157,10 +163,10 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
     BOOST_CHECK(fix.node_left.left == &fix.node_right);
     BOOST_CHECK(fix.node_left.parent == &fix.node_root);
   }
-  {
-    Five_Node_basic_fixture fix; // swap with root
-    Base_ptr left_left = &fix.node_left_left;
-    Base_ptr root = &fix.node_root;
+  { // Swap left_left with root
+    int_node_fixture fix;
+    node_type* left_left = &fix.node_left_left;
+    node_type* root = &fix.node_root;
     swap(*left_left, *root);
     BOOST_CHECK(left_left == &fix.node_left_left);
     BOOST_CHECK(root == &fix.node_root);
@@ -180,10 +186,10 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
     BOOST_CHECK(fix.header.left == &fix.header);
     BOOST_CHECK(fix.header.right == &fix.node_right);
   }
-  {
-    Five_Node_basic_fixture fix; // swap with root, invert args
-    Base_ptr left_left = &fix.node_left_left;
-    Base_ptr root = &fix.node_root;
+  { // Swap root with left_left (mirror procedure)
+    int_node_fixture fix; 
+    node_type* left_left = &fix.node_left_left;
+    node_type* root = &fix.node_root;
     swap(*root, *left_left);
     BOOST_CHECK(left_left == &fix.node_left_left);
     BOOST_CHECK(root == &fix.node_root);
@@ -203,10 +209,10 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
     BOOST_CHECK(fix.header.left == &fix.header);
     BOOST_CHECK(fix.header.right == &fix.node_right);
   }
-  {
-    Five_Node_basic_fixture fix; // swap with left child
-    Base_ptr left_left = &fix.node_left_left;
-    Base_ptr left = &fix.node_left;
+  { // Swap left_left with left
+    int_node_fixture fix;
+    node_type* left_left = &fix.node_left_left;
+    node_type* left = &fix.node_left;
     swap(*left_left, *left);
     BOOST_CHECK(left_left == &fix.node_left_left);
     BOOST_CHECK(left == &fix.node_left);
@@ -219,10 +225,10 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
     BOOST_CHECK(&fix.node_left_left == fix.node_root.left);
     BOOST_CHECK(&fix.node_left_left == fix.node_left_right.parent);
   }
-  {
-    Five_Node_basic_fixture fix; // swap with left child, invert args
-    Base_ptr left_left = &fix.node_left_left;
-    Base_ptr left = &fix.node_left;
+  { // Swap left with left_left (invertion)
+    int_node_fixture fix; 
+    node_type* left_left = &fix.node_left_left;
+    node_type* left = &fix.node_left;
     swap(*left, *left_left);
     BOOST_CHECK(left_left == &fix.node_left_left);
     BOOST_CHECK(left == &fix.node_left);
@@ -235,10 +241,10 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
     BOOST_CHECK(&fix.node_left_left == fix.node_root.left);
     BOOST_CHECK(&fix.node_left_left == fix.node_left_right.parent);
   }
-  {
-    Five_Node_basic_fixture fix; // swap with right child
-    Base_ptr left_right = &fix.node_left_right;
-    Base_ptr left = &fix.node_left;
+  { // Swap left_right with left
+    int_node_fixture fix; // swap with right child
+    node_type* left_right = &fix.node_left_right;
+    node_type* left = &fix.node_left;
     swap(*left_right, *left);
     BOOST_CHECK(left_right == &fix.node_left_right);
     BOOST_CHECK(left == &fix.node_left);
@@ -251,10 +257,10 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
     BOOST_CHECK(&fix.node_left_right == fix.node_root.left);
     BOOST_CHECK(&fix.node_left_right == fix.node_left_left.parent);
   }
-  {
-    Five_Node_basic_fixture fix; // swap with right child, invert args
-    Base_ptr left_right = &fix.node_left_right;
-    Base_ptr left = &fix.node_left;
+  { // Swap left with left_right (invertion)
+    int_node_fixture fix;
+    node_type* left_right = &fix.node_left_right;
+    node_type* left = &fix.node_left;
     swap(*left, *left_right);
     BOOST_CHECK(left_right == &fix.node_left_right);
     BOOST_CHECK(left == &fix.node_left);
@@ -267,10 +273,10 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
     BOOST_CHECK(&fix.node_left_right == fix.node_root.left);
     BOOST_CHECK(&fix.node_left_right == fix.node_left_left.parent);
   }
-  {
-    Five_Node_basic_fixture fix; // swap root with left child
-    Base_ptr root = &fix.node_root;
-    Base_ptr left = &fix.node_left;
+  { // Swap left and root
+    int_node_fixture fix;
+    node_type* root = &fix.node_root;
+    node_type* left = &fix.node_left;
     swap(*left, *root);
     BOOST_CHECK(root == &fix.node_root);
     BOOST_CHECK(left == &fix.node_left);
@@ -284,10 +290,10 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
     BOOST_CHECK(&fix.node_root == fix.node_left_left.parent);
     BOOST_CHECK(&fix.node_root == fix.node_left_right.parent);
   }
-  {
-    Five_Node_basic_fixture fix; // swap root with left child, invert args
-    Base_ptr root = &fix.node_root;
-    Base_ptr left = &fix.node_left;
+  { // Swap root and left (invertion)
+    int_node_fixture fix;
+    node_type* root = &fix.node_root;
+    node_type* left = &fix.node_left;
     swap(*root, *left);
     BOOST_CHECK(root == &fix.node_root);
     BOOST_CHECK(left == &fix.node_left);
@@ -301,10 +307,10 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
     BOOST_CHECK(&fix.node_root == fix.node_left_left.parent);
     BOOST_CHECK(&fix.node_root == fix.node_left_right.parent);
   }
-  {
-    Five_Node_basic_fixture fix; // swap root with right child
-    Base_ptr root = &fix.node_root;
-    Base_ptr right = &fix.node_right;
+  { // Swap right and root
+    int_node_fixture fix;
+    node_type* root = &fix.node_root;
+    node_type* right = &fix.node_right;
     swap(*right, *root);
     BOOST_CHECK(root == &fix.node_root);
     BOOST_CHECK(right == &fix.node_right);
@@ -317,10 +323,10 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
     BOOST_CHECK(fix.header.parent == &fix.node_right);
     BOOST_CHECK(&fix.node_right == fix.node_left.parent);
   }
-  {
-    Five_Node_basic_fixture fix; // swap root with right child, invert args
-    Base_ptr root = &fix.node_root;
-    Base_ptr right = &fix.node_right;
+  { // Swap root and right (invertion)
+    int_node_fixture fix;
+    node_type* root = &fix.node_root;
+    node_type* right = &fix.node_right;
     swap(*root, *right);
     BOOST_CHECK(root == &fix.node_root);
     BOOST_CHECK(right == &fix.node_right);

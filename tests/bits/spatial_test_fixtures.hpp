@@ -6,7 +6,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   test_fixtures.hpp
+ *  @file   spatial_test_fixtures.hpp
  *  @brief  Contains the list of all fixtures required for the test in the
  *  library.
  *
@@ -19,7 +19,7 @@
 #ifndef SPATIAL_TEST_FIXTURES_HPP
 #define SPATIAL_TEST_FIXTURES_HPP
 
-#include "test_types.hpp"
+#include "spatial_test_types.hpp"
 
 using namespace ::spatial;
 using namespace ::spatial::details;
@@ -235,6 +235,7 @@ struct runtime_fixture
       Tp tp;
       container_type::const_iterator it = container.insert(manip(tp, i, n));
       BOOST_CHECK(*it == tp);
+      record.push_back(tp);
     }
   }
 };
