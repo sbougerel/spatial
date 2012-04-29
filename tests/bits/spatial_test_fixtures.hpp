@@ -65,7 +65,7 @@ struct pass
  */
 struct same
 {
-  int2& operator()(int2& p, int i, int n) const
+  int2& operator()(int2& p, int, int n) const
   {
     p[0] = p[1] = n;
     return p;
@@ -205,7 +205,8 @@ struct basic_fixture
     for (int i = 0; i < n; ++i)
     {
       Tp tp;
-      container_type::const_iterator it = container.insert(manip(tp, i, n));
+      typename container_type::const_iterator it
+        = container.insert(manip(tp, i, n));
       BOOST_CHECK(*it == tp);
       record.push_back(tp);
     }
@@ -233,7 +234,8 @@ struct runtime_fixture
     for (int i = 0; i < n; ++i)
     {
       Tp tp;
-      container_type::const_iterator it = container.insert(manip(tp, i, n));
+      typename container_type::const_iterator
+        it = container.insert(manip(tp, i, n));
       BOOST_CHECK(*it == tp);
       record.push_back(tp);
     }
@@ -248,8 +250,11 @@ struct pointset_fix
   : basic_fixture<Tp, pointset<dimension_traits<Tp>::value, Tp, Compare> >
 {
   pointset_fix() { }
-  template<typename Manip> pointset_fix(int n, const Manip& manip = pass())
-    : basic_fixture<Tp, poinset<dimension_traits<Tp>::value, Tp, Compare> >
+  explicit pointset_fix(int n)
+    : basic_fixture<Tp, pointset<dimension_traits<Tp>::value, Tp, Compare> >
+  (n, pass()) { }
+  template<typename Manip> pointset_fix(int n, const Manip& manip)
+    : basic_fixture<Tp, pointset<dimension_traits<Tp>::value, Tp, Compare> >
     (n, manip) { }
 };
 
@@ -262,10 +267,13 @@ struct tight_pointset_fix
   tight_balancing> >
 {
   tight_pointset_fix() { }
-  template<typename Manip>
-  tight_pointset_fix(int n, const Manip& manip = identical())
+  explicit tight_pointset_fix(int n)
     : basic_fixture<Tp, pointset<dimension_traits<Tp>::value, Tp, Compare,
-    tight_balancing> >(n, manip) { }
+                                 tight_balancing> >(n, pass()) { }
+  template<typename Manip>
+  tight_pointset_fix(int n, const Manip& manip)
+    : basic_fixture<Tp, pointset<dimension_traits<Tp>::value, Tp, Compare,
+                                 tight_balancing> >(n, manip) { }
 };
 
 /**
@@ -276,9 +284,11 @@ struct runtime_pointset_fix
   : runtime_fixture<Tp, runtime_pointset<Tp, Compare> >
 {
   runtime_pointset_fix() { }
+  explicit runtime_pointset_fix(int n)
+    : runtime_fixture<Tp, runtime_pointset<Tp, Compare> >(n, pass()) { }
   template<typename Manip>
-  runtime_pointset_fix(int n, const Manip& manip = identical())
-    : runtime_fixture<Tp, runtime_poinset<Tp, Compare> >(n, manip) { }
+  runtime_pointset_fix(int n, const Manip& manip)
+    : runtime_fixture<Tp, runtime_pointset<Tp, Compare> >(n, manip) { }
 };
 
 /**
@@ -290,8 +300,11 @@ struct frozen_pointset_fix
   Compare> >
 {
   frozen_pointset_fix() { }
+  explicit frozen_pointset_fix(int n)
+    : basic_fixture<Tp, frozen_pointset<dimension_traits<Tp>::value, Tp,
+                                        Compare> >(n, pass()) { }
   template<typename Manip>
-  frozen_pointset_fix(int n, const Manip& manip = identical())
+  frozen_pointset_fix(int n, const Manip& manip)
     : basic_fixture<Tp, frozen_pointset<dimension_traits<Tp>::value, Tp,
     Compare> >(n, manip) { }
 };
@@ -304,173 +317,11 @@ struct runtime_frozen_pointset_fix
   : runtime_fixture<Tp, runtime_frozen_pointset<Tp, Compare> >
 {
   runtime_frozen_pointset_fix() { }
+  explicit runtime_frozen_pointset_fix(int n)
+    : runtime_fixture<Tp, runtime_frozen_pointset<Tp, Compare> >(n, pass()) { }
   template<typename Manip>
-  runtime_frozen_pointset_fix(int n, const Manip& manip = identical())
+  runtime_frozen_pointset_fix(int n, const Manip& manip)
     : runtime_fixture<Tp, runtime_frozen_pointset<Tp, Compare> >(n, manip) { }
-};
-
-struct int2_node_fixture
-{
-  /*           H
-               |
-             (2,2)
-             /   \
-         (1,1)   (3,3)
-         /  \
-     (0,0)  (1,1)   */
-  typedef Node<Kdtree_link<int2, int2> > node_type;
-  node_type header;
-  node_type::ptr leftmost;
-  node_type node_root;
-  node_type node_left;
-  node_type node_left_left;
-  node_type node_left_right;
-  node_type node_right;
-
-  int2_node_fixture()
-  {
-    header.parent = &node_root;
-    header.left = &header;
-    header.right = &node_right;
-    leftmost = &node_left_left;
-    node_root.parent = &header;
-    node_root.left = &node_left;
-    node_root.right = &node_right;
-    value(node_root) = twos;
-    node_left.parent = &node_root;
-    node_left.left = &node_left_left;
-    node_left.right = &node_left_right;
-    value(node_left) = ones;
-    node_right.parent = &node_root;
-    node_right.left = 0;
-    node_right.right = 0;
-    value(node_right) = threes;
-    node_left_right.parent = &node_left;
-    node_left_right.left = 0;
-    node_left_right.right = 0;
-    value(node_left_right) = ones;
-    node_left_left.parent = &node_left;
-    node_left_left.left = 0;
-    node_left_left.right = 0;
-    value(node_left_left) = zeros;
-  }
-};
-
-struct int2_relaxed_node_fixture
-{
-  /*         H
-             |
-           (2,2)5
-           /   \
-      (1,1)3  (3,3)1
-       /  \
-  (0,0)1  (1,1)1       */
-  typedef Node<Relaxed_kdtree_link<int2, int2> > node_type;
-  node_type header;
-  node_type::ptr leftmost;
-  node_type node_root;
-  node_type node_left;
-  node_type node_left_left;
-  node_type node_left_right;
-  node_type node_right;
-
-  int2_relaxed_node_fixture()
-  {
-    header.parent = &node_root;
-    header.left = &header;
-    header.right = &node_right;
-    leftmost = &node_left_left;
-    node_root.parent = &header;
-    node_root.left = &node_left;
-    node_root.right = &node_right;
-    link(node_root).weight = 5;
-    value(node_root) = twos;
-    node_left.parent = &node_root;
-    node_left.left = &node_left_left;
-    node_left.right = &node_left_right;
-    link(node_left).weight = 3;
-    value(node_left) = ones;
-    node_right.parent = &node_root;
-    node_right.left = 0;
-    node_right.right = 0;
-    link(node_right).weight = 1;
-    value(node_right) = threes;
-    node_left_right.parent = &node_left;
-    node_left_right.left = 0;
-    node_left_right.right = 0;
-    link(node_left_right).weight = 1;
-    value(node_left_right) = ones;
-    node_left_left.parent = &node_left;
-    node_left_left.left = 0;
-    node_left_left.right = 0;
-    link(node_left_left).weight = 1;
-    value(node_left_left) = zeros;
-  }
-};
-
-struct large_int2_relaxed_node_fixture
-{
-  /*              H
-                  |
-               (2,2)7
-            /          \
-      (1,1)3           (3,3)3
-       /  \             /
-  (0,0)1  (1,1)1     (3,3)2
-                       \
-                     (3,3)1     */
-  typedef Node<Relaxed_kdtree_link<int2, int2> > node_type;
-  node_type header;
-  node_type::ptr leftmost;
-  node_type node_root;
-  node_type node_left;
-  node_type node_left_left;
-  node_type node_left_right;
-  node_type node_right;
-  node_type node_right_left;
-  node_type node_right_left_right;
-  large_int2_relaxed_node_fixture()
-  {
-    header.parent = &node_root;
-    header.left = &header;
-    header.right = &node_right;
-    leftmost = &node_left_left;
-    node_root.parent = &header;
-    node_root.left = &node_left;
-    node_root.right = &node_right;
-    link(node_root).weight = 7;
-    value(node_root) = twos;
-    node_left.parent = &node_root;
-    node_left.left = &node_left_left;
-    node_left.right = &node_left_right;
-    link(node_left).weight = 3;
-    value(node_left) = ones;
-    node_right.parent = &node_root;
-    node_right.left = &node_right_left;
-    node_right.right = 0;
-    link(node_right).weight = 3;
-    value(node_right) = threes;
-    node_right_left.parent = &node_right;
-    node_right_left.left = 0;
-    node_right_left.right = &node_right_left_right;
-    link(node_right_left).weight = 2;
-    value(node_right_left) = threes;
-    node_right_left_right.parent = &node_right_left;
-    node_right_left_right.left = 0;
-    node_right_left_right.right = 0;
-    link(node_right_left_right).weight = 1;
-    value(node_right_left_right) = threes;
-    node_left_right.parent = &node_left;
-    node_left_right.left = 0;
-    node_left_right.right = 0;
-    link(node_left_right).weight = 1;
-    value(node_left_right) = ones;
-    node_left_left.parent = &node_left;
-    node_left_left.left = 0;
-    node_left_left.right = 0;
-    link(node_left_left).weight = 1;
-    value(node_left_left) = zeros;
-  }
 };
 
 #endif // SPATIAL_TEST_FIXTURES_HPP

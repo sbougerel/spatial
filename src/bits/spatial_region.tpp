@@ -38,14 +38,13 @@ namespace spatial
       do
         {
           if (iter.node->right != 0
-              && pred(iter.node_dim, rank(),
-                      const_key(*iter.node)) != above)
+              && pred(iter.node_dim, rank(), const_key(iter.node)) != above)
             {
               iter.node = iter.node->right;
               iter.node_dim = incr_dim(rank, iter.node_dim);
               while (iter.node->left != 0
                      && pred(iter.node_dim, rank(),
-                             const_key(*iter.node)) != below)
+                             const_key(iter.node)) != below)
                 {
                   iter.node = iter.node->left;
                   iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -53,7 +52,8 @@ namespace spatial
             }
           else
             {
-              node_ptr p = iter.node->parent;
+              typename container_traits<Container>::node_type p
+                = iter.node->parent;
               while (!header(p) && iter.node == p->right)
                 {
                   iter.node = p;
@@ -65,10 +65,10 @@ namespace spatial
             }
         }
       while (!header(iter.node)
-             && match_all(rank, const_key(*iter.node), pred) == false);
+             && match_all(rank, const_key(iter.node), pred) == false);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
-          return iter;
+      return iter;
     }
 
     template <typename Container, typename Predicate>
@@ -85,14 +85,13 @@ namespace spatial
       do
         {
           if (iter.node->left != 0
-              && pred(iter.node_dim, rank(),
-                      const_key(*iter.node)) != below)
+              && pred(iter.node_dim, rank(), const_key(iter.node)) != below)
             {
               iter.node = iter.node->left;
               iter.node_dim = incr_dim(rank, iter.node_dim);
               while (iter.node->right != 0
                      && pred(iter.node_dim, rank(),
-                             const_key(*iter.node)) != above)
+                             const_key(iter.node)) != above)
                 {
                   iter.node = iter.node->right;
                   iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -100,7 +99,8 @@ namespace spatial
             }
           else
             {
-              Base_ptr p = iter.node->parent;
+              typename container_traits<Container>::node_type p
+                = iter.node->parent;
               while (!header(p) && iter.node == p->left)
                 {
                   iter.node = p;
@@ -129,16 +129,17 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
       SPATIAL_ASSERT_CHECK(iter.node != 0);
-      Base_ptr end = iter.node->parent;
+      typename container_traits<Container>::node_type end
+        = iter.node->parent;
       // Quick positioning according to in-order transversal.
       while(iter.node->right != 0
-            && pred(iter.node_dim, rank(), const_key(*iter.node)) == below)
+            && pred(iter.node_dim, rank(), const_key(iter.node)) == below)
         {
           iter.node = iter.node->right;
           iter.node_dim = incr_dim(rank, iter.node_dim);
         }
       while(iter.node->left != 0
-            && pred(iter.node_dim, rank(), const_key(*iter.node)) != below)
+            && pred(iter.node_dim, rank(), const_key(iter.node)) != below)
         {
           iter.node = iter.node->left;
           iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -146,7 +147,7 @@ namespace spatial
       // Start algorithm.
       do
         {
-          if (match_all(rank, const_key(*iter.node), pred) == true) { break; }
+          if (match_all(rank, const_key(iter.node), pred) == true) { break; }
           if (iter.node->right != 0
               && pred(iter.node_dim, rank(),
                       const_key(*iter.node)) != above)
@@ -155,7 +156,7 @@ namespace spatial
               iter.node_dim = incr_dim(rank, iter.node_dim);
               while (iter.node->left != 0
                      && pred(iter.node_dim, rank(),
-                             const_key(*iter.node)) != below)
+                             const_key(iter.node)) != below)
                 {
                   iter.node = iter.node->left;
                   iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -163,7 +164,8 @@ namespace spatial
             }
           else
             {
-              Base_ptr p = iter.node->parent;
+              typename container_traits<Container>::node_type p
+                = iter.node->parent;
               while (p != end && iter.node == p->right)
                 {
                   iter.node = p;
@@ -191,18 +193,17 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
-      Base_ptr end = iter.node->parent;
+      typename container_traits<Container>::node_type end
+        = iter.node->parent;
       // Quick positioning according to in-order transversal.
       while (iter.node->left != 0
-             && pred(iter.node_dim, rank(),
-                     const_key(*iter.node)) == above)
+             && pred(iter.node_dim, rank(), const_key(iter.node)) == above)
         {
           iter.node = iter.node->left;
           iter.node_dim = incr_dim(rank, iter.node_dim);
         }
       while (iter.node->right != 0
-             && pred(iter.node_dim, rank(),
-                     const_key(*iter.node)) != above)
+             && pred(iter.node_dim, rank(), const_key(iter.node)) != above)
         {
           iter.node = iter.node->right;
           iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -212,14 +213,13 @@ namespace spatial
         {
           if (match_all(rank, key(iter.node), pred) == true) { break; }
           if (iter.node->left != 0
-              && pred(iter.node_dim, rank(),
-                      const_key(*iter.node)) != below)
+              && pred(iter.node_dim, rank(), const_key(iter.node)) != below)
             {
               iter.node = iter.node->left;
               iter.node_dim = incr_dim(rank, iter.node_dim);
               while (iter.node->right != 0
                      && pred(iter.node_dim, rank(),
-                             const_key(*iter.node)) != above)
+                             const_key(iter.node)) != above)
                 {
                   iter.node = iter.node->right;
                   iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -227,7 +227,8 @@ namespace spatial
             }
           else
             {
-              Base_ptr p = iter.node->parent;
+              typename container_traits<Container>::node_type p
+                = iter.node->parent;
               while (p != end && iter.node == p->left)
                 {
                   iter.node = p;

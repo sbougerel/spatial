@@ -15,6 +15,108 @@
 #ifndef SPATIAL_TEST_REGION_HPP
 #define SPATIAL_TEST_REGION_HPP
 
+BOOST_AUTO_TEST_CASE( test_equal_bounds )
+{
+  int2 t(1, 1);
+  int2 x(0, 1);
+  int2 y(1, 0);
+  int2 z(0, 2);
+  int2 w(2, 0);
+  pointset_fix<int2> fix(0);
+  // Checking this compiles
+  equal_bounds<int2, bracket_less<int2> > bounds
+    = make_equal_bounds(fix.container, t);
+  BOOST_CHECK(bounds(0, 2, t) == matching);
+  BOOST_CHECK(bounds(1, 2, t) == matching);
+  BOOST_CHECK(bounds(0, 2, x) == below);
+  BOOST_CHECK(bounds(1, 2, x) == matching);
+  BOOST_CHECK(bounds(0, 2, y) == matching);
+  BOOST_CHECK(bounds(1, 2, y) == below);
+  BOOST_CHECK(bounds(0, 2, z) == below);
+  BOOST_CHECK(bounds(1, 2, z) == above);
+  BOOST_CHECK(bounds(0, 2, w) == above);
+  BOOST_CHECK(bounds(1, 2, w) == below);
+}
+
+BOOST_AUTO_TEST_CASE( test_open_bounds )
+{
+  int2 l(1, 1);
+  int2 h(3, 3);
+  int2 x(2, 1);
+  int2 y(3, 2);
+  pointset_fix<int2> fix(0);
+  // Checking this compiles
+  open_bounds<int2, bracket_less<int2> > bounds
+    = make_open_bounds(fix.container, l, h);
+  BOOST_CHECK(bounds(0, 2, l) == below);
+  BOOST_CHECK(bounds(1, 2, l) == below);
+  BOOST_CHECK(bounds(0, 2, h) == above);
+  BOOST_CHECK(bounds(1, 2, h) == above);
+  BOOST_CHECK(bounds(0, 2, x) == matching);
+  BOOST_CHECK(bounds(1, 2, x) == below);
+  BOOST_CHECK(bounds(0, 2, y) == above);
+  BOOST_CHECK(bounds(1, 2, y) == matching);
+}
+
+BOOST_AUTO_TEST_CASE( test_bounds )
+{
+  int2 l(1, 1);
+  int2 h(3, 3);
+  int2 x(2, 0);
+  int2 y(3, 2);
+  int2 z(0, 0);
+  pointset_fix<int2> fix(0);
+  // Checking this compiles
+  bounds<int2, bracket_less<int2> > bounds
+    = make_bounds(fix.container, l, h);
+  BOOST_CHECK(bounds(0, 2, l) == matching);
+  BOOST_CHECK(bounds(1, 2, l) == matching);
+  BOOST_CHECK(bounds(0, 2, h) == above);
+  BOOST_CHECK(bounds(1, 2, h) == above);
+  BOOST_CHECK(bounds(0, 2, x) == matching);
+  BOOST_CHECK(bounds(1, 2, x) == below);
+  BOOST_CHECK(bounds(0, 2, y) == above);
+  BOOST_CHECK(bounds(1, 2, y) == matching);
+  BOOST_CHECK(bounds(0, 2, z) == below);
+  BOOST_CHECK(bounds(1, 2, z) == below);
+}
+
+BOOST_AUTO_TEST_CASE( test_closed_bounds )
+{
+  int2 l(1, 1);
+  int2 h(3, 3);
+  int2 x(2, 0);
+  int2 y(4, 2);
+  int2 z(0, 0);
+  int2 w(4, 4);
+  pointset_fix<int2> fix(0);
+  // Checking this compiles
+  closed_bounds<int2, bracket_less<int2> > bounds
+    = make_closed_bounds(fix.container, l, h);
+  BOOST_CHECK(bounds(0, 2, l) == matching);
+  BOOST_CHECK(bounds(1, 2, l) == matching);
+  BOOST_CHECK(bounds(0, 2, h) == matching);
+  BOOST_CHECK(bounds(1, 2, h) == matching);
+  BOOST_CHECK(bounds(0, 2, x) == matching);
+  BOOST_CHECK(bounds(1, 2, x) == below);
+  BOOST_CHECK(bounds(0, 2, y) == above);
+  BOOST_CHECK(bounds(1, 2, y) == matching);
+  BOOST_CHECK(bounds(0, 2, z) == below);
+  BOOST_CHECK(bounds(1, 2, z) == below);
+  BOOST_CHECK(bounds(0, 2, w) == above);
+  BOOST_CHECK(bounds(1, 2, w) == above);
+}
+
+BOOST_AUTO_TEST_CASE( test_overlap_bounds )
+{
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
+}
+
+BOOST_AUTO_TEST_CASE( test_enclosed_bounds )
+{
+  BOOST_CHECK_MESSAGE(false, "test not implemented");
+}
+
 BOOST_AUTO_TEST_CASE( test_region_iterator_default_ctor )
 {
   typedef details::Region_iterator

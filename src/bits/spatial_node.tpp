@@ -34,7 +34,7 @@ namespace spatial
         }
       else
         {
-          typename Node<Mode>::ptr p = x->parent;
+          Node<Mode>* p = x->parent;
           while (!header(p) && x == p->right)
             { x = p; p = x->parent; }
           x = p;
@@ -49,13 +49,13 @@ namespace spatial
         { x = x->right; } // At header, 'right' points to the right-most node
       else if (x->left != 0)
         {
-          typename Node<Mode>::ptr y = x->left;
+          Node<Mode>* y = x->left;
           while (y->right != 0) { y = y->right; }
           x = y;
         }
       else
         {
-          typename Node<Mode>::ptr p = x->parent;
+          Node<Mode>* p = x->parent;
           while (!header(p) && x == p->left)
             { x = p; p = x->parent; }
           x = p;
@@ -65,95 +65,95 @@ namespace spatial
 
     template <typename Mode>
     inline void swap_node
-    (Node<Mode>& a, Node<Mode>& b)
+    (Node<Mode>* a, Node<Mode>* b)
     {
-      typedef typename Node<Mode>::ptr node_ptr;
-      if (&a == &b) return;
-      SPATIAL_ASSERT_CHECK(!header(&a));
-      SPATIAL_ASSERT_CHECK(!header(&b));
-      if (a.parent == &b)
+      typedef Node<Mode>* node_ptr;
+      if (a == b) return;
+      SPATIAL_ASSERT_CHECK(!header(a));
+      SPATIAL_ASSERT_CHECK(!header(b));
+      if (a->parent == b)
         {
-          if (header(b.parent))
-            { b.parent->parent = &a; }
+          if (header(b->parent))
+            { b->parent->parent = a; }
           else
             {
-              if (b.parent->left == &b) { b.parent->left = &a; }
-              else { b.parent->right = &a; }
+              if (b->parent->left == b) { b->parent->left = a; }
+              else { b->parent->right = a; }
             }
-          if (a.left != 0) { a.left->parent = &b; }
-          if (a.right != 0) { a.right->parent = &b; }
-          a.parent = b.parent;
-          b.parent = &a;
-          node_ptr a_left = a.left;
-          node_ptr a_right = a.right;
-          if (b.left == &a)
+          if (a->left != 0) { a->left->parent = b; }
+          if (a->right != 0) { a->right->parent = b; }
+          a->parent = b->parent;
+          b->parent = a;
+          node_ptr a_left = a->left;
+          node_ptr a_right = a->right;
+          if (b->left == a)
             {
-              if (b.right != 0) { b.right->parent = &a; }
-              a.left = &b;
-              a.right = b.right;
+              if (b->right != 0) { b->right->parent = a; }
+              a->left = b;
+              a->right = b->right;
             }
           else
             {
-              if (b.left != 0) { b.left->parent = &a; }
-              a.left = b.left;
-              a.right = &b;
+              if (b->left != 0) { b->left->parent = a; }
+              a->left = b->left;
+              a->right = b;
             }
-          b.left = a_left;
-          b.right = a_right;
+          b->left = a_left;
+          b->right = a_right;
         }
-      else if (b.parent == &a)
+      else if (b->parent == a)
         {
-          if (header(a.parent))
-            { a.parent->parent = &b; }
+          if (header(a->parent))
+            { a->parent->parent = b; }
           else
             {
-              if (a.parent->left == &a) { a.parent->left = &b; }
-              else { a.parent->right = &b; }
+              if (a->parent->left == a) { a->parent->left = b; }
+              else { a->parent->right = b; }
             }
-          if (b.left != 0) { b.left->parent = &a; }
-          if (b.right != 0) { b.right->parent = &a; }
-          b.parent = a.parent;
-          a.parent = &b;
-          node_ptr b_left = b.left;
-          node_ptr b_right = b.right;
-          if (a.left == &b)
+          if (b->left != 0) { b->left->parent = a; }
+          if (b->right != 0) { b->right->parent = a; }
+          b->parent = a->parent;
+          a->parent = b;
+          node_ptr b_left = b->left;
+          node_ptr b_right = b->right;
+          if (a->left == b)
             {
-              if (a.right != 0) { a.right->parent = &b; }
-              b.left = &a;
-              b.right = a.right;
+              if (a->right != 0) { a->right->parent = b; }
+              b->left = a;
+              b->right = a->right;
             }
           else
             {
-              if (a.left != 0) { a.left->parent = &b; }
-              b.left = a.left;
-              b.right = &a;
+              if (a->left != 0) { a->left->parent = b; }
+              b->left = a->left;
+              b->right = a;
             }
-          a.left = b_left;
-          a.right = b_right;
+          a->left = b_left;
+          a->right = b_right;
         }
       else
         {
-          if (header(a.parent))
-            { a.parent->parent = &b; }
+          if (header(a->parent))
+            { a->parent->parent = b; }
           else
             {
-              if (a.parent->left == &a) { a.parent->left = &b; }
-              else { a.parent->right = &b; }
+              if (a->parent->left == a) { a->parent->left = b; }
+              else { a->parent->right = b; }
             }
-          if (header(b.parent))
-            { b.parent->parent = &a; }
+          if (header(b->parent))
+            { b->parent->parent = a; }
           else
             {
-              if (b.parent->left == &b) { b.parent->left = &a; }
-              else { b.parent->right = &a; }
+              if (b->parent->left == b) { b->parent->left = a; }
+              else { b->parent->right = a; }
             }
-          if (a.left != 0) { a.left->parent = &b; }
-          if (b.left != 0) { b.left->parent = &a; }
-          if (a.right != 0) { a.right->parent = &b; }
-          if (b.right != 0) { b.right->parent = &a; }
-          std::swap(a.parent, b.parent);
-          std::swap(a.left, b.left);
-          std::swap(a.right, b.right);
+          if (a->left != 0) { a->left->parent = b; }
+          if (b->left != 0) { b->left->parent = a; }
+          if (a->right != 0) { a->right->parent = b; }
+          if (b->right != 0) { b->right->parent = a; }
+          std::swap(a->parent, b->parent);
+          std::swap(a->left, b->left);
+          std::swap(a->right, b->right);
         }
     }
 
@@ -164,7 +164,7 @@ namespace spatial
       else if (x->right != 0) { x = x->right; }
       else
         {
-          typename Node<Mode>::const_ptr p = x->parent;
+          const Node<Mode>* p = x->parent;
           while (!header(p) && (x == p->right || p->right == 0))
             { x = p; p = x->parent; }
           x = p;

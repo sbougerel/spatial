@@ -104,21 +104,21 @@ namespace spatial
 
     explicit pointset(dimension_type dim)
       : base_type(details::Dynamic_rank(dim))
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     pointset(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim), compare)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     pointset(dimension_type dim, const Compare& compare,
                      const BalancingPolicy& policy)
       : base_type(details::Dynamic_rank(dim), compare, policy)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     pointset(dimension_type dim, const Compare& compare,
                      const BalancingPolicy& policy, const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim), compare, policy, alloc)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     explicit pointset(const Compare& compare)
       : base_type(details::Dynamic_rank(), compare)
@@ -164,21 +164,21 @@ namespace spatial
 
     explicit runtime_pointset(dimension_type dim)
       : base_type(details::Dynamic_rank(dim))
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     runtime_pointset(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim), compare)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     runtime_pointset(dimension_type dim, const Compare& compare,
                      const BalancingPolicy& policy)
       : base_type(details::Dynamic_rank(dim), compare, policy)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     runtime_pointset(dimension_type dim, const Compare& compare,
                      const BalancingPolicy& policy, const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim), compare, policy, alloc)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     explicit runtime_pointset(const Compare& compare)
       : base_type(details::Dynamic_rank(), compare)

@@ -93,6 +93,18 @@ namespace spatial
   };
 
   /**
+   *  Thrown to report that an negative distance has been passed as a parameter
+   *  while distances are expected to be positive.
+   *
+   *  \see check_addition(), check_multiplication()
+   */
+  struct negative_distance : std::logic_error
+  {
+    explicit negative_distance(const std::string& arg)
+      : std::logic_error(arg) { }
+  };
+
+  /**
    *  Thrown to report that an arithmetic error has occured during a
    *  calculation. It could be an overflow, or another kind of error.
    *
@@ -108,20 +120,32 @@ namespace spatial
   {
     /**
      *  Checks that \c rank is not null.
-     *  \exception invalid_rank is thrown if checks fails.
+     *  \throws invalid_rank is thrown if checks fails.
      */
     inline void check_rank(dimension_type rank)
     { if (0 == rank) throw invalid_rank("rank is null"); }
 
     /**
      *  Checks that \c dimension is not greater or equal to \c rank.
-     *  \exception invalid_dimension is thrown if checks fails.
+     *  \throws invalid_dimension is thrown if checks fails.
      */
     inline void check_dimension
     (dimension_type rank, dimension_type dimension)
     {
       if (dimension >= rank)
         throw invalid_dimension("dimension is out of range");
+    }
+
+    /**
+     *  Check that the distance given in \x has a positive value.
+     *  \throws negative_distance
+     */
+    template<typename Tp>
+    inline void check_positive_distance(const Tp& x)
+    {
+      if (!::std::numeric_limits<Tp>::is_signed()) return;
+      if (x < -x) // Use inversion as we don't know how to represent '0' in Tp.
+        throw negative_distance("distance is negative");
     }
 
     /**
@@ -306,6 +330,28 @@ namespace spatial
     //@}
 
     /**
+     *  Check that the absolute of an element has not led to an error such as
+     *  an overflow, by forcing the error itself.
+     *
+     *  This check is not the best check for arithmetic errors. There are ways
+     *  to make it better, but it's hard to make it more portable.
+     *
+     *  In particular, if \c Tp is not a base type, the author of the type must
+     *  define the numeric limits \c ::std::numeric_limits<Tp>::max() for that
+     *  type.
+     */
+    template <typename Tp>
+    inline Tp check_abs(const Tp& x)
+    {
+      if (!::std::numeric_limits<Tp>::is_signed()) return x;
+      Tp _x = -x; _x = x > _x ? x : _x;
+      if (x - x > _x)
+        throw arithmetic_error
+          ("Absolute of an element has resulted in an arithmetic error");
+      return _x;
+    }
+
+    /**
      *  Check that the addtion of 2 elements of positive value has not led to an
      *  error such as an overflow, by forcing the error itself.
      *
@@ -340,12 +386,8 @@ namespace spatial
     template <typename Tp>
     inline Tp check_square(const Tp& x)
     {
-      Tp abs_x = x > 0 ? x : -x;
-      // Computing -x might overflow if x is at the limit of the range
-      if (abs_x < 0)
-        throw arithmetic_error
-          ("Square value of element has resulted in an arithmetic error");
-      if ((::std::numeric_limits<Tp>::max() / abs_x) < abs_x)
+      Tp _x = check_abs(x);
+      if ((::std::numeric_limits<Tp>::max() / _x) < _x)
         throw arithmetic_error
           ("Square value of element has resulted in an arithmetic error");
       return x * x;

@@ -22,7 +22,7 @@
  *  a variable of one type into the result of the condition expression. The test
  *  pass simply if it compiles. That is why there is no BOOST_* construct being
  *  used.
- */ 
+ */
 BOOST_AUTO_TEST_CASE(test_details_condition)
 {
   typedef details::condition<true, std::pair<int, int>,
@@ -90,10 +90,10 @@ BOOST_AUTO_TEST_CASE( test_details_match )
   int2 y  (1, 1);
   int2 _x (-1, -1);
   int2 x_ (2, 2);
-  BOOST_CHECK(closed_test_range()(0, x, 2) == matching);
-  BOOST_CHECK(closed_test_range()(1, y, 2) == matching);
-  BOOST_CHECK(closed_test_range()(0, _x, 2) == below);
-  BOOST_CHECK(closed_test_range()(1, x_, 2) == above);
+  BOOST_CHECK(closed_test_range()(0, 2, x) == matching);
+  BOOST_CHECK(closed_test_range()(1, 2, y) == matching);
+  BOOST_CHECK(closed_test_range()(0, 2, _x) == below);
+  BOOST_CHECK(closed_test_range()(1, 2, x_) == above);
 }
 
 BOOST_AUTO_TEST_CASE( test_details_match_all )

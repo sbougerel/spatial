@@ -22,9 +22,9 @@ template<typename Tp> struct dimension_traits { };
  *  An helper function that helps specializing dimension_traits for a particular
  *  type.
  */
-#define define_dimension(type, dim)		\
-template<> struct dimension_traits<type>	\
-{ enum { value = dim }; };
+#define define_dimension(type, dim)             \
+template<> struct dimension_traits<type>        \
+{ enum { value = dim }; }
 
 /**
  *  Reports an error if type Tp1 differs from type Tp2.
@@ -198,7 +198,7 @@ struct at_accessor
 struct closed_test_range
 {
   relative_order
-  operator()(dimension_type dim, const int2& point, dimension_type rank)
+  operator()(dimension_type dim, dimension_type rank, const int2& point)
     const
   {
     if (dim >= rank)

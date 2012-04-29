@@ -59,7 +59,7 @@ namespace spatial
       (const Ct& c, const Geometry& g,
        const typename ::spatial::container_traits<Ct>::key_type& k)
         : ::spatial::container_traits<Ct>::rank_type(c.rank()),
-	compare(c.key_comp()), distance(g), target(k)
+        compare(c.key_comp()), distance(g), target(k)
       { }
 
       /**
@@ -79,7 +79,7 @@ namespace spatial
        */
       typename ::spatial::container_traits<Ct>::key_type target;
     };
-    
+
   } // namespace details
 
   /**
@@ -114,7 +114,7 @@ namespace spatial
      *
      *  The details of the \c Geometry type are explained in \ref Geometry.
      *  Geometries are generally not defined by the user of the library, given
-     *  their complexity. Rather, the user of the library uses ready-made 
+     *  their complexity. Rather, the user of the library uses ready-made
      *  models of \ref Geometry such as \ref euclid and \ref manhattan. If
      *  more geometries needs to be defined, see the explanation in \ref
      *  Geometry.
@@ -126,18 +126,18 @@ namespace spatial
     {
     private:
       typedef typename ::spatial::details::bidirectional_iterator
-	<typename container_traits<Ct>::mode_type, iterator,
-	 ::std::tr1::is_same<typename container_traits<Ct>::key_type,
-	                     typename container_traits<Ct>::value_type>
-			     ::value> Base;
+        <typename container_traits<Ct>::mode_type, iterator,
+         ::std::tr1::is_same<typename container_traits<Ct>::key_type,
+                             typename container_traits<Ct>::value_type>
+                             ::value> Base;
 
       template<typename Iterator> struct Rebind
       {
-	typedef typename ::spatial::details::bidirectional_iterator
+        typedef typename ::spatial::details::bidirectional_iterator
         <typename container_traits<Ct>::mode_type, Iterator,
          ::std::tr1::is_same<typename container_traits<Ct>::key_type,
-	                     typename container_traits<Ct>::value_type>
-	                     ::value> type;
+                             typename container_traits<Ct>::value_type>
+                             ::value> type;
       };
 
     public:
@@ -154,7 +154,7 @@ namespace spatial
        *  \param iter An iterator on \c container.
        */
       iterator(Ct& container, const Geometry& geometry,
-	       const typename container_traits<Ct>::key_type& target,
+               const typename container_traits<Ct>::key_type& target,
                typename container_traits<Ct>::iterator iter)
         : Base(iter.node, modulo(iter.node, container.rank())),
           data(container, geometry, target) { }
@@ -170,7 +170,7 @@ namespace spatial
        */
       template<typename Iterator>
       iterator(Ct& container, const Geometry& geometry,
-	       const typename container_traits<Ct>::key_type& target,
+               const typename container_traits<Ct>::key_type& target,
                const typename Rebind<Iterator>::type& iter)
         : Base(iter.node, iter.node_dim),
           data(container, geometry, target) { }
@@ -198,18 +198,18 @@ namespace spatial
        *  iteration.
        */
       iterator(Ct& container, const Geometry& geometry,
-	       const typename container_traits<Ct>::key_type& target,
+               const typename container_traits<Ct>::key_type& target,
                dimension_type node_dim,
                typename container_traits<Ct>::mode_type::node_ptr node)
         : Base(node, node_dim), data(container, geometry, target) { }
 
       //@{
       /**
-       *  This iterator can be casted silently into a container iterator. You 
+       *  This iterator can be casted silently into a container iterator. You
        *  can therefore use this iterator as an argument to the erase function
        *  of the container, for example.
        *
-       *  \warning When using this iterator as an argument to the erase 
+       *  \warning When using this iterator as an argument to the erase
        *  function of the container, this iterator will get invalidated after
        *  erase.
        */
@@ -265,7 +265,7 @@ namespace spatial
      *
      *  The details of the \c Geometry type are explained in \ref Geometry.
      *  Geometries are generally not defined by the user of the library, given
-     *  their complexity. Rather, the user of the library uses ready-made 
+     *  their complexity. Rather, the user of the library uses ready-made
      *  models of \ref Geometry such as \ref euclid and \ref manhattan. If
      *  more geometries needs to be defined, see the explanation in \ref
      *  Geometry.
@@ -277,11 +277,11 @@ namespace spatial
     {
     private:
       typedef typename ::spatial::details::bidirectional_iterator
-	<typename container_traits<Ct>::mode_type, iterator, true> Base;
+        <typename container_traits<Ct>::mode_type, iterator, true> Base;
 
       template<typename Iterator> struct Rebind
       {
-	typedef typename ::spatial::details::bidirectional_iterator
+        typedef typename ::spatial::details::bidirectional_iterator
         <typename container_traits<Ct>::mode_type, Iterator, true> type;
       };
 
@@ -299,7 +299,7 @@ namespace spatial
        *  \param iter An iterator on \c container.
        */
       iterator(const Ct& container, const Geometry& geometry,
-	       const typename container_traits<Ct>::key_type& target,
+               const typename container_traits<Ct>::key_type& target,
                typename container_traits<Ct>::iterator iter)
         : Base(iter.node, modulo(iter.node, container.rank())),
           data(container, geometry, target) { }
@@ -315,7 +315,7 @@ namespace spatial
        */
       template<typename Iterator>
       iterator(const Ct& container, const Geometry& geometry,
-	       const typename container_traits<Ct>::key_type& target,
+               const typename container_traits<Ct>::key_type& target,
                const typename Rebind<Iterator>::type& iter)
         : Base(iter.node, iter.node_dim),
           data(container, geometry, target) { }
@@ -343,21 +343,21 @@ namespace spatial
        *  iteration.
        */
       iterator(const Ct& container, const Geometry& geometry,
-	       const typename container_traits<Ct>::key_type& target,
+               const typename container_traits<Ct>::key_type& target,
                dimension_type node_dim,
                typename container_traits<Ct>::mode_type::node_ptr node)
         : Base(node, node_dim), data(container, geometry, target) { }
 
       //! Covertion of mutable iterator into a constant iterator is permitted.
-      iterator(const typename mapping<Ct>::iterator& iter)
-	  : Base(iter.node, iter.node_dim), data(iter.data) { }
+      iterator(const typename neighbor<Ct, Geometry>::iterator& iter)
+          : Base(iter.node, iter.node_dim), data(iter.data) { }
 
       /**
-       *  This iterator can be casted silently into a container iterator. You 
+       *  This iterator can be casted silently into a container iterator. You
        *  can therefore use this iterator as an argument to the erase function
        *  of the container, for example.
        *
-       *  \warning When using this iterator as an argument to the erase 
+       *  \warning When using this iterator as an argument to the erase
        *  function of the container, this iterator will get invalidated after
        *  erase.
        */
@@ -425,58 +425,126 @@ namespace spatial
   { return iter.data.target; }
 
   template <typename Ct, typename Geometry>
-  inline typename mapping<Ct>::iterator
+  inline typename neighbor<Ct, Geometry>::iterator
+  neighbor_end(Ct& container, const Geometry& geometry,
+               const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor<Ct, Geometry>::iterator
+      (container, geometry, target, container.dimension() - 1,
+       container.end().node);
+  }
+
+  template <typename Ct, typename Geometry>
+  inline typename neighbor<const Ct, Geometry>::iterator
+  neighbor_end(const Ct& container, const Geometry& geometry,
+               const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor<const Ct, Geometry>::iterator
+      (container, geometry, target, container.dimension() - 1,
+       container.end().node);
+  }
+
+  template <typename Ct, typename Geometry>
+  inline typename neighbor<const Ct, Geometry>::iterator
+  neighbor_cend(const Ct& container, const Geometry& geometry,
+                const typename container_traits<Ct>::key_type& target)
+  { return neighbor_end(container, geometry, target); }
+
+  template <typename Ct, typename Geometry>
+  inline typename neighbor<Ct, Geometry>::iterator
   neighbor_begin(Ct& container, const Geometry& geometry,
                  const typename container_traits<Ct>::key_type& target)
   {
-    if (container.empty()) return neighbor_end(container, mapping_dim);
-    typename neighbor<Container, Geometry>::iterator
+    if (container.empty()) return neighbor_end(container, geometry, target);
+    typename neighbor<Ct, Geometry>::iterator
       it(container, geometry, target, 0, container.top()); // At root dim = 0
     return ::spatial::details::minimum(it);
   }
 
   template <typename Ct, typename Geometry>
-  inline typename mapping<const Ct>::iterator
+  inline typename neighbor<const Ct, Geometry>::iterator
   neighbor_begin(const Ct& container, const Geometry& geometry,
                  const typename container_traits<Ct>::key_type& target)
   {
-    if (container.empty()) return mapping_end(container, mapping_dim);
-    typename neighbor<const Container, Geometry>::iterator
+    if (container.empty()) return mapping_end(container, geometry, target);
+    typename neighbor<const Ct, Geometry>::iterator
       it(container, geometry, target, 0, container.top()); // At root dim = 0
     return ::spatial::details::minimum(it);
   }
 
   template <typename Ct, typename Geometry>
-  inline typename mapping<const Ct>::iterator
+  inline typename neighbor<const Ct, Geometry>::iterator
   neighbor_cbegin(const Ct& container, const Geometry& geometry,
                   const typename container_traits<Ct>::key_type& target)
   { return neighbor_begin(container, geometry, target); }
 
   template <typename Ct, typename Geometry>
-  inline typename mapping<Ct>::iterator
-  neighbor_end(Ct& container, const Geometry& geometry,
-               const typename container_traits<Ct>::key_type& target)
+  inline typename neighbor<Ct, Geometry>::iterator
+  neighbor_lower_bound(Ct& container, const Geometry& geometry,
+                       const typename container_traits<Ct>::key_type& target,
+                       const typename Geometry::distance_type& bound)
   {
-    return neighbor<Container, Geometry>::iterator
-      (container, geometry, target, container.dimension() - 1,
-       container.end().node);
+    if (container.empty()) return mapping_end(container, geometry, target);
+    ::spatial::except::check_positive_distance(bound);
+    typename neighbor<Ct, Geometry>::iterator
+      it(container, geometry, target, 0, container.top()); // At root dim = 0
+    return ::spatial::details::lower_bound(it, bound);
   }
 
   template <typename Ct, typename Geometry>
-  inline typename mapping<const Ct>::iterator
-  neighbor_end(const Ct& container, const Geometry& geometry,
-               const typename container_traits<Ct>::key_type& target)
+  inline typename neighbor<const Ct, Geometry>::iterator
+  neighbor_lower_bound(const Ct& container, const Geometry& geometry,
+                       const typename container_traits<Ct>::key_type& target,
+                       const typename Geometry::distance_type& bound)
   {
-    return neighbor<const Container, Geometry>::iterator
-      (container, geometry, target, container.dimension() - 1,
-       container.end().node);
+    if (container.empty()) return mapping_end(container, geometry, target);
+    ::spatial::except::check_positive_distance(bound);
+    typename neighbor<const Ct, Geometry>::iterator
+      it(container, geometry, target, 0, container.top()); // At root dim = 0
+    return ::spatial::details::lower_bound(it, bound);
   }
 
   template <typename Ct, typename Geometry>
-  inline typename mapping<const Ct>::iterator
-  neighbor_cend(const Ct& container, const Geometry& geometry,
-                const typename container_traits<Ct>::key_type& target)
-  { return neighbor_end(container, geometry, target); }
+  inline typename neighbor<const Ct, Geometry>::iterator
+  neighbor_clower_bound(const Ct& container, const Geometry& geometry,
+                        const typename container_traits<Ct>::key_type& target,
+                        const typename Geometry::distance_type& bound)
+  { return neighbor_lower_bound(container, geometry, target, bound); }
+
+  template <typename Ct, typename Geometry>
+  inline typename neighbor<Ct, Geometry>::iterator
+  neighbor_upper_bound(Ct& container, const Geometry& geometry,
+                       const typename container_traits<Ct>::key_type& target,
+                       const typename Geometry::distance_type& bound)
+  {
+    if (container.empty()) return mapping_end(container, geometry, target);
+    ::spatial::except::check_positive_distance(bound);
+    typename neighbor<Ct, Geometry>::iterator
+      it(container, geometry, target, 0, container.top()); // At root dim = 0
+    return ::spatial::details::upper_bound(it, bound);
+  }
+
+  template <typename Ct, typename Geometry>
+  inline typename neighbor<const Ct, Geometry>::iterator
+  neighbor_upper_bound(const Ct& container, const Geometry& geometry,
+                       const typename container_traits<Ct>::key_type& target,
+                       const typename Geometry::distance_type& bound)
+  {
+    if (container.empty()) return mapping_end(container, geometry, target);
+    ::spatial::except::check_positive_distance(bound);
+    typename neighbor<const Ct, Geometry>::iterator
+      it(container, geometry, target, 0, container.top()); // At root dim = 0
+    return ::spatial::details::upper_bound(it, bound);
+  }
+
+  template <typename Ct, typename Geometry>
+  inline typename neighbor<const Ct, Geometry>::iterator
+  neighbor_cupper_bound(const Ct& container, const Geometry& geometry,
+                        const typename container_traits<Ct>::key_type& target,
+                        const typename Geometry::distance_type& bound)
+  { return neighbor_upper_bound(container, geometry, target); }
+
+
 
 } // namespace spatial
 

@@ -97,11 +97,11 @@ namespace spatial
 
     explicit frozen_boxset(dimension_type dim)
       : base_type(details::Dynamic_rank(dim << 1))
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     frozen_boxset(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim << 1), compare)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     explicit frozen_boxset(const Compare& compare)
       : base_type(details::Dynamic_rank(2), compare)
@@ -110,7 +110,7 @@ namespace spatial
     frozen_boxset(dimension_type dim, const Compare& compare,
                   const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim << 1), compare, alloc)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     frozen_boxset(const Compare& compare, const Alloc& alloc)
       : base_type(details::Dynamic_rank(2), compare, alloc)
@@ -147,11 +147,11 @@ namespace spatial
 
     explicit runtime_frozen_boxset(dimension_type dim)
       : base_type(details::Dynamic_rank(dim << 1))
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     runtime_frozen_boxset(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim << 1), compare)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     explicit runtime_frozen_boxset(const Compare& compare)
       : base_type(details::Dynamic_rank(2), compare)
@@ -160,7 +160,7 @@ namespace spatial
     runtime_frozen_boxset(dimension_type dim, const Compare& compare,
                           const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim << 1), compare, alloc)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     runtime_frozen_boxset(const Compare& compare, const Alloc& alloc)
       : base_type(details::Dynamic_rank(2), compare, alloc)

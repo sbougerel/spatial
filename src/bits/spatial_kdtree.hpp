@@ -137,9 +137,9 @@ namespace spatial
           leftmost_ = &header_();      // the substitute left most pointer
         }
 
-	Compress<key_compare, size_type>           count_;
-	Compress<Link_allocator, Node<mode_type> > header_;
-	typename Node<mode_type>::ptr leftmost_;
+        Compress<key_compare, size_type>           count_;
+        Compress<Link_allocator, Node<mode_type> > header_;
+        typename Node<mode_type>::ptr leftmost_;
       } impl_;
 
     private:
@@ -220,8 +220,8 @@ namespace spatial
       void
       destroy_node(node_ptr node)
       {
-        get_value_allocator().destroy(value(*node));
-        get_link_allocator().deallocate(&link(*node), 1);
+        get_value_allocator().destroy(&value(node));
+        get_link_allocator().deallocate(&link(node), 1);
       }
 
       /**
@@ -407,7 +407,7 @@ namespace spatial
 
       //@{
       /**
-       *  @brief  Return a pair of iterator around keys of similar coordinates.
+       *  Return a pair of iterator around keys of similar coordinates.
        *
        *  @attention These iterators are not similar to the container's \c
        *  iterator and \c const_iterator, but are special types of iterators
@@ -416,11 +416,11 @@ namespace spatial
        */
       std::pair<equal_iterator, equal_iterator>
       equal_range(const key_type& key)
-      {	return equal_range(*this, key); }
+      { return equal_region_range(*this, key); }
 
       std::pair<const_equal_iterator, const_equal_iterator>
       equal_range(const key_type& key) const
-      {	return equal_range(*this, key); }
+      { return equal_region_range(*this, key); }
       //@}
 
     public:

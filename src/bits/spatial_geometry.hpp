@@ -25,6 +25,23 @@ namespace spatial
   namespace math
   {
     /**
+     *  An naive abs function that works with any type that has the minus unary
+     *  operator and the comparison operator. Does not work for the lowest
+     *  number in 2's complement representation. E.g. -128 for 8-bit integers.
+     */
+    template<typename Tp>
+    inline Tp abs(const Tp& x)
+    {
+#ifdef SPATIAL_SAFER_ARITHMETICS
+      return ::spatial::except::check_abs(x);
+#else
+      if (!::std::numeric_limits<Tp>::is_signed()) return x;
+      Tp _x = -x;
+      return x > _x ? x : _x;
+#endif
+    }
+
+    /**
      *  @brief  Uses hypot algorithm in order to compute the distance: minimize
      *  possibilities of loss of precision due to overflow and underflow.
      *  @test   test_euclidian_distance_to_key
@@ -48,25 +65,25 @@ namespace spatial
       // Find a non zero maximum or return 0
       Distance max = zero;
       dimension_type max_dim; // uninitialized on purpose
-      using namespace ::std;
-      for (dimension_type i=0; i<rank; ++i)
-	{
-	  Distance d = abs(difference(i, origin, key));
-	  if (d == zero) continue;
-	  if (max == zero || d > max) { max = d; max_dim = i; }
-	}
+      for (dimension_type i = 0; i < rank; ++i)
+        {
+          Distance d = abs(difference(i, origin, key));
+          if (d == zero) continue;
+          if (max == zero || d > max) { max = d; max_dim = i; }
+        }
       if (max == zero) return zero; // they're all zero!
       // Compute the distance
       Distance sum = zero;
       for (dimension_type i=0; i<rank; ++i)
-	{
-	  if (i == max_dim) continue;
-	  Distance div = diff(i, origin, key) / max;
-	  sum += div * div;
-	}
+        {
+          if (i == max_dim) continue;
+          Distance div = diff(i, origin, key) / max;
+          sum += div * div;
+        }
 #ifdef SPATIAL_SAFER_ARITHMETICS
       return ::spatial::except::check_positive_mul(max, sqrt(one + sum));
 #else
+      using namespace ::std;
       return max * sqrt(one + sum);
 #endif
     }
@@ -81,7 +98,6 @@ namespace spatial
     euclid_distance_to_plane
     (dimension_type dim, Key origin, Key key, Difference diff)
     {
-      using namespace ::std;
       return abs(diff(dim, origin, key));
     }
 
@@ -115,16 +131,16 @@ namespace spatial
     {
       Distance sum = static_cast<Distance>(0);
       for (dimension_type i=0; i<rank; ++i)
-	{
+        {
 #ifdef SPATIAL_SAFER_ARITHMETICS
-	  sum = ::spatial::except::check_positive_add
-	    (sqeuclid_distance_to_plane<Key, Difference, Distance>
-	     (i, origin, key, diff), sum);
+          sum = ::spatial::except::check_positive_add
+            (sqeuclid_distance_to_plane<Key, Difference, Distance>
+             (i, origin, key, diff), sum);
 #else
-	  sum += sqeuclid_distance_to_plane
-	    <Key, Difference, Distance>(i, origin, key, diff);
+          sum += sqeuclid_distance_to_plane
+            <Key, Difference, Distance>(i, origin, key, diff);
 #endif
-	}
+        }
       return sum;
     }
 
@@ -138,7 +154,6 @@ namespace spatial
     manhattan_distance_to_plane
     (dimension_type dim, Key origin, Key key, Difference diff)
     {
-      using namespace ::std;
       return abs(diff(dim, origin, key));
     }
 
@@ -152,16 +167,16 @@ namespace spatial
     {
       Distance sum = static_cast<Distance>(0);
       for (dimension_type i=0; i<rank; ++i)
-	{
+        {
 #ifdef SPATIAL_SAFER_ARITHMETICS
-	  sum = ::spatial::except::check_positive_add
-	    (manhattan_distance_to_plane<Key, Difference, Distance>
-	     (i, origin, key, diff), sum);
+          sum = ::spatial::except::check_positive_add
+            (manhattan_distance_to_plane<Key, Difference, Distance>
+             (i, origin, key, diff), sum);
 #else
-	  sum += manhattan_distance_to_plane
-	    <Key, Difference, Distance>(i, origin, key, diff);
+          sum += manhattan_distance_to_plane
+            <Key, Difference, Distance>(i, origin, key, diff);
 #endif
-	}
+        }
       return sum;
     }
 
@@ -292,10 +307,10 @@ namespace spatial
      */
     distance_type
     distance_to_key(dimension_type rank,
-		    const Tp& origin, const Tp& key) const
+                    const Tp& origin, const Tp& key) const
     {
       return math::euclid_distance_to_key<Tp, Difference, double>
-	(rank, origin, key, *static_cast<const Difference*>(this));
+        (rank, origin, key, *static_cast<const Difference*>(this));
     }
 
     /**
@@ -309,10 +324,10 @@ namespace spatial
      */
     distance_type
     distance_to_plane(dimension_type, dimension_type dim,
-		      const Tp& origin, const Tp& key) const
+                      const Tp& origin, const Tp& key) const
     {
       return math::euclid_distance_to_plane<Tp, Difference, double>
-	(dim, origin, key, *static_cast<const Difference*>(this));
+        (dim, origin, key, *static_cast<const Difference*>(this));
     }
   };
 
@@ -324,7 +339,7 @@ namespace spatial
   make_euclid(const Ct& container, const Difference& diff)
   {
     return euclid<typename container_traits<Ct>::key_type,
-                      Difference>(diff);
+                  Difference>(diff);
   }
 
   /**
@@ -332,12 +347,12 @@ namespace spatial
    */
   template<typename Ct>
   euclid<typename container_traits<Ct>::key_type,
-             typename auto_difference<Ct, double>::type>
+         typename auto_difference<Ct, double>::type>
   make_euclid_auto(const Ct& container)
   {
     return euclid<typename container_traits<Ct>::key_type,
-                      typename auto_difference<Ct, double>::type>
-		      (auto_difference<Ct, double>::make(diff));
+                  typename auto_difference<Ct, double>::type>
+      (auto_difference<Ct, double>::make(container.key_comp()));
   }
 
   /**
@@ -385,10 +400,10 @@ namespace spatial
      */
     distance_type
     distance_to_key(dimension_type rank,
-		    const Tp& origin, const Tp& key) const
+                    const Tp& origin, const Tp& key) const
     {
       return math::euclid_distance_to_key<Tp, Difference, float>
-	(rank, origin, key, *static_cast<const Difference*>(this));
+        (rank, origin, key, *static_cast<const Difference*>(this));
     }
 
     /**
@@ -402,10 +417,10 @@ namespace spatial
      */
     distance_type
     distance_to_plane(dimension_type, dimension_type dim,
-		      const Tp& origin, const Tp& key) const
+                      const Tp& origin, const Tp& key) const
     {
       return math::euclid_distance_to_plane<Tp, Difference, float>
-	(dim, origin, key, *static_cast<const Difference*>(this));
+        (dim, origin, key, *static_cast<const Difference*>(this));
     }
   };
 
@@ -425,12 +440,12 @@ namespace spatial
    */
   template<typename Ct>
   euclidf<typename container_traits<Ct>::key_type,
-              typename auto_difference<Ct, float>::type>
+          typename auto_difference<Ct, float>::type>
   make_euclidf_auto(const Ct& container)
   {
     return euclidf<typename container_traits<Ct>::key_type,
                    typename auto_difference<Ct, float>::type>
-		   (auto_difference<Ct, float>::make(diff));
+      (auto_difference<Ct, float>::make(container.key_comp()));
   }
 
   /**
@@ -471,10 +486,10 @@ namespace spatial
      */
     distance_type
     distance_to_key(dimension_type rank,
-		    const Tp& origin, const Tp& key) const
+                    const Tp& origin, const Tp& key) const
     {
       return math::sqeuclid_distance_to_key<Tp, Difference, Distance>
-	(rank, origin, key, *static_cast<const Difference*>(this));
+        (rank, origin, key, *static_cast<const Difference*>(this));
     }
 
     /**
@@ -485,10 +500,10 @@ namespace spatial
      */
     distance_type
     distance_to_plane(dimension_type, dimension_type dim,
-		      const Tp& origin, const Tp& key) const
+                      const Tp& origin, const Tp& key) const
     {
       return math::sqeuclid_distance_to_plane<Tp, Difference, Distance>
-	(dim, origin, key, *static_cast<const Difference*>(this));
+        (dim, origin, key, *static_cast<const Difference*>(this));
     }
   };
 
@@ -505,40 +520,21 @@ namespace spatial
   }
 
   /**
-   *  Facilitates creation of a type \ref sqeuclid from an existing
-   *  container and if you want to use a type for distance that is different
-   *  from the type given in the \c Difference functor.
+   *  Facilitates creation of a type \ref sqeuclid from an existing container
+   *  and a provided distance type.
    *
-   *  Use of function is a little particular. It needs a value of type
-   *  \c Distance in order to guess what type is Distance, but it does not use
-   *  the value. By convention just put 1, 1.0, 1.f, 1u, 1l, 1ll or any other
-   *  expression of "one" as an input to this function.
-   */
-  template<typename Ct, typename Difference, typename Distance>
-  sqeuclid<typename container_traits<Ct>::key_type, Difference, Distance>
-  make_sqeuclid(const Ct& container, const Difference& diff, Distance)
-  {
-    return sqeuclid<typename container_traits<Ct>::key_type,
-                    Difference, Distance>(diff);
-  }
-
-  /**
-   *  Facilitates creation of a type \ref sqeuclid from an existing
-   *  container.
-   *
-   *  Use of function is a little particular. It needs a value of type
-   *  \c Distance in order to guess what type is Distance, but it does not use
-   *  the value. By convention just put 1, 1.0, 1.f, 1u, 1l, 1ll or any other
-   *  expression of "one" as an input to this function.
+   *  The value of the Distance itself does not matter, therefore it is
+   *  recommended to call the function with the default constructor for the
+   *  distance type: such as 'int()' or 'double()' or 'MyOwnType()'.
    */
   template<typename Ct, typename Distance>
-  sqeuclid<typename container_traits<Ct>::key_type,
-               typename auto_difference<Ct, Distance>::type, Distance>
-  make_sqeuclid_auto(const Ct& container, Distance)
+  euclid<typename container_traits<Ct>::key_type,
+         typename auto_difference<Ct, Distance>::type>
+  make_sqeuclid_auto(const Ct& container, const Distance&)
   {
     return sqeuclid<typename container_traits<Ct>::key_type,
-                    typename auto_difference<Ct, Distance>::type, Distance>
-		    (auto_difference<Ct, Distance>::make(diff));
+                    typename auto_difference<Ct, Distance>::type>
+      (auto_difference<Ct, Distance>::make(container.key_comp()));
   }
 
   /**
@@ -572,10 +568,10 @@ namespace spatial
      */
     distance_type
     distance_to_key(dimension_type rank,
-		    const Tp& origin, const Tp& key) const
+                    const Tp& origin, const Tp& key) const
     {
-      return math::manhattan_distance_to_key<Key, Difference, Distance>
-	(rank, origin, key, *static_cast<const Difference*>(this));
+      return math::manhattan_distance_to_key<Tp, Difference, Distance>
+        (rank, origin, key, *static_cast<const Difference*>(this));
     }
 
     /**
@@ -586,10 +582,10 @@ namespace spatial
      */
     distance_type
     distance_to_plane(dimension_type, dimension_type dim,
-		      const Tp& origin, const Tp& key) const
+                      const Tp& origin, const Tp& key) const
     {
-      return math::manhattan_distance_to_plane<Key, Difference, Distance>
-	(dim, origin, key, *static_cast<const Difference*>(this));
+      return math::manhattan_distance_to_plane<Tp, Difference, Distance>
+        (dim, origin, key, *static_cast<const Difference*>(this));
     }
   };
 
@@ -607,39 +603,20 @@ namespace spatial
 
   /**
    *  Facilitates creation of a type \ref manhattan from an existing
-   *  container and if you want to use a type for distance that is different
-   *  from the type given in the \c Difference functor.
-   *
-   *  Use of function is a little particular. It needs a value of type
-   *  \c Distance in order to guess what type is Distance, but it does not use
-   *  the value. By convention just put 1, 1.0, 1.f, 1u, 1l, 1ll or any other
-   *  expression of "one" as an input to this function.
-   */
-  template<typename Ct, typename Difference, typename Distance>
-  manhattan<typename container_traits<Ct>::key_type, Difference, Distance>
-  make_manhattan(const Ct& container, const Difference& diff, Distance)
-  {
-    return manhattan<typename container_traits<Ct>::key_type,
-                     Difference, Distance>(diff);
-  }
-
-  /**
-   *  Facilitates creation of a type \ref manhattan from an existing
    *  container.
    *
-   *  Use of function is a little particular. It needs a value of type
-   *  \c Distance in order to guess what type is Distance, but it does not use
-   *  the value. By convention just put 1, 1.0, 1.f, 1u, 1l, 1ll or any other
-   *  expression of "one" as an input to this function.
+   *  The value of the Distance itself does not matter, therefore it is
+   *  recommended to call the function with the default constructor for the
+   *  distance type: such as 'int()' or 'double()' or 'MyOwnType()'.
    */
   template<typename Ct, typename Distance>
   manhattan<typename container_traits<Ct>::key_type,
-                typename auto_difference<Ct, Distance>::type, Distance>
-  make_manhattan_auto(const Ct& container, Distance)
+            typename auto_difference<Ct, Distance>::type>
+  make_manhattan_auto(const Ct& container, const Distance&)
   {
     return manhattan<typename container_traits<Ct>::key_type,
-                     typename auto_difference<Ct, Distance>::type, Distance>
-		     (auto_difference<Ct, Distance>::make(diff));
+                     typename auto_difference<Ct, Distance>::type>
+      (auto_difference<Ct, Distance>::make(container.key_comp()));
   }
 
 } // namespace spatial

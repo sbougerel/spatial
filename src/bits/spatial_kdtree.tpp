@@ -84,7 +84,7 @@ namespace spatial
           while (true)
             {
               if (key_comp()(node_dim,
-		             const_key(*target_node), const_key(*node)))
+                             const_key(*target_node), const_key(*node)))
                 {
                   if (node->left != 0)
                     {
@@ -112,7 +112,7 @@ namespace spatial
                       node->right = target_node;
                       target_node->parent = node;
                       if (node == get_rightmost())
-		      { set_rightmost(target_node); }
+                      { set_rightmost(target_node); }
                       ++impl_.count_();
                       break;
                     }
@@ -146,7 +146,7 @@ namespace spatial
               if (other_node->left != 0)
                 {
                   other_node = other_node->left;
-                  node_ptr target = create_node(const_value(*other_node));
+                  node_ptr target = create_node(const_value(other_node));
                   target->parent = node;
                   target->left = target->right = 0;
                   node->left = target;
@@ -155,7 +155,7 @@ namespace spatial
               else if (other_node->right != 0)
                 {
                   other_node = other_node->right;
-                  node_ptr target = create_node(const_value(*other_node));
+                  node_ptr target = create_node(const_value(other_node));
                   target->parent = node;
                   target->right = target->left = 0;
                   node->right = target;
@@ -163,7 +163,7 @@ namespace spatial
                 }
               else
                 {
-                  Const_Base_ptr p = other_node->parent;
+                  const_node_ptr p = other_node->parent;
                   while (!header(p) && (other_node == p->right || p->right == 0))
                     {
                       other_node = p;
@@ -175,7 +175,7 @@ namespace spatial
                   if (!header(p))
                     {
                       other_node = other_node->right;
-                      node_ptr target = create_node(const_value(*other_node));
+                      node_ptr target = create_node(const_value(other_node));
                       target->parent = node;
                       target->right = target->left = 0;
                       node->right = target;
@@ -289,7 +289,7 @@ namespace spatial
     {
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!header(node));
-      typedef typename mapping<Self>::iterator mapping_iterator;
+      iterator_mapping<Self> candidate(*this, 0, 0, 0);
       while (node->right != 0 || node->left != 0)
         {
           // If there is nothing on the right, to preserve the invariant, we
@@ -306,7 +306,7 @@ namespace spatial
               node->left = 0;
               if (get_rightmost() == node)
                 { set_rightmost(maximum(node->right)); }
-              node_ptr seeker = node->right;
+              const_node_ptr seeker = node->right;
               if (get_leftmost() == seeker) { set_leftmost(node); }
               else
                 {
@@ -318,9 +318,10 @@ namespace spatial
                     }
                 }
             }
-          mapping_iterator candidate = minimum
-	    (mapping_iterator(*this, node_dim, incr_dim(rank(), node_dim),
-	                      node->right));
+          candidate.node = node->right;
+          candidate.node_dim = incr_dim(rank(), node_dim);
+          mapping_dimension(candidate) = node_dim;
+          candidate = minimum_mapping(candidate);
           if (get_rightmost() == candidate.impl_.node_)
             { set_rightmost(node); }
           if (get_leftmost() == node)
@@ -353,7 +354,7 @@ namespace spatial
       --impl_.count_();
       SPATIAL_ASSERT_CHECK((get_header() == get_root())
                            ? (impl_.count_() == 0) : true);
-      destroy_node(static_cast<Link_type>(node));
+      destroy_node(node);
     }
 
     template <typename Rank, typename Key, typename Value, typename Compare,
@@ -362,7 +363,7 @@ namespace spatial
     Kdtree<Rank, Key, Value, Compare, Alloc>
     ::erase(iterator target)
     {
-      except::check_node_iterator_argument(target.node);
+      except::check_node_iterator(target.node);
       dimension_type node_dim = rank()() - 1;
       const_node_ptr node = target.node;
       while (!header(node))
@@ -370,7 +371,7 @@ namespace spatial
           node = node->parent;
           node_dim = incr_dim(rank(), node_dim);
         }
-      except::check_iterator_argument(node, get_header());
+      except::check_iterator(node, get_header());
       erase_node(node_dim, target.node);
     }
 

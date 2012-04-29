@@ -100,11 +100,11 @@ namespace spatial
 
     explicit frozen_pointmap(dimension_type dim)
       : base_type(details::Dynamic_rank(dim))
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     frozen_pointmap(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim), compare)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     explicit frozen_pointmap(const Compare& compare)
       : base_type(compare)
@@ -113,7 +113,7 @@ namespace spatial
     frozen_pointmap(dimension_type dim, const Compare& compare,
                     const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim), compare, alloc)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     frozen_pointmap(const Compare& compare, const Alloc& alloc)
       : base_type(details::Dynamic_rank(), compare, alloc)
@@ -155,11 +155,11 @@ namespace spatial
 
     explicit runtime_frozen_pointmap(dimension_type dim)
       : base_type(details::Dynamic_rank(dim))
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     runtime_frozen_pointmap(dimension_type dim, const Compare& compare)
       : base_type(details::Dynamic_rank(dim), compare)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     explicit runtime_frozen_pointmap(const Compare& compare)
       : base_type(compare)
@@ -168,7 +168,7 @@ namespace spatial
     runtime_frozen_pointmap(dimension_type dim, const Compare& compare,
                             const Alloc& alloc)
       : base_type(details::Dynamic_rank(dim), compare, alloc)
-    { except::check_rank_argument(dim); }
+    { except::check_rank(dim); }
 
     runtime_frozen_pointmap(const Compare& compare, const Alloc& alloc)
       : base_type(details::Dynamic_rank(), compare, alloc)

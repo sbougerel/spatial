@@ -201,7 +201,7 @@ namespace spatial
 
         Implementation(const Implementation& impl)
           : Rank(impl), compare_(impl.compare_.base(), impl.compare_()),
-            header_(impl.header_.base(), Header_node()) { initialize(); }
+            header_(impl.header_.base()) { initialize(); }
 
         void initialize()
         {
@@ -213,7 +213,7 @@ namespace spatial
 
         ::spatial::details::Compress<Balancing, key_compare> compare_;
         ::spatial::details::Compress<Link_allocator, Node<mode_type> > header_;
-        typename mode_type::node_ptr leftmost_;
+        node_ptr leftmost_;
       } impl_;
 
     private:
@@ -295,8 +295,8 @@ namespace spatial
       node_ptr
       clone_node(const_node_ptr node)
       {
-        node_ptr new_node = create_node(const_value(*node));
-        link(*new_node).weight = const_link(*node).weight;
+        node_ptr new_node = create_node(const_value(node));
+        link(new_node).weight = const_link(node).weight;
         return new_node; // silently cast into base type node_ptr.
       }
 
@@ -306,8 +306,8 @@ namespace spatial
       void
       destroy_node(node_ptr node)
       {
-        get_value_allocator().destroy(value(*node));
-        get_link_allocator().deallocate(&link(*node), 1);
+        get_value_allocator().destroy(&value(node));
+        get_link_allocator().deallocate(&link(node), 1);
       }
 
       /**
@@ -541,7 +541,7 @@ namespace spatial
 
       //@{
       /**
-       *  @brief  Return a pair of iterator around keys of similar coordinates.
+       *  Return a pair of iterator around keys of similar coordinates.
        *
        *  @attention These iterator are not similar to the other iterator, but
        *  are special types of iterators that can only be used to list the equal
@@ -549,21 +549,11 @@ namespace spatial
        */
       std::pair<equal_iterator, equal_iterator>
       equal_range(const key_type& key)
-      {
-        equal_bounds<key_type, key_compare> pred(key_comp(), key);
-        equal_iterator first = range::begin(*this, pred);
-        equal_iterator last = range::end(*this, pred);
-        return std::make_pair(first, last);
-      }
+      { return equal_region_range(*this, key); }
 
       std::pair<const_equal_iterator, const_equal_iterator>
       equal_range(const key_type& key) const
-      {
-        equal_bounds<key_type, key_compare> pred(key_comp(), key);
-        const_equal_iterator first = range::const_begin(*this, pred);
-        const_equal_iterator last = range::const_end(*this, pred);
-        return std::make_pair(first, last);
-      }
+      { return equal_region_range(*this, key); }
       //@}
 
     public:
@@ -692,7 +682,7 @@ namespace spatial
       {
         node_ptr target_node = create_node(value); // may throw
         node_ptr node = get_root();
-        if (Node_base::header(node))
+        if (header(node))
           {
             // insert root node in empty tree
             set_leftmost(target_node);
