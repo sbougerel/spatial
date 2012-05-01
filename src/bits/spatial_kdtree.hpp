@@ -139,7 +139,7 @@ namespace spatial
 
         Compress<key_compare, size_type>           count_;
         Compress<Link_allocator, Node<mode_type> > header_;
-        typename Node<mode_type>::ptr leftmost_;
+        Node<mode_type>* leftmost_;
       } impl_;
 
     private:

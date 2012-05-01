@@ -410,7 +410,7 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
     int_node_fixture fix; // swap with right child
     node_type* left_right = &fix.node_left_right;
     node_type* left = &fix.node_left;
-    swap(left_right, left);
+    swap_node(left_right, left);
     BOOST_CHECK(left_right == &fix.node_left_right);
     BOOST_CHECK(left == &fix.node_left);
     BOOST_CHECK(fix.node_left.left == 0);

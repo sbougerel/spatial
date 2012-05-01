@@ -289,7 +289,7 @@ namespace spatial
     {
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!header(node));
-      iterator_mapping<Self> candidate(*this, 0, 0, 0);
+      Iterator_mapping<Self> candidate(*this, 0, 0, 0);
       while (node->right != 0 || node->left != 0)
         {
           // If there is nothing on the right, to preserve the invariant, we

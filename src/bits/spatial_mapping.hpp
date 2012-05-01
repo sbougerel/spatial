@@ -98,12 +98,12 @@ namespace spatial
      *  \c mapped_type can be modified (the \c second element).
      */
     template<typename Ct>
-    struct iterator_mapping : ::spatial::details::bidirectional_iterator
-    <typename container_traits<Ct>::mode_type, iterator_mapping<Ct>, false>
+    struct Iterator_mapping : ::spatial::details::bidirectional_iterator
+    <typename container_traits<Ct>::mode_type, Iterator_mapping<Ct>, false>
     {
     private:
       typedef typename ::spatial::details::bidirectional_iterator
-      <typename container_traits<Ct>::mode_type, iterator_mapping<Ct>, false>
+      <typename container_traits<Ct>::mode_type, Iterator_mapping<Ct>, false>
       Base;
 
       template<typename Iterator> struct Rebind
@@ -114,7 +114,7 @@ namespace spatial
 
     public:
       //! Uninitialized iterator.
-      iterator_mapping() { }
+      Iterator_mapping() { }
 
       /**
        *  The standard way to build this iterator: specify a mapping dimension,
@@ -127,7 +127,7 @@ namespace spatial
        *  \param iter Use the value of \iter as the start point for the
        *  iteration.
        */
-      iterator_mapping(Ct& container, dimension_type mapping_dim,
+      Iterator_mapping(Ct& container, dimension_type mapping_dim,
                        typename container_traits<Ct>::iterator iter)
         : Base(iter.node, modulo(iter.node, container.rank())),
           data(container, mapping_dim) { }
@@ -143,7 +143,7 @@ namespace spatial
        *  point of the iteration.
        */
       template<typename Iterator>
-      iterator_mapping(Ct& container, dimension_type mapping_dim,
+      Iterator_mapping(Ct& container, dimension_type mapping_dim,
                        const typename Rebind<Iterator>::type& iter)
         : Base(iter.node, iter.node_dim), data(container, mapping_dim) { }
 
@@ -169,7 +169,7 @@ namespace spatial
        *  \param ptr Use the value of node as the start point for the
        *  iteration.
        */
-      iterator_mapping(Ct& container, dimension_type mapping_dim,
+      Iterator_mapping(Ct& container, dimension_type mapping_dim,
                        dimension_type dim,
                        typename container_traits<Ct>::mode_type::node_ptr ptr)
         : Base(ptr, dim), data(container, mapping_dim) { }
@@ -192,28 +192,28 @@ namespace spatial
 
       //! Increments the iterator and returns the incremented value. Prefer to
       //! use this form in \c for loops.
-      iterator_mapping<Ct>& operator++()
+      Iterator_mapping<Ct>& operator++()
       { return increment_mapping(*this); }
 
       //! Increments the iterator but returns the value of the iterator before
       //! the increment. Prefer to use the other form in \c for loops.
-      iterator_mapping<Ct> operator++(int)
+      Iterator_mapping<Ct> operator++(int)
       {
-        iterator_mapping<Ct> x(*this);
+        Iterator_mapping<Ct> x(*this);
         increment_mapping(*this);
         return x;
       }
 
       //! Decrements the iterator and returns the decremented value. Prefer to
       //! use this form in \c for loops.
-      iterator_mapping<Ct>& operator--()
+      Iterator_mapping<Ct>& operator--()
       { return decrement_mapping(*this); }
 
       //! Decrements the iterator but returns the value of the iterator before
       //! the decrement. Prefer to use the other form in \c for loops.
-      iterator_mapping<Ct> operator--(int)
+      Iterator_mapping<Ct> operator--(int)
       {
-        iterator_mapping<Ct>& x(*this);
+        Iterator_mapping<Ct>& x(*this);
         decrement_mapping(*this);
         return x;
       }
@@ -238,13 +238,13 @@ namespace spatial
      *  Object deferenced by this iterator are always constant.
      */
     template<typename Ct>
-    struct iterator_mapping<const Ct>
+    struct Iterator_mapping<const Ct>
       : ::spatial::details::bidirectional_iterator
-    <typename container_traits<Ct>::mode_type, iterator_mapping<Ct>, true>
+    <typename container_traits<Ct>::mode_type, Iterator_mapping<Ct>, true>
     {
     private:
       typedef typename ::spatial::details::bidirectional_iterator
-      <typename container_traits<Ct>::mode_type, iterator_mapping<Ct>, true>
+      <typename container_traits<Ct>::mode_type, Iterator_mapping<Ct>, true>
       Base;
 
       template<typename Iterator> struct Rebind
@@ -255,7 +255,7 @@ namespace spatial
 
     public:
       //! Build an uninitialized iterator.
-      iterator_mapping() { }
+      Iterator_mapping() { }
 
       /**
        *  The standard way to build this iterator: specify a mapping dimension,
@@ -268,7 +268,7 @@ namespace spatial
        *  \param iter Use the value of \iter as the start point for the
        *  iteration.
        */
-      iterator_mapping(const Ct& container, dimension_type dim,
+      Iterator_mapping(const Ct& container, dimension_type dim,
                        typename container_traits<const Ct>::iterator iter)
         : Base(iter.node, modulo(iter.node, container.rank())),
           data(dim, container) { }
@@ -284,7 +284,7 @@ namespace spatial
        *  point of the iteration.
        */
       template<typename Iterator>
-      iterator_mapping(const Ct& container, dimension_type mapping_dim,
+      Iterator_mapping(const Ct& container, dimension_type mapping_dim,
                        const typename Rebind<Iterator>::type& iter)
         : Base(iter.node, iter.node_dim),
           data(container, mapping_dim) { }
@@ -311,13 +311,13 @@ namespace spatial
        *  \param node Use the value of \c node as the start point for the
        *  iteration.
        */
-      iterator_mapping(const Ct& container,
+      Iterator_mapping(const Ct& container,
                        dimension_type mapping_dim, dimension_type node_dim,
                        typename container_traits<Ct>::mode_type::node_ptr node)
         : Base(node, node_dim), data(container, mapping_dim) { }
 
       //! Convertion of mutable iterator into a constant iterator is permitted.
-      iterator_mapping(const iterator_mapping<Ct>& iter)
+      Iterator_mapping(const Iterator_mapping<Ct>& iter)
         : Base(iter.node, iter.node_dim), data(iter.data) { }
 
       /**
@@ -333,28 +333,28 @@ namespace spatial
 
       //! Increments the iterator and returns the incremented value. Prefer to
       //! use this form in \c for loops.
-      iterator_mapping<const Ct>& operator++()
+      Iterator_mapping<const Ct>& operator++()
       { return increment_mapping(*this); }
 
       //! Increments the iterator but returns the value of the iterator before
       //! the increment. Prefer to use the other form in \c for loops.
-      iterator_mapping<const Ct> operator++(int)
+      Iterator_mapping<const Ct> operator++(int)
       {
-        iterator_mapping x(*this);
+        Iterator_mapping x(*this);
         increment_mapping(*this);
         return x;
       }
 
       //! Decrements the iterator and returns the decremented value. Prefer to
       //! use this form in \c for loops.
-      iterator_mapping<const Ct>& operator--()
+      Iterator_mapping<const Ct>& operator--()
       { return decrement_mapping(*this); }
 
       //! Decrements the iterator but returns the value of the iterator before
       //! the decrement. Prefer to use the other form in \c for loops.
-      iterator_mapping<const Ct> operator--(int)
+      Iterator_mapping<const Ct> operator--(int)
       {
-        iterator_mapping& x(*this);
+        Iterator_mapping& x(*this);
         decrement_mapping(*this);
         return x;
       }
@@ -365,26 +365,26 @@ namespace spatial
 
     //! Return true if 2 iterators are equal
     template<typename Ct>
-    bool operator==(const iterator_mapping<const Ct>& a,
-                    const iterator_mapping<const Ct>& b)
+    bool operator==(const Iterator_mapping<const Ct>& a,
+                    const Iterator_mapping<const Ct>& b)
     { return a.node == b.node; }
 
     //! Return true if 2 iterators are equal
     template<typename Ct>
-    bool operator==(const iterator_mapping<Ct>& a,
-                    const iterator_mapping<const Ct>& b)
+    bool operator==(const Iterator_mapping<Ct>& a,
+                    const Iterator_mapping<const Ct>& b)
     { return a.node == b.node; }
 
     //! Return true if 2 iterator are different
     template<typename Ct>
-    bool operator!=(const iterator_mapping<const Ct>& a,
-                    const iterator_mapping<const Ct>& b)
+    bool operator!=(const Iterator_mapping<const Ct>& a,
+                    const Iterator_mapping<const Ct>& b)
     { return !(a == b); }
 
     //! Return true if 2 iterator are different
     template<typename Ct>
-    bool operator!=(const iterator_mapping<Ct>& a,
-                    const iterator_mapping<const Ct>& b)
+    bool operator!=(const Iterator_mapping<Ct>& a,
+                    const Iterator_mapping<const Ct>& b)
     { return !(a == b); }
 
     /**
@@ -403,8 +403,8 @@ namespace spatial
      *  time complexity close to \Olog in practice.
      */
     template <typename Container>
-    iterator_mapping<Container>&
-    increment_mapping(iterator_mapping<Container>& iter);
+    Iterator_mapping<Container>&
+    increment_mapping(Iterator_mapping<Container>& iter);
 
     /**
      *  Move the pointer given in parameter to the previous element in the
@@ -429,8 +429,8 @@ namespace spatial
      *  time complexity close to \Olog in practice.
      */
     template <typename Container>
-    iterator_mapping<Container>&
-    decrement_mapping(iterator_mapping<Container>& iter);
+    Iterator_mapping<Container>&
+    decrement_mapping(Iterator_mapping<Container>& iter);
 
     /**
      *  Move the iterator given in parameter to the minimum value along the
@@ -452,8 +452,8 @@ namespace spatial
      *  \dfractime
      */
     template <typename Container>
-    iterator_mapping<Container>&
-    minimum_mapping(iterator_mapping<Container>& iter);
+    Iterator_mapping<Container>&
+    minimum_mapping(Iterator_mapping<Container>& iter);
 
     /**
      *  Move the iterator given in parameter to the maximum value along the
@@ -475,8 +475,8 @@ namespace spatial
      *  \dfractime
      */
     template <typename Container>
-    iterator_mapping<Container>&
-    maximum_mapping(iterator_mapping<Container>& iter);
+    Iterator_mapping<Container>&
+    maximum_mapping(Iterator_mapping<Container>& iter);
 
     /**
      *  Move the iterator given in parameter to the value with the smallest
@@ -501,9 +501,9 @@ namespace spatial
      *  \dfractime
      */
     template <typename Container>
-    iterator_mapping<Container>&
+    Iterator_mapping<Container>&
     lower_bound_mapping
-    (iterator_mapping<Container>& iter,
+    (Iterator_mapping<Container>& iter,
      const typename container_traits<Container>::key_type& bound);
 
     /**
@@ -529,9 +529,9 @@ namespace spatial
      *  \dfractime
      */
     template <typename Container>
-    iterator_mapping<Container>&
+    Iterator_mapping<Container>&
     upper_bound_mapping
-    (iterator_mapping<Container>& iter,
+    (Iterator_mapping<Container>& iter,
      const typename container_traits<Container>::key_type& bound);
 
   } // namespace details
@@ -551,7 +551,7 @@ namespace spatial
      *  A pair of iterators that represents a range (that is: a range of
      *  elements to iterate, and not an orthogonal range).
      */
-    typedef details::iterator_mapping
+    typedef details::Iterator_mapping
     <typename details::condition
      <std::tr1::is_same<typename container_traits<Ct>::key_type,
                         typename container_traits<Ct>::value_type>::value,
@@ -573,7 +573,7 @@ namespace spatial
      *  A pair of iterators that represents a range (that is: a range of
      *  elements to iterate, and not an orthogonal range).
      */
-    typedef details::iterator_mapping<const Ct> type;
+    typedef details::Iterator_mapping<const Ct> type;
   };
 
   /**
@@ -602,12 +602,12 @@ namespace spatial
   //@{
   template <typename Container>
   inline dimension_type
-  mapping_dimension(const details::iterator_mapping<Container>& it)
+  mapping_dimension(const details::Iterator_mapping<Container>& it)
   { return it.data.mapping_dim(); }
 
   template <typename Container>
   inline dimension_type&
-  mapping_dimension(details::iterator_mapping<Container>& it)
+  mapping_dimension(details::Iterator_mapping<Container>& it)
   { return it.data.mapping_dim(); }
   //@}
 
