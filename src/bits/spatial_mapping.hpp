@@ -547,10 +547,6 @@ namespace spatial
   template <typename Ct>
   struct mapping_iterator
   {
-    /**
-     *  A pair of iterators that represents a range (that is: a range of
-     *  elements to iterate, and not an orthogonal range).
-     */
     typedef details::Iterator_mapping
     <typename details::condition
      <std::tr1::is_same<typename container_traits<Ct>::key_type,
@@ -569,10 +565,6 @@ namespace spatial
   template <typename Ct>
   struct mapping_iterator<const Ct>
   {
-    /**
-     *  A pair of iterators that represents a range (that is: a range of
-     *  elements to iterate, and not an orthogonal range).
-     */
     typedef details::Iterator_mapping<const Ct> type;
   };
 

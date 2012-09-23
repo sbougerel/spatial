@@ -15,28 +15,22 @@
 #ifndef SPATIAL_TEST_MAPPING_HPP
 #define SPATIAL_TEST_MAPPING_HPP
 
-BOOST_AUTO_TEST_CASE( test_mapping_iterator_equal )
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_mapping_equal, Tp, int_pair_sets )
 {
-  frozen_pointset_fix<int_pair, int_pair_less> fix(0);
-  typedef frozen_pointset_fix<int_pair, int_pair_less>::container_type
-    cont_type;
+  Tp fix(0);
   {
-    mapping_iterator<cont_type>::type
+    typename mapping_iterator<typename Tp::container_type>::type
       it1(fix.container, 0, 0, 0), it2(fix.container, 0, 0, 0);
     BOOST_CHECK(it1 == it2);
     BOOST_CHECK(!(it1 != it2));
+    BOOST_CHECK(it2 == it1);
+    BOOST_CHECK(!(it2 != it1));
   }
   {
-    mapping_iterator<cont_type>::type
-      it1(fix.container, 0, 0, 0), it2(fix.container, 0, 0, 0);
-    BOOST_CHECK(it1 == it2);
-    BOOST_CHECK(!(it1 != it2));
-  }
-  {
-    mapping_iterator<cont_type>::type
-      it1(fix.container, 0, 0, 0);
-    mapping_iterator<cont_type>::type
-      it2(fix.container, 0, 0, 0);
+    typename mapping_iterator<const typename Tp::container_type>::type
+      it1(fix.container, 1, 0, 0), it2(fix.container, 1, 0, 0);
     BOOST_CHECK(it1 == it2);
     BOOST_CHECK(it2 == it1);
     BOOST_CHECK(!(it1 != it2));
@@ -44,195 +38,116 @@ BOOST_AUTO_TEST_CASE( test_mapping_iterator_equal )
   }
 }
 
-BOOST_AUTO_TEST_CASE( test_mapping_iterator_ref )
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_mapping_dereference, Tp, int_pair_maps )
 {
   {
-    frozen_pointmap_fix<int_pair, std::string, int_pair_less>
-      fix(1, decrease());
-    mapping_iterator<frozen_pointmap_fix<int_pair, std::string, int_pair_less>
-                     ::container_type>::type
+    Tp fix(1, same());
+    typename mapping_iterator<typename Tp::container_type>::type
       it = mapping_begin(fix.container, 0);
+    (*it).second = "some string";
     BOOST_CHECK_EQUAL((*it).first, int_pair(1, 1));
-    BOOST_CHECK_EQUAL(((*it).first = int_pair(3, 4)), int_pair(3, 4));
-    BOOST_CHECK_EQUAL((*it).first, int_pair(3, 4));
-    BOOST_CHECK_EQUAL((it->first = int_pair(5, 6)), int_pair(5, 6));
-    BOOST_CHECK_EQUAL(it->first, int_pair(5, 6));
-  }
-  {
-    pointset_fix<int_pair, int_pair_less> fix(1, decrease());
-    mapping_iterator<const pointset_fix<int_pair, int_pair_less>
-                     ::container_type>::type
-      it = mapping_begin(fix.container, 0);
-    BOOST_CHECK_EQUAL((*it).first, int_pair(1, 1));
+    it->second = "some other string";
     BOOST_CHECK_EQUAL(it->first, int_pair(1, 1));
   }
+  {
+    Tp fix(1, same());
+    typename mapping_iterator<const typename Tp::container_type>::type
+      it = mapping_begin(fix.container, 0);
+    BOOST_CHECK_EQUAL(*it, int_pair(1, 1));
+  }
 }
 
-BOOST_AUTO_TEST_CASE( test_mapping_iterator_minimum )
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_mapping_minimum, Tp, int_pair_sets )
 {
   {
-    dimension_type mapping_dim = 0;
-    Hundred_kdtree_2D_fixture fix;
-    typedef details::Mapping_iterator
-      <details::Dynamic_rank, int2, int2,
-       Kdtree_node<int2>, bracket_less<int2> > iter_type;
-    iter_type iter;
+    Tp fix(100, random());
     int count = 0;
-    int min_value = (*fix.kdtree.begin())[mapping_dim];
-    for(Hundred_kdtree_2D_fixture::kdtree_type::iterator i
-          = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
+    int min_value_0 = (*fix.record.begin())[0];
+    int min_value_1 = (*fix.record.begin())[1];
+    for(typename Tp::record_type::iterator
+          i = fix.record.begin(); i != fix.record.end(); ++i)
       {
-        int tmp = (*i)[mapping_dim];
-        if (tmp < min_value) { min_value = tmp; }
+        int tmp = (*i)[0];
+        if (tmp < min_value_0) { min_value_0 = tmp; }
+        tmp = (*i)[1];
+        if (tmp < min_value_1) { min_value_1 = tmp; }
         ++count;
       }
     BOOST_CHECK_EQUAL(count, 100);
-    BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<int2>*>
-                            (fix.kdtree.end().node->parent)));
-    BOOST_REQUIRE_EQUAL((*iter)[mapping_dim], min_value);
-  }
-  {
-    dimension_type mapping_dim = 1;
-    Hundred_kdtree_2D_fixture fix;
-    typedef details::Mapping_iterator
-      <details::Dynamic_rank, int2, int2,
-       Kdtree_node<int2>, bracket_less<int2> > iter_type;
-    iter_type iter;
-    int count = 0;
-    int min_value = (*fix.kdtree.begin())[mapping_dim];
-    for(Hundred_kdtree_2D_fixture::kdtree_type::iterator i
-          = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
-      {
-        int tmp = (*i)[mapping_dim];
-        if (tmp < min_value) { min_value = tmp; }
-        ++count;
-      }
-    BOOST_CHECK_EQUAL(count, 100);
-    BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<int2>*>
-                            (fix.kdtree.end().node->parent)));
-    BOOST_REQUIRE_EQUAL((*iter)[mapping_dim], min_value);
-  }
-  { // test at the limit: an unbalanced tree!
-    dimension_type mapping_dim = 1;
-    Unbalanced_right_kdtree_fixture fix;
-    typedef details::Const_Mapping_iterator
-      <details::Dynamic_rank, pair_type, pair_type,
-       Kdtree_node<pair_type>, pair_less> iterator;
-    iterator iter;
-    BOOST_REQUIRE_NO_THROW(iter = iterator::minimum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-                            (fix.kdtree.end().node->parent)));
-    BOOST_CHECK_EQUAL(iter->first, 1); // should be (1, 2);
-    BOOST_CHECK_EQUAL(iter->second, 2); // should be (1, 2);
-  }
-  { // test at the limit: an unbalanced tree!
+    typename mapping_iterator<typename Tp::container_type>::type iter;
     dimension_type mapping_dim = 0;
-    Unbalanced_left_kdtree_fixture fix;
-    typedef details::Const_Mapping_iterator
-      <details::Dynamic_rank, pair_type, pair_type,
-       Kdtree_node<pair_type>, pair_less> iterator;
-    iterator iter;
-    BOOST_REQUIRE_NO_THROW(iter = iterator::minimum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-                            (fix.kdtree.end().node->parent)));
-    BOOST_CHECK_EQUAL(iter->first, 1); // should be (1, 2);
-    BOOST_CHECK_EQUAL(iter->second, 2); // should be (1, 2);
+    iter = mapping_begin(fix.container, mapping_dim);
+    BOOST_REQUIRE_EQUAL((*iter)[mapping_dim], min_value_0);
+    mapping_dim = 1;
+    iter = mapping_begin(fix.container, mapping_dim);
+    BOOST_REQUIRE_EQUAL((*iter)[mapping_dim], min_value_1);
+  }
+  { // test at the limit: an unbalanced tree (i.e. insertions in order)!
+    Tp fix(100, decrease());
+    typename mapping_iterator<typename Tp::container_type>::type iter;
+    dimension_type mapping_dim = 1;
+    iter = mapping_begin(fix.container, mapping_dim);
+    BOOST_CHECK_EQUAL(iter->first, 1); // should be (1, 1);
+    BOOST_CHECK_EQUAL(iter->second, 1);
+  }
+  { // test at the limit: an unbalanced tree (i.e insertions in order)!
+    Tp fix(100, increase());
+    typename mapping_iterator<typename Tp::container_type>::type iter;
+    dimension_type mapping_dim = 1;
+    iter = mapping_begin(fix.container, mapping_dim);
+    BOOST_CHECK_EQUAL(iter->first, 0); // should be (0, 0);
+    BOOST_CHECK_EQUAL(iter->second, 0);
   }
 }
 
-BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_maximum )
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_mapping_maximum, Tp, int2_sets )
 {
   {
-    dimension_type mapping_dim = 0;
-    Hundred_kdtree_2D_fixture fix;
-    typedef details::Const_Mapping_iterator
-      <details::Dynamic_rank, int2, int2,
-       Kdtree_node<int2>, bracket_less<int2> > iter_type;
-    iter_type iter;
+    Tp fix(100, random());
     int count = 0;
-    int max_value = (*fix.kdtree.begin())[mapping_dim];
-    for(Hundred_kdtree_2D_fixture::kdtree_type::iterator i
-          = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
+    int min_value_0 = (*fix.record.begin())[0];
+    int min_value_1 = (*fix.record.begin())[1];
+    for(typename Tp::record_type::iterator
+          i = fix.record.begin(); i != fix.record.end(); ++i)
       {
-        int tmp = (*i)[mapping_dim];
-        if (tmp > max_value) { max_value = tmp; }
+        int tmp = (*i)[0];
+        if (tmp < min_value_0) { min_value_0 = tmp; }
+        tmp = (*i)[1];
+        if (tmp < min_value_1) { min_value_1 = tmp; }
         ++count;
       }
     BOOST_CHECK_EQUAL(count, 100);
-    BOOST_REQUIRE_NO_THROW(iter = iter_type::maximum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<int2>*>
-                            (fix.kdtree.end().node->parent)));
-    BOOST_REQUIRE_EQUAL((*iter)[mapping_dim], max_value);
-  }
-  {
-    dimension_type mapping_dim = 1;
-    Hundred_kdtree_2D_fixture fix;
-    typedef details::Const_Mapping_iterator
-      <details::Dynamic_rank, int2, int2,
-       Kdtree_node<int2>, bracket_less<int2> > iter_type;
-    iter_type iter;
-    int count = 0;
-    int max_value = (*fix.kdtree.begin())[mapping_dim];
-    for(Hundred_kdtree_2D_fixture::kdtree_type::iterator i
-          = fix.kdtree.begin(); i != fix.kdtree.end(); ++i)
-      {
-        int tmp = (*i)[mapping_dim];
-        if (tmp > max_value) { max_value = tmp; }
-        ++count;
-      }
-    BOOST_CHECK_EQUAL(count, 100);
-    BOOST_REQUIRE_NO_THROW(iter = iter_type::maximum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<int2>*>
-                            (fix.kdtree.end().node->parent)));
-    BOOST_REQUIRE_EQUAL((*iter)[mapping_dim], max_value);
+    typename mapping_iterator<typename Tp::container_type>::type iter;
+    iter = mapping_end(fix.container, 0);
+    --iter; // When at the end, this call the 'maximum' function
+    BOOST_REQUIRE_EQUAL((*iter)[0], min_value_0);
+    iter = mapping_end(fix.container, 1);
+    --iter;
+    BOOST_REQUIRE_EQUAL((*iter)[1], min_value_1);
   }
   { // test at the limit: an unbalanced tree!
-    dimension_type mapping_dim = 1;
-    Unbalanced_right_kdtree_fixture fix;
-    typedef details::Const_Mapping_iterator
-      <details::Dynamic_rank, pair_type, pair_type,
-       Kdtree_node<pair_type>, pair_less> iterator;
-    iterator iter;
-    BOOST_REQUIRE_NO_THROW(iter = iterator::maximum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-                            (fix.kdtree.end().node->parent)));
-    BOOST_CHECK_EQUAL(iter->first, 7); // should be (1, 2);
-    BOOST_CHECK_EQUAL(iter->second, 8); // should be (1, 2);
+    Tp fix(100, decrease());
+    typename mapping_iterator<typename Tp::container_type>::type iter;
+    iter = mapping_end(fix.container, 0);
+    --iter;
+    BOOST_CHECK_EQUAL((*iter)[0], 100); // should be (100, 100);
+    BOOST_CHECK_EQUAL((*iter)[1], 100);
   }
   { // test at the limit: an unbalanced tree!
-    dimension_type mapping_dim = 0;
-    Unbalanced_left_kdtree_fixture fix;
-    typedef details::Const_Mapping_iterator
-      <details::Dynamic_rank, pair_type, pair_type,
-       Kdtree_node<pair_type>, pair_less> iterator;
-    iterator iter;
-    BOOST_REQUIRE_NO_THROW(iter = iterator::maximum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-                            (fix.kdtree.end().node->parent)));
-    BOOST_CHECK_EQUAL(iter->first, 7); // should be (1, 2);
-    BOOST_CHECK_EQUAL(iter->second, 8); // should be (1, 2);
+    Tp fix(100, increase());
+    typename mapping_iterator<typename Tp::container_type>::type iter;
+    iter = mapping_end(fix.container, 1);
+    --iter;
+    BOOST_CHECK_EQUAL((*iter)[0], 99); // should be (99, 99);
+    BOOST_CHECK_EQUAL((*iter)[1], 99);
   }
 }
 
-BOOST_AUTO_TEST_CASE( test_Mapping_iterator_increment )
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_mapping_increment, Tp, double5_sets )
 {
   {
     dimension_type mapping_dim = 0;
@@ -742,62 +657,6 @@ BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_upper_bound )
           }
       }
   }
-}
-
-BOOST_AUTO_TEST_CASE( test_pointset_mapping_view )
-{
-  pointset<2, int2> points;
-  mapping_view<pointset<2, int2> > set_zero(points, 0);
-  BOOST_CHECK(set_zero.begin() == set_zero.end());
-  // Now add some points to pointset and iterate throught these points.
-  points.insert(ones);
-  points.insert(ones);
-  points.insert(twos);
-  points.insert(zeros);
-  points.insert(fives);
-  points.insert(fives);
-  BOOST_CHECK(set_zero.begin() != set_zero.end());
-  BOOST_CHECK(set_zero.cbegin() != set_zero.cend());
-  BOOST_CHECK(set_zero.rbegin() != set_zero.rend());
-  BOOST_CHECK(set_zero.crbegin() != set_zero.crend());
-  BOOST_CHECK(*set_zero.begin() == zeros);
-  BOOST_CHECK(*set_zero.cbegin() == zeros);
-  BOOST_CHECK(*--set_zero.end() == fives);
-  BOOST_CHECK(*--set_zero.cend() == fives);
-  BOOST_CHECK(*set_zero.rbegin() == fives);
-  BOOST_CHECK(*set_zero.crbegin() == fives);
-  BOOST_CHECK(*set_zero.lower_bound(ones) == ones);
-  BOOST_CHECK(*set_zero.clower_bound(ones) == ones);
-  BOOST_CHECK(*set_zero.upper_bound(ones) == twos);
-  BOOST_CHECK(*set_zero.cupper_bound(ones) == twos);
-}
-
-BOOST_AUTO_TEST_CASE( test_pointset_const_mapping_view )
-{
-  pointset<2, int2> points;
-  mapping_view<const pointset<2, int2> > set_zero(points, 0);
-  BOOST_CHECK(set_zero.begin() == set_zero.end());
-  // Now add some points to pointset and iterate throught these points.
-  points.insert(ones);
-  points.insert(ones);
-  points.insert(twos);
-  points.insert(zeros);
-  points.insert(fives);
-  points.insert(fives);
-  BOOST_CHECK(set_zero.begin() != set_zero.end());
-  BOOST_CHECK(set_zero.cbegin() != set_zero.cend());
-  BOOST_CHECK(set_zero.rbegin() != set_zero.rend());
-  BOOST_CHECK(set_zero.crbegin() != set_zero.crend());
-  BOOST_CHECK(*set_zero.begin() == zeros);
-  BOOST_CHECK(*set_zero.cbegin() == zeros);
-  BOOST_CHECK(*--set_zero.end() == fives);
-  BOOST_CHECK(*--set_zero.cend() == fives);
-  BOOST_CHECK(*set_zero.rbegin() == fives);
-  BOOST_CHECK(*set_zero.crbegin() == fives);
-  BOOST_CHECK(*set_zero.lower_bound(ones) == ones);
-  BOOST_CHECK(*set_zero.clower_bound(ones) == ones);
-  BOOST_CHECK(*set_zero.upper_bound(ones) == twos);
-  BOOST_CHECK(*set_zero.cupper_bound(ones) == twos);
 }
 
 BOOST_AUTO_TEST_CASE( test_Relaxed_mapping_increment )

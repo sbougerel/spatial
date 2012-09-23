@@ -261,7 +261,7 @@ struct runtime_fixture
 /**
  *  Defines a pointset container with optionally a specific comparator.
  */
-template<typename Tp, typename Compare = bracket_less<Tp> >
+template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
 struct pointset_fix
   : basic_fixture<Tp, pointset<dimension_traits<Tp>::value, Tp, Compare> >
 {
@@ -277,7 +277,8 @@ struct pointset_fix
 /**
  *  Defines a pointmap container with optionally a specific comparator.
  */
-template<typename Tp, typename Mapped, typename Compare = bracket_less<Tp> >
+template<typename Tp, typename Mapped,
+         typename Compare = typename compare_traits<Tp>::type >
 struct pointmap_fix
   : basic_fixture<std::pair<Tp, Mapped>,
                   pointmap<dimension_traits<Tp>::value, Tp, Mapped, Compare> >
@@ -297,7 +298,7 @@ struct pointmap_fix
 /**
  *  Defines a pointset fixture that is tightly balanced.
  */
-template<typename Tp, typename Compare = bracket_less<Tp> >
+template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
 struct tight_pointset_fix
   : basic_fixture<Tp, pointset<dimension_traits<Tp>::value, Tp, Compare,
                                tight_balancing> >
@@ -315,7 +316,8 @@ struct tight_pointset_fix
 /**
  *  Defines a pointmap fixture that is tightly balanced.
  */
-template<typename Tp, typename Mapped, typename Compare = bracket_less<Tp> >
+template<typename Tp, typename Mapped,
+         typename Compare = typename compare_traits<Tp>::type >
 struct tight_pointmap_fix
   : basic_fixture<std::pair<Tp, Mapped>,
                   pointmap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
@@ -336,7 +338,7 @@ struct tight_pointmap_fix
 /**
  *  Defines a fixture for a runtime_pointset.
  */
-template<typename Tp, typename Compare = bracket_less<Tp> >
+template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
 struct runtime_pointset_fix
   : runtime_fixture<Tp, runtime_pointset<Tp, Compare> >
 {
@@ -351,7 +353,8 @@ struct runtime_pointset_fix
 /**
  *  Defines a fixture for a runtime_pointmap.
  */
-template<typename Tp, typename Mapped, typename Compare = bracket_less<Tp> >
+template<typename Tp, typename Mapped,
+         typename Compare = typename compare_traits<Tp>::type >
 struct runtime_pointmap_fix
   : runtime_fixture<Tp, runtime_pointmap<Tp, Mapped, Compare> >
 {
@@ -370,7 +373,7 @@ struct runtime_pointmap_fix
 /**
  *  Defines a fixture for a frozen_poinset.
  */
-template<typename Tp, typename Compare = bracket_less<Tp> >
+template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
 struct frozen_pointset_fix
   : basic_fixture<Tp, frozen_pointset<dimension_traits<Tp>::value, Tp,
   Compare> >
@@ -388,7 +391,8 @@ struct frozen_pointset_fix
 /**
  *  Defines a fixture for a frozen_poinmap.
  */
-template<typename Tp, typename Mapped, typename Compare = bracket_less<Tp> >
+template<typename Tp, typename Mapped,
+         typename Compare = typename compare_traits<Tp>::type >
 struct frozen_pointmap_fix
   : basic_fixture<Tp, frozen_pointmap<dimension_traits<Tp>::value,
                                       Tp, Mapped, Compare> >
@@ -397,7 +401,7 @@ struct frozen_pointmap_fix
   explicit frozen_pointmap_fix(int n)
     : basic_fixture<Tp, frozen_pointmap<dimension_traits<Tp>::value, Tp,
                                         Mapped, Compare> >
-  (n, to_first<pass>()) { }
+      (n, to_first<pass>()) { }
   template<typename Manip>
   frozen_pointmap_fix(int n, const Manip& manip)
     : basic_fixture<Tp, frozen_pointmap<dimension_traits<Tp>::value, Tp,
@@ -408,7 +412,7 @@ struct frozen_pointmap_fix
 /**
  *  Defines a fixture for a \c runtime_frozen_pointset.
  */
-template<typename Tp, typename Compare = bracket_less<Tp> >
+template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
 struct runtime_frozen_pointset_fix
   : runtime_fixture<Tp, runtime_frozen_pointset<Tp, Compare> >
 {
@@ -419,5 +423,51 @@ struct runtime_frozen_pointset_fix
   runtime_frozen_pointset_fix(int n, const Manip& manip)
     : runtime_fixture<Tp, runtime_frozen_pointset<Tp, Compare> >(n, manip) { }
 };
+
+/**
+ *  Defines a fixture for a \c runtime_frozen_pointmap.
+ */
+template<typename Tp, typename Mapped,
+         typename Compare = typename compare_traits<Tp>::type >
+struct runtime_frozen_pointmap_fix
+  : runtime_fixture<Tp, runtime_frozen_pointmap<Tp, Mapped, Compare> >
+{
+  runtime_frozen_pointmap_fix() { }
+  explicit runtime_frozen_pointmap_fix(int n)
+    : runtime_fixture<Tp, runtime_frozen_pointmap<Tp, Mapped, Compare> >
+      (n, to_first<pass>()) { }
+  template<typename Manip>
+  runtime_frozen_pointmap_fix(int n, const Manip& manip)
+    : runtime_fixture<Tp, runtime_frozen_pointmap<Tp, Mapped, Compare> >
+      (n, to_first<Manip>(manip)) { }
+};
+
+// Set lists
+typedef boost::mpl::list<pointset_fix<int2>,
+                         frozen_pointset_fix<int2>,
+                         runtime_pointset_fix<int2>,
+                         runtime_frozen_pointset_fix<int2> >
+int2_sets;
+
+typedef boost::mpl::list<pointset_fix<int_pair>,
+                         frozen_pointset_fix<int_pair>,
+                         runtime_pointset_fix<int_pair>,
+                         runtime_frozen_pointset_fix<int_pair> >
+int_pair_sets;
+
+// Map lists
+typedef boost::mpl::list<pointmap_fix<int2, std::string>,
+                         frozen_pointmap_fix<int2, std::string>,
+                         runtime_pointmap_fix<int2, std::string>,
+                         runtime_frozen_pointmap_fix<int2, std::string> >
+int2_maps;
+
+typedef boost::mpl::list<pointmap_fix<int_pair, std::string>,
+                         frozen_pointmap_fix<int_pair, std::string>,
+                         runtime_pointmap_fix<int_pair, std::string>,
+                         runtime_frozen_pointmap_fix<int_pair, std::string> >
+int_pair_maps;
+
+
 
 #endif // SPATIAL_TEST_FIXTURES_HPP

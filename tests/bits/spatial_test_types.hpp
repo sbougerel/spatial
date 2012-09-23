@@ -15,16 +15,29 @@
 
 /**
  *  The dimension_traits resolve a given type into a constant dimension value;
+ *  that will be used by the fixtures.
  */
 template<typename Tp> struct dimension_traits { };
 
 /**
- *  An helper function that helps specializing dimension_traits for a particular
- *  type.
+ *  An helper macro to specialize dimension_traits for a particular type.
  */
-#define define_dimension(type, dim)             \
-template<> struct dimension_traits<type>        \
-{ enum { value = dim }; }
+#define define_dimension(Tp, dim)               \
+  template<> struct dimension_traits<Tp>        \
+  { enum { value = dim }; }
+
+/**
+ *  The compare_traits resolves a given type into a type used for comparison in
+ *  the fixture.
+ */
+template <typename Tp> struct compare_traits { };
+
+/**
+ *  An helper macro to define the comparison function for the key types.
+ */
+#define define_compare(Tp, Cmp)                 \
+  template<> struct compare_traits<Tp>          \
+  { typedef Cmp type; }
 
 /**
  *  Reports an error if type Tp1 differs from type Tp2.
@@ -66,6 +79,7 @@ struct int2 : std::tr1::array<int, 2>
   { return int2::operator[](n); }
 };
 define_dimension(int2, 2);
+define_compare(int2, bracket_less<int2>);
 
 // int2 declaration for usual value
 int2 zeros(0, 0);
@@ -100,6 +114,7 @@ struct int_pair_less
       }
   }
 };
+define_compare(int_pair, int_pair_less);
 
 // Definition of triple below...
 
@@ -142,6 +157,7 @@ struct triple_less
       }
   }
 };
+define_compare(triple, triple_less);
 
 //! An accessor for the type triple
 struct triple_access
@@ -176,12 +192,14 @@ struct triple_access
 //! A type that contains an array of 5 doubles.
 typedef std::tr1::array<double, 5> double5;
 define_dimension(double5, 5);
+define_compare(double5, bracket_less<int2>);
 
 // Definition of double5 below...
 
 //! A type that contains an array of 5 floats.
 typedef std::tr1::array<float, 5> float5;
 define_dimension(float5, 5);
+define_compare(float5, bracket_less<int2>);
 
 // Definition of accessors and comparators below...
 

@@ -15,6 +15,50 @@
 #ifndef SPATIAL_TEST_FUNCTION_HPP
 #define SPATIAL_TEST_FUNCTION_HPP
 
+BOOST_AUTO_TEST_CASE( test_access_minus )
+{
+  accessor_minus<at_accessor, int2, int> minus;
+  BOOST_CHECK_EQUAL(0, minus(0, zeros, zeros));
+  BOOST_CHECK_EQUAL(0, minus(1, zeros, zeros));
+  BOOST_CHECK_EQUAL(-1, minus(0, ones, twos));
+  BOOST_CHECK_EQUAL(-1, minus(1, ones, twos));
+  BOOST_CHECK_EQUAL(1, minus(0, twos, ones));
+  BOOST_CHECK_EQUAL(1, minus(1, twos, ones));
+}
+
+BOOST_AUTO_TEST_CASE( test_bracket_minus )
+{
+  bracket_minus<int2, int> minus;
+  BOOST_CHECK_EQUAL(0, minus(0, zeros, zeros));
+  BOOST_CHECK_EQUAL(0, minus(1, zeros, zeros));
+  BOOST_CHECK_EQUAL(-1, minus(0, ones, twos));
+  BOOST_CHECK_EQUAL(-1, minus(1, ones, twos));
+  BOOST_CHECK_EQUAL(1, minus(0, twos, ones));
+  BOOST_CHECK_EQUAL(1, minus(1, twos, ones));
+}
+
+BOOST_AUTO_TEST_CASE( test_paren_minus )
+{
+  paren_minus<int2, int> minus;
+  BOOST_CHECK_EQUAL(0, minus(0, zeros, zeros));
+  BOOST_CHECK_EQUAL(0, minus(1, zeros, zeros));
+  BOOST_CHECK_EQUAL(-1, minus(0, ones, twos));
+  BOOST_CHECK_EQUAL(-1, minus(1, ones, twos));
+  BOOST_CHECK_EQUAL(1, minus(0, twos, ones));
+  BOOST_CHECK_EQUAL(1, minus(1, twos, ones));
+}
+
+BOOST_AUTO_TEST_CASE( test_iterator_minus )
+{
+  iterator_minus<int2, int> minus;
+  BOOST_CHECK_EQUAL(0, minus(0, zeros, zeros));
+  BOOST_CHECK_EQUAL(0, minus(1, zeros, zeros));
+  BOOST_CHECK_EQUAL(-1, minus(0, ones, twos));
+  BOOST_CHECK_EQUAL(-1, minus(1, ones, twos));
+  BOOST_CHECK_EQUAL(1, minus(0, twos, ones));
+  BOOST_CHECK_EQUAL(1, minus(1, twos, ones));
+}
+
 BOOST_AUTO_TEST_CASE( test_access_less )
 {
   // This test is hard to craft, how to make sure I'm testing "less" and not
