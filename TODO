@@ -11,16 +11,22 @@ expectations or interests)
            a heavy unit-testing and thus, it should take a good 3
            months.
 
+DONE!
+
 * Jun 11   Some documentation and unit test missing on the first
            release, so we just need to add them. Just a few are
            missing, only. Additionaly, check that the library is
            compiling fine on Visual Studio. Plus add examples and
 	   performance comparisions.
 
+In progress...
+
 * Jul 11   Add interator_cast() operators to cast a view interator
            into a container iterator, to facilitate erasing a node
            from a container, for example. Cause it currently involves
            quite a messy use of iterator constructor.
+
+DONE! (Iterator casting is supported in the iterator themselves)
 
 * Aug 11   Complete General doxygen documention with details on
            container and views, elaboration of how to write geometry,
@@ -30,11 +36,15 @@ expectations or interests)
            milestone 1.0 release, and the end of the beta period, if
            enough people have used it.
 
+In progress...
+
 * Oct 11   Addition of intrusive containers for every existing
            ones. The intrusive containers should have a rather limited
            inpact on the existing code if possible, but should make a
            great difference in terms of performance for those who need
            them. Should take about 2 months.
+
+In progress...
 
 * Dec 11   Implementation of pointmap containers. Need to add quite a
            bit of unit testing, cause they differ from pointset in the
@@ -42,12 +52,16 @@ expectations or interests)
            should also take about 2 months. It would mark the 1.1
            release.
 	   
+DONE!
+
 * Feb 12   Work on boxset containers, add a new type of iterator:
            contain_iterator and intersect_iterator which walk through
            all the boxes that are contained in a range or that are
            intersecting a range, respectively. With unit tests, that
            should take a good 3 months. It would also mark the 1.2
            release.
+
+DONE!
 
 * May 12   Add new iterators such at ray_iterator, which travels along
            a vector, in a given geometry. This iterator works only on
@@ -60,6 +74,8 @@ expectations or interests)
            release and that would probably be the last release before
            a long, long period of bug fixing and compatibility
            improvements.
+
+DONE!
 
 * Oct 12   Porting Spatial to scripting/duck-typing languages or
            frameworks? Python, Java, Lua, Ruby, .Net, others?

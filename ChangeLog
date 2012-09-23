@@ -1,3 +1,11 @@
+2012-09-23  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * task_3432355 After a long quiet time not working on the library, I'm
+        finally moving forward in unit testing. A new fixture framework has been
+        created in order to make an efficient use of test template and
+        considerably reduce the number of tests required while increasing the
+        portions of code actually tested.
+
 2011-11-08  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * task_3432355 Adding more documentation on complexity of mapping function.
@@ -188,4 +196,3 @@
           * flexible definition of a metric space for elements in the container,
           * STL-compatible iterators going from the nearest to the furthest
             neighbr of a point according to the metric space applied.
-
