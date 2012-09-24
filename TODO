@@ -16,8 +16,7 @@ DONE!
 * Jun 11   Some documentation and unit test missing on the first
            release, so we just need to add them. Just a few are
            missing, only. Additionaly, check that the library is
-           compiling fine on Visual Studio. Plus add examples and
-	   performance comparisions.
+           compiling fine on Visual Studio. Plus add better examples
 
 In progress...
 
@@ -51,7 +50,7 @@ In progress...
            sense that their iterator are not always constant. It
            should also take about 2 months. It would mark the 1.1
            release.
-	   
+
 DONE!
 
 * Feb 12   Work on boxset containers, add a new type of iterator:
@@ -63,28 +62,32 @@ DONE!
 
 DONE!
 
-* May 12   Add new iterators such at ray_iterator, which travels along
+* Apr 12   Add a new type of iterator known as ordered_iterator. This
+           iterator always walks through the nodes of the tree in the same
+           order. This iterator is absolutely necessary to properly
+           implement some elementary functions such as "==" between
+           containers.
+
+* Jul 12   Add new iterators such at ray_iterator, which travels along
            a vector, in a given geometry. This iterator works only on
-	   boxset family of iterators. Some new functions for geometry
+           boxset family of iterators. Some new functions for geometry
            should appear and therefore, it would make defining a
            geometry quite a complex business, needing more
            documentation. Should take about 2 months.
 
-* Jul 12   Add the boxmap family of iterators. That would mark the 1.3
+* Sep 12   Add the boxmap family of iterators. That would mark the 1.3
            release and that would probably be the last release before
            a long, long period of bug fixing and compatibility
            improvements.
 
 DONE!
 
-* Oct 12   Porting Spatial to scripting/duck-typing languages or
+* Nov 12   Final optimization: work on adding performance-based tests and
+           comparison with other libraries in the market. Wouldn't it be
+           nice to see how it fares against ANN or libkdtree++?
+
+* Feb 13   Porting Spatial to scripting/duck-typing languages or
            frameworks? Python, Java, Lua, Ruby, .Net, others?
 
-* Dec 12   Final optimization: work on cache oblivious tree allocator,
-           that would store nodes that are related closer to one another
-	   in memory.
 
-* Jan 13   A new type of tree to add: VP-tree. They come with a much faster
-      	   neighbor iterator, and a new type of range search iterator, which is
- 	   not orthogonal by metric based, as is the rest of the tree.
-
+* May 13   Add: VP-tree?

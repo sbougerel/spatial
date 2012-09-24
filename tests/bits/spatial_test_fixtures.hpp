@@ -444,30 +444,60 @@ struct runtime_frozen_pointmap_fix
 
 // Set lists
 typedef boost::mpl::list<pointset_fix<int2>,
+                         tight_pointset_fix<int2>,
                          frozen_pointset_fix<int2>,
                          runtime_pointset_fix<int2>,
                          runtime_frozen_pointset_fix<int2> >
 int2_sets;
 
 typedef boost::mpl::list<pointset_fix<int_pair>,
+                         tight_pointset_fix<int2>,
                          frozen_pointset_fix<int_pair>,
                          runtime_pointset_fix<int_pair>,
                          runtime_frozen_pointset_fix<int_pair> >
 int_pair_sets;
 
+typedef boost::mpl::list<pointset_fix<double5>,
+                         tight_pointset_fix<double5>,
+                         frozen_pointset_fix<double5>,
+                         runtime_pointset_fix<double5>,
+                         runtime_frozen_pointset_fix<double5> >
+double5_sets;
+
+typedef boost::mpl::list<pointset_fix<float5>,
+                         tight_pointset_fix<float5>,
+                         frozen_pointset_fix<float5>,
+                         runtime_pointset_fix<float5>,
+                         runtime_frozen_pointset_fix<float5> >
+float5_sets;
+
 // Map lists
 typedef boost::mpl::list<pointmap_fix<int2, std::string>,
+                         tight_pointmap_fix<int2, std::string>,
                          frozen_pointmap_fix<int2, std::string>,
                          runtime_pointmap_fix<int2, std::string>,
                          runtime_frozen_pointmap_fix<int2, std::string> >
 int2_maps;
 
 typedef boost::mpl::list<pointmap_fix<int_pair, std::string>,
+                         tight_pointmap_fix<int_pair, std::string>,
                          frozen_pointmap_fix<int_pair, std::string>,
                          runtime_pointmap_fix<int_pair, std::string>,
                          runtime_frozen_pointmap_fix<int_pair, std::string> >
 int_pair_maps;
 
+typedef boost::mpl::list<pointmap_fix<double5, std::string>,
+                         tight_pointmap_fix<double5, std::string>,
+                         frozen_pointmap_fix<double5, std::string>,
+                         runtime_pointmap_fix<double5, std::string>,
+                         runtime_frozen_pointmap_fix<double5, std::string> >
+double5_maps;
 
+typedef boost::mpl::list<pointmap_fix<float5, std::string>,
+                         tight_pointmap_fix<float5, std::string>,
+                         frozen_pointmap_fix<float5, std::string>,
+                         runtime_pointmap_fix<float5, std::string>,
+                         runtime_frozen_pointmap_fix<float5, std::string> >
+float5_maps;
 
 #endif // SPATIAL_TEST_FIXTURES_HPP

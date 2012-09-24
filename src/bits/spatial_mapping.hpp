@@ -365,6 +365,12 @@ namespace spatial
 
     //! Return true if 2 iterators are equal
     template<typename Ct>
+    bool operator==(const Iterator_mapping<Ct>& a,
+                    const Iterator_mapping<Ct>& b)
+    { return a.node == b.node; }
+
+    //! Return true if 2 iterators are equal
+    template<typename Ct>
     bool operator==(const Iterator_mapping<const Ct>& a,
                     const Iterator_mapping<const Ct>& b)
     { return a.node == b.node; }
@@ -374,6 +380,18 @@ namespace spatial
     bool operator==(const Iterator_mapping<Ct>& a,
                     const Iterator_mapping<const Ct>& b)
     { return a.node == b.node; }
+
+    //! Return true if 2 iterators are equal
+    template<typename Ct>
+    bool operator==(const Iterator_mapping<const Ct>& a,
+                    const Iterator_mapping<Ct>& b)
+    { return a.node == b.node; }
+
+    //! Return true if 2 iterator are different
+    template<typename Ct>
+    bool operator!=(const Iterator_mapping<Ct>& a,
+                    const Iterator_mapping<Ct>& b)
+    { return !(a == b); }
 
     //! Return true if 2 iterator are different
     template<typename Ct>
@@ -385,6 +403,12 @@ namespace spatial
     template<typename Ct>
     bool operator!=(const Iterator_mapping<Ct>& a,
                     const Iterator_mapping<const Ct>& b)
+    { return !(a == b); }
+
+    //! Return true if 2 iterator are different
+    template<typename Ct>
+    bool operator!=(const Iterator_mapping<const Ct>& a,
+                    const Iterator_mapping<Ct>& b)
     { return !(a == b); }
 
     /**
