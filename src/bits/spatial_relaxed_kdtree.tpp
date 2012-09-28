@@ -140,13 +140,13 @@ namespace spatial
       // Note that while I can theorize this for several algorithms (simple
       // iteration, mapping iteration, range iteration), I still have to perform
       // experiments that reflect this hypothesis.
-      if (const_link(node).weight
+      if (const_link(node)->weight
           <= static_cast<weight_type>(dimension()) << 1)
         { return false; }
       return balancing()
         (rank(),
-         more_left + (node->left ? const_link(node->left).weight : 0),
-         more_right + (node->right ? const_link(node->right).weight : 0));
+         more_left + (node->left ? const_link(node->left)->weight : 0),
+         more_right + (node->right ? const_link(node->right)->weight : 0));
     }
 
     template <typename Rank, typename Key, typename Value, typename Compare,
@@ -181,17 +181,17 @@ namespace spatial
       while (true)
         {
           SPATIAL_ASSERT_CHECK
-            ((node->right ? const_link(node->right).weight : 0)
-             + (node->left ? const_link(node->left).weight: 0)
-             + 1 == const_link(node).weight);
+            ((node->right ? const_link(node->right)->weight : 0)
+             + (node->left ? const_link(node->left)->weight: 0)
+             + 1 == const_link(node)->weight);
           // Balancing equal values on either side of the tree
           if (key_comp()(node_dim, const_key(target_node), const_key(node))
               || (!key_comp()(node_dim,
                               const_key(node), const_key(target_node))
                   && (node->left == 0
                       || (node->right != 0
-                          && const_link(node->left).weight
-                          < const_link(node->right).weight))))
+                          && const_link(node->left)->weight
+                          < const_link(node->right)->weight))))
             {
               if (node->left == 0)
                 {
@@ -199,7 +199,7 @@ namespace spatial
                   target_node->parent = node;
                   if (get_leftmost() == node)
                     { set_leftmost(target_node); }
-                  ++link(node).weight;
+                  ++link(node)->weight;
                   break;
                 }
               else
@@ -210,7 +210,7 @@ namespace spatial
                     }
                   else
                     {
-                      ++link(node).weight;
+                      ++link(node)->weight;
                       node = node->left;
                       node_dim = incr_dim(rank(), node_dim);
                     }
@@ -224,7 +224,7 @@ namespace spatial
                   target_node->parent = node;
                   if (get_rightmost() == node)
                     { set_rightmost(target_node); }
-                  ++link(node).weight;
+                  ++link(node)->weight;
                   break;
                 }
               else
@@ -235,7 +235,7 @@ namespace spatial
                     }
                   else
                     {
-                      ++link(node).weight;
+                      ++link(node)->weight;
                       node = node->right;
                       node_dim = incr_dim(rank(), node_dim);
                     }
@@ -269,8 +269,8 @@ namespace spatial
           mapping_iterator candidate(*this, 0, 0, 0);
           if (node->left != 0
               && (node->right == 0
-                  || const_link(node->right).weight
-                  < const_link(node->left).weight))
+                  || const_link(node->right)->weight
+                  < const_link(node->left)->weight))
             {
               mapping_dimension(candidate) = node_dim;
               candidate.node_dim = incr_dim(rank(), node_dim);
@@ -324,8 +324,8 @@ namespace spatial
             {
               node = node->parent;
               node_dim = decr_dim(rank(), node_dim);
-              SPATIAL_ASSERT_CHECK(const_link(node).weight > 1);
-              --link(node).weight;
+              SPATIAL_ASSERT_CHECK(const_link(node)->weight > 1);
+              --link(node)->weight;
               if(is_node_unbalanced(node))
                 {
                   node = balance_node(node_dim, node);  // recursive!
@@ -351,8 +351,8 @@ namespace spatial
       node_dim = decr_dim(rank(), node_dim);
       while(!header(p))
         {
-          SPATIAL_ASSERT_CHECK(const_link(p).weight > 1);
-          --link(p).weight;
+          SPATIAL_ASSERT_CHECK(const_link(p)->weight > 1);
+          --link(p)->weight;
           if(is_node_unbalanced(p))
             { p = balance_node(node_dim, p); } // balance node
           p = p->parent;
@@ -368,13 +368,8 @@ namespace spatial
     (iterator target)
     {
       except::check_node_iterator(target.node);
-      dimension_type node_dim = rank()() - 1;
-      const_node_ptr node = target.node;
-      while (!header(node))
-        {
-          node = node->parent;
-          node_dim = incr_dim(rank(), node_dim);
-        }
+      node_ptr node = target.node;
+      dimension_type node_dim = modulo(node, rank());
       except::check_iterator(node, get_header());
       erase_node_balance(node_dim, target.node);
       destroy_node(target.node);

@@ -140,27 +140,27 @@ struct int2_relaxed_node_fixture
     node_root.parent = &header;
     node_root.left = &node_left;
     node_root.right = &node_right;
-    link(&node_root).weight = 5;
+    link(&node_root)->weight = 5;
     value(&node_root) = twos;
     node_left.parent = &node_root;
     node_left.left = &node_left_left;
     node_left.right = &node_left_right;
-    link(&node_left).weight = 3;
+    link(&node_left)->weight = 3;
     value(&node_left) = ones;
     node_right.parent = &node_root;
     node_right.left = 0;
     node_right.right = 0;
-    link(&node_right).weight = 1;
+    link(&node_right)->weight = 1;
     value(&node_right) = threes;
     node_left_right.parent = &node_left;
     node_left_right.left = 0;
     node_left_right.right = 0;
-    link(&node_left_right).weight = 1;
+    link(&node_left_right)->weight = 1;
     value(&node_left_right) = ones;
     node_left_left.parent = &node_left;
     node_left_left.left = 0;
     node_left_left.right = 0;
-    link(&node_left_left).weight = 1;
+    link(&node_left_left)->weight = 1;
     value(&node_left_left) = zeros;
   }
 };
@@ -196,37 +196,37 @@ struct large_int2_relaxed_node_fixture
     node_root.parent = &header;
     node_root.left = &node_left;
     node_root.right = &node_right;
-    link(&node_root).weight = 7;
+    link(&node_root)->weight = 7;
     value(&node_root) = twos;
     node_left.parent = &node_root;
     node_left.left = &node_left_left;
     node_left.right = &node_left_right;
-    link(&node_left).weight = 3;
+    link(&node_left)->weight = 3;
     value(&node_left) = ones;
     node_right.parent = &node_root;
     node_right.left = &node_right_left;
     node_right.right = 0;
-    link(&node_right).weight = 3;
+    link(&node_right)->weight = 3;
     value(&node_right) = threes;
     node_right_left.parent = &node_right;
     node_right_left.left = 0;
     node_right_left.right = &node_right_left_right;
-    link(&node_right_left).weight = 2;
+    link(&node_right_left)->weight = 2;
     value(&node_right_left) = threes;
     node_right_left_right.parent = &node_right_left;
     node_right_left_right.left = 0;
     node_right_left_right.right = 0;
-    link(&node_right_left_right).weight = 1;
+    link(&node_right_left_right)->weight = 1;
     value(&node_right_left_right) = threes;
     node_left_right.parent = &node_left;
     node_left_right.left = 0;
     node_left_right.right = 0;
-    link(&node_left_right).weight = 1;
+    link(&node_left_right)->weight = 1;
     value(&node_left_right) = ones;
     node_left_left.parent = &node_left;
     node_left_left.left = 0;
     node_left_left.right = 0;
-    link(&node_left_left).weight = 1;
+    link(&node_left_left)->weight = 1;
     value(&node_left_left) = zeros;
   }
 };
@@ -537,36 +537,40 @@ BOOST_AUTO_TEST_CASE( test_Node_iterator )
   // increment and decrement tested earlier, check pre/post correctness and
   // derefencing
   {
-    int_pair test_object(1, 2);
-    Kdtree_link<int_pair, int_pair> test_node;
+    quad test_object(1, 2, 3, 4);
+    Kdtree_link<quad, quad> test_node;
     test_node.parent = &test_node;
     test_node.left = 0;
     test_node.right = 0;
     test_node.value = test_object;
-    details::Node_iterator<Kdtree_link<int_pair, int_pair> >
+    details::Node_iterator<Kdtree_link<quad, quad> >
       iter(&test_node);
     BOOST_CHECK(*iter == test_object);
-    BOOST_CHECK_EQUAL(iter->first, 1);
-    BOOST_CHECK_EQUAL(iter->second, 2);
+    BOOST_CHECK_EQUAL(iter->x, 1);
+    BOOST_CHECK_EQUAL(iter->y, 2);
+    BOOST_CHECK_EQUAL(iter->z, 3);
+    BOOST_CHECK_EQUAL(iter->w, 4);
     // should compile: non-const iterator!
     BOOST_CHECK((*iter = test_object) == test_object);
-    BOOST_CHECK_EQUAL((iter->first = 3), 3);
+    BOOST_CHECK_EQUAL((iter->x = 3), 3);
   }
   {
-    int_pair test_object(1, 2);
-    Relaxed_kdtree_link<int_pair, int_pair> test_node;
+    quad test_object(1, 2, 3, 4);
+    Relaxed_kdtree_link<quad, quad> test_node;
     test_node.parent = &test_node;
     test_node.left = 0;
     test_node.right = 0;
     test_node.value = test_object;
-    details::Node_iterator<Relaxed_kdtree_link<int_pair, int_pair> >
+    details::Node_iterator<Relaxed_kdtree_link<quad, quad> >
       iter(&test_node);
     BOOST_CHECK(*iter == test_object);
-    BOOST_CHECK_EQUAL(iter->first, 1);
-    BOOST_CHECK_EQUAL(iter->second, 2);
+    BOOST_CHECK_EQUAL(iter->x, 1);
+    BOOST_CHECK_EQUAL(iter->y, 2);
+    BOOST_CHECK_EQUAL(iter->z, 3);
+    BOOST_CHECK_EQUAL(iter->w, 4);
     // should compile: non-const iterator!
     BOOST_CHECK((*iter = test_object) == test_object);
-    BOOST_CHECK_EQUAL((iter->first = 3), 3);
+    BOOST_CHECK_EQUAL((iter->x = 3), 3);
   }
   {
     // Make sure that constant iterator does not invalidate anything
@@ -591,30 +595,34 @@ BOOST_AUTO_TEST_CASE( test_Const_Node_iterator )
   // increment and decrement tested earlier, check pre/post correctness and
   // derefencing
   {
-    int_pair test_object(1, 2);
-    Kdtree_link<int_pair, int_pair> test_node;
+    quad test_object(1, 2, 3, 4);
+    Kdtree_link<quad, quad> test_node;
     test_node.parent = &test_node;
     test_node.left = 0;
     test_node.right = 0;
     test_node.value = test_object;
-    details::Const_node_iterator<Kdtree_link<int_pair, int_pair> >
+    details::Const_node_iterator<Kdtree_link<quad, quad> >
       iter(&test_node);
     BOOST_CHECK(*iter == test_object);
-    BOOST_CHECK_EQUAL(iter->first, 1);
-    BOOST_CHECK_EQUAL(iter->second, 2);
+    BOOST_CHECK_EQUAL(iter->x, 1);
+    BOOST_CHECK_EQUAL(iter->y, 2);
+    BOOST_CHECK_EQUAL(iter->z, 3);
+    BOOST_CHECK_EQUAL(iter->w, 4);
   }
   {
-    int_pair test_object(1, 2);
-    Relaxed_kdtree_link<int_pair, int_pair> test_node;
+    quad test_object(1, 2, 3, 4);
+    Relaxed_kdtree_link<quad, quad> test_node;
     test_node.parent = &test_node;
     test_node.left = 0;
     test_node.right = 0;
     test_node.value = test_object;
-    details::Const_node_iterator<Relaxed_kdtree_link<int_pair, int_pair> >
+    details::Const_node_iterator<Relaxed_kdtree_link<quad, quad> >
       iter(&test_node);
     BOOST_CHECK(*iter == test_object);
-    BOOST_CHECK_EQUAL(iter->first, 1);
-    BOOST_CHECK_EQUAL(iter->second, 2);
+    BOOST_CHECK_EQUAL(iter->x, 1);
+    BOOST_CHECK_EQUAL(iter->y, 2);
+    BOOST_CHECK_EQUAL(iter->z, 3);
+    BOOST_CHECK_EQUAL(iter->w, 4);
   }
   {
     // Make sure that constant iterator does not invalidate anything
@@ -641,17 +649,19 @@ BOOST_AUTO_TEST_CASE( test_Preorder_node_iterator )
   // increment and decrement tested earlier, check pre/post correctness and
   // derefencing
   {
-    int_pair test_object(1, 2);
-    Kdtree_link<int_pair, int_pair> test_node;
+    quad test_object(1, 2, 3, 4);
+    Kdtree_link<quad, quad> test_node;
     test_node.parent = &test_node;
     test_node.left = 0;
     test_node.right = 0;
     test_node.value = test_object;
-    details::Preorder_node_iterator<Kdtree_link<int_pair, int_pair> >
+    details::Preorder_node_iterator<Kdtree_link<quad, quad> >
       iter(&test_node);
     BOOST_CHECK(*iter == test_object);
-    BOOST_CHECK_EQUAL(iter->first, 1);
-    BOOST_CHECK_EQUAL(iter->second, 2);
+    BOOST_CHECK_EQUAL(iter->x, 1);
+    BOOST_CHECK_EQUAL(iter->y, 2);
+    BOOST_CHECK_EQUAL(iter->z, 3);
+    BOOST_CHECK_EQUAL(iter->w, 4);
   }
   {
     int2_node_fixture fix;

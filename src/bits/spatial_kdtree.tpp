@@ -84,7 +84,7 @@ namespace spatial
           while (true)
             {
               if (key_comp()(node_dim,
-                             const_key(*target_node), const_key(*node)))
+                             const_key(target_node), const_key(node)))
                 {
                   if (node->left != 0)
                     {
@@ -364,13 +364,8 @@ namespace spatial
     ::erase(iterator target)
     {
       except::check_node_iterator(target.node);
-      dimension_type node_dim = rank()() - 1;
-      const_node_ptr node = target.node;
-      while (!header(node))
-        {
-          node = node->parent;
-          node_dim = incr_dim(rank(), node_dim);
-        }
+      node_ptr node = target.node;
+      dimension_type node_dim = modulo(node, rank());
       except::check_iterator(node, get_header());
       erase_node(node_dim, target.node);
     }

@@ -69,7 +69,7 @@ administrators, listed on the \project_page. Once your access is granted, you
 can use the following command to clone the repository:
 
 \code
-git clone ssh://<your_name>@spatial.git.sourceforge.net/gitroot/spatial/spatial 
+git clone ssh://<your_name>@spatial.git.sourceforge.net/gitroot/spatial/spatial
 \endcode
 
 \prev \ref intro \next \ref changelog \endprevnext
@@ -374,8 +374,8 @@ struct point3d_accessor
 
 // Now declare the container with the user-defined accessor
 spatial::pointset<3, point3d,
-		  spatial::accessor_less<point3d_accessor, point3d>
-		  > other_container;
+                  spatial::accessor_less<point3d_accessor, point3d>
+                  > other_container;
 \endcode
 
 Now you start to see that you can use a wide range of objects, inside your
@@ -592,14 +592,14 @@ struct predicate
   {
     switch(dim)
       {
-	// for dimension 0, only the interval ]-1, 1[ matches...
+        // for dimension 0, only the interval ]-1, 1[ matches...
       case 0: return x[0] <= -1 ? spatial::below
                      : (x[0] >= 1 ? spatial::above : spatial::matching );
-	// for dimension 1, it's always a match...
+        // for dimension 1, it's always a match...
       case 1: return spatial::matching;
-	// for dimension 2, matches unless it's equal or above 2...
+        // for dimension 2, matches unless it's equal or above 2...
       case 2: return x[2] < 2 ? spatial::matching : spatial::above;
-	// else we must be out of range...
+        // else we must be out of range...
       default: throw std::out_of_range();
       }
   }
@@ -749,4 +749,3 @@ There is a documentation for each example too, in the related pages.
 \prev \ref structure \next \ref tutorial_end \endprevnext
 
 */
-

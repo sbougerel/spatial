@@ -307,14 +307,14 @@ namespace spatial
        *  \param container The container to iterate.
        *  \param mapping_dim The dimension used to order all nodes during the
        *  iteration.
-       *  \param node_dim The dimension of the node pointed to by iterator.
-       *  \param node Use the value of \c node as the start point for the
+       *  \param other_node_dim The dimension of the node pointed to by iterator.
+       *  \param other_node Use the value of \c node as the start point for the
        *  iteration.
        */
       Iterator_mapping(const Ct& container,
-                       dimension_type mapping_dim, dimension_type node_dim,
-                       typename container_traits<Ct>::mode_type::node_ptr node)
-        : Base(node, node_dim), data(container, mapping_dim) { }
+                       dimension_type mapping_dim, dimension_type other_node_dim,
+                       typename container_traits<Ct>::mode_type::node_ptr other_node)
+        : Base(other_node, other_node_dim), data(container, mapping_dim) { }
 
       //! Convertion of mutable iterator into a constant iterator is permitted.
       Iterator_mapping(const Iterator_mapping<Ct>& iter)
@@ -329,7 +329,7 @@ namespace spatial
        *  of the container, this iterator will get invalidated after erase.
        */
       operator typename container_traits<Ct>::const_iterator() const
-      { return container_traits<Ct>::const_iterator(Base::node); }
+      { return typename container_traits<Ct>::const_iterator(Base::node); }
 
       //! Increments the iterator and returns the incremented value. Prefer to
       //! use this form in \c for loops.
@@ -655,7 +655,7 @@ namespace spatial
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
     typename mapping_iterator<Container>::type
-      it(container, mapping_dim, 0, container.top()); // At root (dim = 0)
+      it(container, mapping_dim, 0, container.end().node->parent); // At root (dim = 0)
     return ::spatial::details::minimum_mapping(it);
   }
 
@@ -682,7 +682,7 @@ namespace spatial
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
     typename mapping_iterator<const Container>::type
-      it(container, mapping_dim, 0, container.top()); // At root (dim = 0)
+      it(container, mapping_dim, 0, container.end().node->parent);
     return ::spatial::details::minimum_mapping(it);
   }
 
@@ -720,9 +720,9 @@ namespace spatial
   mapping_end(Container& container, dimension_type mapping_dim)
   {
     except::check_dimension(container.dimension(), mapping_dim);
-    return mapping_iterator<Container>::type
+    return typename mapping_iterator<Container>::type
       (container, mapping_dim, container.dimension() - 1,
-       container.end()); // At header (dim = rank - 1)
+       container.end().node); // At header (dim = rank - 1)
   }
 
   //@{
@@ -748,9 +748,9 @@ namespace spatial
   mapping_end(const Container& container, dimension_type mapping_dim)
   {
     except::check_dimension(container.dimension(), mapping_dim);
-    return mapping_iterator<const Container>::type
+    return typename mapping_iterator<const Container>::type
       (container, mapping_dim, container.dimension() - 1,
-       container.end()); // At header (dim = rank - 1)
+       container.end().node); // At header (dim = rank - 1)
   }
 
   template <typename Container>
@@ -887,7 +887,7 @@ namespace spatial
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
     typename mapping_iterator<Container>::type it
-      (container, mapping_dim, 0, container.top()); // At root (dim = 0)
+      (container, mapping_dim, 0, container.end().node->parent);
     return ::spatial::details::lower_bound_mapping(it, bound);
   }
 
@@ -920,7 +920,7 @@ namespace spatial
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
     typename mapping_iterator<const Container>::type it
-      (container, mapping_dim, 0, container.top()); // At root (dim = 0)
+      (container, mapping_dim, 0, container.end().node->parent);
     return ::spatial::details::lower_bound_mapping(it, bound);
   }
 
@@ -966,7 +966,7 @@ namespace spatial
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
     typename mapping_iterator<Container>::type it
-      (container, mapping_dim, 0, container.top()); // At root (dim = 0)
+      (container, mapping_dim, 0, container.end().node->parent); // At root (dim = 0)
     return ::spatial::details::upper_bound_mapping(it, bound);
   }
 
@@ -999,7 +999,7 @@ namespace spatial
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
     typename mapping_iterator<const Container>::type it
-      (container, mapping_dim, 0, container.top()); // At root (dim = 0)
+      (container, mapping_dim, 0, container.end().node->parent); // At root (dim = 0)
     return ::spatial::details::upper_bound_mapping(it, bound);
   }
 

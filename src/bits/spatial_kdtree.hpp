@@ -221,7 +221,7 @@ namespace spatial
       destroy_node(node_ptr node)
       {
         get_value_allocator().destroy(&value(node));
-        get_link_allocator().deallocate(&link(node), 1);
+        get_link_allocator().deallocate(link(node), 1);
       }
 
       /**
@@ -286,14 +286,6 @@ namespace spatial
       { const_iterator it; it.node = get_header(); return it; }
 
       const_iterator cend() const { return end(); }
-
-      iterator top()
-      { iterator it; it.node = get_root(); return it; }
-
-      const_iterator top() const
-      { const_iterator it; it.node = get_root(); return it; }
-
-      const_iterator ctop() const { return top(); }
 
       reverse_iterator rbegin()
       { return reverse_iterator(end()); }
@@ -558,7 +550,7 @@ namespace spatial
       iterator
       insert(const value_type& value)
       {
-        link_ptr tmp = create_node(value); // may throw
+        link_ptr tmp = link(create_node(value)); // may throw
         return insert_node(tmp);
       }
 

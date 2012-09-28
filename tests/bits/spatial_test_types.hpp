@@ -24,7 +24,7 @@ template<typename Tp> struct dimension_traits { };
  */
 #define define_dimension(Tp, dim)               \
   template<> struct dimension_traits<Tp>        \
-  { enum { value = dim }; }
+  { enum { value = dim, half = dim >> 1 }; }
 
 /**
  *  The compare_traits resolves a given type into a type used for comparison in
@@ -55,7 +55,7 @@ struct check_is_same<Tp, Tp>
 };
 //@}
 
-// Definitions of int2 below...
+// Definitions of int2 below, a simple array of simple type
 
 /**
  *  Defines int2, an array type that contains 2 integrers.
@@ -89,117 +89,73 @@ int2 threes(3, 3);
 int2 fours(4, 4);
 int2 fives(5, 5);
 
-// Definitions of int_pair below...
+// Definition of double6 below, a larger array of double type
+
+//! A type that contains an array of 6 doubles.
+typedef std::tr1::array<double, 6> double6;
+define_dimension(double6, 6);
+define_compare(double6, bracket_less<double6>);
+
+// Definition of quad below, a structure of simple type
 
 /**
- *  A type that also contains 2 integers stored in a pair, accessed through
- *  first, second.
+ *  A type that contains 4 elements of type int accessed exclusively via their
+ *  variable names: x, y, z, w.
  */
-typedef std::pair<int, int> int_pair;
-define_dimension(int_pair, 2);
-
-/**
- *  The comparator for int_pair.
- */
-struct int_pair_less
+struct quad
 {
-  bool
-  operator()(dimension_type dim, const int_pair& a, const int_pair& b) const
-  {
-    switch(dim)
-      {
-      case 0: return (a.first < b.first);
-      case 1: return (a.second < b.second);
-      default: throw std::out_of_range("arugment 'dim' is greater than 1");
-      }
-  }
+  int x; int y; int z; int w;
+  quad() { }
+  quad(int a, int b, int c, int d) : x(a), y(b), z(c), w(d) { }
 };
-define_compare(int_pair, int_pair_less);
+define_dimension(quad, 4);
 
-// Definition of triple below...
-
-/**
- *  A type that contains 3 elements of type int accessed exclusively via their
- *  variable names: x, y, z.
- */
-struct triple
+//! \return true if 2 quads contain the same values
+inline bool operator== (const quad& a, const quad& b)
 {
-  int x; int y; int z;
-  triple() { }
-  triple(int a, int b, int c) : x(a), y(b), z(c) { }
-};
-define_dimension(triple, 3);
-
-//! \return true if 2 triples contain the same values
-inline bool operator== (const triple& a, const triple& b)
-{
-  return ( a.x == b.x && a.y == b.y && a.z == b.z );
+  return ( a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w );
 }
 
-//! \return false if 2 triples contain the same values
-inline bool operator!= (const triple& a, const triple& b)
+//! \return false if 2 quads contain the same values
+inline bool operator!= (const quad& a, const quad& b)
 {
   return !(a == b);
 }
 
-//! A comparator for the type triple.
-struct triple_less
+//! A comparator for the type quad.
+struct quad_less
 {
   bool
-  operator()(dimension_type dim, const triple& a, const triple& b) const
+  operator()(dimension_type dim, const quad& a, const quad& b) const
   {
     switch(dim)
       {
       case 0: return (a.x < b.x);
       case 1: return (a.y < b.y);
       case 2: return (a.z < b.z);
+      case 3: return (a.w < b.w);
       default: throw std::out_of_range("argument 'dim' is greater than 2");
       }
   }
 };
-define_compare(triple, triple_less);
+define_compare(quad, quad_less);
 
-//! An accessor for the type triple
-struct triple_access
+//! An accessor for the type quad
+struct quad_access
 {
-  int&
-  operator()(dimension_type dim, triple& x) const
-  {
-    switch(dim)
-      {
-      case 0: return x.x;
-      case 1: return x.y;
-      case 2: return x.z;
-      default: throw std::out_of_range("argument 'dim' is greater than 2");
-      }
-  }
-
   int
-  operator()(dimension_type dim, const triple& x) const
+  operator()(dimension_type dim, const quad& x) const
   {
     switch(dim)
       {
       case 0: return x.x;
       case 1: return x.y;
       case 2: return x.z;
-      default: throw std::out_of_range("argument 'dim' is greater than 2");
+      case 3: return x.w;
+      default: throw std::out_of_range("argument 'dim' is greater than 3");
       }
   }
 };
-
-// Definition of double5 below...
-
-//! A type that contains an array of 5 doubles.
-typedef std::tr1::array<double, 5> double5;
-define_dimension(double5, 5);
-define_compare(double5, bracket_less<int2>);
-
-// Definition of double5 below...
-
-//! A type that contains an array of 5 floats.
-typedef std::tr1::array<float, 5> float5;
-define_dimension(float5, 5);
-define_compare(float5, bracket_less<int2>);
 
 // Definition of accessors and comparators below...
 
@@ -207,8 +163,6 @@ define_compare(float5, bracket_less<int2>);
 struct at_accessor
 {
   int operator()(dimension_type dim, const int2& arg) const
-  { return arg.at(dim); }
-  int& operator()(dimension_type dim, int2& arg) const
   { return arg.at(dim); }
 };
 

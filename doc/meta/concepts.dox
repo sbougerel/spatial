@@ -1,4 +1,5 @@
 /**
+ *  \page LinkModeConcept LinkMode
  *  A link mode defines the relationship between a node and the links that bears
  *  the node. It provides all necessary informations in order to get from the
  *  node to the link, and to access the key and value information contained in
@@ -63,9 +64,9 @@
  *  LinkMode. These two types have the peculiarity to be both a type of link and
  *  a type of linking mode at the same time.
  */
-struct LinkMode { };
 
 /**
+ *  \page RankConcept Rank
  *  Rank concept defines the model for a functor class used to represent the
  *  rank of a container, or the minimum number of dimensions in space expressed
  *  in all values stored in the container.
@@ -102,9 +103,9 @@ struct LinkMode { };
  *  box\* containers treat 2D boxes as a 4D point in space, giving rise to a
  *  double number of axis, for each of the low and high coordinate of a box.
  */
-struct Rank { };
 
 /**
+ *  \page TrivialComparisonConcept TrivialComparison
  *  TrivialComparison concept defines the model for a functor class used to
  *  perform strict comparison between two values of a spatial container,
  *  over a single dimension. The functor shall return a boolean value equal
@@ -130,9 +131,9 @@ struct Rank { };
  *  dynamic_boxset, and similar containers are required to be models of
  *  RegularComparison.
  */
-struct TrivialComparison { };
 
 /**
+ *  \page RegularComparisonConcept RegularComparison
  *  RegularComparison concept defines the model for a functor used to perform a
  *  strict comparison between two values of a spatial container, over different
  *  dimensions. The functor shall return a boolean value equal true if the first
@@ -166,9 +167,9 @@ struct TrivialComparison { };
  *  As you can guess, models of this concept are required for comparison
  *  functors in boxset, dynamic_boxset, and similar containers.
  */
-struct RegularComparison : TrivialComparison { };
 
 /**
+ *  \page RegionPredicateConcept RegionPredicate
  *  This concept defines the requirements for a predicate to be used in region
  *  queries. Region queries are used for orthogonal searches in sets of point and
  *  overlaping or enclosing orthogonal searches in set of boxes. The models of
@@ -267,9 +268,9 @@ struct RegularComparison : TrivialComparison { };
  *
  *  More examples of predicates can be found in the example and the tutorial.
  */
-struct RegionPredicate { };
 
 /**
+ *  \page GeometryConcept Geometry
  *  This concept defines the requirements for a Geometry to be used with
  *  neighbor iterators. Neighbor iterators implement the nearest neighbor search
  *  algorithm on the container. Initializing the iterator to its begining makes
@@ -357,4 +358,3 @@ struct RegionPredicate { };
  *  Spatial provides ready-made models of Geometry such as \ref euclidian_geom
  *  and \ref manhattan_geom.
  */
-struct Geometry { };
