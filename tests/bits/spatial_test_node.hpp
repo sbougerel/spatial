@@ -17,7 +17,7 @@
 
 struct header_fixture
 {
-  Node<Kdtree_link<int, int> > header;
+  details::Node<details::Kdtree_link<int, int> > header;
   header_fixture()
   {
     header.parent = &header;
@@ -35,7 +35,7 @@ struct int_node_fixture
              L     R
             /  \
           LL    LR       */
-  typedef Node<Kdtree_link<int, int> > node_type;
+  typedef details::Node<details::Kdtree_link<int, int> > node_type;
   node_type header;
   node_type node_root;
   node_type node_left;
@@ -75,17 +75,18 @@ struct int2_node_fixture
          (1,1)   (3,3)
          /  \
      (0,0)  (1,1)   */
-  typedef Node<Kdtree_link<int2, int2> > node_type;
+  typedef details::Node<details::Kdtree_link<int2, int2> > node_type;
   node_type header;
   node_type* leftmost;
-  Kdtree_link<int2, int2> node_root;
-  Kdtree_link<int2, int2> node_left;
-  Kdtree_link<int2, int2> node_left_left;
-  Kdtree_link<int2, int2> node_left_right;
-  Kdtree_link<int2, int2> node_right;
+  details::Kdtree_link<int2, int2> node_root;
+  details::Kdtree_link<int2, int2> node_left;
+  details::Kdtree_link<int2, int2> node_left_left;
+  details::Kdtree_link<int2, int2> node_left_right;
+  details::Kdtree_link<int2, int2> node_right;
 
   int2_node_fixture()
   {
+	using namespace ::spatial::details;
     header.parent = &node_root;
     header.left = &header;
     header.right = &node_right;
@@ -122,17 +123,18 @@ struct int2_relaxed_node_fixture
       (1,1)3  (3,3)1
        /  \
   (0,0)1  (1,1)1       */
-  typedef Node<Relaxed_kdtree_link<int2, int2> > node_type;
+  typedef details::Node<details::Relaxed_kdtree_link<int2, int2> > node_type;
   node_type header;
   node_type* leftmost;
-  Relaxed_kdtree_link<int2, int2> node_root;
-  Relaxed_kdtree_link<int2, int2> node_left;
-  Relaxed_kdtree_link<int2, int2> node_left_left;
-  Relaxed_kdtree_link<int2, int2> node_left_right;
-  Relaxed_kdtree_link<int2, int2> node_right;
+  details::Relaxed_kdtree_link<int2, int2> node_root;
+  details::Relaxed_kdtree_link<int2, int2> node_left;
+  details::Relaxed_kdtree_link<int2, int2> node_left_left;
+  details::Relaxed_kdtree_link<int2, int2> node_left_right;
+  details::Relaxed_kdtree_link<int2, int2> node_right;
 
   int2_relaxed_node_fixture()
   {
+	using namespace ::spatial::details;
     header.parent = &node_root;
     header.left = &header;
     header.right = &node_right;
@@ -176,7 +178,7 @@ struct large_int2_relaxed_node_fixture
   (0,0)1  (1,1)1     (3,3)2
                        \
                      (3,3)1     */
-  typedef Node<Relaxed_kdtree_link<int2, int2> > node_type;
+  typedef details::Node<details::Relaxed_kdtree_link<int2, int2> > node_type;
   node_type header;
   node_type* leftmost;
   node_type node_root;
@@ -189,6 +191,7 @@ struct large_int2_relaxed_node_fixture
 
   large_int2_relaxed_node_fixture()
   {
+    using namespace ::spatial::details;
     header.parent = &node_root;
     header.left = &header;
     header.right = &node_right;
@@ -233,6 +236,7 @@ struct large_int2_relaxed_node_fixture
 
 BOOST_AUTO_TEST_CASE( test_header )
 {
+  using namespace ::spatial::details;
   header_fixture fix1;
   BOOST_CHECK(header(&fix1.header));
   int_node_fixture fix2;
@@ -247,6 +251,7 @@ BOOST_AUTO_TEST_CASE( test_header )
 
 BOOST_AUTO_TEST_CASE( test_5_node )
 {
+  using namespace ::spatial::details;
   int_node_fixture fix;
   BOOST_CHECK(header(&fix.header));
   BOOST_CHECK(!header(&fix.node_root));
@@ -287,6 +292,7 @@ BOOST_AUTO_TEST_CASE( test_5_node )
  */
 BOOST_AUTO_TEST_CASE( test_swap_node )
 {
+  using namespace ::spatial::details;
   typedef int_node_fixture::node_type node_type;
   { // Swap left_left with right
     int_node_fixture fix;
@@ -508,6 +514,7 @@ BOOST_AUTO_TEST_CASE( test_swap_node )
 
 BOOST_AUTO_TEST_CASE( test_swap_kdtree_node )
 { // swap only position (tested before). Do not swap values!
+  using namespace ::spatial::details;
   int2_node_fixture fix;
   int2_node_fixture::node_type* left_left = &fix.node_left_left;
   int2_node_fixture::node_type* right = &fix.node_right;
@@ -520,6 +527,7 @@ BOOST_AUTO_TEST_CASE( test_swap_kdtree_node )
 
 BOOST_AUTO_TEST_CASE( test_swap_relaxed_kdtree_node )
 { // swap position and weight, but not values!
+  using namespace ::spatial::details;
   int2_relaxed_node_fixture fix;
   int2_relaxed_node_fixture::node_type* left = &fix.node_left;
   int2_relaxed_node_fixture::node_type* right = &fix.node_right;
@@ -534,6 +542,7 @@ BOOST_AUTO_TEST_CASE( test_swap_relaxed_kdtree_node )
 
 BOOST_AUTO_TEST_CASE( test_Node_iterator )
 {
+  using namespace ::spatial::details;
   // increment and decrement tested earlier, check pre/post correctness and
   // derefencing
   {
@@ -592,6 +601,7 @@ BOOST_AUTO_TEST_CASE( test_Node_iterator )
 
 BOOST_AUTO_TEST_CASE( test_Const_Node_iterator )
 {
+  using namespace ::spatial::details;
   // increment and decrement tested earlier, check pre/post correctness and
   // derefencing
   {
@@ -646,6 +656,7 @@ BOOST_AUTO_TEST_CASE( test_Const_Node_iterator )
 
 BOOST_AUTO_TEST_CASE( test_Preorder_node_iterator )
 {
+  using namespace ::spatial::details;
   // increment and decrement tested earlier, check pre/post correctness and
   // derefencing
   {

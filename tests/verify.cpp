@@ -30,6 +30,7 @@
 #  include <array>
 #endif
 
+#include <boost/mpl/list.hpp>
 #define BOOST_TEST_MAIN
 #include <boost/test/included/unit_test.hpp>
 

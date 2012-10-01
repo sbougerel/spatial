@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE( text_except_check_dimension )
 BOOST_AUTO_TEST_CASE( text_except_check_node )
 {
   {
-    Node<Kdtree_link<int, int> >* ptr = 0;
+    details::Node<details::Kdtree_link<int, int> >* ptr = 0;
     BOOST_CHECK_THROW(except::check_node(ptr),
                       invalid_node);
   }
@@ -44,15 +44,15 @@ BOOST_AUTO_TEST_CASE( text_except_check_node )
 BOOST_AUTO_TEST_CASE( text_except_check_iterator )
 {
   {
-    details::Node_iterator<Kdtree_link<int2, int2> > i(0);
+    details::Node_iterator<details::Kdtree_link<int2, int2> > i(0);
     BOOST_CHECK_THROW(except::check_node_iterator(i.node),
                       invalid_iterator);
   }
   {
     int2_node_fixture fix;
-    details::Node_iterator<Kdtree_link<int2, int2> >
+    details::Node_iterator<details::Kdtree_link<int2, int2> >
       i(&fix.node_root);
-    details::Node_iterator<Kdtree_link<int2, int2> >
+    details::Node_iterator<details::Kdtree_link<int2, int2> >
       j(&fix.header);
     BOOST_CHECK_NO_THROW(except::check_node_iterator(i.node));
     BOOST_CHECK_THROW(except::check_node_iterator(j.node),

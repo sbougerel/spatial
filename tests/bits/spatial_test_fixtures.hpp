@@ -21,9 +21,6 @@
 
 #include "spatial_test_types.hpp"
 
-using namespace ::spatial;
-using namespace ::spatial::details;
-
 /**
  *  Creates a random double between 0 and 1.
  */
