@@ -145,11 +145,11 @@ struct decrease
  *  Define a manipulator that initializes all the elements of the objects to
  *  random values.
  */
-struct random
+struct randomize
 {
   int lower;
   int higher;
-  random(int l = 0, int h = 1) : lower(l), higher(h) { }
+  randomize(int l = 0, int h = 1) : lower(l), higher(h) { }
   int2& operator()(int2& p, int, int) const
   {
     p[0] = rand() % (higher - lower) + lower;
@@ -337,17 +337,17 @@ struct tight_pointset_fix
  */
 template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
 struct tight_boxset_fix
-  : basic_fixture<Tp, pointset<dimension_traits<Tp>::half, Tp, Compare,
-                               tight_balancing> >
+  : basic_fixture<Tp, boxset<dimension_traits<Tp>::half, Tp, Compare,
+                             tight_balancing> >
 {
   tight_boxset_fix() { }
   explicit tight_boxset_fix(int n)
-    : basic_fixture<Tp, pointset<dimension_traits<Tp>::half, Tp, Compare,
-                                 tight_balancing> >(n, pass()) { }
+    : basic_fixture<Tp, boxset<dimension_traits<Tp>::half, Tp, Compare,
+                               tight_balancing> >(n, pass()) { }
   template<typename Manip>
   tight_boxset_fix(int n, const Manip& manip)
-    : basic_fixture<Tp, pointset<dimension_traits<Tp>::half, Tp, Compare,
-                                 tight_balancing> >(n, manip) { }
+    : basic_fixture<Tp, boxset<dimension_traits<Tp>::half, Tp, Compare,
+                               tight_balancing> >(n, manip) { }
 };
 
 /**
@@ -477,263 +477,263 @@ struct runtime_boxmap_fix
 };
 
 /**
- *  Defines a fixture for a frozen_poinset.
+ *  Defines a fixture for a idle_poinset.
  */
 template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
-struct frozen_pointset_fix
-  : basic_fixture<Tp, frozen_pointset<dimension_traits<Tp>::value, Tp,
+struct idle_pointset_fix
+  : basic_fixture<Tp, idle_pointset<dimension_traits<Tp>::value, Tp,
                                       Compare> >
 {
-  frozen_pointset_fix() { }
-  explicit frozen_pointset_fix(int n)
-    : basic_fixture<Tp, frozen_pointset<dimension_traits<Tp>::value, Tp,
+  idle_pointset_fix() { }
+  explicit idle_pointset_fix(int n)
+    : basic_fixture<Tp, idle_pointset<dimension_traits<Tp>::value, Tp,
                                         Compare> >(n, pass()) { }
   template<typename Manip>
-  frozen_pointset_fix(int n, const Manip& manip)
-    : basic_fixture<Tp, frozen_pointset<dimension_traits<Tp>::value, Tp,
+  idle_pointset_fix(int n, const Manip& manip)
+    : basic_fixture<Tp, idle_pointset<dimension_traits<Tp>::value, Tp,
                                         Compare> >(n, manip) { }
 };
 
 /**
- *  Defines a fixture for a frozen_poinset.
+ *  Defines a fixture for a idle_poinset.
  */
 template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
-struct frozen_boxset_fix
-  : basic_fixture<Tp, frozen_boxset<dimension_traits<Tp>::half, Tp,
+struct idle_boxset_fix
+  : basic_fixture<Tp, idle_boxset<dimension_traits<Tp>::half, Tp,
                                     Compare> >
 {
-  frozen_boxset_fix() { }
-  explicit frozen_boxset_fix(int n)
-    : basic_fixture<Tp, frozen_boxset<dimension_traits<Tp>::half, Tp,
+  idle_boxset_fix() { }
+  explicit idle_boxset_fix(int n)
+    : basic_fixture<Tp, idle_boxset<dimension_traits<Tp>::half, Tp,
                                       Compare> >(n, pass()) { }
   template<typename Manip>
-  frozen_boxset_fix(int n, const Manip& manip)
-    : basic_fixture<Tp, frozen_boxset<dimension_traits<Tp>::half, Tp,
+  idle_boxset_fix(int n, const Manip& manip)
+    : basic_fixture<Tp, idle_boxset<dimension_traits<Tp>::half, Tp,
                                       Compare> >(n, manip) { }
 };
 
 /**
- *  Defines a fixture for a frozen_poinmap.
+ *  Defines a fixture for a idle_poinmap.
  */
 template<typename Tp, typename Mapped,
          typename Compare = typename compare_traits<Tp>::type >
-struct frozen_pointmap_fix
+struct idle_pointmap_fix
   : basic_fixture<std::pair<Tp, Mapped>,
-                  frozen_pointmap<dimension_traits<Tp>::value,
+                  idle_pointmap<dimension_traits<Tp>::value,
                                   Tp, Mapped, Compare> >
 {
-  frozen_pointmap_fix() { }
-  explicit frozen_pointmap_fix(int n)
+  idle_pointmap_fix() { }
+  explicit idle_pointmap_fix(int n)
     : basic_fixture<std::pair<Tp, Mapped>,
-                    frozen_pointmap<dimension_traits<Tp>::value, Tp,
+                    idle_pointmap<dimension_traits<Tp>::value, Tp,
                                     Mapped, Compare> >
       (n, to_first<pass>()) { }
   template<typename Manip>
-  frozen_pointmap_fix(int n, const Manip& manip)
+  idle_pointmap_fix(int n, const Manip& manip)
     : basic_fixture<std::pair<Tp, Mapped>,
-                    frozen_pointmap<dimension_traits<Tp>::value, Tp,
+                    idle_pointmap<dimension_traits<Tp>::value, Tp,
                                     Mapped, Compare> >
       (n, to_first<Manip>(manip)) { }
 };
 
 /**
- *  Defines a fixture for a frozen_poinmap.
+ *  Defines a fixture for a idle_poinmap.
  */
 template<typename Tp, typename Mapped,
          typename Compare = typename compare_traits<Tp>::type >
-struct frozen_boxmap_fix
+struct idle_boxmap_fix
   : basic_fixture<std::pair<Tp, Mapped>,
-                  frozen_boxmap<dimension_traits<Tp>::half,
+                  idle_boxmap<dimension_traits<Tp>::half,
                                 Tp, Mapped, Compare> >
 {
-  frozen_boxmap_fix() { }
-  explicit frozen_boxmap_fix(int n)
+  idle_boxmap_fix() { }
+  explicit idle_boxmap_fix(int n)
     : basic_fixture<std::pair<Tp, Mapped>,
-                    frozen_boxmap<dimension_traits<Tp>::half, Tp,
+                    idle_boxmap<dimension_traits<Tp>::half, Tp,
                                   Mapped, Compare> >
       (n, to_first<pass>()) { }
   template<typename Manip>
-  frozen_boxmap_fix(int n, const Manip& manip)
+  idle_boxmap_fix(int n, const Manip& manip)
     : basic_fixture<std::pair<Tp, Mapped>,
-                    frozen_boxmap<dimension_traits<Tp>::half, Tp,
+                    idle_boxmap<dimension_traits<Tp>::half, Tp,
                                   Mapped, Compare> >
       (n, to_first<Manip>(manip)) { }
 };
 
 /**
- *  Defines a fixture for a \c runtime_frozen_pointset.
+ *  Defines a fixture for a \c runtime_idle_pointset.
  */
 template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
-struct runtime_frozen_pointset_fix
+struct runtime_idle_pointset_fix
   : runtime_fixture<Tp, dimension_traits<Tp>::value,
-                    runtime_frozen_pointset<Tp, Compare> >
+                    runtime_idle_pointset<Tp, Compare> >
 {
-  runtime_frozen_pointset_fix() { }
-  explicit runtime_frozen_pointset_fix(int n)
+  runtime_idle_pointset_fix() { }
+  explicit runtime_idle_pointset_fix(int n)
     : runtime_fixture<Tp, dimension_traits<Tp>::value,
-                      runtime_frozen_pointset<Tp, Compare> >(n, pass()) { }
+                      runtime_idle_pointset<Tp, Compare> >(n, pass()) { }
   template<typename Manip>
-  runtime_frozen_pointset_fix(int n, const Manip& manip)
+  runtime_idle_pointset_fix(int n, const Manip& manip)
     : runtime_fixture<Tp, dimension_traits<Tp>::value,
-                      runtime_frozen_pointset<Tp, Compare> >(n, manip) { }
+                      runtime_idle_pointset<Tp, Compare> >(n, manip) { }
 };
 
 /**
- *  Defines a fixture for a \c runtime_frozen_boxset.
+ *  Defines a fixture for a \c runtime_idle_boxset.
  */
 template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
-struct runtime_frozen_boxset_fix
+struct runtime_idle_boxset_fix
   : runtime_fixture<Tp, dimension_traits<Tp>::half,
-                    runtime_frozen_boxset<Tp, Compare> >
+                    runtime_idle_boxset<Tp, Compare> >
 {
-  runtime_frozen_boxset_fix() { }
-  explicit runtime_frozen_boxset_fix(int n)
+  runtime_idle_boxset_fix() { }
+  explicit runtime_idle_boxset_fix(int n)
     : runtime_fixture<Tp, dimension_traits<Tp>::half,
-                      runtime_frozen_boxset<Tp, Compare> >(n, pass()) { }
+                      runtime_idle_boxset<Tp, Compare> >(n, pass()) { }
   template<typename Manip>
-  runtime_frozen_boxset_fix(int n, const Manip& manip)
+  runtime_idle_boxset_fix(int n, const Manip& manip)
     : runtime_fixture<Tp, dimension_traits<Tp>::half,
-                      runtime_frozen_boxset<Tp, Compare> >(n, manip) { }
+                      runtime_idle_boxset<Tp, Compare> >(n, manip) { }
 };
 
 /**
- *  Defines a fixture for a \c runtime_frozen_pointmap.
+ *  Defines a fixture for a \c runtime_idle_pointmap.
  */
 template<typename Tp, typename Mapped,
          typename Compare = typename compare_traits<Tp>::type >
-struct runtime_frozen_pointmap_fix
+struct runtime_idle_pointmap_fix
   : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
-                    runtime_frozen_pointmap<Tp, Mapped, Compare> >
+                    runtime_idle_pointmap<Tp, Mapped, Compare> >
 {
-  runtime_frozen_pointmap_fix() { }
-  explicit runtime_frozen_pointmap_fix(int n)
+  runtime_idle_pointmap_fix() { }
+  explicit runtime_idle_pointmap_fix(int n)
     : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
-                      runtime_frozen_pointmap<Tp, Mapped, Compare> >
+                      runtime_idle_pointmap<Tp, Mapped, Compare> >
       (n, to_first<pass>()) { }
   template<typename Manip>
-  runtime_frozen_pointmap_fix(int n, const Manip& manip)
+  runtime_idle_pointmap_fix(int n, const Manip& manip)
     : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
-                      runtime_frozen_pointmap<Tp, Mapped, Compare> >
+                      runtime_idle_pointmap<Tp, Mapped, Compare> >
       (n, to_first<Manip>(manip)) { }
 };
 
 /**
- *  Defines a fixture for a \c runtime_frozen_boxmap.
+ *  Defines a fixture for a \c runtime_idle_boxmap.
  */
 template<typename Tp, typename Mapped,
          typename Compare = typename compare_traits<Tp>::type >
-struct runtime_frozen_boxmap_fix
+struct runtime_idle_boxmap_fix
   : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::half,
-                    runtime_frozen_boxmap<Tp, Mapped, Compare> >
+                    runtime_idle_boxmap<Tp, Mapped, Compare> >
 {
-  runtime_frozen_boxmap_fix() { }
-  explicit runtime_frozen_boxmap_fix(int n)
+  runtime_idle_boxmap_fix() { }
+  explicit runtime_idle_boxmap_fix(int n)
     : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::half,
-                      runtime_frozen_boxmap<Tp, Mapped, Compare> >
+                      runtime_idle_boxmap<Tp, Mapped, Compare> >
       (n, to_first<pass>()) { }
   template<typename Manip>
-  runtime_frozen_boxmap_fix(int n, const Manip& manip)
+  runtime_idle_boxmap_fix(int n, const Manip& manip)
     : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::half,
-                      runtime_frozen_boxmap<Tp, Mapped, Compare> >
+                      runtime_idle_boxmap<Tp, Mapped, Compare> >
       (n, to_first<Manip>(manip)) { }
 };
 
 // Set lists
 typedef boost::mpl::list<pointset_fix<int2>,
                          tight_pointset_fix<int2>,
-                         frozen_pointset_fix<int2>,
+                         idle_pointset_fix<int2>,
                          runtime_pointset_fix<int2>,
-                         runtime_frozen_pointset_fix<int2>,
+                         runtime_idle_pointset_fix<int2>,
                          boxset_fix<int2>,
                          tight_boxset_fix<int2>,
-                         frozen_boxset_fix<int2>,
+                         idle_boxset_fix<int2>,
                          runtime_boxset_fix<int2>,
-                         runtime_frozen_boxset_fix<int2> >
+                         runtime_idle_boxset_fix<int2> >
 int2_sets;
 
 typedef boost::mpl::list<pointset_fix<quad>,
                          tight_pointset_fix<quad>,
-                         frozen_pointset_fix<quad>,
+                         idle_pointset_fix<quad>,
                          runtime_pointset_fix<quad>,
-                         runtime_frozen_pointset_fix<quad>,
+                         runtime_idle_pointset_fix<quad>,
                          boxset_fix<quad>,
                          tight_boxset_fix<quad>,
-                         frozen_boxset_fix<quad>,
+                         idle_boxset_fix<quad>,
                          runtime_boxset_fix<quad>,
-                         runtime_frozen_boxset_fix<quad> >
+                         runtime_idle_boxset_fix<quad> >
 quad_sets;
 
 typedef boost::mpl::list<pointset_fix<double6>,
                          tight_pointset_fix<double6>,
-                         frozen_pointset_fix<double6>,
+                         idle_pointset_fix<double6>,
                          runtime_pointset_fix<double6>,
-                         runtime_frozen_pointset_fix<double6>,
+                         runtime_idle_pointset_fix<double6>,
                          boxset_fix<double6>,
                          tight_boxset_fix<double6>,
-                         frozen_boxset_fix<double6>,
+                         idle_boxset_fix<double6>,
                          runtime_boxset_fix<double6>,
-                         runtime_frozen_boxset_fix<double6> >
+                         runtime_idle_boxset_fix<double6> >
 double6_sets;
 
 // Map lists
 typedef boost::mpl::list<pointmap_fix<int2, std::string>,
                          tight_pointmap_fix<int2, std::string>,
-                         frozen_pointmap_fix<int2, std::string>,
+                         idle_pointmap_fix<int2, std::string>,
                          runtime_pointmap_fix<int2, std::string>,
-                         runtime_frozen_pointmap_fix<int2, std::string>,
+                         runtime_idle_pointmap_fix<int2, std::string>,
                          boxmap_fix<int2, std::string>,
                          tight_boxmap_fix<int2, std::string>,
-                         frozen_boxmap_fix<int2, std::string>,
+                         idle_boxmap_fix<int2, std::string>,
                          runtime_boxmap_fix<int2, std::string>,
-                         runtime_frozen_boxmap_fix<int2, std::string> >
+                         runtime_idle_boxmap_fix<int2, std::string> >
 int2_maps;
 
 typedef boost::mpl::list<pointmap_fix<quad, std::string>,
                          tight_pointmap_fix<quad, std::string>,
-                         frozen_pointmap_fix<quad, std::string>,
+                         idle_pointmap_fix<quad, std::string>,
                          runtime_pointmap_fix<quad, std::string>,
-                         runtime_frozen_pointmap_fix<quad, std::string>,
+                         runtime_idle_pointmap_fix<quad, std::string>,
                          boxmap_fix<quad, std::string>,
                          tight_boxmap_fix<quad, std::string>,
-                         frozen_boxmap_fix<quad, std::string>,
+                         idle_boxmap_fix<quad, std::string>,
                          runtime_boxmap_fix<quad, std::string>,
-                         runtime_frozen_boxmap_fix<quad, std::string> >
+                         runtime_idle_boxmap_fix<quad, std::string> >
 quad_maps;
 
 typedef boost::mpl::list<pointmap_fix<double6, std::string>,
                          tight_pointmap_fix<double6, std::string>,
-                         frozen_pointmap_fix<double6, std::string>,
+                         idle_pointmap_fix<double6, std::string>,
                          runtime_pointmap_fix<double6, std::string>,
-                         runtime_frozen_pointmap_fix<double6, std::string>,
+                         runtime_idle_pointmap_fix<double6, std::string>,
                          boxmap_fix<double6, std::string>,
                          tight_boxmap_fix<double6, std::string>,
-                         frozen_boxmap_fix<double6, std::string>,
+                         idle_boxmap_fix<double6, std::string>,
                          runtime_boxmap_fix<double6, std::string>,
-                         runtime_frozen_boxmap_fix<double6, std::string> >
+                         runtime_idle_boxmap_fix<double6, std::string> >
 double6_maps;
 
 // Every quad
 typedef boost::mpl::list<pointset_fix<quad>,
                          tight_pointset_fix<quad>,
-                         frozen_pointset_fix<quad>,
+                         idle_pointset_fix<quad>,
                          runtime_pointset_fix<quad>,
-                         runtime_frozen_pointset_fix<quad>,
+                         runtime_idle_pointset_fix<quad>,
                          boxset_fix<quad>,
                          tight_boxset_fix<quad>,
-                         frozen_boxset_fix<quad>,
+                         idle_boxset_fix<quad>,
                          runtime_boxset_fix<quad>,
-                         runtime_frozen_boxset_fix<quad>,
+                         runtime_idle_boxset_fix<quad>,
 
                          pointmap_fix<quad, std::string>,
                          tight_pointmap_fix<quad, std::string>,
-                         frozen_pointmap_fix<quad, std::string>,
+                         idle_pointmap_fix<quad, std::string>,
                          runtime_pointmap_fix<quad, std::string>,
-                         runtime_frozen_pointmap_fix<quad, std::string>,
+                         runtime_idle_pointmap_fix<quad, std::string>,
                          boxmap_fix<quad, std::string>,
                          tight_boxmap_fix<quad, std::string>,
-                         frozen_boxmap_fix<quad, std::string>,
+                         idle_boxmap_fix<quad, std::string>,
                          runtime_boxmap_fix<quad, std::string>,
-                         runtime_frozen_boxmap_fix<quad, std::string> >
+                         runtime_idle_boxmap_fix<quad, std::string> >
 every_quad;
 
 

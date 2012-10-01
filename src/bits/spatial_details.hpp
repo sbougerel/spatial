@@ -51,7 +51,7 @@ namespace spatial
   {
     //@{
     /*
-     *  A type trait that choses between 2 types
+     *  A type trait that choses between 2 types.
      */
     template<bool, typename Tp1, typename Tp2>
     struct condition
@@ -59,6 +59,30 @@ namespace spatial
     template<typename Tp1, typename Tp2>
     struct condition<false, Tp1, Tp2>
     { typedef Tp2 type; };
+    //@}
+
+    //@{
+    /**
+     *  Changes a const type into a mutable type.
+     */
+    template<typename Tp>
+    struct mutate { typedef Tp type; };
+    template <typename Tp>
+    struct mutate<const Tp> { typedef Tp type; };
+    //@}
+
+    //@{
+    /**
+     *  A helper functions that mutates pointers. Required to unallocate
+     *  key values, which are always constant.
+     */
+    template<typename Tp>
+    inline Tp*
+    mutate_pointer(const Tp* p) { return const_cast<Tp*>(p); }
+
+    template<typename Tp>
+    inline Tp*
+    mutate_pointer(Tp* p) { return p; } // hoping this one gets optimized away
     //@}
 
     /**

@@ -64,7 +64,7 @@ namespace spatial
     }
 
     template <typename Mode>
-    inline void swap_node
+    inline void swap_node_aux
     (Node<Mode>* a, Node<Mode>* b)
     {
       typedef Node<Mode>* node_ptr;

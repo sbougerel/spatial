@@ -292,7 +292,7 @@ namespace spatial
               if (get_leftmost() == node)
                 { set_leftmost(candidate.node); }
             }
-          spatial::details::swap(node, candidate.node);
+          swap_node(node, candidate.node);
           node_dim = candidate.node_dim;
         }
       SPATIAL_ASSERT_CHECK(!header(node));
@@ -369,7 +369,12 @@ namespace spatial
     {
       except::check_node_iterator(target.node);
       node_ptr node = target.node;
-      dimension_type node_dim = modulo(node, rank());
+      dimension_type node_dim = rank()() - 1;
+      while(!header(node))
+        {
+          node_dim = details::incr_dim(rank(), node_dim);
+          node = node->parent;
+        }
       except::check_iterator(node, get_header());
       erase_node_balance(node_dim, target.node);
       destroy_node(target.node);

@@ -29,14 +29,14 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<std::pair<const Key, Mapped> > >
   struct pointmap
-    : details::Relaxed_kdtree<details::Static_rank<Rank>, Key,
+    : details::Relaxed_kdtree<details::Static_rank<Rank>, const Key,
                               std::pair<const Key, Mapped>, Compare,
                               BalancingPolicy, Alloc>
   {
   private:
     typedef details::Relaxed_kdtree
-    <details::Static_rank<Rank>, Key, std::pair<const Key, Mapped>, Compare,
-     BalancingPolicy, Alloc>                  base_type;
+    <details::Static_rank<Rank>, const Key, std::pair<const Key, Mapped>,
+     Compare, BalancingPolicy, Alloc>         base_type;
     typedef pointmap<Rank, Key, Mapped, Compare,
                      BalancingPolicy, Alloc>  Self;
 
@@ -89,13 +89,13 @@ namespace spatial
   template<typename Key, typename Mapped, typename Compare,
            typename BalancingPolicy, typename Alloc>
   struct pointmap<0, Key, Mapped, Compare, BalancingPolicy, Alloc>
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key,
+    : details::Relaxed_kdtree<details::Dynamic_rank, const Key,
                               std::pair<const Key, Mapped>, Compare,
                               BalancingPolicy, Alloc>
   {
   private:
     typedef details::Relaxed_kdtree
-    <details::Dynamic_rank, Key, std::pair<const Key, Mapped>,
+    <details::Dynamic_rank, const Key, std::pair<const Key, Mapped>,
      Compare, BalancingPolicy, Alloc>       base_type;
     typedef pointmap<0, Key, Mapped, Compare, BalancingPolicy,
                      Alloc>                 Self;
@@ -154,14 +154,14 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<std::pair<const Key, Mapped> > >
   struct runtime_pointmap
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key,
+    : details::Relaxed_kdtree<details::Dynamic_rank, const Key,
                               std::pair<const Key, Mapped>, Compare,
                               BalancingPolicy, Alloc>
   {
   private:
     typedef details::Relaxed_kdtree
-    <details::Dynamic_rank, Key, std::pair<const Key, Mapped>, Compare,
-     BalancingPolicy, Alloc>                base_type;
+    <details::Dynamic_rank, const Key, std::pair<const Key, Mapped>,
+     Compare, BalancingPolicy, Alloc>       base_type;
     typedef runtime_pointmap<Key, Mapped, Compare, BalancingPolicy,
                              Alloc>         Self;
 

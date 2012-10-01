@@ -322,12 +322,12 @@ namespace spatial
           candidate.node_dim = incr_dim(rank(), node_dim);
           mapping_dimension(candidate) = node_dim;
           candidate = minimum_mapping(candidate);
-          if (get_rightmost() == candidate.impl_.node_)
+          if (get_rightmost() == candidate.node)
             { set_rightmost(node); }
           if (get_leftmost() == node)
             { set_leftmost(candidate.node); }
-          swap(candidate.node, node);
-          node_dim = candidate.data.node_dim;
+          swap_node(candidate.node, node);
+          node_dim = candidate.node_dim;
         }
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(node->right == 0);
@@ -336,7 +336,7 @@ namespace spatial
       node_ptr p = node->parent;
       if (header(p))
         {
-          SPATIAL_ASSERT_CHECK(impl_.count_() == 1);
+          SPATIAL_ASSERT_CHECK(count() == 1);
           set_root(get_header());
           set_leftmost(get_header());
           set_rightmost(get_header());
@@ -365,7 +365,12 @@ namespace spatial
     {
       except::check_node_iterator(target.node);
       node_ptr node = target.node;
-      dimension_type node_dim = modulo(node, rank());
+      dimension_type node_dim = rank()() - 1;
+      while(!header(node))
+        {
+          node_dim = details::incr_dim(rank(), node_dim);
+          node = node->parent;
+        }
       except::check_iterator(node, get_header());
       erase_node(node_dim, target.node);
     }

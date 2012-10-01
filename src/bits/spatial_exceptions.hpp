@@ -172,7 +172,7 @@ namespace spatial
     {
       if (node == 0 || node->left == node)
         throw invalid_iterator
-          ("iterator is points to null or header node");
+          ("iterator points to null or header node");
     }
 
     /**

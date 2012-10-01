@@ -131,57 +131,45 @@ namespace spatial
     public:
       // Container intrincsic types
       typedef Rank                                    rank_type;
-      typedef Key                                     key_type;
-      typedef Value                                   value_type;
+      typedef typename mutate<Key>::type              key_type;
+      typedef typename mutate<Value>::type            value_type;
       typedef Relaxed_kdtree_link<Key, Value>         mode_type;
       typedef Compare                                 key_compare;
-      typedef typename ::spatial::details::condition
-      <std::tr1::is_same<Key, Value>::value, key_compare,
-       ValueCompare<value_type, key_compare> >::type  value_compare;
+      typedef ValueCompare<Value, key_compare>        value_compare;
       typedef Alloc                                   allocator_type;
       typedef Balancing                               balancing_policy;
 
       // Container iterator related types
-      typedef typename ::spatial::details::condition
-      <std::tr1::is_same<Key, Value>::value,
-       const value_type*, value_type*>::type          pointer;
-      typedef const value_type*                       const_pointer;
-      typedef typename ::spatial::details::condition
-      <std::tr1::is_same<Key, Value>::value,
-       const value_type&, value_type&>::type          reference;
-      typedef const Key&                              const_reference;
+      typedef Value*                                  pointer;
+      typedef const Value*                            const_pointer;
+      typedef Value&                                  reference;
+      typedef const Value&                            const_reference;
       typedef std::size_t                             size_type;
       typedef std::ptrdiff_t                          difference_type;
 
       // Container iterators
       // Conformant to C++ standard, if Key and Value are the same type then
       // iterator and const_iterator shall be the same.
-      typedef typename ::spatial::details::condition
-      <std::tr1::is_same<Key, Value>::value,
-       Const_node_iterator<mode_type>,
-       Node_iterator<mode_type> >::type               iterator;
+      typedef Node_iterator<mode_type>                iterator;
       typedef Const_node_iterator<mode_type>          const_iterator;
       typedef std::reverse_iterator<iterator>         reverse_iterator;
       typedef std::reverse_iterator
       <const_iterator>                                const_reverse_iterator;
-      typedef typename ::spatial::details::condition
-      <std::tr1::is_same<Key, Value>::value,
-       typename equal_region<const Self>::iterator,
-       typename equal_region<Self>::iterator>::type   equal_iterator;
+      typedef typename equal_region<Self>::iterator   equal_iterator;
       typedef typename equal_region<const Self>
       ::iterator                                      const_equal_iterator;
 
     private:
       typedef typename Alloc::template rebind
-      <Relaxed_kdtree_link<key_type, value_type> >::other Link_allocator;
+      <Relaxed_kdtree_link<Key, Value> >::other       Link_allocator;
       typedef typename Alloc::template rebind
-      <value_type>::other                                 Value_allocator;
+      <value_type>::other                             Value_allocator;
 
       // The types used to deal with nodes
-      typedef typename mode_type::node_ptr                node_ptr;
-      typedef typename mode_type::const_node_ptr          const_node_ptr;
-      typedef typename mode_type::link_ptr                link_ptr;
-      typedef typename mode_type::const_link_ptr          const_link_ptr;
+      typedef typename mode_type::node_ptr            node_ptr;
+      typedef typename mode_type::const_node_ptr      const_node_ptr;
+      typedef typename mode_type::link_ptr            link_ptr;
+      typedef typename mode_type::const_link_ptr      const_link_ptr;
 
     private:
       /**
@@ -283,7 +271,9 @@ namespace spatial
       create_node(const value_type& value)
       {
         safe_allocator safe(get_link_allocator());
-        get_value_allocator().construct(&safe.link->value, value); // may throw
+        // the following may throw. But we have RAII on safe_allocator
+        get_value_allocator().construct(mutate_pointer(&safe.link->value),
+                                        value);
         link_ptr node = safe.release();
         // leave parent uninitialized: its value will change during insertion.
         node->left = 0;
@@ -306,7 +296,7 @@ namespace spatial
       void
       destroy_node(node_ptr node)
       {
-        get_value_allocator().destroy(&value(node));
+        get_value_allocator().destroy(mutate_pointer(&value(node)));
         get_link_allocator().deallocate(link(node), 1);
       }
 
@@ -399,10 +389,10 @@ namespace spatial
       { return begin(); }
 
       iterator end()
-      { iterator it; it.node = get_header(); return it; }
+      { return iterator(get_header()); }
 
       const_iterator end() const
-      { const_iterator it; it.node = get_header(); return it; }
+      { return const_iterator(get_header()); }
 
       const_iterator cend() const
       { return end(); }

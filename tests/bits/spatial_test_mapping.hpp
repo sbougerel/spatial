@@ -64,8 +64,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_mapping_minimum, Tp, int2_sets )
 {
   {
-    Tp fix(100, random());
-    // Prove that you can find the max value with any number of nodes
+    Tp fix(100, randomize()); // Need to add some value heres like (-20, 20)
+    // Prove that you can find the max value with 100 nodes or 1 nodes
     for (int num_elems = 100; num_elems > 1; --num_elems)
       {
         int count = 0;

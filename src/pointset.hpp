@@ -37,13 +37,13 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct pointset
-    : details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Key, Compare,
-                              BalancingPolicy, Alloc>
+    : details::Relaxed_kdtree<details::Static_rank<Rank>, const Key, const Key,
+                              Compare, BalancingPolicy, Alloc>
   {
   private:
     typedef
-    details::Relaxed_kdtree<details::Static_rank<Rank>, Key, Key, Compare,
-                            BalancingPolicy, Alloc>               base_type;
+    details::Relaxed_kdtree<details::Static_rank<Rank>, const Key, const Key,
+                            Compare, BalancingPolicy, Alloc>      base_type;
     typedef pointset<Rank, Key, Compare, BalancingPolicy, Alloc>  Self;
 
   public:
@@ -91,13 +91,13 @@ namespace spatial
   template<typename Key, typename Compare, typename BalancingPolicy,
            typename Alloc>
   struct pointset<0, Key, Compare, BalancingPolicy, Alloc>
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
-                              BalancingPolicy, Alloc>
+    : details::Relaxed_kdtree<details::Dynamic_rank, const Key, const Key,
+                              Compare, BalancingPolicy, Alloc>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
-                                    BalancingPolicy, Alloc>    base_type;
-    typedef pointset<0, Key, Compare, BalancingPolicy, Alloc>  Self;
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, const Key, const Key,
+                                    Compare, BalancingPolicy, Alloc> base_type;
+    typedef pointset<0, Key, Compare, BalancingPolicy, Alloc>        Self;
 
   public:
     pointset() { }
@@ -151,13 +151,13 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
   struct runtime_pointset
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
-                              BalancingPolicy, Alloc>
+    : details::Relaxed_kdtree<details::Dynamic_rank, const Key, const Key,
+                              Compare, BalancingPolicy, Alloc>
   {
   private:
-    typedef details::Relaxed_kdtree<details::Dynamic_rank, Key, Key, Compare,
-                                    BalancingPolicy, Alloc>        base_type;
-    typedef runtime_pointset<Key, Compare, BalancingPolicy, Alloc> Self;
+    typedef details::Relaxed_kdtree<details::Dynamic_rank, const Key, const Key,
+                                    Compare, BalancingPolicy, Alloc> base_type;
+    typedef runtime_pointset<Key, Compare, BalancingPolicy, Alloc>   Self;
 
   public:
     runtime_pointset() { }

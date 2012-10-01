@@ -36,13 +36,13 @@
 
 #define SPATIAL_ENABLE_ASSERT // detect interal issues that should not occur
 #include "../src/pointset.hpp"
-#include "../src/frozen_pointset.hpp"
+#include "../src/idle_pointset.hpp"
 #include "../src/boxset.hpp"
-#include "../src/frozen_boxset.hpp"
+#include "../src/idle_boxset.hpp"
 #include "../src/pointmap.hpp"
-#include "../src/frozen_pointmap.hpp"
+#include "../src/idle_pointmap.hpp"
 #include "../src/boxmap.hpp"
-#include "../src/frozen_boxmap.hpp"
+#include "../src/idle_boxmap.hpp"
 
 using namespace spatial;
 
@@ -56,6 +56,7 @@ BOOST_AUTO_TEST_CASE(install_srand)
 }
 
 #include "bits/spatial_test_fixtures.hpp"
+#include "bits/spatial_test_output.hpp"
 #include "bits/spatial_test_traits.hpp"
 #include "bits/spatial_test_details.hpp"
 #include "bits/spatial_test_node.hpp"

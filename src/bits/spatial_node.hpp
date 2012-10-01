@@ -579,18 +579,18 @@ namespace spatial
      *  \see Relaxed_kdtree_link
      */
     template <typename Mode>
-    void swap_node(Node<Mode>* a, Node<Mode>* b);
+    void swap_node_aux(Node<Mode>* a, Node<Mode>* b);
 
     template<typename Key, typename Value>
-    inline void swap(Node<Kdtree_link<Key, Value> >*& a,
-                     Node<Kdtree_link<Key, Value> >*& b)
-    { swap_node(a, b); std::swap(a, b); }
+    inline void swap_node(Node<Kdtree_link<Key, Value> >*& a,
+                          Node<Kdtree_link<Key, Value> >*& b)
+    { swap_node_aux(a, b); std::swap(a, b); }
 
     template<typename Key, typename Value>
-    inline void swap(Node<Relaxed_kdtree_link<Key, Value> >*& a,
-                     Node<Relaxed_kdtree_link<Key, Value> >*& b)
+    inline void swap_node(Node<Relaxed_kdtree_link<Key, Value> >*& a,
+                          Node<Relaxed_kdtree_link<Key, Value> >*& b)
     {
-      swap_node(a, b);
+      swap_node_aux(a, b);
       std::swap(link(a)->weight, link(b)->weight);
       std::swap(a, b);
     }
@@ -606,12 +606,12 @@ namespace spatial
     template<typename Mode>
     struct Node_iterator
     {
-      typedef typename Mode::value_type          value_type;
-      typedef value_type&                        reference;
-      typedef value_type*                        pointer;
+      typedef typename mutate<typename Mode::value_type>::type value_type;
+      typedef typename Mode::value_type&         reference;
+      typedef typename Mode::value_type*         pointer;
       typedef std::ptrdiff_t                     difference_type;
       typedef std::bidirectional_iterator_tag    iterator_category;
-      typedef Node<Mode>*                        node_ptr;
+      typedef typename Mode::node_ptr            node_ptr;
 
     private:
       typedef Node_iterator<Mode>                Self;
@@ -672,12 +672,12 @@ namespace spatial
     template<typename Mode>
     struct Const_node_iterator
     {
-      typedef typename Mode::value_type          value_type;
-      typedef const value_type&                  reference;
-      typedef const value_type*                  pointer;
+      typedef typename mutate<typename Mode::value_type>::type value_type;
+      typedef const typename Mode::value_type&   reference;
+      typedef const typename Mode::value_type*   pointer;
       typedef std::ptrdiff_t                     difference_type;
       typedef std::bidirectional_iterator_tag    iterator_category;
-      typedef const Node<Mode>*                  node_ptr;
+      typedef typename Mode::const_node_ptr      node_ptr;
 
     private:
       typedef Const_node_iterator<Mode>          Self;
@@ -743,15 +743,15 @@ namespace spatial
     template<typename Mode>
     struct Preorder_node_iterator
     {
-      typedef typename Mode::value_type     value_type;
-      typedef const value_type&             reference;
-      typedef const value_type*             pointer;
-      typedef std::ptrdiff_t                difference_type;
-      typedef std::forward_iterator_tag     iterator_category;
-      typedef typename Mode::const_node_ptr node_ptr;
+      typedef typename mutate<typename Mode::value_type>::type value_type;
+      typedef const typename Mode::value_type&  reference;
+      typedef const typename Mode::value_type*  pointer;
+      typedef std::ptrdiff_t                    difference_type;
+      typedef std::forward_iterator_tag         iterator_category;
+      typedef typename Mode::const_node_ptr     node_ptr;
 
     private:
-      typedef Preorder_node_iterator<Mode>  Self;
+      typedef Preorder_node_iterator<Mode>      Self;
 
     public:
       //! Create an uninintialized iterator. This iterator should not be used
@@ -795,46 +795,35 @@ namespace spatial
      *  A common template for bidirectional iterators that work on identical
      *  \ref LinkMode "modes of linking".
      *
-     *  This template defines all the necessary features of a bidirectional
-     *  iterator. It relies on 2 pre-existing functions, \c increment and \c
-     *  decrement to be implemented for the type of \c Iterator.
+     *  This template defines all the basic features of a bidirectional
+     *  iterator for this library.
      *
-     *  \tparam Mode      The mode used to \ref LinkMode "link nodes to their values".
+     *  \tparam Mode      The mode used to \ref LinkMode "link nodes to
+     *                    their values".
      *  \tparam Iterator  The real type of iterator.
-     *  \tparam Constant  True if the iterator is a constant iterator, false
-     *  otherwise.
      */
-    template <typename Mode, typename Iterator, bool Constant>
-    struct bidirectional_iterator
+    template <typename Mode, typename Iterator>
+    struct Bidirectional_iterator
     {
       //! The \c value_type can receive a copy of the reference pointed to be
       //! the iterator.
-      typedef typename Mode::value_type                value_type;
-
+      typedef typename mutate<typename Mode::value_type>::type value_type;
       //! The reference type of the object pointed to by the iterator.
-      typedef typename condition
-      <Constant, const value_type&, value_type&>::type reference;
-
+      typedef typename Mode::value_type&           reference;
       //! The pointer type of the object pointed to by the iterator.
-      typedef typename condition
-      <Constant, const value_type*, value_type*>::type pointer;
-
+      typedef typename Mode::value_type*           pointer;
       //! The difference_type returned by the distance between 2 iterators.
-      typedef std::ptrdiff_t                           difference_type;
-
-      //! The iterator category that is always \c bidirectional_iterator_tag.
-      typedef std::bidirectional_iterator_tag          iterator_category;
-
+      typedef std::ptrdiff_t                       difference_type;
+      //! The iterator category that is always \c Bidirectional_iterator_tag.
+      typedef std::bidirectional_iterator_tag      iterator_category;
       //! The type for the node pointed to by the iterator.
-      typedef typename condition
-      <Constant, typename Mode::const_node_ptr,
-       typename Mode::node_ptr>::type                  node_ptr;
+      typedef typename Mode::node_ptr              node_ptr;
 
       //! Build an uninitialized iterator
-      bidirectional_iterator() { }
+      Bidirectional_iterator() { }
 
       //! Initialize the node at construction time
-      bidirectional_iterator(node_ptr x, dimension_type n)
+      Bidirectional_iterator(node_ptr x, dimension_type n)
         : node(x), node_dim(n) { }
 
       //! Returns the reference to the value pointed to by the iterator.
@@ -862,6 +851,113 @@ namespace spatial
        */
       bool operator!=(const Const_node_iterator<Mode>& x) const
       { return node != x.node; }
+
+      //@{
+      /**
+       *  This iterator can be casted silently into a container iterator. You can
+       *  therefore use this iterator as an argument to the erase function of
+       *  the container, for example.
+       *
+       *  \warning When using this iterator as an argument to the erase function
+       *  of the container, this iterator will get invalidated after erase.
+       */
+      operator Node_iterator<Mode>() const
+      { return Node_iterator<Mode>(node); }
+
+      operator Const_node_iterator<Mode>() const
+      { return Const_node_iterator<Mode>(node); }
+      //@}
+
+      /**
+       *  The pointer to the current node.
+       *
+       *  Modifying this attribute can potentially invalidate the iterator. Do
+       *  not modify this attribute unless you know what you're doing. This
+       *  iterator must always point to a valid node in the tree or to the end.
+       */
+      node_ptr node;
+
+      /**
+       *  The dimension of the current node.
+       *
+       *  Modifying this attribute can potentially invalidate the iterator. Do
+       *  not modify this attribute unless you know what you're doing. This
+       *  iterator must always point to a valid node in the tree or to the end.
+       */
+      dimension_type node_dim;
+    };
+
+    /**
+     *  A common template for constant bidirectional iterators that work on
+     *  identical \ref LinkMode "modes of linking".
+     *
+     *  This template defines all the basic features of a bidirectional
+     *  iterator for this library.
+     *
+     *  \tparam Mode      The mode used to \ref LinkMode "link nodes to
+     *                    their values".
+     *  \tparam Iterator  The real type of iterator.
+     */
+    template <typename Mode, typename Iterator>
+    struct Const_bidirectional_iterator
+    {
+      //! The \c value_type can receive a copy of the reference pointed to be
+      //! the iterator.
+      typedef typename mutate<typename Mode::value_type>::type value_type;
+      //! The reference type of the object pointed to by the iterator.
+      typedef const typename Mode::value_type&     reference;
+      //! The pointer type of the object pointed to by the iterator.
+      typedef const typename Mode::value_type*     pointer;
+      //! The difference_type returned by the distance between 2 iterators.
+      typedef std::ptrdiff_t                       difference_type;
+      //! The iterator category that is always \c Bidirectional_iterator_tag.
+      typedef std::bidirectional_iterator_tag      iterator_category;
+      //! The type for the node pointed to by the iterator.
+      typedef typename Mode::const_node_ptr        node_ptr;
+
+      //! Build an uninitialized iterator
+      Const_bidirectional_iterator() { }
+
+      //! Initialize the node at construction time
+      Const_bidirectional_iterator(node_ptr x, dimension_type n)
+        : node(x), node_dim(n) { }
+
+      //! Returns the reference to the value pointed to by the iterator.
+      reference operator*()
+      { return value(node); }
+
+      //! Returns a pointer to the value pointed to by the iterator.
+      pointer operator->()
+      { return &value(node); }
+
+      /**
+       *  A bidirectional iterator can be compared with a node iterator if they
+       *  work on identical \ref LinkMode "linking modes".
+       *
+       *  \param x The iterator on the right.
+       */
+      bool operator==(const Const_node_iterator<Mode>& x) const
+      { return node == x.node; }
+
+      /**
+       *  A bidirectional iterator can be compared for inequality with a node
+       *  iterator if they work on identical \ref LinkMode "linking modes".
+       *
+       *  \param x The iterator on the right.
+       */
+      bool operator!=(const Const_node_iterator<Mode>& x) const
+      { return node != x.node; }
+
+      /**
+       *  Children of this iterator can be casted silently into a container
+       *  iterator. You can therefore use this iterator as an argument to the
+       *  erase function of the container, for example.
+       *
+       *  \warning When using this iterator as an argument to the erase function
+       *  of the container, this iterator will get invalidated after erase.
+       */
+      operator Const_node_iterator<Mode>() const
+      { return Const_node_iterator<Mode>(node); }
 
       /**
        *  The pointer to the current node.

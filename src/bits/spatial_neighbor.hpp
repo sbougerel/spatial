@@ -119,25 +119,17 @@ namespace spatial
      *  more geometries needs to be defined, see the explanation in \ref
      *  Geometry.
      */
-    struct iterator : ::spatial::details::bidirectional_iterator
-      <typename container_traits<Ct>::mode_type, iterator,
-       ::std::tr1::is_same<typename container_traits<Ct>::key_type,
-                           typename container_traits<Ct>::value_type>::value>
+    struct iterator : ::spatial::details::Bidirectional_iterator
+      <typename container_traits<Ct>::mode_type, iterator>
     {
     private:
-      typedef typename ::spatial::details::bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, iterator,
-         ::std::tr1::is_same<typename container_traits<Ct>::key_type,
-                             typename container_traits<Ct>::value_type>
-                             ::value> Base;
+      typedef typename ::spatial::details::Bidirectional_iterator
+        <typename container_traits<Ct>::mode_type, iterator> Base;
 
       template<typename Iterator> struct Rebind
       {
-        typedef typename ::spatial::details::bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, Iterator,
-         ::std::tr1::is_same<typename container_traits<Ct>::key_type,
-                             typename container_traits<Ct>::value_type>
-                             ::value> type;
+        typedef typename ::spatial::details::Bidirectional_iterator
+        <typename container_traits<Ct>::mode_type, Iterator> type;
       };
 
     public:
@@ -272,17 +264,17 @@ namespace spatial
      *
      *  This iterator only returns constant objects.
      */
-    struct iterator : ::spatial::details::bidirectional_iterator
-      <typename container_traits<Ct>::mode_type, iterator, true>
+    struct iterator : ::spatial::details::Const_bidirectional_iterator
+      <typename container_traits<Ct>::mode_type, iterator>
     {
     private:
-      typedef typename ::spatial::details::bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, iterator, true> Base;
+      typedef typename ::spatial::details::Const_bidirectional_iterator
+        <typename container_traits<Ct>::mode_type, iterator> Base;
 
       template<typename Iterator> struct Rebind
       {
-        typedef typename ::spatial::details::bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, Iterator, true> type;
+        typedef typename ::spatial::details::Const_bidirectional_iterator
+        <typename container_traits<Ct>::mode_type, Iterator> type;
       };
 
     public:

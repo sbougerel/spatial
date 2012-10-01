@@ -29,16 +29,16 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<std::pair<const Key, Mapped> > >
   struct boxmap
-    : details::Relaxed_kdtree<details::Static_rank<Rank << 1>, Key,
+    : details::Relaxed_kdtree<details::Static_rank<Rank << 1>, const Key,
                               std::pair<const Key, Mapped>,
                               Compare, BalancingPolicy, Alloc>
   {
   private:
     typedef details::Relaxed_kdtree
-    <details::Static_rank<Rank << 1>, Key, std::pair<const Key, Mapped>, Compare,
-     BalancingPolicy, Alloc>                  base_type;
-    typedef boxmap<Rank, Key, Mapped, Compare, BalancingPolicy,
-                   Alloc>                     Self;
+    <details::Static_rank<Rank << 1>, const Key, std::pair<const Key, Mapped>,
+     Compare, BalancingPolicy, Alloc>         base_type;
+    typedef boxmap<Rank, Key, Mapped, Compare,
+                   BalancingPolicy, Alloc>    Self;
 
   public:
     typedef Mapped                            mapped_type;
@@ -91,14 +91,14 @@ namespace spatial
            typename BalancingPolicy,
            typename Alloc>
   struct boxmap<0, Key, Mapped, Compare, BalancingPolicy, Alloc>
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key,
+    : details::Relaxed_kdtree<details::Dynamic_rank, const Key,
                               std::pair<const Key, Mapped>, Compare,
                               BalancingPolicy, Alloc>
   {
   private:
     typedef details::Relaxed_kdtree
-    <details::Dynamic_rank, Key, std::pair<const Key, Mapped>, Compare,
-     BalancingPolicy, Alloc>                  base_type;
+    <details::Dynamic_rank, const Key, std::pair<const Key, Mapped>,
+     Compare, BalancingPolicy, Alloc>         base_type;
     typedef boxmap<0, Key, Mapped, Compare,
                    BalancingPolicy, Alloc>    Self;
 
@@ -156,19 +156,19 @@ namespace spatial
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<std::pair<const Key, Mapped> > >
   struct runtime_boxmap
-    : details::Relaxed_kdtree<details::Dynamic_rank, Key,
+    : details::Relaxed_kdtree<details::Dynamic_rank, const Key,
                               std::pair<const Key, Mapped>, Compare,
                               BalancingPolicy, Alloc>
   {
   private:
     typedef details::Relaxed_kdtree
-    <details::Dynamic_rank, Key, std::pair<const Key, Mapped>, Compare,
-     BalancingPolicy, Alloc>                  base_type;
-    typedef runtime_boxmap<Key, Mapped, Compare, BalancingPolicy,
-                           Alloc>             Self;
+    <details::Dynamic_rank, const Key, std::pair<const Key, Mapped>,
+     Compare, BalancingPolicy, Alloc>              base_type;
+    typedef runtime_boxmap<Key, Mapped, Compare,
+                           BalancingPolicy, Alloc> Self;
 
   public:
-    typedef Mapped                            mapped_type;
+    typedef Mapped                                 mapped_type;
 
     runtime_boxmap() : base_type(details::Dynamic_rank(2)) { }
 
