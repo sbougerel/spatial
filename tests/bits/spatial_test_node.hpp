@@ -532,8 +532,8 @@ BOOST_AUTO_TEST_CASE( test_swap_relaxed_kdtree_node )
   int2_relaxed_node_fixture::node_type* left = &fix.node_left;
   int2_relaxed_node_fixture::node_type* right = &fix.node_right;
   swap_node(left, right);
-  BOOST_CHECK_EQUAL(fix.node_left.weight, 1);
-  BOOST_CHECK_EQUAL(fix.node_right.weight, 3);
+  BOOST_CHECK_EQUAL(fix.node_left.weight, 1u);
+  BOOST_CHECK_EQUAL(fix.node_right.weight, 3u);
   BOOST_CHECK(fix.node_left.value == ones);
   BOOST_CHECK(fix.node_right.value == threes);
   BOOST_CHECK(right == &fix.node_left);

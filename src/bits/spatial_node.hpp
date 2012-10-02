@@ -266,6 +266,9 @@ namespace spatial
       //! The category of invariant associated with this mode.
       typedef strict_invariant_tag                 invariant_category;
 
+	  //! Default constructor
+	  Kdtree_link() : value() { }
+
       /**
        *  The value of the node, required by the @ref Link concept.
        *
@@ -305,6 +308,9 @@ namespace spatial
       typedef const Node<link_type>*              const_node_ptr;
       //! The category of invariant with associated with this mode.
       typedef relaxed_invariant_tag               invariant_category;
+
+	  //! Default constructor
+	  Relaxed_kdtree_link() : weight(), value() { }
 
       //! The weight is equal to 1 plus the amount of child nodes below the
       //! current node. It is always equal to 1 at least.

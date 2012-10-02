@@ -36,19 +36,19 @@ BOOST_AUTO_TEST_CASE(test_details_condition)
 BOOST_AUTO_TEST_CASE(test_static_rank)
 {
   details::Static_rank<2> rank;
-  BOOST_CHECK_EQUAL(incr_dim(rank, 0), 1);
-  BOOST_CHECK_EQUAL(incr_dim(rank, 1), 0);
-  BOOST_CHECK_EQUAL(decr_dim(rank, 0), 1);
-  BOOST_CHECK_EQUAL(decr_dim(rank, 1), 0);
+  BOOST_CHECK_EQUAL(incr_dim(rank, 0), 1u);
+  BOOST_CHECK_EQUAL(incr_dim(rank, 1), 0u);
+  BOOST_CHECK_EQUAL(decr_dim(rank, 0), 1u);
+  BOOST_CHECK_EQUAL(decr_dim(rank, 1), 0u);
 }
 
 BOOST_AUTO_TEST_CASE( test_details_incr_decr_dim_dynamic )
 {
   details::Dynamic_rank rank(2);
-  BOOST_CHECK_EQUAL(incr_dim(rank, 0), 1);
-  BOOST_CHECK_EQUAL(incr_dim(rank, 1), 0);
-  BOOST_CHECK_EQUAL(decr_dim(rank, 0), 1);
-  BOOST_CHECK_EQUAL(decr_dim(rank, 1), 0);
+  BOOST_CHECK_EQUAL(incr_dim(rank, 0), 1u);
+  BOOST_CHECK_EQUAL(incr_dim(rank, 1), 0u);
+  BOOST_CHECK_EQUAL(decr_dim(rank, 0), 1u);
+  BOOST_CHECK_EQUAL(decr_dim(rank, 1), 0u);
 }
 
 BOOST_AUTO_TEST_CASE( test_details_template_swap )
