@@ -366,7 +366,8 @@ namespace spatial
     template <typename Tp>
     inline Tp check_positive_add(const Tp& x, const Tp& y)
     {
-      if ((::std::numeric_limits<Tp>::max() - x) < y)
+	  // The additional bracket is to avoid conflict with MSVC min/max macros
+      if (((::std::numeric_limits<Tp>::max)() - x) < y)
         throw arithmetic_error
           ("Addition of two elements has resulted in an arithmetic error");
       return x + y;
@@ -387,7 +388,7 @@ namespace spatial
     inline Tp check_square(const Tp& x)
     {
       Tp _x = check_abs(x);
-      if ((::std::numeric_limits<Tp>::max() / _x) < _x)
+      if (((::std::numeric_limits<Tp>::max)() / _x) < _x)
         throw arithmetic_error
           ("Square value of element has resulted in an arithmetic error");
       return x * x;
@@ -408,7 +409,7 @@ namespace spatial
     template <typename Tp>
     inline Tp check_positive_mul(const Tp& x, const Tp& y)
     {
-      if ((::std::numeric_limits<Tp>::max() / y) < x)
+      if (((::std::numeric_limits<Tp>::max)() / y) < x)
         throw arithmetic_error
           ("Multiplication of two elements has resulted in an arithmetic error");
       return x * y;
