@@ -64,15 +64,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_mapping_minimum, Tp, int2_sets )
 {
   {
-    Tp fix(100, randomize()); // Need to add some value heres like (-20, 20)
+    Tp fix(100, randomize(-20, 20));
     // Prove that you can find the max value with N nodes, down to 1 nodes
-    for (int num_elems = fix.record.size(); num_elems > 0; --num_elems)
+    while (!fix.container.empty())
       {
-        int count = 0;
-        int min_value_0 = (*fix.record.begin())[0];
-        int min_value_1 = (*fix.record.begin())[1];
-        for(typename Tp::record_type::iterator
-              i = fix.record.begin(); i != fix.record.end(); ++i)
+        unsigned int count = 0;
+        int min_value_0 = (*fix.container.begin())[0];
+        int min_value_1 = (*fix.container.begin())[1];
+        for(typename Tp::container_type::iterator
+              i = fix.container.begin(); i != fix.container.end(); ++i)
           {
             int tmp = (*i)[0];
             if (tmp < min_value_0) { min_value_0 = tmp; }
@@ -80,14 +80,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
             if (tmp < min_value_1) { min_value_1 = tmp; }
             ++count;
           }
-        BOOST_CHECK_EQUAL(count, num_elems);
+        BOOST_CHECK_EQUAL(count, fix.container.size());
         typename mapping_iterator<typename Tp::container_type>::type iter;
         dimension_type mapping_dim = 0;
         iter = mapping_begin(fix.container, mapping_dim);
-        BOOST_REQUIRE_EQUAL((*iter)[mapping_dim], min_value_0);
+        BOOST_CHECK_EQUAL((*iter)[mapping_dim], min_value_0);
         mapping_dim = 1;
         iter = mapping_begin(fix.container, mapping_dim);
-        BOOST_REQUIRE_EQUAL((*iter)[mapping_dim], min_value_1);
+        BOOST_CHECK_EQUAL((*iter)[mapping_dim], min_value_1);
         fix.container.erase(iter);
       }
   }

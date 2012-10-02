@@ -293,6 +293,7 @@ namespace spatial
                 { set_leftmost(candidate.node); }
             }
           swap_node(node, candidate.node);
+		  node = candidate.node;
           node_dim = candidate.node_dim;
         }
       SPATIAL_ASSERT_CHECK(!header(node));

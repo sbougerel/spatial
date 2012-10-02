@@ -327,6 +327,7 @@ namespace spatial
           if (get_leftmost() == node)
             { set_leftmost(candidate.node); }
           swap_node(candidate.node, node);
+		  node = candidate.node;
           node_dim = candidate.node_dim;
         }
       SPATIAL_ASSERT_CHECK(node != 0);
