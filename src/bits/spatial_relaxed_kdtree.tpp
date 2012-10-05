@@ -132,21 +132,18 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!header(node));
       // I believe it is not necessary to balance node when it weighs less than
-      // twice the rank. This due to the k-d tree rotating invarient (each
-      // dimension is considered in turn). Therefore, it makes little difference
-      // for all algorithms to have balanced nodes if there are not enough nodes
-      // to balance along all dimensions.
+      // the current dimension. This due to the k-d tree rotating invarient
+      // (each dimension is considered in turn). Therefore, it makes little
+      // difference for all algorithms to have balanced nodes if there are not
+      // enough nodes to start pruning along all dimensions.
       //
       // Note that while I can theorize this for several algorithms (simple
       // iteration, mapping iteration, range iteration), I still have to perform
       // experiments that reflect this hypothesis.
-      if (const_link(node)->weight
-          <= static_cast<weight_type>(dimension()) << 1)
-        { return false; }
-      return balancing()
+      return (const_link(node)->weight > dimension() && balancing()
         (rank(),
          more_left + (node->left ? const_link(node->left)->weight : 0),
-         more_right + (node->right ? const_link(node->right)->weight : 0));
+         more_right + (node->right ? const_link(node->right)->weight : 0)));
     }
 
     template <typename Rank, typename Key, typename Value, typename Compare,
@@ -293,7 +290,7 @@ namespace spatial
                 { set_leftmost(candidate.node); }
             }
           swap_node(node, candidate.node);
-		  node = candidate.node;
+                  node = candidate.node;
           node_dim = candidate.node_dim;
         }
       SPATIAL_ASSERT_CHECK(!header(node));

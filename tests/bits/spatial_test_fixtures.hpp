@@ -90,7 +90,7 @@ struct same
   }
   double6& operator()(double6& d, int, int n) const
   {
-    d[0] = d[1] = d[2] = d[3] = d[4] = static_cast<double>(n);
+    d[0] = d[1] = d[2] = d[3] = d[4] = d[5] = static_cast<double>(n);
     return d;
   }
 };
@@ -113,7 +113,7 @@ struct increase
   }
   double6& operator()(double6& d, int i, int) const
   {
-    d[0] = d[1] = d[2] = d[3] = d[4] = static_cast<double>(i);
+    d[0] = d[1] = d[2] = d[3] = d[4] = d[5] = static_cast<double>(i);
     return d;
   }
 };
@@ -136,7 +136,7 @@ struct decrease
   }
   double6& operator()(double6& d, int i, int n) const
   {
-    d[0] = d[1] = d[2] = d[3] = d[4] = static_cast<double>(n - i);
+    d[0] = d[1] = d[2] = d[3] = d[4] = d[5] = static_cast<double>(n - i);
     return d;
   }
 };
@@ -171,6 +171,7 @@ struct randomize
     d[2] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
     d[3] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
     d[4] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
+    d[5] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
     return d;
   }
 };

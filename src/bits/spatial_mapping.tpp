@@ -185,7 +185,7 @@ namespace spatial
       node_ptr node = iter.node;
       dimension_type node_dim = iter.node_dim;
       dimension_type best_dim = iter.node_dim;
-      if (node->left != 0 && node_dim != iter.mapping_dim()) // optimization
+      if (node->left != 0 && node_dim != iter.data.mapping_dim()) // optimization
         {
           do
             {
@@ -445,9 +445,10 @@ namespace spatial
     //! invariant.
     template<typename Container>
     inline Iterator_mapping<Container>&
-    lower_bound(Iterator_mapping<Container>& iter,
-                const typename container_traits<Container>::key_type& bound,
-                details::relaxed_invariant_tag)
+    lower_bound_mapping
+    (Iterator_mapping<Container>& iter,
+     const typename container_traits<Container>::key_type& bound,
+     details::relaxed_invariant_tag)
     {
       typedef typename Iterator_mapping<Container>::node_ptr node_ptr;
       const typename container_traits<Container>::rank_type& rank
@@ -526,9 +527,10 @@ namespace spatial
     //! invariant.
     template<typename Container>
     inline Iterator_mapping<Container>&
-    lower_bound(Iterator_mapping<Container>& iter,
-                const typename container_traits<Container>::key_type& bound,
-                details::strict_invariant_tag)
+    lower_bound_mapping
+    (Iterator_mapping<Container>& iter,
+     const typename container_traits<Container>::key_type& bound,
+     details::strict_invariant_tag)
     {
       typedef typename Iterator_mapping<Container>::node_ptr node_ptr;
       const typename container_traits<Container>::rank_type& rank
@@ -632,7 +634,7 @@ namespace spatial
         {
           iter.node = iter.node->parent;
           iter.node_dim = 0; // root is always compared on dimension 0
-          return maximum(iter);
+          return maximum_mapping(iter);
         }
       node_ptr best = 0; // not null when best has been found
       node_ptr node = iter.node;
