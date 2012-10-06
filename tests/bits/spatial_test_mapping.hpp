@@ -325,7 +325,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         for (; iter != end; ++iter)
           {
             BOOST_CHECK_GE(tmp, iter->first[mapping_dim]);
-            tmp = (iter->first[mapping_dim];
+            tmp = iter->first[mapping_dim];
             if (++count > 100) break;
           }
         BOOST_CHECK_EQUAL(count, 100);
@@ -357,13 +357,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         typename mapping_iterator<typename Tp::container_type>::type
           pre = mapping_end(fix.container, mapping_dim),
           post = mapping_end(fix.container, mapping_dim),
-          end = mapping_begin(fix.container, mapping_dim);
-        BOOST_CHECK(pre != end);
+          begin = mapping_begin(fix.container, mapping_dim);
+        BOOST_CHECK(pre != begin);
 		BOOST_CHECK(--pre != post--);
 		BOOST_CHECK(pre == post);
-        BOOST_CHECK(post-- != end);
-        BOOST_CHECK(--pre == end);
-        BOOST_CHECK(post == end);
+        BOOST_CHECK(post-- != begin);
+        BOOST_CHECK(--pre == begin);
+        BOOST_CHECK(post == begin);
       }
   }
   { // test at the limit: a right-unbalanced tree (pre-increment)
@@ -379,8 +379,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         double tmp = iter->first[mapping_dim];
         for (; iter != end; ++iter)
           {
-            BOOST_CHECK_GE(tmp, iter->[mapping_dim]);
-            tmp = iter->[mapping_dim];
+            BOOST_CHECK_GE(tmp, iter->first[mapping_dim]);
+            tmp = iter->first[mapping_dim];
             if (++count > 100) break;
           }
         BOOST_CHECK_EQUAL(count, 100);
@@ -408,106 +408,101 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
 }
 
-/*
-BOOST_AUTO_TEST_CASE( test_Mapping_iterator_lower_bound )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_mapping_lower_bound, Tp, quad_sets )
 {
-  // return the smallest element in set that is greater or equal to key
-  // test with high density and oob values
-  {
-    dimension_type mapping_dim = 1;
-    Hundred_kdtree_2D_fixture fix;
-    typedef details::Mapping_iterator
-      <details::Dynamic_rank, int2, int2,
-       Kdtree_node<int2>, bracket_less<int2> > iter_type;
-    int2 flag = { { 10, 10 } };
-    int2 low_flag = { { -10, -10 } };
-    int2 high_flag = { { 30, 30 } };
-    iter_type iter;
-    BOOST_REQUIRE_NO_THROW(iter = iter_type::lower_bound
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<int2>*>
-                            (fix.kdtree.end().node->parent), flag));
-    iter_type low_iter;
-    BOOST_REQUIRE_NO_THROW(low_iter = iter_type::lower_bound
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<int2>*>
-                            (fix.kdtree.end().node->parent), low_flag));
-    iter_type high_iter;
-    BOOST_REQUIRE_NO_THROW(high_iter = iter_type::lower_bound
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<int2>*>
-                            (fix.kdtree.end().node->parent), high_flag));
-    iter_type begin;
-    BOOST_REQUIRE_NO_THROW(begin = iter_type::minimum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<int2>*>
-                            (fix.kdtree.end().node->parent)));
-    iter_type end;
-    BOOST_REQUIRE_NO_THROW(end = iter_type
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, details::decr_dim
-                            (fix.kdtree.rank(), 0),
-                            static_cast<Kdtree_node<int2>*>
-                            (fix.kdtree.end().node)));
-    if (iter != end) // chances that this is false are extremely low 1/(2^100)
+  { // find the smallest element that is greater or equal to key
+    Tp fix(100, randomize(-2, 2));
+    quad lower (-2, -2, -2, -2);
+    quad in (1, 1, 1, 1);
+    quad upper (2, 2, 2, 2);
+    for (dimension_type mapping_dim = 0; mapping_dim < 4;
+         ++mapping_dim)
       {
-        BOOST_CHECK_GE((*iter)[mapping_dim], flag[mapping_dim]);
-        if (iter != begin) // same as above
-          {
-            iter_type tmp = iter;
-            BOOST_CHECK_LT((*(--tmp))[mapping_dim], (*iter)[mapping_dim]);
-            BOOST_CHECK_LT((*tmp)[mapping_dim], flag[mapping_dim]);
-          }
+		mapping_iterator<typename Tp::container_type>::type
+		  iter (mapping_lower_bound(fix.container, mapping_dim, in));
+		BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim)
+			        || !quad_less()(mapping_dim, *iter, in));
+		BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim)
+			        || quad_less()(mapping_dim, *--iter, in));
+		iter = mapping_lower_bound(fix.container, mapping_dim, lower);
+		BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+		iter = mapping_lower_bound(fix.container, mapping_dim, upper);
+		BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
       }
-    BOOST_CHECK(low_iter == begin);
-    BOOST_CHECK(high_iter == end);
   }
-  // test with high dispersion
-  {
-    dimension_type mapping_dim = 2;  // triple::z
-    Twenty_kdtree_3D_fixture fix;
-    typedef details::Mapping_iterator
-      <details::Dynamic_rank, triple, triple,
-       Kdtree_node<triple>, triple_less> iter_type;
-    triple flag; flag.x = 0; flag.y = 0; flag.z = 0;
-    iter_type iter;
-    BOOST_REQUIRE_NO_THROW(iter = iter_type::lower_bound
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<triple>*>
-                            (fix.kdtree.end().node->parent), flag));
-    iter_type begin;
-    BOOST_REQUIRE_NO_THROW(begin = iter_type::minimum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<triple>*>
-                            (fix.kdtree.end().node->parent)));
-    iter_type end;
-    BOOST_REQUIRE_NO_THROW(end = iter_type
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, details::decr_dim
-                            (fix.kdtree.rank(), 0),
-                            static_cast<Kdtree_node<triple>*>
-                            (fix.kdtree.end().node)));
-    if (iter != end) // chances that this is false are low 1/(2^20)
+  { // same test with a tree filled with similar values
+    Tp fix(100, same());
+    quad lower (99, 99, 99, 99);
+    quad in (100, 100, 100, 100);
+	quad upper (101, 101, 101, 101);
+    for (dimension_type mapping_dim = 0; mapping_dim < 4;
+         ++mapping_dim)
       {
-        BOOST_CHECK_GE(iter->z, flag.z);
-        if (iter != begin) // same as above
-          {
-            iter_type tmp = iter;
-            BOOST_CHECK_LT((--tmp)->z, iter->z);
-            BOOST_CHECK_LT(tmp->z, flag.z);
-          }
+		mapping_iterator<typename Tp::container_type>::type
+		  iter (mapping_lower_bound(fix.container, mapping_dim, lower));
+		BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+		iter = mapping_lower_bound(fix.container, mapping_dim, in);
+		BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+		iter = mapping_lower_bound(fix.container, mapping_dim, upper);
+		BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
+      }
+  }
+  { // test at the limit: tree with 1 value
+    Tp fix(1, same());
+    quad lower (0, 0, 0, 0);
+    quad in (1, 1, 1, 1);
+	quad upper (2, 2, 2, 2);
+    for (dimension_type mapping_dim = 0; mapping_dim < 4;
+         ++mapping_dim)
+      {
+		mapping_iterator<typename Tp::container_type>::type
+		  iter (mapping_lower_bound(fix.container, mapping_dim, lower));
+		BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+		iter = mapping_lower_bound(fix.container, mapping_dim, in);
+		BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+		iter = mapping_lower_bound(fix.container, mapping_dim, upper);
+		BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
+      }
+  }
+  { // test at the limit: tree filled with decreasing values
+    Tp fix(100, decrease()); // first (100, 100, 100, 100), last (1, 1, 1, 1)
+	quad lower(1, 1, 1, 1);
+	quad in (100, 100, 100, 100);
+	quad upper(101, 101, 101, 101);
+    for (dimension_type mapping_dim = 0; mapping_dim < 4;
+         ++mapping_dim)
+      {
+		mapping_iterator<typename Tp::container_type>::type
+		  iter (mapping_lower_bound(fix.container, mapping_dim, lower));
+		BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+		iter = mapping_lower_bound(fix.container, mapping_dim, in);
+		BOOST_CHECK(iter != mapping_end(fix.container, mapping_dim)
+			&& ++iter == mapping_end(fix.container, mapping_dim));
+		iter = mapping_lower_bound(fix.container, mapping_dim, upper);
+		BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
+      }
+  }
+  { // test at the limit: tree filled with increasing values
+    Tp fix(100, increase()); // first (0, 0, 0, 0), last (99, 99, 99, 99)
+	quad lower(0, 0, 0, 0);
+	quad in(99, 99, 99, 99);
+	quad upper (100, 100, 100, 100);
+    for (dimension_type mapping_dim = 0; mapping_dim < 4;
+         ++mapping_dim)
+      {
+		mapping_iterator<typename Tp::container_type>::type
+		  iter (mapping_lower_bound(fix.container, mapping_dim, lower));
+		BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+		iter = mapping_lower_bound(fix.container, mapping_dim, in);
+		BOOST_CHECK(iter != mapping_end(fix.container, mapping_dim)
+			&& ++iter == mapping_end(fix.container, mapping_dim));
+		iter = mapping_lower_bound(fix.container, mapping_dim, upper);
+		BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
       }
   }
 }
 
+/*
 BOOST_AUTO_TEST_CASE( test_Const_Mapping_iterator_upper_bound )
 {
   // return the smallest element in set that is strictly greater than key

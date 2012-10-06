@@ -601,7 +601,7 @@ namespace spatial
       if (best != 0) { iter.node = best; iter.node_dim = best_dim; }
 
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
-      SPATIAL_ASSERT_CHECK(iter.data.node != 0);
+      SPATIAL_ASSERT_CHECK(iter.node != 0);
       return iter;
     }
 

@@ -117,6 +117,9 @@ namespace spatial
       //! Uninitialized iterator.
       Iterator_mapping() { }
 
+	  //! Copy constructor.
+	  Iterator_mapping(const Iterator_mapping& x) : Base(x), data(x.data) { }
+
       /**
        *  The standard way to build this iterator: specify a mapping dimension,
        *  an iterator on a container, and that container.
@@ -198,7 +201,7 @@ namespace spatial
       //! the decrement. Prefer to use the other form in \c for loops.
       Iterator_mapping<Ct> operator--(int)
       {
-        Iterator_mapping<Ct>& x(*this);
+        Iterator_mapping<Ct> x(*this);
         decrement_mapping(*this);
         return x;
       }
@@ -241,6 +244,10 @@ namespace spatial
     public:
       //! Build an uninitialized iterator.
       Iterator_mapping() { }
+
+	  //! Copy constructor.
+	  Iterator_mapping(const Iterator_mapping<const Ct>& x)
+		: Base(x), data(x.data) { }
 
       /**
        *  The standard way to build this iterator: specify a mapping dimension,
@@ -329,7 +336,7 @@ namespace spatial
       //! the decrement. Prefer to use the other form in \c for loops.
       Iterator_mapping<const Ct> operator--(int)
       {
-        Iterator_mapping<const Ct>& x(*this);
+        Iterator_mapping<const Ct> x(*this);
         decrement_mapping(*this);
         return x;
       }
