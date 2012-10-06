@@ -862,7 +862,7 @@ namespace spatial
       const typename container_traits<Container>::key_compare& cmp
         = iter.data.mapping_dim.base();
       SPATIAL_ASSERT_CHECK(iter.node != 0);
-      SPATIAL_ASSERT_CHECK(mapping_dim(iter) < rank());
+      SPATIAL_ASSERT_CHECK(iter.data.mapping_dim() < rank());
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
 
@@ -870,34 +870,34 @@ namespace spatial
       node_ptr best = 0;
       dimension_type best_dim = 0;
       while (iter.node->left != 0
-             && (iter.node_dim != iter.data.mapping_dim
+             && (iter.node_dim != iter.data.mapping_dim()
                  || cmp(iter.node_dim, bound, const_key(iter.node))))
         {
           iter.node = iter.node->left;
           iter.node_dim = incr_dim(rank, iter.node_dim);
         }
-      if (cmp(iter.data.mapping_dim, bound, const_key(iter.node)))
+      if (cmp(iter.data.mapping_dim(), bound, const_key(iter.node)))
         { best = iter.node; best_dim = iter.node_dim; }
       do
         {
           if (iter.node->right != 0
-              && (iter.node_dim != iter.data.mapping_dim || best == 0
-                  || !cmp(iter.data.mapping_dim,
+              && (iter.node_dim != iter.data.mapping_dim() || best == 0
+                  || !cmp(iter.data.mapping_dim(),
                           const_key(best), const_key(iter.node))))
             {
               iter.node = iter.node->right;
               iter.node_dim = incr_dim(rank, iter.node_dim);
               while (iter.node->left != 0
-                     && (iter.node_dim != iter.data.mapping_dim
+                     && (iter.node_dim != iter.data.mapping_dim()
                          || cmp(iter.node_dim, bound,
                                 const_key(iter.node))))
                 {
                   iter.node = iter.node->left;
                   iter.node_dim = incr_dim(rank, iter.node_dim);
                 }
-              if (cmp(iter.data.mapping_dim, bound, const_key(iter.node))
+              if (cmp(iter.data.mapping_dim(), bound, const_key(iter.node))
                   && (best == 0
-                      || less_by_ref(cmp, iter.data.mapping_dim,
+                      || less_by_ref(cmp, iter.data.mapping_dim(),
                                      const_key(iter.node), const_key(best))))
                 { best = iter.node; best_dim = iter.node_dim; }
             }
@@ -913,9 +913,9 @@ namespace spatial
               iter.node = p;
               iter.node_dim = decr_dim(rank, iter.node_dim);
               if (iter.node != end
-                  && cmp(iter.data.mapping_dim, bound, const_key(iter.node))
+                  && cmp(iter.data.mapping_dim(), bound, const_key(iter.node))
                   && (best == 0
-                      || less_by_ref(cmp, iter.data.mapping_dim,
+                      || less_by_ref(cmp, iter.data.mapping_dim(),
                                      const_key(iter.node), const_key(best))))
                 { best = iter.node; best_dim = iter.node_dim; }
             }

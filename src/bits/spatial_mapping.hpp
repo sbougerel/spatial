@@ -107,12 +107,6 @@ namespace spatial
       <typename container_traits<Ct>::mode_type, Iterator_mapping<Ct> >
       Base;
 
-      template<typename Iterator> struct Rebind
-      {
-        typedef Bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, Iterator> type;
-      };
-
     public:
       //! Uninitialized iterator.
       Iterator_mapping() { }
@@ -132,24 +126,9 @@ namespace spatial
        *  iteration.
        */
       Iterator_mapping(Ct& container, dimension_type mapping_dim,
-                       typename container_traits<Ct>::iterator iter)
+                       const typename container_traits<Ct>::iterator& iter)
         : Base(iter.node, modulo(iter.node, container.rank())),
           data(container, mapping_dim) { }
-
-      /**
-       *  Build this iterator from another bidirectional iterator.
-       *
-       *  \param container The container to iterate.
-       *  \param mapping_dim The dimension used to order all nodes during the
-       *  iteration.
-       *  \param node_dim The dimension of the node pointed to by iterator.
-       *  \param iter Use the node currenly pointed to by iter as a staring
-       *  point of the iteration.
-       */
-      template<typename Iterator>
-      Iterator_mapping(Ct& container, dimension_type mapping_dim,
-                       const typename Rebind<Iterator>::type& iter)
-        : Base(iter.node, iter.node_dim), data(container, mapping_dim) { }
 
       /**
        *  When the information of the dimension for the current node being
@@ -235,12 +214,6 @@ namespace spatial
       <typename container_traits<Ct>::mode_type, Iterator_mapping<const Ct> >
       Base;
 
-      template<typename Iterator> struct Rebind
-      {
-        typedef Const_bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, Iterator> type;
-      };
-
     public:
       //! Build an uninitialized iterator.
       Iterator_mapping() { }
@@ -261,25 +234,9 @@ namespace spatial
        *  iteration.
        */
       Iterator_mapping(const Ct& container, dimension_type dim,
-                       typename container_traits<const Ct>::iterator iter)
+                       const typename container_traits<Ct>::const_iterator& iter)
         : Base(iter.node, modulo(iter.node, container.rank())),
           data(dim, container) { }
-
-      /**
-       *  Build this iterator from another bidirectional iterator.
-       *
-       *  \param container The container to iterate.
-       *  \param mapping_dim The dimension used to order all nodes during the
-       *  iteration.
-       *  \param node_dim The dimension of the node pointed to by iterator.
-       *  \param iter Use the node currenly pointed to by iter as a staring
-       *  point of the iteration.
-       */
-      template<typename Iterator>
-      Iterator_mapping(const Ct& container, dimension_type mapping_dim,
-                       const typename Rebind<Iterator>::type& iter)
-        : Base(iter.node, iter.node_dim),
-          data(container, mapping_dim) { }
 
       /**
        *  When the information of the dimension for the current node being
@@ -305,7 +262,7 @@ namespace spatial
        */
       Iterator_mapping(const Ct& container,
                        dimension_type mapping_dim, dimension_type other_node_dim,
-                       typename container_traits<Ct>::mode_type::node_ptr
+                       typename container_traits<Ct>::mode_type::const_node_ptr
                        other_node)
         : Base(other_node, other_node_dim), data(container, mapping_dim) { }
 
@@ -606,6 +563,73 @@ namespace spatial
   //@}
 
   /**
+   *  Finds the past-the-end position in \c container for this constant
+   *  iterator.
+   *
+   *  \attention This iterator impose constness constraints on its \c value_type
+   *  if the container's is a set and not a map. Iterators on sets prevent
+   *  modification of the \c value_type because modifying the key may result in
+   *  invalidation of the tree. If the container is a map, only the \c
+   *  mapped_type can be modified (the \c second element).
+   *
+   *  \tparam Container The type of container to iterate.
+   *  \param mapping_dim The dimension that is the reference for the iteration:
+   *  all iterated values will be ordered along this dimension, from smallest to
+   *  largest.
+   *  \param container The container to iterate.
+   *  \throw invalid_dimension If the dimension specified is larger than the
+   *  dimension from the \ref Rank "rank" of the container.
+   *  \return An iterator pointing to the past-the-end position in the
+   *  container.
+   *
+   *  \consttime
+   *  \see mapping
+   */
+  template <typename Container>
+  inline typename mapping_iterator<Container>::type
+  mapping_end(Container& container, dimension_type mapping_dim)
+  {
+    except::check_dimension(container.dimension(), mapping_dim);
+    return typename mapping_iterator<Container>::type
+      (container, mapping_dim, container.dimension() - 1,
+       container.end().node); // At header (dim = rank - 1)
+  }
+
+  //@{
+  /**
+   *  Finds the past-the-end position in \c container for this constant
+   *  iterator.
+   *
+   *  \tparam Container The type of container to iterate.
+   *  \param mapping_dim The dimension that is the reference for the iteration:
+   *  all iterated values will be ordered along this dimension, from smallest to
+   *  largest.
+   *  \param container The container to iterate.
+   *  \throw invalid_dimension If the dimension specified is larger than the
+   *  dimension from the \ref Rank "rank" of the container.
+   *  \return An iterator pointing to the past-the-end position in the
+   *  container.
+   *
+   *  \consttime
+   *  \see mapping
+   */
+  template <typename Container>
+  inline typename mapping_iterator<const Container>::type
+  mapping_end(const Container& container, dimension_type mapping_dim)
+  {
+    except::check_dimension(container.dimension(), mapping_dim);
+    return typename mapping_iterator<const Container>::type
+      (container, mapping_dim, container.dimension() - 1,
+       container.end().node); // At header (dim = rank - 1)
+  }
+
+  template <typename Container>
+  inline typename mapping_iterator<const Container>::type
+  mapping_cend(const Container& container, dimension_type mapping_dim)
+  { return mapping_end(container, mapping_dim); }
+  //@}
+
+  /**
    *  Finds the value in \c container for which its key has the smallest
    *  coordinate over the dimension \c mapping_dim.
    *
@@ -668,73 +692,6 @@ namespace spatial
   inline typename mapping_iterator<const Container>::type
   mapping_cbegin(const Container& container, dimension_type mapping_dim)
   { return mapping_begin(container, mapping_dim); }
-  //@}
-
-  /**
-   *  Finds the past-the-end position in \c container for this constant
-   *  iterator.
-   *
-   *  \attention This iterator impose constness constraints on its \c value_type
-   *  if the container's is a set and not a map. Iterators on sets prevent
-   *  modification of the \c value_type because modifying the key may result in
-   *  invalidation of the tree. If the container is a map, only the \c
-   *  mapped_type can be modified (the \c second element).
-   *
-   *  \tparam Container The type of container to iterate.
-   *  \param mapping_dim The dimension that is the reference for the iteration:
-   *  all iterated values will be ordered along this dimension, from smallest to
-   *  largest.
-   *  \param container The container to iterate.
-   *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
-   *  \return An iterator pointing to the past-the-end position in the
-   *  container.
-   *
-   *  \consttime
-   *  \see mapping
-   */
-  template <typename Container>
-  inline typename mapping_iterator<Container>::type
-  mapping_end(Container& container, dimension_type mapping_dim)
-  {
-    except::check_dimension(container.dimension(), mapping_dim);
-    return typename mapping_iterator<Container>::type
-      (container, mapping_dim, container.dimension() - 1,
-       container.end().node); // At header (dim = rank - 1)
-  }
-
-  //@{
-  /**
-   *  Finds the past-the-end position in \c container for this constant
-   *  iterator.
-   *
-   *  \tparam Container The type of container to iterate.
-   *  \param mapping_dim The dimension that is the reference for the iteration:
-   *  all iterated values will be ordered along this dimension, from smallest to
-   *  largest.
-   *  \param container The container to iterate.
-   *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
-   *  \return An iterator pointing to the past-the-end position in the
-   *  container.
-   *
-   *  \consttime
-   *  \see mapping
-   */
-  template <typename Container>
-  inline typename mapping_iterator<const Container>::type
-  mapping_end(const Container& container, dimension_type mapping_dim)
-  {
-    except::check_dimension(container.dimension(), mapping_dim);
-    return typename mapping_iterator<const Container>::type
-      (container, mapping_dim, container.dimension() - 1,
-       container.end().node); // At header (dim = rank - 1)
-  }
-
-  template <typename Container>
-  inline typename mapping_iterator<Container>::type
-  mapping_cend(const Container& container, dimension_type mapping_dim)
-  { return mapping_end(container, mapping_dim); }
   //@}
 
   /**
@@ -818,16 +775,16 @@ namespace spatial
   inline typename mapping_iterator_pair<const Container>::type
   mapping_range(const Container& container, dimension_type dim)
   {
-    return ::std::make_pair(mapping_begin(container, dim),
-                            mapping_end(container, dim));
+    return std::make_pair(mapping_begin(container, dim),
+                          mapping_end(container, dim));
   }
 
   template <typename Container>
   inline typename mapping_iterator_pair<const Container>::type
   mapping_crange(const Container& container, dimension_type dim)
   {
-    return ::std::make_pair(mapping_begin(container, dim),
-                            mapping_end(container, dim));
+    return std::make_pair(mapping_begin(container, dim),
+                          mapping_end(container, dim));
   }
   //@}
 
@@ -866,7 +823,7 @@ namespace spatial
     except::check_dimension(container.dimension(), mapping_dim);
     typename mapping_iterator<Container>::type it
       (container, mapping_dim, 0, container.end().node->parent);
-    return ::spatial::details::lower_bound_mapping(it, bound);
+    return details::lower_bound_mapping(it, bound);
   }
 
   //@{
@@ -899,7 +856,7 @@ namespace spatial
     except::check_dimension(container.dimension(), mapping_dim);
     typename mapping_iterator<const Container>::type it
       (container, mapping_dim, 0, container.end().node->parent);
-    return ::spatial::details::lower_bound_mapping(it, bound);
+    return details::lower_bound_mapping(it, bound);
   }
 
   template <typename Container>
@@ -945,7 +902,7 @@ namespace spatial
     except::check_dimension(container.dimension(), mapping_dim);
     typename mapping_iterator<Container>::type it
       (container, mapping_dim, 0, container.end().node->parent); // At root (dim = 0)
-    return ::spatial::details::upper_bound_mapping(it, bound);
+    return details::upper_bound_mapping(it, bound);
   }
 
   //@{
@@ -978,17 +935,15 @@ namespace spatial
     except::check_dimension(container.dimension(), mapping_dim);
     typename mapping_iterator<const Container>::type it
       (container, mapping_dim, 0, container.end().node->parent); // At root (dim = 0)
-    return ::spatial::details::upper_bound_mapping(it, bound);
+    return details::upper_bound_mapping(it, bound);
   }
 
   template <typename Container>
-  inline typename mapping_iterator<Container>::type
+  inline typename mapping_iterator<const Container>::type
   mapping_cupper_bound
   (const Container& container, dimension_type mapping_dim,
    const typename container_traits<Container>::key_type& bound)
-  {
-    return mapping_upper_bound(container, mapping_dim, bound);
-  }
+  { return mapping_upper_bound(container, mapping_dim, bound); }
   //@}
 
 } // namespace spatial
