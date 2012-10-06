@@ -250,8 +250,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         BOOST_CHECK_EQUAL(count, 100);
       }
   }
-  { // test at the limit: a tree with 1 element
-    Tp fix(1, same());
+  { // test at the limit: a tree with 2 elements
+    Tp fix(2, same());
     for (dimension_type mapping_dim = 0; mapping_dim < 6;
          ++mapping_dim)
       {
@@ -260,6 +260,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
           post = mapping_begin(fix.container, mapping_dim),
           end = mapping_end(fix.container, mapping_dim);
         BOOST_CHECK(pre != end);
+		BOOST_CHECK(++pre != post++);
+		BOOST_CHECK(pre == post);
         BOOST_CHECK(post++ != end);
         BOOST_CHECK(++pre == end);
         BOOST_CHECK(post == end);
@@ -305,149 +307,108 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
 }
 
-/*
+
 BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_mapping_decrement, Tp, double6_maps )
 {
   { // test the invarient of the increment
-    Tp fix(100, random());
+    Tp fix(100, randomize(-1, 1));
     for (dimension_type mapping_dim = 0; mapping_dim < 6;
          ++mapping_dim)
       {
-        typename mapping_iterator<typename Tp::container_type>::type
-          iter = mapping_begin(fix.container, mapping_dim),
-          end = mapping_end(fix.container, mapping_dim);
+        std::reverse_iterator
+	      <typename mapping_iterator<typename Tp::container_type>::type>
+          iter(mapping_end(fix.container, mapping_dim)),
+          end(mapping_begin(fix.container, mapping_dim));
         int count = 0;
-        double tmp = (*iter)[mapping_dim];
+        double tmp = iter->first[mapping_dim];
         for (; iter != end; ++iter)
           {
-            BOOST_CHECK_LE(tmp, (*iter)[mapping_dim]);
-            tmp = (*iter)[mapping_dim];
-            BOOST_REQUIRE_LE(++count, 100);
+            BOOST_CHECK_GE(tmp, iter->first[mapping_dim]);
+            tmp = (iter->first[mapping_dim];
+            if (++count > 100) break;
           }
         BOOST_CHECK_EQUAL(count, 100);
       }
   }
-  {
-    dimension_type mapping_dim = 0;
-    Hundred_kdtree_2D_fixture fix;
-    typedef details::Mapping_iterator
-      <details::Dynamic_rank, int2, int2,
-       Kdtree_node<int2>, bracket_less<int2> > iter_type;
-    iter_type iter;
-    BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<int2>*>
-                            (fix.kdtree.end().node->parent)));
-    iter_type end;
-    BOOST_REQUIRE_NO_THROW(end = iter_type
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, details::decr_dim
-                            (fix.kdtree.rank(), 0),
-                            static_cast<Kdtree_node<int2>*>
-                            (fix.kdtree.end().node)));
-    typedef std::reverse_iterator<iter_type> reverse_iter_type;
-    reverse_iter_type rend(iter);
-    reverse_iter_type riter(end);
-    int count = 0;
-    int tmp = (*riter)[mapping_dim];
-    for (; riter != rend; ++riter)
-    {
-      BOOST_CHECK_GE(tmp, (*riter)[mapping_dim]);
-      tmp = (*riter)[mapping_dim];
-      BOOST_REQUIRE_LE(++count, 100);
-    }
-    BOOST_CHECK_EQUAL(count, 100);
+  { // test at the limit: a tree where all elements are the same
+    Tp fix(100, same());
+    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+         ++mapping_dim)
+      {
+        std::reverse_iterator
+		  <typename mapping_iterator<typename Tp::container_type>::type>
+          iter(mapping_end(fix.container, mapping_dim)),
+          end(mapping_begin(fix.container, mapping_dim));
+        int count = 0;
+        for (; iter != end; ++iter)
+          {
+            BOOST_CHECK_EQUAL(100, iter->first[mapping_dim]);
+            if (++count > 100) break;
+          }
+        BOOST_CHECK_EQUAL(count, 100);
+      }
   }
-  {
-    dimension_type mapping_dim = 1;
-    Hundred_kdtree_2D_fixture fix;
-    typedef details::Mapping_iterator
-      <details::Dynamic_rank, int2, int2,
-       Kdtree_node<int2>, bracket_less<int2> > iter_type;
-    iter_type iter;
-    BOOST_REQUIRE_NO_THROW(iter = iter_type::minimum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<int2>*>
-                            (fix.kdtree.end().node->parent)));
-    iter_type end;
-    BOOST_REQUIRE_NO_THROW(end = iter_type
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, details::decr_dim
-                            (fix.kdtree.rank(), 0),
-                            static_cast<Kdtree_node<int2>*>
-                            (fix.kdtree.end().node)));
-    typedef std::reverse_iterator<iter_type> reverse_iter_type;
-    reverse_iter_type rend(iter);
-    reverse_iter_type riter(end);
-    int count = 0;
-    int tmp = (*riter)[mapping_dim];
-    for (; riter != rend; ++riter)
-    {
-      BOOST_CHECK_GE(tmp, (*riter)[mapping_dim]);
-      tmp = (*riter)[mapping_dim];
-      BOOST_REQUIRE_LE(++count, 100);
-    }
-    BOOST_CHECK_EQUAL(count, 100);
+  { // test at the limit: a tree with 2 elements
+    Tp fix(2, same());
+    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+         ++mapping_dim)
+      {
+        typename mapping_iterator<typename Tp::container_type>::type
+          pre = mapping_end(fix.container, mapping_dim),
+          post = mapping_end(fix.container, mapping_dim),
+          end = mapping_begin(fix.container, mapping_dim);
+        BOOST_CHECK(pre != end);
+		BOOST_CHECK(--pre != post--);
+		BOOST_CHECK(pre == post);
+        BOOST_CHECK(post-- != end);
+        BOOST_CHECK(--pre == end);
+        BOOST_CHECK(post == end);
+      }
   }
-  { // test at the limit: an unbalanced tree
-    dimension_type mapping_dim = 0;
-    Unbalanced_left_kdtree_fixture fix;
-    typedef details::Const_Mapping_iterator
-      <details::Dynamic_rank, pair_type, pair_type,
-       Kdtree_node<pair_type>, pair_less> iterator;
-    iterator iter;
-    BOOST_REQUIRE_NO_THROW(iter = iterator::maximum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-                            (fix.kdtree.end().node->parent)));
-    BOOST_CHECK_EQUAL(iter->first, 7);
-    BOOST_CHECK_EQUAL(iter->second, 8);
-    --iter;
-    BOOST_CHECK_EQUAL(iter->first, 5);
-    BOOST_CHECK_EQUAL(iter->second, 6);
-    --iter;
-    BOOST_CHECK_EQUAL(iter->first, 3);
-    BOOST_CHECK_EQUAL(iter->second, 4);
-    --iter;
-    BOOST_CHECK_EQUAL(iter->first, 1);
-    BOOST_CHECK_EQUAL(iter->second, 2);
-    --iter;
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+  { // test at the limit: a right-unbalanced tree (pre-increment)
+    Tp fix(100, increase());
+    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+         ++mapping_dim)
+      {
+        std::reverse_iterator
+		  <typename mapping_iterator<typename Tp::container_type>::type>
+          iter(mapping_end(fix.container, mapping_dim)),
+          end(mapping_begin(fix.container, mapping_dim));
+        int count = 0;
+        double tmp = iter->first[mapping_dim];
+        for (; iter != end; ++iter)
+          {
+            BOOST_CHECK_GE(tmp, iter->[mapping_dim]);
+            tmp = iter->[mapping_dim];
+            if (++count > 100) break;
+          }
+        BOOST_CHECK_EQUAL(count, 100);
+      }
   }
-  { // test at the limit: an unbalanced tree
-    dimension_type mapping_dim = 1;
-    Unbalanced_right_kdtree_fixture fix;
-    typedef details::Const_Mapping_iterator
-      <details::Dynamic_rank, pair_type, pair_type,
-       Kdtree_node<pair_type>, pair_less> iterator;
-    iterator iter;
-    BOOST_REQUIRE_NO_THROW(iter = iterator::maximum
-                           (fix.kdtree.rank(),
-                            fix.kdtree.key_comp(),
-                            mapping_dim, 0, static_cast<Kdtree_node<pair_type>*>
-                            (fix.kdtree.end().node->parent)));
-    BOOST_CHECK_EQUAL(iter->first, 7);
-    BOOST_CHECK_EQUAL(iter->second, 8);
-    --iter;
-    BOOST_CHECK_EQUAL(iter->first, 5);
-    BOOST_CHECK_EQUAL(iter->second, 6);
-    --iter;
-    BOOST_CHECK_EQUAL(iter->first, 3);
-    BOOST_CHECK_EQUAL(iter->second, 4);
-    --iter;
-    BOOST_CHECK_EQUAL(iter->first, 1);
-    BOOST_CHECK_EQUAL(iter->second, 2);
-    --iter;
-    BOOST_CHECK(iter.impl_.node_ == fix.kdtree.end().node);
+  { // test at the limit: a left-unbalanced tree (post-increment)
+    Tp fix(100, decrease());
+    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+         ++mapping_dim)
+      {
+		std::reverse_iterator
+          <typename mapping_iterator<typename Tp::container_type>::type>
+          iter(mapping_end(fix.container, mapping_dim)),
+          end(mapping_begin(fix.container, mapping_dim));
+        int count = 0;
+        double tmp = iter->first[mapping_dim];
+        for (; iter != end; iter++)
+          {
+            BOOST_CHECK_GE(tmp, iter->first[mapping_dim]);
+            tmp = iter->first[mapping_dim];
+            if (++count > 100) break;
+          }
+        BOOST_CHECK_EQUAL(count, 100);
+      }
   }
 }
 
+/*
 BOOST_AUTO_TEST_CASE( test_Mapping_iterator_lower_bound )
 {
   // return the smallest element in set that is greater or equal to key
