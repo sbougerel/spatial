@@ -320,7 +320,7 @@ namespace spatial
             }
           candidate.node = node->right;
           candidate.node_dim = incr_dim(rank(), node_dim);
-          mapping_dimension(candidate) = node_dim;
+          candidate.data.mapping_dim() = node_dim;
           candidate = minimum_mapping(candidate);
           if (get_rightmost() == candidate.node)
             { set_rightmost(node); }

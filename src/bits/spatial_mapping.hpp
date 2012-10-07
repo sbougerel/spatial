@@ -41,9 +41,10 @@ namespace spatial
      *  \tparam Ct The container to which these iterator relate to.
      */
     template <typename Ct>
-    struct Mapping_data
-      : ::spatial::container_traits<Ct>::rank_type
+    struct Mapping_data : container_traits<Ct>::rank_type
     {
+	  typedef typename container_traits<Ct>::rank_type rank_type;
+
       //! Build an uninitialized mapping data object.
       Mapping_data() { }
 
@@ -56,10 +57,10 @@ namespace spatial
        */
       Mapping_data
       (const Ct& c, dimension_type m)
-        : ::spatial::container_traits<Ct>::rank_type(c.rank()),
-          mapping_dim(typename ::spatial::container_traits<Ct>
-                      ::key_compare(c.key_comp()), m)
-      { }
+        : rank_type(c.rank()),
+		  mapping_dim(typename container_traits<Ct>
+		              ::key_compare(c.key_comp()), m)
+	  { }
 
       /**
        *  The current dimension of iteration.
@@ -74,7 +75,7 @@ namespace spatial
        *  \Warning If you modify this value directly, no safety check will be
        *  performed.
        */
-      Compress<typename ::spatial::container_traits<Ct>::key_compare,
+      Compress<typename container_traits<Ct>::key_compare,
                dimension_type> mapping_dim;
     };
 
@@ -128,7 +129,8 @@ namespace spatial
       Iterator_mapping(Ct& container, dimension_type mapping_dim,
                        const typename container_traits<Ct>::iterator& iter)
         : Base(iter.node, modulo(iter.node, container.rank())),
-          data(container, mapping_dim) { }
+          data(container, mapping_dim)
+	  { except::check_dimension(container.dimension(), mapping_dim); }
 
       /**
        *  When the information of the dimension for the current node being
@@ -155,7 +157,8 @@ namespace spatial
       Iterator_mapping(Ct& container, dimension_type mapping_dim,
                        dimension_type dim,
                        typename container_traits<Ct>::mode_type::node_ptr ptr)
-        : Base(ptr, dim), data(container, mapping_dim) { }
+        : Base(ptr, dim), data(container, mapping_dim)
+	  { except::check_dimension(container.dimension(), mapping_dim); }
 
       //! Increments the iterator and returns the incremented value. Prefer to
       //! use this form in \c for loops.
@@ -233,10 +236,11 @@ namespace spatial
        *  \param iter Use the value of \iter as the start point for the
        *  iteration.
        */
-      Iterator_mapping(const Ct& container, dimension_type dim,
+      Iterator_mapping(const Ct& container, dimension_type mapping_dim,
                        const typename container_traits<Ct>::const_iterator& iter)
         : Base(iter.node, modulo(iter.node, container.rank())),
-          data(dim, container) { }
+          data(container, mapping_dim)
+	  { except::check_dimension(container.dimension(), mapping_dim); }
 
       /**
        *  When the information of the dimension for the current node being
@@ -264,7 +268,8 @@ namespace spatial
                        dimension_type mapping_dim, dimension_type other_node_dim,
                        typename container_traits<Ct>::mode_type::const_node_ptr
                        other_node)
-        : Base(other_node, other_node_dim), data(container, mapping_dim) { }
+        : Base(other_node, other_node_dim), data(container, mapping_dim)
+	  { except::check_dimension(container.dimension(), mapping_dim); }
 
       //! Convertion of mutable iterator into a constant iterator is permitted.
       Iterator_mapping(const Iterator_mapping<Ct>& iter)
@@ -547,20 +552,29 @@ namespace spatial
   };
 
   /**
-   *  Return the mapping dimension of the iterator, and allow to modify it.
+   *  Return the mapping dimension of the iterator.
    *  \param it the iterator where the mapping dimension is retreived.
    */
-  //@{
-  template <typename Container>
-  inline dimension_type&
-  mapping_dimension(details::Iterator_mapping<Container>& it)
-  { return it.data.mapping_dim(); }
-
   template <typename Container>
   inline dimension_type
   mapping_dimension(const details::Iterator_mapping<Container>& it)
   { return it.data.mapping_dim(); }
-  //@}
+
+
+  /**
+   *  Sets the mapping dimension of the iterator.
+   *  \param it The iterator where the mapping dimension is set.
+   *  \param mapping_dim The new mapping dimension to use.
+   */
+  template <typename Container>
+  inline void
+  mapping_dimension(details::Iterator_mapping<Container>& it,
+                    dimension_type mapping_dim)
+  {
+	except::check_dimension
+	  (static_cast<typename Container::rank_type&>(it.data)(), mapping_dim);
+	it.data.mapping_dim() = mapping_dim;
+  }
 
   /**
    *  Finds the past-the-end position in \c container for this constant

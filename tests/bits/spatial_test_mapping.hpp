@@ -597,11 +597,32 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE
-( test_mapping_dimension, Tp, double6_maps )
+BOOST_AUTO_TEST_CASE( test_mapping_dimension )
 {
-  // Test exceptions too!
-  BOOST_CHECK(false);
+  { // with mutable iterator
+	pointset_fix<double6> fix;
+	mapping_iterator<typename pointset_fix<double6>::container_type>::type iter;
+	iter = mapping_begin(fix.container, 5u);
+	BOOST_CHECK_EQUAL(mapping_dimension(iter), 5u);
+	mapping_dimension(iter, 3u);
+	BOOST_CHECK_EQUAL(mapping_dimension(iter), 3u);
+	mapping_iterator<const typename pointset_fix<double6>
+		             ::container_type>::type citer;
+	citer = mapping_cbegin(fix.container, 5u);
+	BOOST_CHECK_EQUAL(mapping_dimension(citer), 5u);
+	mapping_dimension(citer, 3u);
+	BOOST_CHECK_EQUAL(mapping_dimension(citer), 3u);
+  }
+  { // Check exception when setting too high
+  }
+  { // Check exception when getting begin
+  }
+  { // Check exception when getting end
+  }
+  { // Check exception when getting lower_bound
+  }
+  { // Check exception when getting upper_bound
+  }
 }
 
 
