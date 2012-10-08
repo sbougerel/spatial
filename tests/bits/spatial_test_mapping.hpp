@@ -613,17 +613,44 @@ BOOST_AUTO_TEST_CASE( test_mapping_dimension )
 	mapping_dimension(citer, 3u);
 	BOOST_CHECK_EQUAL(mapping_dimension(citer), 3u);
   }
-  { // Check exception when setting too high
-  }
-  { // Check exception when getting begin
-  }
-  { // Check exception when getting end
-  }
-  { // Check exception when getting lower_bound
-  }
-  { // Check exception when getting upper_bound
+  { // Check invalid dimension exception
+	pointset_fix<double6> fix;
+	mapping_iterator<typename pointset_fix<double6>::container_type>
+	  iter(mapping_begin(fix.container, 5u));
+	BOOST_CHECK_THROW(mapping_dimension(iter, 6u), invalid_dimension);
+	BOOST_CHECK_THROW(mapping_begin(fix.container, 6u),
+		              invalid_dimension);
+	BOOST_CHECK_THROW(mapping_end(fix.container, 6u),
+			          invalid_dimension);
+	BOOST_CHECK_THROW(mapping_lower_bound(fix.container, 6u, double6()),
+		              invalid_dimension);
+	BOOST_CHECK_THROW(mapping_upper_bound(fix.container, 6u, double6()),
+		              invalid_dimension);
   }
 }
 
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_mapping_range, Tp, every_quad )
+{
+  Tp fix(20, randomize(-100, 100));
+  { // non-const
+	mapping_iterator_pair<Tp> pair(mapping_range(fix.container, 2u));
+	BOOST_CHECK(pair.first ==  mapping_begin(fix.container, 2u));
+	BOOST_CHECK(pair.second == mapping_end(fix.container, 2u));
+	mapping_iterator_pair<Tp> pair2;
+	pair2 = mapping_range(fix.container, 3u);
+	BOOST_CHECK(pair2.first ==  mapping_begin(fix.container, 3u));
+	BOOST_CHECK(pair2.second == mapping_end(fix.container, 3u));
+  }
+  { // const
+	mapping_iterator_pair<const Tp> pair(mapping_range(fix.container, 2u));
+	BOOST_CHECK(pair.first ==  mapping_begin(fix.container, 2u));
+	BOOST_CHECK(pair.second == mapping_end(fix.container, 2u));
+	mapping_iterator_pair<const Tp> pair2;
+	pair2 = mapping_crange(fix.container, 3u);
+	BOOST_CHECK(pair2.first ==  mapping_cbegin(fix.container, 3u));
+	BOOST_CHECK(pair2.second == mapping_cend(fix.container, 3u));
+  }
+}
 
 #endif // SPATIAL_TEST_MAPPING_HPP
