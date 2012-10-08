@@ -832,10 +832,6 @@ namespace spatial
       Bidirectional_iterator(node_ptr x, dimension_type n)
         : node(x), node_dim(n) { }
 
-      //! Copy constructor
-      Bidirectional_iterator(const Bidirectional_iterator& x)
-	    : node(x.node), node_dim(x.node_dim) { }
-
       //! Returns the reference to the value pointed to by the iterator.
       reference operator*()
       { return value(node); }
@@ -931,10 +927,6 @@ namespace spatial
       //! Initialize the node at construction time
       Const_bidirectional_iterator(node_ptr x, dimension_type n)
         : node(x), node_dim(n) { }
-
-	  //! Copy constructor
-	  Const_bidirectional_iterator(const Const_bidirectional_iterator& x)
-		: node(x.node), node_dim(x.node_dim) { }
 
       //! Returns the reference to the value pointed to by the iterator.
       reference operator*()

@@ -112,9 +112,6 @@ namespace spatial
       //! Uninitialized iterator.
       Iterator_mapping() { }
 
-	  //! Copy constructor.
-	  Iterator_mapping(const Iterator_mapping& x) : Base(x), data(x.data) { }
-
       /**
        *  The standard way to build this iterator: specify a mapping dimension,
        *  an iterator on a container, and that container.
@@ -220,10 +217,6 @@ namespace spatial
     public:
       //! Build an uninitialized iterator.
       Iterator_mapping() { }
-
-	  //! Copy constructor.
-	  Iterator_mapping(const Iterator_mapping<const Ct>& x)
-		: Base(x), data(x.data) { }
 
       /**
        *  The standard way to build this iterator: specify a mapping dimension,
