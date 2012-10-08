@@ -27,11 +27,11 @@ namespace spatial
     //! invariant.
     //! \see increment<Container>(typename mapping<Container>::iterator&)
     template <typename Container>
-    inline Iterator_mapping<Container>&
-    increment_mapping(Iterator_mapping<Container>& iter,
+    inline mapping_iterator<Container>&
+    increment_mapping(mapping_iterator<Container>& iter,
                       details::relaxed_invariant_tag)
     {
-      typedef typename Iterator_mapping<Container>::node_ptr node_ptr;
+      typedef typename mapping_iterator<Container>::node_ptr node_ptr;
       const typename container_traits<Container>::rank_type& rank
         = *static_cast<const typename container_traits<Container>::rank_type*>
         (&iter.data);
@@ -166,11 +166,11 @@ namespace spatial
     //! invariant.
     //! \see increment<Container>(typename mapping<Container>::iterator&)
     template <typename Container>
-    inline Iterator_mapping<Container>&
-    increment_mapping(Iterator_mapping<Container>& iter,
+    inline mapping_iterator<Container>&
+    increment_mapping(mapping_iterator<Container>& iter,
                       details::strict_invariant_tag)
     {
-      typedef typename Iterator_mapping<Container>::node_ptr node_ptr;
+      typedef typename mapping_iterator<Container>::node_ptr node_ptr;
       const typename container_traits<Container>::rank_type& rank
         = *static_cast<const typename container_traits<Container>::rank_type*>
         (&iter.data);
@@ -305,11 +305,11 @@ namespace spatial
     //! invariant.
     //! \see maximum<Container>(typename mapping<Container>::iterator&)
     template<typename Container>
-    inline Iterator_mapping<Container>&
-    maximum_mapping(Iterator_mapping<Container>& iter,
+    inline mapping_iterator<Container>&
+    maximum_mapping(mapping_iterator<Container>& iter,
                     details::relaxed_invariant_tag)
     {
-      typedef typename Iterator_mapping<Container>::node_ptr node_ptr;
+      typedef typename mapping_iterator<Container>::node_ptr node_ptr;
       const typename container_traits<Container>::rank_type& rank
         = *static_cast<const typename container_traits<Container>::rank_type*>
         (&iter.data);
@@ -374,13 +374,13 @@ namespace spatial
 
     //! Specialization for iterators pointed to node using the strict
     //! invariant.
-    //! \see maximum<Container>(typename iterator_mapping<Container>&)
+    //! \see maximum<Container>(typename mapping_iterator<Container>&)
     template<typename Container>
-    inline Iterator_mapping<Container>&
-    maximum_mapping(Iterator_mapping<Container>& iter,
+    inline mapping_iterator<Container>&
+    maximum_mapping(mapping_iterator<Container>& iter,
                     details::strict_invariant_tag)
     {
-      typedef typename Iterator_mapping<Container>::node_ptr node_ptr;
+      typedef typename mapping_iterator<Container>::node_ptr node_ptr;
       const typename container_traits<Container>::rank_type& rank
         = *static_cast<const typename container_traits<Container>::rank_type*>
         (&iter.data);
@@ -444,13 +444,13 @@ namespace spatial
     //! Specialization for iterators pointed to node using the relaxed
     //! invariant.
     template<typename Container>
-    inline Iterator_mapping<Container>&
+    inline mapping_iterator<Container>&
     lower_bound_mapping
-    (Iterator_mapping<Container>& iter,
+    (mapping_iterator<Container>& iter,
      const typename container_traits<Container>::key_type& bound,
      details::relaxed_invariant_tag)
     {
-      typedef typename Iterator_mapping<Container>::node_ptr node_ptr;
+      typedef typename mapping_iterator<Container>::node_ptr node_ptr;
       const typename container_traits<Container>::rank_type& rank
         = *static_cast<const typename container_traits<Container>::rank_type*>
         (&iter.data);
@@ -526,13 +526,13 @@ namespace spatial
     //! Specialization for iterators pointed to node using the strict
     //! invariant.
     template<typename Container>
-    inline Iterator_mapping<Container>&
+    inline mapping_iterator<Container>&
     lower_bound_mapping
-    (Iterator_mapping<Container>& iter,
+    (mapping_iterator<Container>& iter,
      const typename container_traits<Container>::key_type& bound,
      details::strict_invariant_tag)
     {
-      typedef typename Iterator_mapping<Container>::node_ptr node_ptr;
+      typedef typename mapping_iterator<Container>::node_ptr node_ptr;
       const typename container_traits<Container>::rank_type& rank
         = *static_cast<const typename container_traits<Container>::rank_type*>
         (&iter.data);
@@ -606,8 +606,8 @@ namespace spatial
     }
 
     template <typename Container>
-    inline Iterator_mapping<Container>&
-    increment_mapping(Iterator_mapping<Container>& iter)
+    inline mapping_iterator<Container>&
+    increment_mapping(mapping_iterator<Container>& iter)
     {
       return ::spatial::details::increment_mapping
         (iter, typename container_traits<Container>::mode_type
@@ -617,10 +617,10 @@ namespace spatial
     // The next largest key on the mapping dimension is likely to be found in the
     // children of the current best, so, descend into the children of node first.
     template <typename Container>
-    inline Iterator_mapping<Container>&
-    decrement_mapping(Iterator_mapping<Container>& iter)
+    inline mapping_iterator<Container>&
+    decrement_mapping(mapping_iterator<Container>& iter)
     {
-      typedef typename Iterator_mapping<Container>::node_ptr node_ptr;
+      typedef typename mapping_iterator<Container>::node_ptr node_ptr;
       const typename container_traits<Container>::rank_type& rank
         = *static_cast<const typename container_traits<Container>::rank_type*>
         (&iter.data);
@@ -760,10 +760,10 @@ namespace spatial
     // Find the minimum from node and stop when reaching the parent. Iterate in
     // left-first fashion.
     template <typename Container>
-    inline Iterator_mapping<Container>&
-    minimum_mapping(Iterator_mapping<Container>& iter)
+    inline mapping_iterator<Container>&
+    minimum_mapping(mapping_iterator<Container>& iter)
     {
-      typedef typename Iterator_mapping<Container>::node_ptr node_ptr;
+      typedef typename mapping_iterator<Container>::node_ptr node_ptr;
       const typename container_traits<Container>::rank_type& rank
         = *static_cast<const typename container_traits<Container>::rank_type*>
         (&iter.data);
@@ -827,8 +827,8 @@ namespace spatial
     }
 
     template <typename Container>
-    inline Iterator_mapping<Container>&
-    maximum_mapping(Iterator_mapping<Container>& iter)
+    inline mapping_iterator<Container>&
+    maximum_mapping(mapping_iterator<Container>& iter)
     {
       return ::spatial::details::maximum_mapping
         (iter, typename container_traits<Container>::mode_type
@@ -836,8 +836,8 @@ namespace spatial
     }
 
     template <typename Container>
-    inline Iterator_mapping<Container>&
-    lower_bound_mapping(Iterator_mapping<Container>& iter,
+    inline mapping_iterator<Container>&
+    lower_bound_mapping(mapping_iterator<Container>& iter,
                         const typename container_traits<Container>::key_type&
                         bound)
     {
@@ -850,12 +850,12 @@ namespace spatial
     // Walk tree nodes in right-first fashion, bouncing off values that are higher
     // than key.
     template <typename Container>
-    inline Iterator_mapping<Container>&
-    upper_bound_mapping(Iterator_mapping<Container>& iter,
+    inline mapping_iterator<Container>&
+    upper_bound_mapping(mapping_iterator<Container>& iter,
                         const typename container_traits<Container>::key_type&
                         bound)
     {
-      typedef typename Iterator_mapping<Container>::node_ptr node_ptr;
+      typedef typename mapping_iterator<Container>::node_ptr node_ptr;
       const typename container_traits<Container>::rank_type& rank
         = *static_cast<const typename container_traits<Container>::rank_type*>
         (&iter.data);

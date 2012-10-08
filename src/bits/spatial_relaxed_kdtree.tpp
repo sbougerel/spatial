@@ -257,7 +257,7 @@ namespace spatial
     ::erase_node
     (dimension_type node_dim, node_ptr node)
     {
-      typedef Iterator_mapping<Self> mapping_iterator;
+      typedef mapping_iterator<Self> mapping_iterator;
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!header(node));
       node_ptr parent = node->parent;
