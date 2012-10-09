@@ -657,9 +657,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 	BOOST_CHECK(pair2.first ==  mapping_cbegin(fix.container, 3u));
 	BOOST_CHECK(pair2.second == mapping_cend(fix.container, 3u));
   }
-  { // test with std::tie()
-    BOOST_CHECK(false);
-  }
 }
 
 #endif // SPATIAL_TEST_MAPPING_HPP
