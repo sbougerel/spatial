@@ -501,12 +501,10 @@ namespace spatial
   } // namespace details
 
   /**
-   *  This structure defines the mapping mutable iterator type as well as a pair
-   *  of each iterator.
+   *  This structure defines a pair of mutable mapping iterator.
    *
    *  \tparam Ct The container to which these iterator relate to.
-   *  \see mapping<>::iterator
-   *  \see mapping<>::const_iterator
+   *  \see mapping_iterator
    */
   template <typename Ct>
   struct mapping_iterator_pair
@@ -525,6 +523,38 @@ namespace spatial
 	//! mapping_iterators.
 	mapping_iterator_pair(const mapping_iterator<Ct>& a, 
 		                  const mapping_iterator<Ct>& b) : Base(a, b) { }
+  };
+
+  /**
+   *  This structure defines a pair of constant mapping iterator.
+   *
+   *  \tparam Ct The container to which these iterator relate to.
+   *  \see mapping_iterator
+   */
+  template <typename Ct>
+  struct mapping_iterator_pair<const Ct>
+	: std::pair<mapping_iterator<const Ct>, mapping_iterator<const Ct> >
+  {
+    /**
+     *  A pair of iterators that represents a range (that is: a range of
+     *  elements to iterate, and not an orthogonal range).
+     */
+    typedef std::pair<mapping_iterator<const Ct>, mapping_iterator<const Ct> >
+	  Base;
+
+	//! Empty constructor.
+	mapping_iterator_pair() { }
+
+	//! Regular constructor that builds a mapping_iterator_pair out of 2
+	//! mapping_iterators.
+	mapping_iterator_pair(const mapping_iterator<const Ct>& a, 
+		                  const mapping_iterator<const Ct>& b) : Base(a, b)
+	{ }
+
+	//! Convert a mutable mapping iterator pair into a const mapping iterator
+	//!pair.
+	mapping_iterator_pair(const mapping_iterator_pair<Ct>& p)
+	  : Base(p.first, p.second) { }
   };
 
   /**
@@ -765,7 +795,7 @@ namespace spatial
   inline mapping_iterator_pair<const Container>
   mapping_range(const Container& container, dimension_type mapping_dim)
   {
-    return mapping_iterator_pair<Container>
+    return mapping_iterator_pair<const Container>
 	  (mapping_begin(container, mapping_dim),
        mapping_end(container, mapping_dim));
   }
@@ -774,7 +804,7 @@ namespace spatial
   inline mapping_iterator_pair<const Container>
   mapping_crange(const Container& container, dimension_type mapping_dim)
   {
-    return mappind_iterator_pair<Container>
+    return mapping_iterator_pair<const Container>
 	  (mapping_begin(container, mapping_dim),
        mapping_end(container, mapping_dim));
   }

@@ -634,22 +634,31 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 {
   Tp fix(20, randomize(-100, 100));
   { // non-const
-	mapping_iterator_pair<Tp> pair(mapping_range(fix.container, 2u));
+	mapping_iterator_pair<typename Tp::container_type>
+      pair(mapping_range(fix.container, 2u));
 	BOOST_CHECK(pair.first ==  mapping_begin(fix.container, 2u));
 	BOOST_CHECK(pair.second == mapping_end(fix.container, 2u));
-	mapping_iterator_pair<Tp> pair2;
+	mapping_iterator_pair<typename Tp::container_type> pair2;
 	pair2 = mapping_range(fix.container, 3u);
 	BOOST_CHECK(pair2.first ==  mapping_begin(fix.container, 3u));
 	BOOST_CHECK(pair2.second == mapping_end(fix.container, 3u));
   }
   { // const
-	mapping_iterator_pair<const Tp> pair(mapping_range(fix.container, 2u));
-	BOOST_CHECK(pair.first ==  mapping_begin(fix.container, 2u));
-	BOOST_CHECK(pair.second == mapping_end(fix.container, 2u));
-	mapping_iterator_pair<const Tp> pair2;
-	pair2 = mapping_crange(fix.container, 3u);
+	mapping_iterator_pair<const typename Tp::container_type>
+      pair0(mapping_range(fix.container, 1u)); // cast constructor
+	BOOST_CHECK(pair0.first ==  mapping_begin(fix.container, 1u));
+	BOOST_CHECK(pair0.second == mapping_end(fix.container, 1u));
+	mapping_iterator_pair<const typename Tp::container_type>
+      pair1(mapping_crange(fix.container, 2u)); // copy constructor
+	BOOST_CHECK(pair1.first ==  mapping_begin(fix.container, 2u));
+	BOOST_CHECK(pair1.second == mapping_end(fix.container, 2u));
+	mapping_iterator_pair<const typename Tp::container_type> pair2;
+	pair2 = mapping_crange(fix.container, 3u); // assignment operator
 	BOOST_CHECK(pair2.first ==  mapping_cbegin(fix.container, 3u));
 	BOOST_CHECK(pair2.second == mapping_cend(fix.container, 3u));
+  }
+  { // test with std::tie()
+    BOOST_CHECK(false);
   }
 }
 
