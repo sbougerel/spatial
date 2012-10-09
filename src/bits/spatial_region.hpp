@@ -623,7 +623,6 @@ namespace spatial
      */
     template<typename Ct, typename Predicate>
     struct Region_data
-      : ::spatial::container_traits<Ct>::rank_type
     {
       //! Build an uninitialized region data object.
       Region_data() { }
@@ -636,8 +635,7 @@ namespace spatial
        *  \param p The model of \ref RegionPredicate.
        */
       Region_data
-      (const Ct& c, const Predicate& p)
-        : container_traits<Ct>::rank_type(c.rank()), pred(p)
+      (const Ct&, const Predicate& p) : pred(p)
         { }
 
       /**
@@ -676,18 +674,18 @@ namespace spatial
      *  be a model of \ref RegionPredicate. See the \ref RegionPredicate concept
      *  for more information on writing a region predicates.
      */
-    struct iterator : ::spatial::details::Bidirectional_iterator
-    <typename Ct::mode_type, iterator>
+    struct iterator : details::Bidirectional_iterator
+    <typename Ct::mode_type, typename Ct::rank_type, iterator>
     {
     private:
-      typedef typename ::spatial::details::Bidirectional_iterator
-      <typename Ct::mode_type, iterator>
+      typedef typename details::Bidirectional_iterator
+      <typename Ct::mode_type, typename Ct::rank_type, iterator>
       Base;
 
       template<typename Iterator> struct Rebind
       {
         typedef typename ::spatial::details::Bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, Iterator> type;
+        <typename container_traits<Ct>::mode_type, typename Ct::rank_type, Iterator> type;
       };
 
     public:
@@ -810,16 +808,16 @@ namespace spatial
      *  for more information on writing a region predicates.
      */
     struct iterator : ::spatial::details::Const_bidirectional_iterator
-    <typename container_traits<Ct>::mode_type, iterator>
+    <typename container_traits<Ct>::mode_type, typename Ct::rank_type, iterator>
     {
     private:
       typedef ::spatial::details::Const_bidirectional_iterator
-      <typename container_traits<Ct>::mode_type, iterator> Base;
+      <typename container_traits<Ct>::mode_type, typename Ct::rank_type, iterator> Base;
 
       template<typename Iterator> struct Rebind
       {
         typedef typename ::spatial::details::Const_bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, Iterator> type;
+        <typename container_traits<Ct>::mode_type, typename Ct::rank_type, Iterator> type;
       };
 
     public:
@@ -842,7 +840,7 @@ namespace spatial
        */
       iterator(const Ct& container, const Predicate& predicate,
                typename container_traits<Ct>::const_iterator iter)
-        : Base(iter.node, modulo(iter.node, container.rank())),
+        : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
           data(predicate, container) { }
 
       /**
@@ -863,7 +861,7 @@ namespace spatial
       template<typename Iterator>
       iterator(const Ct& container, const Predicate& predicate,
                typename Rebind<Iterator>::type iter)
-        : Base(iter.node, iter.node_dim), data(predicate, container) { }
+        : Base(container.rank(), iter.node, iter.node_dim), data(predicate, container) { }
 
       /**
        *  Build a region iterator from the node and curretn dimension of a

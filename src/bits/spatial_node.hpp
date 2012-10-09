@@ -266,8 +266,8 @@ namespace spatial
       //! The category of invariant associated with this mode.
       typedef strict_invariant_tag                 invariant_category;
 
-	  //! Default constructor
-	  Kdtree_link() : value() { }
+          //! Default constructor
+          Kdtree_link() : value() { }
 
       /**
        *  The value of the node, required by the @ref Link concept.
@@ -309,8 +309,8 @@ namespace spatial
       //! The category of invariant with associated with this mode.
       typedef relaxed_invariant_tag               invariant_category;
 
-	  //! Default constructor
-	  Relaxed_kdtree_link() : weight(), value() { }
+          //! Default constructor
+          Relaxed_kdtree_link() : weight(), value() { }
 
       //! The weight is equal to 1 plus the amount of child nodes below the
       //! current node. It is always equal to 1 at least.
@@ -806,10 +806,11 @@ namespace spatial
      *
      *  \tparam Mode      The mode used to \ref LinkMode "link nodes to
      *                    their values".
+     *  \tparam Rank      The rank of the iterator.
      *  \tparam Iterator  The real type of iterator.
      */
-    template <typename Mode, typename Iterator>
-    struct Bidirectional_iterator
+    template <typename Mode, typename Rank, typename Iterator>
+    struct Bidirectional_iterator : private Rank
     {
       //! The \c value_type can receive a copy of the reference pointed to be
       //! the iterator.
@@ -824,13 +825,15 @@ namespace spatial
       typedef std::bidirectional_iterator_tag      iterator_category;
       //! The type for the node pointed to by the iterator.
       typedef typename Mode::node_ptr              node_ptr;
+      //! The type of rank used by the iterator.
+      typedef Rank                                 rank_type;
 
       //! Build an uninitialized iterator
       Bidirectional_iterator() { }
 
       //! Initialize the node at construction time
-      Bidirectional_iterator(node_ptr x, dimension_type n)
-        : node(x), node_dim(n) { }
+      Bidirectional_iterator(const Rank& r, node_ptr x, dimension_type n)
+        : Rank(r), node(x), node_dim(n) { }
 
       //! Returns the reference to the value pointed to by the iterator.
       reference operator*()
@@ -875,6 +878,17 @@ namespace spatial
       //@}
 
       /**
+       *  Return the current Rank type used by the iterator.
+       */
+      const rank_type& rank() const { return static_cast<const Rank&>(*this); }
+
+      /**
+       *  Return the number of dimensions stored by the Rank of the iterator.
+       */
+      dimension_type dimension() const
+      { return static_cast<const Rank&>(*this)(); }
+
+      /**
        *  The pointer to the current node.
        *
        *  Modifying this attribute can potentially invalidate the iterator. Do
@@ -902,10 +916,11 @@ namespace spatial
      *
      *  \tparam Mode      The mode used to \ref LinkMode "link nodes to
      *                    their values".
+     *  \tparam Rank      The rank of the iterator.
      *  \tparam Iterator  The real type of iterator.
      */
-    template <typename Mode, typename Iterator>
-    struct Const_bidirectional_iterator
+    template <typename Mode, typename Rank, typename Iterator>
+    struct Const_bidirectional_iterator : private Rank
     {
       //! The \c value_type can receive a copy of the reference pointed to be
       //! the iterator.
@@ -920,13 +935,15 @@ namespace spatial
       typedef std::bidirectional_iterator_tag      iterator_category;
       //! The type for the node pointed to by the iterator.
       typedef typename Mode::const_node_ptr        node_ptr;
+      //! The type of rank used by the iterator.
+      typedef Rank                                 rank_type;
 
       //! Build an uninitialized iterator
       Const_bidirectional_iterator() { }
 
       //! Initialize the node at construction time
-      Const_bidirectional_iterator(node_ptr x, dimension_type n)
-        : node(x), node_dim(n) { }
+      Const_bidirectional_iterator(const Rank& r, node_ptr x, dimension_type n)
+        : Rank(r), node(x), node_dim(n) { }
 
       //! Returns the reference to the value pointed to by the iterator.
       reference operator*()
@@ -964,6 +981,18 @@ namespace spatial
        */
       operator Const_node_iterator<Mode>() const
       { return Const_node_iterator<Mode>(node); }
+
+      /**
+       *  Return the current Rank type used by the iterator.
+       */
+      const rank_type& rank() const { return static_cast<const Rank&>(*this); }
+
+      /**
+       *  Return the current number of dimensions given by the Rank of the
+       *  iterator.
+       */
+      dimension_type dimension() const
+      { return static_cast<const Rank&>(*this)(); }
 
       /**
        *  The pointer to the current node.

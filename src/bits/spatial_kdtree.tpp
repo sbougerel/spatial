@@ -320,14 +320,14 @@ namespace spatial
             }
           candidate.node = node->right;
           candidate.node_dim = incr_dim(rank(), node_dim);
-          candidate.data.mapping_dim() = node_dim;
+          candidate.data.mapping_dim = node_dim;
           candidate = minimum_mapping(candidate);
           if (get_rightmost() == candidate.node)
             { set_rightmost(node); }
           if (get_leftmost() == node)
             { set_leftmost(candidate.node); }
           swap_node(candidate.node, node);
-		  node = candidate.node;
+                  node = candidate.node;
           node_dim = candidate.node_dim;
         }
       SPATIAL_ASSERT_CHECK(node != 0);

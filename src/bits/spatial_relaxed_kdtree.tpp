@@ -269,7 +269,7 @@ namespace spatial
                   || const_link(node->right)->weight
                   < const_link(node->left)->weight))
             {
-              candidate.data.mapping_dim() = node_dim;
+              candidate.data.mapping_dim = node_dim;
               candidate.node_dim = incr_dim(rank(), node_dim);
               candidate.node = node->left;
               candidate = maximum_mapping(candidate);
@@ -280,7 +280,7 @@ namespace spatial
             }
           else
             {
-              candidate.data.mapping_dim() = node_dim;
+              candidate.data.mapping_dim = node_dim;
               candidate.node_dim = incr_dim(rank(), node_dim);
               candidate.node = node->right;
               candidate = minimum_mapping(candidate);

@@ -42,7 +42,6 @@ namespace spatial
      */
     template<typename Ct, typename Geometry>
     struct Neighbor_data
-      : ::spatial::container_traits<Ct>::rank_type
     {
       //! Build an unintialized neighbor data object.
       Neighbor_data() { }
@@ -57,15 +56,14 @@ namespace spatial
        */
       Neighbor_data
       (const Ct& c, const Geometry& g,
-       const typename ::spatial::container_traits<Ct>::key_type& k)
-        : ::spatial::container_traits<Ct>::rank_type(c.rank()),
-        compare(c.key_comp()), distance(g), target(k)
+       const typename container_traits<Ct>::key_type& k)
+        : compare(c.key_comp()), distance(g), target(k)
       { }
 
       /**
        *  The comparison functor for keys, compacted with Geometry.
        */
-      typename ::spatial::container_traits<Ct>::key_compare compare;
+      typename container_traits<Ct>::key_compare compare;
 
       /**
        *  The last valid computed value of the distance. The value stored is
@@ -77,7 +75,7 @@ namespace spatial
        *  The target of the iteration; element of the container are iterate
        *  from the closest to the element furthest away from the target.
        */
-      typename ::spatial::container_traits<Ct>::key_type target;
+      typename container_traits<Ct>::key_type target;
     };
 
   } // namespace details
@@ -119,17 +117,23 @@ namespace spatial
      *  more geometries needs to be defined, see the explanation in \ref
      *  Geometry.
      */
-    struct iterator : ::spatial::details::Bidirectional_iterator
-      <typename container_traits<Ct>::mode_type, iterator>
+    struct iterator : details::Bidirectional_iterator
+                      <typename container_traits<Ct>::mode_type,
+                       typename container_traits<Ct>::rank_type,
+                       iterator>
     {
     private:
-      typedef typename ::spatial::details::Bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, iterator> Base;
+      typedef typename details::Bidirectional_iterator
+        <typename container_traits<Ct>::mode_type,
+         typename container_traits<Ct>::rank_type,
+         iterator> Base;
 
       template<typename Iterator> struct Rebind
       {
         typedef typename ::spatial::details::Bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, Iterator> type;
+        <typename container_traits<Ct>::mode_type,
+         typename container_traits<Ct>::rank_type,
+         Iterator> type;
       };
 
     public:
@@ -143,12 +147,12 @@ namespace spatial
        *  \param container The container to iterate.
        *  \param geometry The geometry applied during the iteration.
        *  \param target The target of the neighbor iteration.
-       *  \param iter An iterator on \c container.
+       *  \param it An iterator on container.
        */
       iterator(Ct& container, const Geometry& geometry,
                const typename container_traits<Ct>::key_type& target,
-               typename container_traits<Ct>::iterator iter)
-        : Base(iter.node, modulo(iter.node, container.rank())),
+               typename container_traits<Ct>::iterator it)
+        : Base(container.rank(), it.node, modulo(it.node, container.rank())),
           data(container, geometry, target) { }
 
       /**
@@ -158,13 +162,13 @@ namespace spatial
        *  \param container The container to iterate.
        *  \param geometry The geometry applied during the iteration.
        *  \param target The target of the neighbor iteration.
-       *  \param iter An iterator on \c container.
+       *  \param it An iterator on container.
        */
       template<typename Iterator>
       iterator(Ct& container, const Geometry& geometry,
                const typename container_traits<Ct>::key_type& target,
-               const typename Rebind<Iterator>::type& iter)
-        : Base(iter.node, iter.node_dim),
+               const typename Rebind<Iterator>::type& it)
+        : Base(container.rank(), it.node, it.node_dim),
           data(container, geometry, target) { }
 
       /**
@@ -193,7 +197,8 @@ namespace spatial
                const typename container_traits<Ct>::key_type& target,
                dimension_type node_dim,
                typename container_traits<Ct>::mode_type::node_ptr node)
-        : Base(node, node_dim), data(container, geometry, target) { }
+        : Base(container.rank(), node, node_dim),
+          data(container, geometry, target) { }
 
       //@{
       /**
@@ -264,17 +269,24 @@ namespace spatial
      *
      *  This iterator only returns constant objects.
      */
-    struct iterator : ::spatial::details::Const_bidirectional_iterator
-      <typename container_traits<Ct>::mode_type, iterator>
+    struct iterator
+      : details::Const_bidirectional_iterator
+        <typename container_traits<Ct>::mode_type,
+         typename container_traits<Ct>::rank_type,
+         iterator>
     {
     private:
-      typedef typename ::spatial::details::Const_bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, iterator> Base;
+      typedef typename details::Const_bidirectional_iterator
+        <typename container_traits<Ct>::mode_type,
+         typename container_traits<Ct>::rank_type,
+         iterator> Base;
 
       template<typename Iterator> struct Rebind
       {
         typedef typename ::spatial::details::Const_bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, Iterator> type;
+        <typename container_traits<Ct>::mode_type,
+         typename container_traits<Ct>::rank_type,
+         Iterator> type;
       };
 
     public:
@@ -293,7 +305,7 @@ namespace spatial
       iterator(const Ct& container, const Geometry& geometry,
                const typename container_traits<Ct>::key_type& target,
                typename container_traits<Ct>::iterator iter)
-        : Base(iter.node, modulo(iter.node, container.rank())),
+        : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
           data(container, geometry, target) { }
 
       /**
@@ -309,7 +321,7 @@ namespace spatial
       iterator(const Ct& container, const Geometry& geometry,
                const typename container_traits<Ct>::key_type& target,
                const typename Rebind<Iterator>::type& iter)
-        : Base(iter.node, iter.node_dim),
+        : Base(container.rank(), iter.node, iter.node_dim),
           data(container, geometry, target) { }
 
       /**
@@ -338,11 +350,12 @@ namespace spatial
                const typename container_traits<Ct>::key_type& target,
                dimension_type node_dim,
                typename container_traits<Ct>::mode_type::node_ptr node)
-        : Base(node, node_dim), data(container, geometry, target) { }
+        : Base(container.rank(), node, node_dim),
+          data(container, geometry, target) { }
 
       //! Covertion of mutable iterator into a constant iterator is permitted.
       iterator(const typename neighbor<Ct, Geometry>::iterator& iter)
-          : Base(iter.node, iter.node_dim), data(iter.data) { }
+        : Base(iter.rank(), iter.node, iter.node_dim), data(iter.data) { }
 
       /**
        *  This iterator can be casted silently into a container iterator. You
