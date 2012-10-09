@@ -194,7 +194,7 @@ namespace spatial
 
     //! Return the key_comparator used by the iterator
     const key_compare&
-    key_comp() { return static_cast<const key_compare&>(data); }
+    key_comp() const { return static_cast<const key_compare&>(data); }
 
     //! The related data for the iterator.
     details::Mapping_data<Ct> data;
@@ -318,7 +318,7 @@ namespace spatial
 
     //! Return the key_comparator used by the iterator
     const key_compare&
-    key_comp() { return static_cast<const key_compare&>(data); }
+    key_comp() const { return static_cast<const key_compare&>(data); }
 
     //! The related data for the iterator.
     details::Mapping_data<Ct> data;

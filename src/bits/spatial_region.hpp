@@ -609,42 +609,6 @@ namespace spatial
   { return make_enclosed_bounds(container, target, llhh_layout_tag()); }
   //@}
 
-  namespace details
-  {
-    /**
-     *  Extra information needed by the region iterator. This information is
-     *  stored in the iterator is copied for each iterator.
-     *
-     *  Although it may be possible to modify this information directly from
-     *  it's members, it may be unwise to do so, as it could invalidate the
-     *  iterator and cause the program to behave unexpectedly. If any of this
-     *  information needs to be modified, it is probably recommended to create a
-     *  new iterator altogether.
-     */
-    template<typename Ct, typename Predicate>
-    struct Region_data
-    {
-      //! Build an uninitialized region data object.
-      Region_data() { }
-
-      /**
-       *  Builds required region data from a given container, dimension, and a
-       *  predicate.
-       *
-       *  \param c The container being iterated.
-       *  \param p The model of \ref RegionPredicate.
-       */
-      Region_data
-      (const Ct&, const Predicate& p) : pred(p)
-        { }
-
-      /**
-       *  The predicate that contains the definition of the region.
-       */
-      Predicate pred;
-    };
-  } // namespace details
-
   /**
    *  This type provides both an iterator and a constant iterator to iterate
    *  through all elements of a tree that match an orthogonal region defined by
@@ -662,7 +626,11 @@ namespace spatial
   template <typename Ct, typename Predicate
     = bounds<typename container_traits<Ct>::key_type,
              typename container_traits<Ct>::key_compare> >
-  struct region
+  struct region_iterator
+    : details::Bidirectional_iterator
+      <typename container_type<Ct>::mode_type,
+       typename container_type<Ct>::rank_type,
+       region_iterator>
   {
     /**
      *  Iterates over values contained within the orthogonal region expressed
@@ -674,110 +642,106 @@ namespace spatial
      *  be a model of \ref RegionPredicate. See the \ref RegionPredicate concept
      *  for more information on writing a region predicates.
      */
-    struct iterator : details::Bidirectional_iterator
-    <typename Ct::mode_type, typename Ct::rank_type, iterator>
-    {
-    private:
-      typedef typename details::Bidirectional_iterator
-      <typename Ct::mode_type, typename Ct::rank_type, iterator>
-      Base;
+  private:
+    typedef typename details::Bidirectional_iterator
+    <typename container_type<Ct>::mode_type,
+     typename container_type<Ct>::rank_type, region_iterator> Base;
 
-      template<typename Iterator> struct Rebind
-      {
-        typedef typename ::spatial::details::Bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, typename Ct::rank_type, Iterator> type;
-      };
-
-    public:
-      //! Uninitialized iterator.
-      iterator() { }
-
-      /**
-       *  Build a region iterator from a container's iterator type.
-       *
-       *  This constructor should be used in the general case where the
-       *  dimension for the node pointed to by \c iter is not known. The
-       *  dimension of the node will be recomputed from the given iterator by
-       *  iterating through all parents until the header node has been
-       *  reached. This iteration is bounded by \Olog in case the tree is
-       *  perfectly balanced.
-       *
-       *  \param container The container being iterated.
-       *  \param predicate A model of the \ref RegionPredicate concept.
-       *  \param iter An iterator on the type Ct.
-       */
-      iterator(Ct& container, const Predicate& predicate,
-               typename container_traits<Ct>::iterator iter)
-        : Base(iter.node, modulo(iter.node, container.rank())),
-          data(predicate, container) { }
-
-      /**
-       *  Build a region iterator from a container and another bidirectional
-       *  iterator on this container.
-       *
-       *  This constructor should be used in the general case where the
-       *  dimension for the node pointed to by \c iter is not known. The
-       *  dimension of the node will be recomputed from the given iterator by
-       *  iterating through all parents until the header node has been
-       *  reached. This iteration is bounded by \Olog in case the tree is
-       *  perfectly balanced.
-       *
-       *  \param container The container being iterated.
-       *  \param predicate A model of the \ref RegionPredicate concept.
-       *  \param iter A bidirectional iterator on the type Ct.
-       */
-      template<typename Iterator>
-      iterator(Ct& container, const Predicate& predicate,
-               typename Rebind<Iterator>::type iter)
-        : Base(iter.node, iter.node_dim), data(predicate, container) { }
-
-      /**
-       *  Build a region iterator from the node and curretn dimension of a
-       *  container's element.
-       *
-       *  This constructor should be used only when the dimension of the node
-       *  pointed to by iter is known. If in doubt, use the other
-       *  constructor. This constructor perform slightly faster than the other,
-       *  since the dimension does not have to be calculated. Note however that
-       *  the calculation of the dimension in the other iterator takes slightly
-       *  longer than \Olog in general, and so it is not likely to affect the
-       *  performance of your application in any major way.
-       *
-       *  \param predicate A model of the \ref RegionPredicate concept.
-       *  \param node An iterator on the type Ct.
-       *  \param node_dim The node's dimension for the node pointed to by node.
-       *  \param container The container being iterated.
-       */
-      iterator(Ct& container, const Predicate& predicate,
-               dimension_type node_dim,
-               typename container_traits<Ct>::mode_type::node_ptr node)
-        : Base(node, node_dim), data(container, predicate) { }
-
-      //@{
-      /**
-       *  This iterator can be casted silently into a container iterator. You can
-       *  therefore use this iterator as an argument to the erase function of
-       *  the container, for example.
-       *
-       *  \warning When using this iterator as an argument to the erase function
-       *  of the container, this iterator will get invalidated after erase.
-       */
-      operator typename container_traits<Ct>::iterator()
-      { return container_traits<Ct>::iterator(Base::node); }
-
-      operator typename container_traits<Ct>::const_iterator()
-      { return container_traits<Ct>::const_iterator(Base::node); }
-      //@}
-
-      //! The related data for the iterator.
-      ::spatial::details::Region_data<Ct, Predicate> data;
-    };
+  public:
+    //! Uninitialized iterator.
+    region_iterator() { }
 
     /**
-     *  A pair of iterators that represents a region of elements to
-     *  iterates. These elements are the results of the orthogonal region search.
+     *  Build a region iterator from a container's iterator type.
+     *
+     *  This constructor should be used in the general case where the
+     *  dimension for the node pointed to by \c iter is not known. The
+     *  dimension of the node will be recomputed from the given iterator by
+     *  iterating through all parents until the header node has been
+     *  reached. This iteration is bounded by \Olog in case the tree is
+     *  perfectly balanced.
+     *
+     *  \param container The container being iterated.
+     *  \param predicate A model of the \ref RegionPredicate concept.
+     *  \param iter An iterator on the type Ct.
      */
-    typedef ::std::pair<iterator, iterator>             iterator_pair;
+    region_iterator(Ct& container, const Predicate& predicate,
+                    typename container_traits<Ct>::iterator iter)
+      : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
+        pred_(predicate) { }
+
+    /**
+     *  Build a region iterator from the node and current dimension of a
+     *  container's element.
+     *
+     *  This constructor should be used only when the dimension of the node
+     *  pointed to by iter is known. If in doubt, use the other
+     *  constructor. This constructor perform slightly faster than the other,
+     *  since the dimension does not have to be calculated. Note however that
+     *  the calculation of the dimension in the other iterator takes slightly
+     *  longer than \Olog in general, and so it is not likely to affect the
+     *  performance of your application in any major way.
+     *
+     *  \param predicate A model of the \ref RegionPredicate concept.
+     *  \param ptr An iterator on the type Ct.
+     *  \param dim The node's dimension for the node pointed to by node.
+     *  \param container The container being iterated.
+     */
+    iterator(Ct& container, const Predicate& predicate,
+             dimension_type dim,
+             typename container_traits<Ct>::mode_type::node_ptr ptr)
+      : Base(container.rank(), node, node_dim), pred_(predicate) { }
+
+    //@{
+    /**
+     *  This iterator can be casted silently into a container iterator. You can
+     *  therefore use this iterator as an argument to the erase function of
+     *  the container, for example.
+     *
+     *  \warning When using this iterator as an argument to the erase function
+     *  of the container, this iterator will get invalidated after erase.
+     */
+    operator typename container_traits<Ct>::iterator()
+    { return container_traits<Ct>::iterator(Base::node); }
+
+    operator typename container_traits<Ct>::const_iterator()
+    { return container_traits<Ct>::const_iterator(Base::node); }
+    //@}
+
+    //! Increments the iterator and returns the incremented value. Prefer to
+    //! use this form in \c for loops.
+    region_iterator<Ct, Predicate>& operator++()
+    { return increment_region(*this); }
+
+    //! Increments the iterator but returns the value of the iterator before
+    //! the increment. Prefer to use the other form in \c for loops.
+    region_iterator<Ct, Predicate> operator++(int)
+    {
+      region_iterator<Ct, Predicate> x(*this);
+      increment_region(*this);
+      return x;
+    }
+
+    //! Decrements the iterator and returns the decremented value. Prefer to
+    //! use this form in \c for loops.
+    region_iterator<Ct>& operator--()
+    { return decrement_region(*this); }
+
+    //! Decrements the iterator but returns the value of the iterator before
+    //! the decrement. Prefer to use the other form in \c for loops.
+    region_iterator<Ct> operator--(int)
+    {
+      region_iterator<Ct> x(*this);
+      decrement_region(*this);
+      return x;
+    }
+
+    //! Return the key_comparator used by the iterator
+    const Predicate& predicate() const { return pred_; }
+
+  private:
+    //! The related data for the iterator.
+    Predicate pred_;
   };
 
   /**
@@ -795,130 +759,121 @@ namespace spatial
    *  \see region_query<>::const_iterator
    */
   template <typename Ct, typename Predicate>
-  struct region<const Ct, Predicate>
+  struct region_iterator<const Ct, Predicate>
+    : details::Const_bidirectional_iterator
+      <typename container_traits<Ct>::mode_type,
+       typename container_traits<Ct>::rank_type, region_iterator>
   {
+  private:
+    typedef details::Const_bidirectional_iterator
+    <typename container_traits<Ct>::mode_type,
+     typename container_traits<Ct>::rank_type, region_iterator> Base;
+
+  public:
+    //! Uninitialized iterator.
+    region_iterator() { }
+
     /**
-     *  Iterates over values contained within the orthogonal region expressed
-     *  in the \ref RegionPredicate. The elements returned by this iterator are
-     *  not ordered, but are guarrented to fall within the given Predicate
-     *  provided.
+     *  Build a region iterator from a container's iterator type.
      *
-     *  Uses \ref Predicate to find all matching values. \ref Predicate must
-     *  be a model of \ref RegionPredicate. See the \ref RegionPredicate concept
-     *  for more information on writing a region predicates.
+     *  This constructor should be used in the general case where the
+     *  dimension for the node pointed to by \c iter is not known. The
+     *  dimension of the node will be recomputed from the given iterator by
+     *  iterating through all parents until the header node has been
+     *  reached. This iteration is bounded by \Olog in case the tree is
+     *  perfectly balanced.
+     *
+     *  \param container The container being iterated.
+     *  \param predicate A model of the \ref RegionPredicate concept.
+     *  \param iter An iterator on the type Ct.
      */
-    struct iterator : ::spatial::details::Const_bidirectional_iterator
-    <typename container_traits<Ct>::mode_type, typename Ct::rank_type, iterator>
-    {
-    private:
-      typedef ::spatial::details::Const_bidirectional_iterator
-      <typename container_traits<Ct>::mode_type, typename Ct::rank_type, iterator> Base;
-
-      template<typename Iterator> struct Rebind
-      {
-        typedef typename ::spatial::details::Const_bidirectional_iterator
-        <typename container_traits<Ct>::mode_type, typename Ct::rank_type, Iterator> type;
-      };
-
-    public:
-      //! Uninitialized iterator.
-      iterator() { }
-
-      /**
-       *  Build a region iterator from a container's iterator type.
-       *
-       *  This constructor should be used in the general case where the
-       *  dimension for the node pointed to by \c iter is not known. The
-       *  dimension of the node will be recomputed from the given iterator by
-       *  iterating through all parents until the header node has been
-       *  reached. This iteration is bounded by \Olog in case the tree is
-       *  perfectly balanced.
-       *
-       *  \param container The container being iterated.
-       *  \param predicate A model of the \ref RegionPredicate concept.
-       *  \param iter An iterator on the type Ct.
-       */
-      iterator(const Ct& container, const Predicate& predicate,
-               typename container_traits<Ct>::const_iterator iter)
-        : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-          data(predicate, container) { }
-
-      /**
-       *  Build a region iterator from a container and another bidirectional
-       *  iterator on this container.
-       *
-       *  This constructor should be used in the general case where the
-       *  dimension for the node pointed to by \c iter is not known. The
-       *  dimension of the node will be recomputed from the given iterator by
-       *  iterating through all parents until the header node has been
-       *  reached. This iteration is bounded by \Olog in case the tree is
-       *  perfectly balanced.
-       *
-       *  \param container The container being iterated.
-       *  \param predicate A model of the \ref RegionPredicate concept.
-       *  \param iter A bidirectional iterator on the type Ct.
-       */
-      template<typename Iterator>
-      iterator(const Ct& container, const Predicate& predicate,
-               typename Rebind<Iterator>::type iter)
-        : Base(container.rank(), iter.node, iter.node_dim), data(predicate, container) { }
-
-      /**
-       *  Build a region iterator from the node and curretn dimension of a
-       *  container's element.
-       *
-       *  This constructor should be used only when the dimension of the node
-       *  pointed to by iter is known. If in doubt, use the other
-       *  constructor. This constructor perform slightly faster than the other,
-       *  since the dimension does not have to be calculated. Note however that
-       *  the calculation of the dimension in the other iterator takes slightly
-       *  longer than \Olog in general, and so it is not likely to affect the
-       *  performance of your application in any major way.
-       *
-       *  \param container The container being iterated.
-       *  \param predicate A model of the \ref RegionPredicate concept.
-       *  \param iter An iterator on the type Ct.
-       */
-      iterator(const Ct& container, const Predicate& predicate,
-               dimension_type node_dim,
-               typename container_traits<Ct>::mode_type::node_ptr node)
-        : Base(node, node_dim), data(container, predicate) { }
-
-      //! Convertion of an iterator into a const_iterator is permitted.
-      iterator(const typename region<Ct>::iterator& iter)
-        : Base(iter.node, iter.node_dim), data(iter.data) { }
-
-      /**
-       *  This iterator can be casted silently into a container iterator. You can
-       *  therefore use this iterator as an argument to the erase function of
-       *  the container, for example.
-       *
-       *  \warning When using this iterator as an argument to the erase function
-       *  of the container, this iterator will get invalidated after erase.
-       */
-      operator typename container_traits<Ct>::const_iterator()
-      { return container_traits<Ct>::const_iterator(Base::node); }
-
-      //! The related data for the iterator.
-      ::spatial::details::Region_data<Ct, Predicate> data;
-    };
+    region_iterator(const Ct& container, const Predicate& predicate,
+                    typename container_traits<Ct>::const_iterator iter)
+      : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
+        pred_(predicate) { }
 
     /**
-     *  A pair of iterators that represents a region of elements to
-     *  iterates. These elements are the results of the orthogonal region search.
+     *  Build a region iterator from the node and current dimension of a
+     *  container's element.
+     *
+     *  This constructor should be used only when the dimension of the node
+     *  pointed to by iter is known. If in doubt, use the other
+     *  constructor. This constructor perform slightly faster than the other,
+     *  since the dimension does not have to be calculated. Note however that
+     *  the calculation of the dimension in the other iterator takes slightly
+     *  longer than \Olog in general, and so it is not likely to affect the
+     *  performance of your application in any major way.
+     *
+     *  \param container The container being iterated.
+     *  \param predicate A model of the \ref RegionPredicate concept.
+     *  \param iter An iterator on the type Ct.
      */
-    typedef ::std::pair<iterator, iterator>             iterator_pair;
+    region_iterator(const Ct& container, const Predicate& predicate,
+                    dimension_type dim,
+                    typename container_traits<Ct>::mode_type::const_node_ptr
+                    ptr)
+      : Base(container.rank(), ptr, dim), pred_(predicate) { }
+
+    //! Convertion of an iterator into a const_iterator is permitted.
+    region_iterator(const typename region_iterator<Ct>& iter)
+      : Base(iter.rank(), iter.node, iter.node_dim), pred_(iter.predicate()) { }
+
+    /**
+     *  This iterator can be casted silently into a container iterator. You can
+     *  therefore use this iterator as an argument to the erase function of
+     *  the container, for example.
+     *
+     *  \warning When using this iterator as an argument to the erase function
+     *  of the container, this iterator will get invalidated after erase.
+     */
+    operator typename container_traits<Ct>::const_iterator()
+    { return container_traits<Ct>::const_iterator(Base::node); }
+
+    //! Increments the iterator and returns the incremented value. Prefer to
+    //! use this form in \c for loops.
+    region_iterator<const Ct, Predicate>& operator++()
+    { return increment_region(*this); }
+
+    //! Increments the iterator but returns the value of the iterator before
+    //! the increment. Prefer to use the other form in \c for loops.
+    region_iterator<const Ct, Predicate> operator++(int)
+    {
+      region_iterator<const Ct, Predicate> x(*this);
+      increment_region(*this);
+      return x;
+    }
+
+    //! Decrements the iterator and returns the decremented value. Prefer to
+    //! use this form in \c for loops.
+    region_iterator<const Ct>& operator--()
+    { return decrement_region(*this); }
+
+    //! Decrements the iterator but returns the value of the iterator before
+    //! the decrement. Prefer to use the other form in \c for loops.
+    region_iterator<const Ct> operator--(int)
+    {
+      region_iterator<const Ct> x(*this);
+      decrement_region(*this);
+      return x;
+    }
+
+    //! Return the key_comparator used by the iterator
+    const Predicate& predicate() const { return pred_; }
+
+  private:
+    //! The related data for the iterator.
+    Predicate pred_;
   };
 
   namespace details
   {
     template <typename Ct, typename Predicate>
-    typename region<Ct, Predicate>::iterator&
-    increment(typename region<Ct, Predicate>::iterator& iter);
+    typename region_iterator<Ct, Predicate>&
+    increment_region(typename region_iterator<Ct, Predicate>& iter);
 
     template <typename Ct, typename Predicate>
     typename region<Ct, Predicate>::iterator&
-    decrement(typename region<Ct, Predicate>::iterator& iter);
+    decrement_region(typename region_iterator<Ct, Predicate>& iter);
 
     /**
      *  @brief  From @c x, find the node with the minimum value in the region
@@ -934,8 +889,8 @@ namespace spatial
      *  If @c node is a header node, the search will stop immediately.
      */
     template <typename Ct, typename Predicate>
-    typename region<Ct, Predicate>::iterator&
-    minimum(typename region<Ct, Predicate>::iterator& iter);
+    typename region_iterator<Ct, Predicate>&
+    minimum_region(typename region_iterator<Ct, Predicate>& iter);
 
     /**
      *  @brief  From @c x, find the node with the maximum value in the region
@@ -951,27 +906,27 @@ namespace spatial
      *  If @c node is a header node, the search will stop immediately.
      */
     template <typename Ct, typename Predicate>
-    typename region<Ct, Predicate>::iterator&
-    maximum(typename region<Ct, Predicate>::iterator& iter);
+    typename region_iterator<Ct, Predicate>&
+    maximum_region(typename region_iterator<Ct, Predicate>& iter);
 
   } // namespace details
 
   template <typename Ct, typename Predicate>
-  inline typename region<Ct, Predicate>::iterator
+  inline typename region_iterator<Ct, Predicate>
   region_begin(Ct& container, const Predicate& pred)
   {
     if (container.empty()) return end_region(pred, container);
-    typename region<Ct, Predicate>::iterator
+    typename region_iterator<Ct, Predicate>
       it(pred, 0, container.top(), container); // At root, dim = 0
     return ::spatial::details::minimum(it);
   }
 
   template <typename Ct, typename Predicate>
-  inline typename region<const Ct, Predicate>::iterator
+  inline typename region_iterator<const Ct, Predicate>
   region_begin(const Ct& container, const Predicate& pred)
   {
     if (container.empty()) return end_region(pred, container);
-    typename region<const Ct, Predicate>::iterator
+    typename region_iterator<const Ct, Predicate>
       it(pred, 0, container.top(), container); // At root, dim = 0
     return ::spatial::details::minimum(it);
   }
@@ -982,30 +937,30 @@ namespace spatial
   { return region_begin(container, pred); }
 
   template <typename Ct, typename Predicate>
-  inline typename region<Ct, Predicate>::iterator
+  inline typename region_iterator<Ct, Predicate>
   region_end(Ct& container, const Predicate& pred)
   {
-    return region<Ct, Predicate>::iterator
+    return region_iterator<Ct, Predicate>
       (container, pred, container.dimension() - 1,
        container.end()); // At header, dim = rank - 1
   }
 
   template <typename Ct, typename Predicate>
-  inline typename region<const Ct, Predicate>::iterator
+  inline typename region_iterator<const Ct, Predicate>
   region_end(const Ct& container, const Predicate& pred)
   {
-    return region<Ct, Predicate>::iterator
+    return region_iterator<Ct, Predicate>
       (container, pred, container.dimension() - 1,
        container.end()); // At header, dim = rank - 1
   }
 
   template <typename Ct, typename Predicate>
-  inline typename region<const Ct, Predicate>::iterator
+  inline typename region_iterator<const Ct, Predicate>
   region_cend(const Ct& container, const Predicate& pred)
   { return region_end(container, pred); }
 
   template <typename Ct, typename Predicate>
-  inline typename region<Ct, Predicate>::iterator_pair
+  inline typename region_iterator_pair<Ct, Predicate>
   region_range(Ct& container, const Predicate& pred)
   {
     return ::std::make_pair(region_begin(container, pred),
@@ -1013,19 +968,19 @@ namespace spatial
   }
 
   template <typename Ct, typename Predicate>
-  inline typename region<const Ct, Predicate>::iterator_pair
+  inline typename region_iterator_pair<const Ct, Predicate>
   region_range(const Ct& container, const Predicate& pred)
   {
-    return ::std::make_pair(region_begin(container, pred),
-                            region_end(container, pred));
+    return std::make_pair(region_begin(container, pred),
+                          region_end(container, pred));
   }
 
   template <typename Ct, typename Predicate>
-  inline typename region<const Ct, Predicate>::iterator_pair
+  inline typename region_iterator_pair<const Ct, Predicate>
   region_crange(const Ct& container, const Predicate& pred)
   {
-    return ::std::make_pair(region_begin(container, pred),
-                            region_end(container, pred));
+    return std::make_pair(region_begin(container, pred),
+                          region_end(container, pred));
   }
 
 /*  MACRO CLASS GENERATORS START HERE
