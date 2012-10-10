@@ -25,13 +25,12 @@ namespace spatial
   {
 
     template <typename Container, typename Predicate>
-    inline typename region<Container, Predicate>::iterator&
-    increment(typename region<Container, Predicate>::iterator& iter)
+    inline typename region_iterator<Container, Predicate>&
+    increment(typename region_iterator<Container, Predicate>& iter)
     {
       const typename container_traits<Container>::rank_type& rank
-        = *static_cast<const typename container_traits<Container>::rank_type*>
-        (&iter.data);
-      const Predicate& pred = iter.data.pred;
+        = iter.rank();
+      const Predicate& pred = iter.predicate();
       SPATIAL_ASSERT_CHECK(!header(iter.node));
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim() < rank());
@@ -72,13 +71,12 @@ namespace spatial
     }
 
     template <typename Container, typename Predicate>
-    inline typename region<Container, Predicate>::iterator&
-    decrement(typename region<Container, Predicate>::iterator& iter)
+    inline typename region_iterator<Container, Predicate>&
+    decrement(typename region_iterator<Container, Predicate>& iter)
     {
       const typename container_traits<Container>::rank_type& rank
-        = *static_cast<const typename container_traits<Container>::rank_type*>
-        (&iter.data);
-      const Predicate& pred = iter.data.pred;
+        = iter.rank();
+      const Predicate& pred = iter.predicate();
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       if (header(iter.node)) { return maximum(iter); }
@@ -119,13 +117,12 @@ namespace spatial
     }
 
     template <typename Container, typename Predicate>
-    inline typename region<Container, Predicate>::iterator&
-    minimum(typename region<Container, Predicate>::iterator& iter)
+    inline typename region_iterator<Container, Predicate>&
+    minimum(typename region_iterator<Container, Predicate>& iter)
     {
       const typename container_traits<Container>::rank_type& rank
-        = *static_cast<const typename container_traits<Container>::rank_type*>
-        (&iter.data);
-      const Predicate& pred = iter.data.pred;
+        = iter.rank();
+      const Predicate& pred = iter.predicate();
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
       SPATIAL_ASSERT_CHECK(iter.node != 0);
@@ -183,13 +180,12 @@ namespace spatial
     }
 
     template <typename Container, typename Predicate>
-    inline typename region<Container, Predicate>::iterator&
-    maximum(typename region<Container, Predicate>::iterator& iter)
+    inline typename region_iterator<Container, Predicate>&
+    maximum(typename region_iterator<Container, Predicate>& iter)
     {
       const typename container_traits<Container>::rank_type& rank
-        = *static_cast<const typename container_traits<Container>::rank_type*>
-        (&iter.data);
-      const Predicate& pred = iter.data.pred;
+        = iter.rank();
+      const Predicate& pred = iter.predicate();
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));

@@ -135,7 +135,7 @@ namespace spatial
       typedef typename mutate<Value>::type            value_type;
       typedef Relaxed_kdtree_link<Key, Value>         mode_type;
       typedef Compare                                 key_compare;
-      typedef ValueCompare<Value, key_compare>        value_compare;
+      typedef ValueCompare<value_type, key_compare>   value_compare;
       typedef Alloc                                   allocator_type;
       typedef Balancing                               balancing_policy;
 
@@ -153,11 +153,7 @@ namespace spatial
       typedef Node_iterator<mode_type>                iterator;
       typedef Const_node_iterator<mode_type>          const_iterator;
       typedef std::reverse_iterator<iterator>         reverse_iterator;
-      typedef std::reverse_iterator
-      <const_iterator>                                const_reverse_iterator;
-      typedef typename equal_region<Self>::iterator   equal_iterator;
-      typedef typename equal_region<const Self>
-      ::iterator                                      const_equal_iterator;
+      typedef std::reverse_iterator<const_iterator>   const_reverse_iterator;
 
     private:
       typedef typename Alloc::template rebind
@@ -518,23 +514,6 @@ namespace spatial
         const_equal_iterator eq = begin_equal(*this, key);
         const_iterator it; it.node = eq.node; return it;
       }
-      //@}
-
-      //@{
-      /**
-       *  Return a pair of iterator around keys of similar coordinates.
-       *
-       *  @attention These iterator are not similar to the other iterator, but
-       *  are special types of iterators that can only be used to list the equal
-       *  objects in the container.
-       */
-      std::pair<equal_iterator, equal_iterator>
-      equal_range(const key_type& key)
-      { return equal_region_range(*this, key); }
-
-      std::pair<const_equal_iterator, const_equal_iterator>
-      equal_range(const key_type& key) const
-      { return equal_region_range(*this, key); }
       //@}
 
     public:

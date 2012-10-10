@@ -539,13 +539,13 @@ namespace spatial
      */
     typedef std::pair<mapping_iterator<Ct>, mapping_iterator<Ct> > Base;
 
-        //! Empty constructor.
-        mapping_iterator_pair() { }
+    //! Empty constructor.
+    mapping_iterator_pair() { }
 
-        //! Regular constructor that builds a mapping_iterator_pair out of 2
-        //! mapping_iterators.
-        mapping_iterator_pair(const mapping_iterator<Ct>& a,
-                                  const mapping_iterator<Ct>& b) : Base(a, b) { }
+    //! Regular constructor that builds a mapping_iterator_pair out of 2
+    //! mapping_iterators.
+    mapping_iterator_pair(const mapping_iterator<Ct>& a,
+                          const mapping_iterator<Ct>& b) : Base(a, b) { }
   };
 
   /**
@@ -565,19 +565,19 @@ namespace spatial
     typedef std::pair<mapping_iterator<const Ct>, mapping_iterator<const Ct> >
           Base;
 
-        //! Empty constructor.
-        mapping_iterator_pair() { }
+    //! Empty constructor.
+    mapping_iterator_pair() { }
 
-        //! Regular constructor that builds a mapping_iterator_pair out of 2
-        //! mapping_iterators.
-        mapping_iterator_pair(const mapping_iterator<const Ct>& a,
-                                  const mapping_iterator<const Ct>& b) : Base(a, b)
-        { }
+    //! Regular constructor that builds a mapping_iterator_pair out of 2
+    //! mapping_iterators.
+    mapping_iterator_pair(const mapping_iterator<const Ct>& a,
+                          const mapping_iterator<const Ct>& b) : Base(a, b)
+    { }
 
-        //! Convert a mutable mapping iterator pair into a const mapping iterator
-        //!pair.
-        mapping_iterator_pair(const mapping_iterator_pair<Ct>& p)
-          : Base(p.first, p.second) { }
+    //! Convert a mutable mapping iterator pair into a const mapping iterator
+    //!pair.
+    mapping_iterator_pair(const mapping_iterator_pair<Ct>& p)
+      : Base(p.first, p.second) { }
   };
 
   /**
