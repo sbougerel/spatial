@@ -387,9 +387,9 @@ namespace spatial
       while (true)
         {
           if (empty()) break;
-          std::pair<equal_iterator, equal_iterator> found = equal_range(key);
+          equal_iterator_pair<Self> found = equal_range(key);
           if (found.first == found.second) break; // no node matching this key
-          erase_node(found.first.impl_.node_dim_(), found.first.impl_.node_);
+          erase_node(found.first.node_dim, found.first.node);
           ++cnt;
         }
       return cnt;

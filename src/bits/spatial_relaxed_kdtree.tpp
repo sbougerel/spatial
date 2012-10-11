@@ -391,10 +391,9 @@ namespace spatial
       while (true)
         {
           if (empty()) break;
-          typename equal_region<Self>::iterator_pair found
-            = equal_region_range(*this, key);
+          equal_iterator_pair<Self> found = equal_range(*this, key);
           if (found.first == found.second) break; // no node matching this key
-          erase_node_balance(found.first.data.node_dim, found.first.node);
+          erase_node_balance(found.first.node_dim, found.first.node);
           destroy_node(found.first.node);
           ++cnt;
         }

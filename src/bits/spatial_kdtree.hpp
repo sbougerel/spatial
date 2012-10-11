@@ -370,17 +370,11 @@ namespace spatial
        */
       iterator
       find(const key_type& key)
-      {
-        equal_iterator eq = begin_equal(*this, key);
-        iterator it; it.node = eq.node; return it;
-      }
+      { return equal_begin(*this, key); }
 
       const_iterator
       find(const key_type& key) const
-      {
-        const_equal_iterator eq = begin_equal(*this, key);
-        const_iterator it; it.node = eq.node; return it;
-      }
+      { return equal_begin(*this, key); }
       //@}
 
     public:

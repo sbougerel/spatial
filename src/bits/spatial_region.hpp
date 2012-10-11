@@ -662,13 +662,13 @@ namespace spatial
      *  perfectly balanced.
      *
      *  \param container The container being iterated.
-     *  \param predicate A model of the \ref RegionPredicate concept.
+     *  \param pred A model of the \ref RegionPredicate concept.
      *  \param iter An iterator on the type Ct.
      */
-    region_iterator(Ct& container, const Predicate& predicate,
+    region_iterator(Ct& container, const Predicate& pred,
                     typename container_traits<Ct>::iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        pred_(predicate) { }
+        pred_(pred) { }
 
     /**
      *  Build a region iterator from the node and current dimension of a
@@ -682,15 +682,15 @@ namespace spatial
      *  longer than \Olog in general, and so it is not likely to affect the
      *  performance of your application in any major way.
      *
-     *  \param predicate A model of the \ref RegionPredicate concept.
+     *  \param pred A model of the \ref RegionPredicate concept.
      *  \param ptr An iterator on the type Ct.
      *  \param dim The node's dimension for the node pointed to by node.
      *  \param container The container being iterated.
      */
-    region_iterator(Ct& container, const Predicate& predicate,
+    region_iterator(Ct& container, const Predicate& pred,
                     dimension_type dim,
                     typename container_traits<Ct>::mode_type::node_ptr ptr)
-      : Base(container.rank(), node, node_dim), pred_(predicate) { }
+      : Base(container.rank(), ptr, dim), pred_(predicate) { }
 
     //@{
     /**
@@ -788,10 +788,10 @@ namespace spatial
      *  \param predicate A model of the \ref RegionPredicate concept.
      *  \param iter An iterator on the type Ct.
      */
-    region_iterator(const Ct& container, const Predicate& predicate,
+    region_iterator(const Ct& container, const Predicate& pred,
                     typename container_traits<Ct>::const_iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        pred_(predicate) { }
+        pred_(pred) { }
 
     /**
      *  Build a region iterator from the node and current dimension of a
@@ -809,14 +809,14 @@ namespace spatial
      *  \param predicate A model of the \ref RegionPredicate concept.
      *  \param iter An iterator on the type Ct.
      */
-    region_iterator(const Ct& container, const Predicate& predicate,
+    region_iterator(const Ct& container, const Predicate& pred,
                     dimension_type dim,
                     typename container_traits<Ct>::mode_type::const_node_ptr
                     ptr)
-      : Base(container.rank(), ptr, dim), pred_(predicate) { }
+      : Base(container.rank(), ptr, dim), pred_(pred) { }
 
     //! Convertion of an iterator into a const_iterator is permitted.
-    region_iterator(const typename region_iterator<Ct>& iter)
+    region_iterator(const region_iterator<Ct>& iter)
       : Base(iter.rank(), iter.node, iter.node_dim), pred_(iter.predicate()) { }
 
     /**
@@ -869,12 +869,12 @@ namespace spatial
   namespace details
   {
     template <typename Ct, typename Predicate>
-    typename region_iterator<Ct, Predicate>&
-    increment_region(typename region_iterator<Ct, Predicate>& iter);
+    region_iterator<Ct, Predicate>&
+    increment_region(region_iterator<Ct, Predicate>& iter);
 
     template <typename Ct, typename Predicate>
-    typename region_iterator<Ct, Predicate>&
-    decrement_region(typename region_iterator<Ct, Predicate>& iter);
+    region_iterator<Ct, Predicate>&
+    decrement_region(region_iterator<Ct, Predicate>& iter);
 
     /**
      *  @brief  From @c x, find the node with the minimum value in the region
@@ -890,8 +890,8 @@ namespace spatial
      *  If @c node is a header node, the search will stop immediately.
      */
     template <typename Ct, typename Predicate>
-    typename region_iterator<Ct, Predicate>&
-    minimum_region(typename region_iterator<Ct, Predicate>& iter);
+    region_iterator<Ct, Predicate>&
+    minimum_region(region_iterator<Ct, Predicate>& iter);
 
     /**
      *  @brief  From @c x, find the node with the maximum value in the region
@@ -907,8 +907,8 @@ namespace spatial
      *  If @c node is a header node, the search will stop immediately.
      */
     template <typename Ct, typename Predicate>
-    typename region_iterator<Ct, Predicate>&
-    maximum_region(typename region_iterator<Ct, Predicate>& iter);
+    region_iterator<Ct, Predicate>&
+    maximum_region(region_iterator<Ct, Predicate>& iter);
 
   } // namespace details
 
@@ -930,7 +930,7 @@ namespace spatial
      *  elements to iterate, and not an orthogonal range).
      */
     typedef std::pair<region_iterator<Ct, Predicate>,
-		              region_iterator<Ct, Predicate> > Base;
+                              region_iterator<Ct, Predicate> > Base;
 
     //! Empty constructor.
     region_iterator_pair() { }
@@ -939,7 +939,7 @@ namespace spatial
     //! region_iterators.
     region_iterator_pair(const region_iterator<Ct, Predicate>& a,
                          const region_iterator<Ct, Predicate>& b)
-	  : Base(a, b) { }
+          : Base(a, b) { }
   };
 
   /**
@@ -976,7 +976,7 @@ namespace spatial
   };
 
   template <typename Ct, typename Predicate>
-  inline typename region_iterator<Ct, Predicate>
+  inline region_iterator<Ct, Predicate>
   region_end(Ct& container, const Predicate& pred)
   {
     return region_iterator<Ct, Predicate>
@@ -985,7 +985,7 @@ namespace spatial
   }
 
   template <typename Ct, typename Predicate>
-  inline typename region_iterator<const Ct, Predicate>
+  inline region_iterator<const Ct, Predicate>
   region_end(const Ct& container, const Predicate& pred)
   {
     return region_iterator<const Ct, Predicate>
@@ -994,12 +994,12 @@ namespace spatial
   }
 
   template <typename Ct, typename Predicate>
-  inline typename region_iterator<const Ct, Predicate>
+  inline region_iterator<const Ct, Predicate>
   region_cend(const Ct& container, const Predicate& pred)
   { return region_end(container, pred); }
 
   template <typename Ct, typename Predicate>
-  inline typename region_iterator<Ct, Predicate>
+  inline region_iterator<Ct, Predicate>
   region_begin(Ct& container, const Predicate& pred)
   {
     if (container.empty()) return end_region(pred, container);
@@ -1009,7 +1009,7 @@ namespace spatial
   }
 
   template <typename Ct, typename Predicate>
-  inline typename region_iterator<const Ct, Predicate>
+  inline region_iterator<const Ct, Predicate>
   region_begin(const Ct& container, const Predicate& pred)
   {
     if (container.empty()) return end_region(pred, container);
@@ -1019,12 +1019,12 @@ namespace spatial
   }
 
   template <typename Ct, typename Predicate>
-  inline typename region_iterator<const Ct, Predicate>
+  inline region_iterator<const Ct, Predicate>
   region_cbegin(const Ct& container, const Predicate& pred)
   { return region_begin(container, pred); }
 
   template <typename Ct, typename Predicate>
-  inline typename region_iterator_pair<Ct, Predicate>
+  inline region_iterator_pair<Ct, Predicate>
   region_range(Ct& container, const Predicate& pred)
   {
     return region_iterator_pair<Ct, Predicate>(region_begin(container, pred),
@@ -1032,7 +1032,7 @@ namespace spatial
   }
 
   template <typename Ct, typename Predicate>
-  inline typename region_iterator_pair<const Ct, Predicate>
+  inline region_iterator_pair<const Ct, Predicate>
   region_range(const Ct& container, const Predicate& pred)
   {
     return region_iterator_pair<const Ct, Predicate>
@@ -1040,7 +1040,7 @@ namespace spatial
   }
 
   template <typename Ct, typename Predicate>
-  inline typename region_iterator_pair<const Ct, Predicate>
+  inline region_iterator_pair<const Ct, Predicate>
   region_crange(const Ct& container, const Predicate& pred)
   {
     return region_iterator_pair<const Ct, Predicate>
@@ -1122,207 +1122,207 @@ namespace spatial
   { };
 
 /* MACRO FOR GENERATION OF FACTORIES FOR ALL TYPES OF REGION ITERATORS
- * 
+ *
  * The follwing sets of macros are used to rapidly define all factories for
  * every type of region iterators.
  */
 
-# define SPATIAL_REGION_MATCH_BIT(Region, Type, Bounds) \
-  template <typename Ct> \
-  inline typename Region##_iterator<Ct> \
-  Region##_##Type(Ct& container, \
+# define SPATIAL_REGION_MATCH_BIT(Region, Type, Bounds)                 \
+  template <typename Ct>                                                \
+  inline Region##_iterator<Ct>                                          \
+  Region##_##Type(Ct& container,                                        \
                   const typename container_traits<Ct>::key_type& match) \
   { return region_##Type(container, make_##Bounds(container, match)); } \
-  template <typename Ct> \
-  inline typename Region##_iterator<const Ct> \
-  Region##_##Type(const Ct& container, \
+  template <typename Ct>                                                \
+  inline Region##_iterator<const Ct>                                    \
+  Region##_##Type(const Ct& container,                                  \
                   const typename container_traits<Ct>::key_type& match) \
   { return region_##Type(container, make_##Bounds(container, match)); } \
-  template <typename Ct> \
-  inline typename Region##_iterator<const Ct> \
-  Region##_c##Type(const Ct& container, \
+  template <typename Ct>                                                \
+  inline Region##_iterator<const Ct>                                    \
+  Region##_c##Type(const Ct& container,                                 \
                    const typename container_traits<Ct>::key_type& match) \
   { return region_c##Type(container, make_##Bounds(container, match)); }
 
-# define SPATIAL_REGION_MATCH(Region, Bounds) \
-  SPATIAL_REGION_MATCH_BIT(Region, begin, Bounds) \
-  SPATIAL_REGION_MATCH_BIT(Region, end, Bounds) \
-  template <typename Ct> \
-  inline typename Region##_iterator_pair<Ct> \
-  Region##_range(Ct& container, \
-                 const typename container_traits<Ct>::key_type& match) \
-  { return region_range(container, make_##Bounds(container, match)); } \
-  template <typename Ct> \
-  inline typename Region##_iterator_pair<const Ct> \
-  Region##_range(const Ct& container, \
-                 const typename container_traits<Ct>::key_type& match) \
-  { return region_range(container, make_##Bounds(container, match)); } \
-  template <typename Ct> \
-  inline typename Region##_iterator_pair<const Ct> \
-  Region##_crange(const Ct& container, \
+# define SPATIAL_REGION_MATCH(Region, Bounds)                           \
+  SPATIAL_REGION_MATCH_BIT(Region, begin, Bounds)                       \
+  SPATIAL_REGION_MATCH_BIT(Region, end, Bounds)                         \
+  template <typename Ct>                                                \
+  inline Region##_iterator_pair<Ct>                                     \
+  Region##_range(Ct& container,                                         \
+                 const typename container_traits<Ct>::key_type& match)  \
+  { return region_range(container, make_##Bounds(container, match)); }  \
+  template <typename Ct>                                                \
+  inline Region##_iterator_pair<const Ct>                               \
+  Region##_range(const Ct& container,                                   \
+                 const typename container_traits<Ct>::key_type& match)  \
+  { return region_range(container, make_##Bounds(container, match)); }  \
+  template <typename Ct>                                                \
+  inline Region##_iterator_pair<const Ct>                               \
+  Region##_crange(const Ct& container,                                  \
                   const typename container_traits<Ct>::key_type& match) \
   { return region_crange(container, make_##Bounds(container, match)); }
 
-# define SPATIAL_REGION_INTERVAL_BIT(Region, Type, Bounds) \
-  template <typename Ct> \
-  inline typename Region##_iterator<Ct> \
-  Region##_##Type(Ct& container, \
+# define SPATIAL_REGION_INTERVAL_BIT(Region, Type, Bounds)              \
+  template <typename Ct>                                                \
+  inline Region##_iterator<Ct>                                          \
+  Region##_##Type(Ct& container,                                        \
                   const typename container_traits<Ct>::key_type& lower, \
                   const typename container_traits<Ct>::key_type& upper) \
   { return region_##Type(container, make_##Bounds(container, lower, upper)); }\
-  template <typename Ct> \
-  inline typename Region##_iterator<const Ct> \
-  Region##_##Type(const Ct& container, \
+  template <typename Ct>                                                \
+  inline Region##_iterator<const Ct>                                    \
+  Region##_##Type(const Ct& container,                                  \
                   const typename container_traits<Ct>::key_type& lower, \
                   const typename container_traits<Ct>::key_type& upper) \
   { return region_##Type(container, make_##Bounds(container, lower, upper)); }\
-  template <typename Ct> \
-  inline typename Region##_iterator<const Ct> \
-  Region##_c##Type(const Ct& container, \
+  template <typename Ct>                                                \
+  inline Region##_iterator<const Ct>                                    \
+  Region##_c##Type(const Ct& container,                                 \
                    const typename container_traits<Ct>::key_type& lower, \
                    const typename container_traits<Ct>::key_type& upper) \
   { return region_c##Type(container, make_##Bounds(container, lower, upper)); }
 
-# define SPATIAL_REGION_INTERVAL(Region, Bounds) \
-  SPATIAL_REGION_INTERVAL_BIT(Region, begin, Bounds) \
-  SPATIAL_REGION_INTERVAL_BIT(Region, end, Bounds) \
-  template <typename Ct> \
-  inline typename Region##_iterator_pair<Ct> \
-  Region##_range(Ct& container, \
-                 const typename container_traits<Ct>::key_type& lower, \
-                 const typename container_traits<Ct>::key_type& upper) \
+# define SPATIAL_REGION_INTERVAL(Region, Bounds)                        \
+  SPATIAL_REGION_INTERVAL_BIT(Region, begin, Bounds)                    \
+  SPATIAL_REGION_INTERVAL_BIT(Region, end, Bounds)                      \
+  template <typename Ct>                                                \
+  inline Region##_iterator_pair<Ct>                                     \
+  Region##_range(Ct& container,                                         \
+                 const typename container_traits<Ct>::key_type& lower,  \
+                 const typename container_traits<Ct>::key_type& upper)  \
   { return region_range(container, make_##Bounds(container, lower, upper)); } \
-  template <typename Ct> \
-  inline typename Region##_iterator_pair<const Ct> \
-  Region##_range(const Ct& container, \
-                 const typename container_traits<Ct>::key_type& lower, \
-                 const typename container_traits<Ct>::key_type& upper) \
+  template <typename Ct>                                                \
+  inline Region##_iterator_pair<const Ct>                               \
+  Region##_range(const Ct& container,                                   \
+                 const typename container_traits<Ct>::key_type& lower,  \
+                 const typename container_traits<Ct>::key_type& upper)  \
   { return region_range(container, make_##Bounds(container, lower, upper)); } \
-  template <typename Ct> \
-  inline typename Region##_iterator_pair<const Ct> \
-  Region##_crange(const Ct& container, \
+  template <typename Ct>                                                \
+  inline Region##_iterator_pair<const Ct>                               \
+  Region##_crange(const Ct& container,                                  \
                   const typename container_traits<Ct>::key_type& lower, \
                   const typename container_traits<Ct>::key_type& upper) \
   { return region_crange(container, make_##Bounds(container, lower, upper)); }
 
-# define SPATIAL_REGION_INTERVAL_L_BIT(Region, Type, Bounds) \
-  template <typename Ct> \
-  inline typename Region##_iterator<Ct> \
-  Region##_##Type(Ct& container, \
+# define SPATIAL_REGION_INTERVAL_L_BIT(Region, Type, Bounds)            \
+  template <typename Ct>                                                \
+  inline Region##_iterator<Ct>                                          \
+  Region##_##Type(Ct& container,                                        \
                   const typename container_traits<Ct>::key_type& lower, \
                   const typename container_traits<Ct>::key_type& upper) \
-  { \
-    return region_##Type \
+  {                                                                     \
+    return region_##Type                                                \
     (container, make_##Bounds(container, lower, upper, llhh_layout_tag())); \
-  } \
-  template <typename Ct, typename Layout> \
-  inline typename Region##_iterator<Ct, Layout> \
-  Region##_##Type(Ct& container, \
+  }                                                                     \
+  template <typename Ct, typename Layout>                               \
+  inline Region##_iterator<Ct, Layout>                                  \
+  Region##_##Type(Ct& container,                                        \
                   const typename container_traits<Ct>::key_type& lower, \
                   const typename container_traits<Ct>::key_type& upper, \
-                  const Layout& layout) \
-  { \
-    return region_##Type \
-    (container, make_##Bounds(container, lower, upper, layout)); \
-  } \
-  template <typename Ct> \
-  inline typename Region##_iterator<const Ct> \
-  Region##_##Type(const Ct& container, \
+                  const Layout& layout)                                 \
+  {                                                                     \
+    return region_##Type                                                \
+      (container, make_##Bounds(container, lower, upper, layout));      \
+  }                                                                     \
+  template <typename Ct>                                                \
+  inline Region##_iterator<const Ct>                                    \
+  Region##_##Type(const Ct& container,                                  \
                   const typename container_traits<Ct>::key_type& lower, \
                   const typename container_traits<Ct>::key_type& upper) \
-  { \
-    return region_##Type \
+  {                                                                     \
+    return region_##Type                                                \
     (container, make_##Bounds(container, lower, upper, llhh_layout_tag())); \
-  } \
-  template <typename Ct, typename Layout> \
-  inline typename Region##_iterator<const Ct, Layout> \
-  Region##_##Type(const Ct& container, \
+  }                                                                     \
+  template <typename Ct, typename Layout>                               \
+  inline Region##_iterator<const Ct, Layout>                            \
+  Region##_##Type(const Ct& container,                                  \
                   const typename container_traits<Ct>::key_type& lower, \
                   const typename container_traits<Ct>::key_type& upper, \
-                  const Layout& layout) \
-  { \
-    return region_##Type \
-    (container, make_##Bounds(container, lower, upper, layout)); \
-  } \
-  template <typename Ct> \
-  inline typename Region##_iterator<const Ct> \
-  Region##_c##Type(const Ct& container, \
+                  const Layout& layout)                                 \
+  {                                                                     \
+    return region_##Type                                                \
+      (container, make_##Bounds(container, lower, upper, layout));      \
+  }                                                                     \
+  template <typename Ct>                                                \
+  inline Region##_iterator<const Ct>                                    \
+  Region##_c##Type(const Ct& container,                                 \
                    const typename container_traits<Ct>::key_type& lower, \
                    const typename container_traits<Ct>::key_type& upper) \
-  { \
-    return region_c##Type \
-    (container, make_##Bounds(container, lower, upper, llhh_layout_tag())); \
-  } \
-  template <typename Ct, typename Layout> \
-  inline typename Region##_iterator<const Ct, Layout> \
-  Region##_c##Type(const Ct& container, \
+  {                                                                     \
+    return region_c##Type                                               \
+      (container, make_##Bounds(container, lower, upper, llhh_layout_tag())); \
+  }                                                                     \
+  template <typename Ct, typename Layout>                               \
+  inline Region##_iterator<const Ct, Layout>                            \
+  Region##_c##Type(const Ct& container,                                 \
                    const typename container_traits<Ct>::key_type& lower, \
                    const typename container_traits<Ct>::key_type& upper, \
-                   const Layout& layout) \
-  { \
-    return region_c##Type \
-    (container, make_##Bounds(container, lower, upper, layout)); \
+                   const Layout& layout)                                \
+  {                                                                     \
+    return region_c##Type                                               \
+      (container, make_##Bounds(container, lower, upper, layout));      \
   }
 
-# define SPATIAL_REGION_INTERVAL_L(Region, Bounds) \
-  SPATIAL_REGION_INTERVAL_L_BIT(Region, begin, Bounds) \
-  SPATIAL_REGION_INTERVAL_L_BIT(Region, end, Bounds) \
-  template <typename Ct> \
-  inline typename Region##_iterator_pair<Ct> \
-  Region##_range(Ct& container, \
-                 const typename container_traits<Ct>::key_type& lower, \
-                 const typename container_traits<Ct>::key_type& upper) \
-  { \
-    return region_range \
+# define SPATIAL_REGION_INTERVAL_L(Region, Bounds)                      \
+  SPATIAL_REGION_INTERVAL_L_BIT(Region, begin, Bounds)                  \
+  SPATIAL_REGION_INTERVAL_L_BIT(Region, end, Bounds)                    \
+  template <typename Ct>                                                \
+  inline Region##_iterator_pair<Ct>                                     \
+  Region##_range(Ct& container,                                         \
+                 const typename container_traits<Ct>::key_type& lower,  \
+                 const typename container_traits<Ct>::key_type& upper)  \
+  {                                                                     \
+    return region_range                                                 \
+      (container, make_##Bounds(container, lower, upper, llhh_layout_tag())); \
+  }                                                                     \
+  template <typename Ct, typename Layout>                               \
+  inline Region##_iterator_pair<Ct, Layout>                             \
+  Region##_range(Ct& container,                                         \
+                 const typename container_traits<Ct>::key_type& lower,  \
+                 const typename container_traits<Ct>::key_type& upper,  \
+                 const Layout& layout)                                  \
+  {                                                                     \
+    return region_range                                                 \
+      (container, make_##Bounds(container, lower, upper, layout));      \
+  }                                                                     \
+  template <typename Ct>                                                \
+  inline Region##_iterator_pair<const Ct>                               \
+  Region##_range(const Ct& container,                                   \
+                 const typename container_traits<Ct>::key_type& lower,  \
+                 const typename container_traits<Ct>::key_type& upper)  \
+  {                                                                     \
+    return region_range                                                 \
     (container, make_##Bounds(container, lower, upper, llhh_layout_tag())); \
-  } \
-  template <typename Ct, typename Layout> \
-  inline typename Region##_iterator_pair<Ct, Layout> \
-  Region##_range(Ct& container, \
-                 const typename container_traits<Ct>::key_type& lower, \
-                 const typename container_traits<Ct>::key_type& upper, \
-                 const Layout& layout) \
-  { \
-    return region_range \
-    (container, make_##Bounds(container, lower, upper, layout)); \
-  } \
-  template <typename Ct> \
-  inline typename Region##_iterator_pair<const Ct> \
-  Region##_range(const Ct& container, \
-                 const typename container_traits<Ct>::key_type& lower, \
-                 const typename container_traits<Ct>::key_type& upper) \
-  { \
-    return region_range \
-    (container, make_##Bounds(container, lower, upper, llhh_layout_tag())); \
-  } \
-  template <typename Ct, typename Layout> \
-  inline typename Region##_iterator_pair<const Ct, Layout> \
-  Region##_range(const Ct& container, \
-                 const typename container_traits<Ct>::key_type& lower, \
-                 const typename container_traits<Ct>::key_type& upper, \
-                 const Layout& layout) \
-  { \
-    return region_range \
-    (container, make_##Bounds(container, lower, upper, layout)); \
-  } \
-  template <typename Ct> \
-  inline typename Region##_iterator_pair<const Ct> \
-  Region##_crange(const Ct& container, \
+  }                                                                     \
+  template <typename Ct, typename Layout>                               \
+  inline Region##_iterator_pair<const Ct, Layout>                       \
+  Region##_range(const Ct& container,                                   \
+                 const typename container_traits<Ct>::key_type& lower,  \
+                 const typename container_traits<Ct>::key_type& upper,  \
+                 const Layout& layout)                                  \
+  {                                                                     \
+    return region_range                                                 \
+      (container, make_##Bounds(container, lower, upper, layout));      \
+  }                                                                     \
+  template <typename Ct>                                                \
+  inline Region##_iterator_pair<const Ct>                               \
+  Region##_crange(const Ct& container,                                  \
                   const typename container_traits<Ct>::key_type& lower, \
                   const typename container_traits<Ct>::key_type& upper) \
-  { \
-    return region_crange \
-    (container, make_##Bounds(container, lower, upper, llhh_layout_tag())); \
-  } \
-  template <typename Ct, typename Layout> \
-  inline typename Region##_iterator_pair<const Ct, Layout> \
-  Region##_crange(const Ct& container, \
+  {                                                                     \
+    return region_crange                                                \
+      (container, make_##Bounds(container, lower, upper, llhh_layout_tag())); \
+  }                                                                     \
+  template <typename Ct, typename Layout>                               \
+  inline Region##_iterator_pair<const Ct, Layout>                       \
+  Region##_crange(const Ct& container,                                  \
                   const typename container_traits<Ct>::key_type& lower, \
                   const typename container_traits<Ct>::key_type& upper, \
-                  const Layout& layout) \
-  { \
-    return region_crange \
-    (container, make_##Bounds(container, lower, upper, layout)); \
+                  const Layout& layout)                                 \
+  {                                                                     \
+    return region_crange                                                \
+      (container, make_##Bounds(container, lower, upper, layout));      \
   }
 
   SPATIAL_REGION_MATCH(equal, equal_bounds)

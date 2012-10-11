@@ -25,8 +25,8 @@ namespace spatial
   {
 
     template <typename Container, typename Predicate>
-    inline typename region_iterator<Container, Predicate>&
-    increment(typename region_iterator<Container, Predicate>& iter)
+    inline region_iterator<Container, Predicate>&
+    increment(region_iterator<Container, Predicate>& iter)
     {
       const typename container_traits<Container>::rank_type& rank
         = iter.rank();
@@ -71,8 +71,8 @@ namespace spatial
     }
 
     template <typename Container, typename Predicate>
-    inline typename region_iterator<Container, Predicate>&
-    decrement(typename region_iterator<Container, Predicate>& iter)
+    inline region_iterator<Container, Predicate>&
+    decrement(region_iterator<Container, Predicate>& iter)
     {
       const typename container_traits<Container>::rank_type& rank
         = iter.rank();
@@ -117,8 +117,8 @@ namespace spatial
     }
 
     template <typename Container, typename Predicate>
-    inline typename region_iterator<Container, Predicate>&
-    minimum(typename region_iterator<Container, Predicate>& iter)
+    inline region_iterator<Container, Predicate>&
+    minimum(region_iterator<Container, Predicate>& iter)
     {
       const typename container_traits<Container>::rank_type& rank
         = iter.rank();
@@ -180,8 +180,8 @@ namespace spatial
     }
 
     template <typename Container, typename Predicate>
-    inline typename region_iterator<Container, Predicate>&
-    maximum(typename region_iterator<Container, Predicate>& iter)
+    inline region_iterator<Container, Predicate>&
+    maximum(region_iterator<Container, Predicate>& iter)
     {
       const typename container_traits<Container>::rank_type& rank
         = iter.rank();
