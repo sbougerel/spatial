@@ -117,6 +117,7 @@ BOOST_AUTO_TEST_CASE( test_enclosed_bounds )
   BOOST_CHECK_MESSAGE(false, "test not implemented");
 }
 
+/*
 BOOST_AUTO_TEST_CASE( test_region_iterator_default_ctor )
 {
   typedef details::Region_iterator
@@ -1382,5 +1383,6 @@ BOOST_AUTO_TEST_CASE( test_relaxed_region_iterator_post_increment )
     ++after;
     BOOST_CHECK(after == test);
 }
+*/
 
 #endif // SPATIAL_TEST_REGION_HPP
