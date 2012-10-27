@@ -396,19 +396,19 @@ namespace spatial
     const
     {
       return (dim < (rank >> 1))
-        ? (Compare::operator()(dim + (rank >> 1), target_, dim, key)
-           ? above : matching)
-        : (Compare::operator()(dim, key, dim - (rank >> 1), target_)
-           ? below : matching);
+        ? (Compare::operator()(dim, key, dim + (rank >> 1), target_)
+           ? matching : above)
+        : (Compare::operator()(dim - (rank >> 1), target_, dim, key)
+           ? matching : below);
     }
 
     relative_order overlap_bounds_impl
-    (dimension_type dim, dimension_type rank, const Key& key, lhlh_layout_tag)
+    (dimension_type dim, dimension_type, const Key& key, lhlh_layout_tag)
     const
     {
       return ((dim % 2) == 0)
-        ? (Compare::operator()(dim + 1, target_, dim, key) ? above : matching)
-        : (Compare::operator()(dim, key, dim - 1, target_) ? below : matching);
+        ? (Compare::operator()(dim, key, dim + 1, target_) ? matching : above)
+        : (Compare::operator()(dim - 1, target_, dim, key) ? matching : below);
     }
 
     relative_order overlap_bounds_impl
@@ -416,19 +416,19 @@ namespace spatial
     const
     {
       return (dim < (rank >> 1))
-        ? (Compare::operator()(dim, key, dim + (rank >> 1), target_)
-           ? below : matching)
-        : (Compare::operator()(dim - (rank >> 1), target_, dim, key)
-           ? above : matching);
+        ? (Compare::operator()(dim + (rank >> 1), target_, dim, key)
+           ? matching : below)
+        : (Compare::operator()(dim, key, dim - (rank >> 1), target_)
+           ? matching : above);
     }
 
     relative_order overlap_bounds_impl
-    (dimension_type dim, dimension_type rank, const Key& key, hlhl_layout_tag)
+    (dimension_type dim, dimension_type, const Key& key, hlhl_layout_tag)
     const
     {
       return ((dim % 2) == 0)
-        ? (Compare::operator()(dim, key, dim + 1, target_) ? below : matching)
-        : (Compare::operator()(dim - 1, target_, dim, key) ? above : matching);
+        ? (Compare::operator()(dim + 1, target_, dim, key) ? matching : below)
+        : (Compare::operator()(dim, key, dim - 1, target_) ? matching : above);
     }
   };
 

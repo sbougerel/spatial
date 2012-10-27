@@ -724,7 +724,6 @@ typedef boost::mpl::list<pointset_fix<quad>,
                          idle_boxset_fix<quad>,
                          runtime_boxset_fix<quad>,
                          runtime_idle_boxset_fix<quad>,
-
                          pointmap_fix<quad, std::string>,
                          tight_pointmap_fix<quad, std::string>,
                          idle_pointmap_fix<quad, std::string>,

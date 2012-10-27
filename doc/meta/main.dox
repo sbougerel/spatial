@@ -10,6 +10,8 @@
 
 \prev \ref intro \next \ref changelog \endprevnext
 
+<!-- Sarah start work here -->
+
 \section intro Introduction
 
 \quote
@@ -17,25 +19,22 @@ Man's mind, once stretched by a new idea, never regains its original
 dimensions. <br> -- Oliver Wendell Holmes, Jr.
 \endquote
 
-After getting involved with \libkdtree, I had quite a number of new
-ideas. \Spatial was started from scratch and it aims at providing a library that
-retains all the great benefits of \libkdtree while broadening its horizons.
+\section feature Library Features
 
 Like \libkdtree, \Spatial is a header-only C++ library providing template
-multi-dimension in-memory containers that should be reusable and that should be
-tuned to offer good overall performance in various situations. Like it's parent,
-\Spatial borrows heavily from the \STL, and strive to follow \STL's interfaces
-whenever possible.
+multi-dimension in-memory containers that are reusable and tuned to adapt 
+to an array of uses. Like its parent,
+\Spatial borrows heavily from the \STL, and strives to follow \STL's interface.
 
 Just like the \STL containers \c ::std::multiset and \c ::std::multimap,
-\Spatial was designed to handle element insertion and removal from its
-containers in logarithmic amortized time. Because of this characteristics,
-\Spatial is particularly well-suited for tracking analysis, real-time
+\Spatial is designed to handle element insertion and removal from its
+containers in logarithmic amortized time. With such characteristics,
+\Spatial is particularly well suited for tracking analysis, real-time
 positioning, or geographic information systems.
 
 Features include:
 
-- multi-dimension template containers with unlimited number of dimensions to
+- multi-dimension template containers with an unlimited number of dimensions to
   store points in space,
 - dimensions may be of different types,
 - static or dynamic time determination of the number of dimensions,
@@ -46,6 +45,13 @@ Features include:
 - \STL-compatible iterators going from the nearest to the furthest neighbor
   of a point according to the metric space applied.
 
+\section history History of the Library
+
+\Spatial was inspired from \libkdtree, and aims at providing a library that
+retains all the great benefits of \libkdtree while broadening its horizons.
+
+
+<!-- Sarah don't do anything here -->
 \section source Getting the Source and Sending Feedbacks
 
 You can access all the above from the \project_page. Some packages are

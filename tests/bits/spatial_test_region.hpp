@@ -107,14 +107,109 @@ BOOST_AUTO_TEST_CASE( test_closed_bounds )
   BOOST_CHECK(bounds(1, 2, w) == above);
 }
 
-BOOST_AUTO_TEST_CASE( test_overlap_bounds )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_overlap_bounds, Tp, every_quad )
 {
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  Tp fix(0);
+  { // test for llhh_layout_tag
+    quad a(0, 0, 1, 1);
+    overlap_bounds<quad, quad_less, llhh_layout_tag> bounds
+      = make_overlap_bounds(fix.container, a);
+    // A region must overlap itself (all it's element must match)
+    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    // A region must overlap a larger region than itself
+    quad b(-1, -1, 3, 3);
+    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    // A region must *not* overlap another region whose corner only contact
+    quad c(-1, -1, 0, 3);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    quad d(-1, -1, 3, 0);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    quad e(1, -1, 3, 3);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    quad f(-1, 1, 3, 3);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+  }
+  { // test for lhlh_layout_tag
+    quad a(0, 1, 0, 1);
+    overlap_bounds<quad, quad_less, lhlh_layout_tag> bounds
+      = make_overlap_bounds(fix.container, a, lhlh_layout_tag());
+    // A region must overlap itself (all it's element must match)
+    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    // A region must overlap a larger region than itself
+    quad b(-1, 3, -1, 3);
+    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    // A region must *not* overlap another region whose corner only contact
+    quad c(-1, 0, -1, 3);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    quad d(-1, 3, -1, 0);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    quad e(1, 3, -1, 3);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    quad f(-1, 3, 1, 3);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+  }
+  { // test for hhll_layout_tag
+    quad a(1, 1, 0, 0);
+    overlap_bounds<quad, quad_less, hhll_layout_tag> bounds
+      = make_overlap_bounds(fix.container, a, hhll_layout_tag());
+    // A region must overlap itself (all it's element must match)
+    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    // A region must overlap a larger region than itself
+    quad b(3, 3, -1, -1);
+    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    // A region must *not* overlap another region whose corner only contact
+    quad c(0, 3, -1, -1);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    quad d(3, 0, -1, -1);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    quad e(3, 3, 1, -1);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    quad f(3, 3, -1, 1);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+  }
+  { // test for hlhl_layout_tag
+    quad a(1, 0, 1, 0);
+    overlap_bounds<quad, quad_less, hlhl_layout_tag> bounds
+      = make_overlap_bounds(fix.container, a, hlhl_layout_tag());
+    // A region must overlap itself (all it's element must match)
+    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    // A region must overlap a larger region than itself
+    quad b(3, -1, 3, -1);
+    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    // A region must *not* overlap another region whose corner only contact
+    quad c(0, -1, 3, -1);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    quad d(3, -1, 0, -1);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    quad e(3, 1, 3, -1);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    quad f(3, -1, 3, 1);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+  }
 }
 
-BOOST_AUTO_TEST_CASE( test_enclosed_bounds )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_enclosed_bounds, Tp, every_quad )
 {
-  BOOST_CHECK_MESSAGE(false, "test not implemented");
+  Tp fix(0);
+  { // test for llhh_layout_tag
+    quad a(0, 0, 3, 3);
+    enclosed_bounds<quad, quad_less> bounds
+      = make_enclosed_bounds(fix.container, a);
+    // A region must overlap itself (all it's element must match)
+    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    // A region must overlap a larger region than itself
+    quad b(-1, -1, 3, 3);
+    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    // A region must *not* overlap another region whose corner only contact
+    quad c(-1, -1, 0, 3);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    quad d(-1, -1, 3, 0);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    quad e(1, -1, 3, 3);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    quad f(-1, 1, 3, 3);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+  }
 }
 
 /*
