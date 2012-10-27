@@ -59,6 +59,18 @@ namespace spatial
       { }
 
       /**
+       *  Builds required mapping data from the given key comparison functor,
+       *  dimension and mapping dimension.
+       *
+       *  \param c The container being iterated.
+       *  \param m The mapping dimension used in the iteration.
+       */
+      Mapping_data
+      (const typename container_traits<Ct>::key_compare& c, dimension_type m)
+        : container_traits<Ct>::key_compare(c), mapping_dim(m)
+      { }
+
+      /**
        *  The current dimension of iteration.
        *
        *  You can modify this key if you suddenly want the iterator to change
@@ -130,7 +142,7 @@ namespace spatial
     mapping_iterator(Ct& container, dimension_type mapping_dim,
                      const typename container_traits<Ct>::iterator& iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        data(container, mapping_dim)
+        data_(container, mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
 
     /**
@@ -161,7 +173,7 @@ namespace spatial
     mapping_iterator(Ct& container, dimension_type mapping_dim,
                      dimension_type dim,
                      typename container_traits<Ct>::mode_type::node_ptr ptr)
-      : Base(container.rank(), ptr, dim), data(container, mapping_dim)
+      : Base(container.rank(), ptr, dim), data_(container, mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
 
     //! Increments the iterator and returns the incremented value. Prefer to
@@ -194,10 +206,33 @@ namespace spatial
 
     //! Return the key_comparator used by the iterator
     const key_compare&
-    key_comp() const { return static_cast<const key_compare&>(data); }
+    key_comp() const { return static_cast<const key_compare&>(data_); }
 
+    /**
+     *  Accessor to the mapping dimension used by the iterator.
+     *
+     *  No check is performed on this accessor if a new mapping dimension is
+     *  given. If you need to check that the mapping dimension given does not
+     *  exceed the rank use the function \ref
+     *  spatial::mapping_dimension(const iterator&, dimension_type) instead:
+     *  \code
+     *  // Create a mapping iterator that works on dimension 0
+     *  mapping_iterator<my_container> iter (begin_mapping(container, 0));
+     *  // Reset the mapping iterator to work on dimension 2
+     *  mapping_dimension(iter, 2);
+     *  // This will throw if the container used has a rank lower than 3.
+     *  \endcode
+     *  @{
+     */
+    dimension_type
+    mapping_dimension() const { return data_.mapping_dim; }
+    dimension_type&
+    mapping_dimension() { return data_.mapping_dim; }
+    //@}
+
+  private:
     //! The related data for the iterator.
-    details::Mapping_data<Ct> data;
+    details::Mapping_data<Ct> data_;
   };
 
   /**
@@ -249,7 +284,7 @@ namespace spatial
     mapping_iterator(const Ct& container, dimension_type mapping_dim,
                      const typename container_traits<Ct>::const_iterator& iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        data(container, mapping_dim)
+        data_(container, mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
 
     /**
@@ -281,12 +316,13 @@ namespace spatial
                      dimension_type mapping_dim, dimension_type dim,
                      typename container_traits<Ct>::mode_type::const_node_ptr
                      ptr)
-      : Base(container.rank(), ptr, dim), data(container, mapping_dim)
+      : Base(container.rank(), ptr, dim), data_(container, mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
 
     //! Convertion of mutable iterator into a constant iterator is permitted.
     mapping_iterator(const mapping_iterator<Ct>& iter)
-      : Base(iter.rank(), iter.node, iter.node_dim), data(iter.data) { }
+      : Base(iter.rank(), iter.node, iter.node_dim),
+        data_(iter.key_comp(), iter.mapping_dimension()) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
@@ -318,10 +354,33 @@ namespace spatial
 
     //! Return the key_comparator used by the iterator
     const key_compare&
-    key_comp() const { return static_cast<const key_compare&>(data); }
+    key_comp() const { return static_cast<const key_compare&>(data_); }
 
+    /**
+     *  Accessor to the mapping dimension used by the iterator.
+     *
+     *  No check is performed on this accessor if a new mapping dimension is
+     *  given. If you need to check that the mapping dimension given does not
+     *  exceed the rank use the function \ref
+     *  spatial::mapping_dimension(const iterator&, dimension_type) instead:
+     *  \code
+     *  // Create a mapping iterator that works on dimension 0
+     *  mapping_iterator<my_container> iter (begin_mapping(container, 0));
+     *  // Reset the mapping iterator to work on dimension 2
+     *  mapping_dimension(iter, 2);
+     *  // This will throw if the container used has a rank lower than 3.
+     *  \endcode
+     *  @{
+     */
+    dimension_type
+    mapping_dimension() const { return data_.mapping_dim; }
+    dimension_type&
+    mapping_dimension() { return data_.mapping_dim; }
+    //@}
+
+  private:
     //! The related data for the iterator.
-    details::Mapping_data<Ct> data;
+    details::Mapping_data<Ct> data_;
   };
 
   //! Return true if 2 iterators are equal
@@ -587,7 +646,7 @@ namespace spatial
   template <typename Container>
   inline dimension_type
   mapping_dimension(const mapping_iterator<Container>& it)
-  { return it.data.mapping_dim; }
+  { return it.mapping_dimension(); }
 
   /**
    *  Sets the mapping dimension of the iterator.
@@ -600,7 +659,7 @@ namespace spatial
                     dimension_type mapping_dim)
   {
     except::check_dimension(it.dimension(), mapping_dim);
-    it.data.mapping_dim = mapping_dim;
+    it.mapping_dimension() = mapping_dim;
   }
 
   /**
