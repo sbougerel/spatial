@@ -390,28 +390,27 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_deference, Tp, double6_maps )
 }
 
 /*
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum_equal, Tp, every_quad )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum_range, Tp, double6_sets )
 {
   {
-    Hundred_kdtree_2D_fixture fix;
-    typedef closed_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // bounds totally encloses the tree, whose elements are between 0 and 20.
-    point2d low = { {0, 0} };
-    point2d high = { {20, 20} };
-    bounds_type whole_tree_box(fix.kdtree.key_comp(), low, high);
+    Tp fix(100, boximize(-1, 1));
+    // Prove that you can find the min value with N nodes, down to 1 nodes
+    double6 l; l.assign(-1);
+    double6 h; h.assign(1);
     // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::minimum
+    region_iterator<typename Tp::container_type> it = region_iterator::minimum
       (fix.kdtree.rank(), whole_tree_box, 0,
        fix.kdtree.end().node->parent);
     BOOST_CHECK(it.impl_.node_ == fix.kdtree.begin().node);
+  }
+  { // A tree where all elements are the same!
+
+  }
+  { // test at the limit: a tree with 1 element
+  }
+  { // test at the limit: an unbalanced tree (i.e. insertions in order)!
+  }
+  { // test at the limit: an unbalanced tree (i.e. insertions in order)!
   }
   {
     Hundred_kdtree_2D_fixture fix;
@@ -437,7 +436,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum_equal, Tp, every_quad )
     BOOST_CHECK(it.impl_.node_ == max.node);
   }
 }
-
 
 BOOST_AUTO_TEST_CASE( test_region_iterator_maximum )
 {
