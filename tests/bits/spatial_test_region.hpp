@@ -111,11 +111,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_overlap_bounds, Tp, every_quad )
 {
   Tp fix(0);
   { // test for llhh_layout_tag
-    quad a(0, 0, 1, 1);
+    quad a(0, 0, 2, 2);
     overlap_bounds<quad, quad_less, llhh_layout_tag> bounds
       = make_overlap_bounds(fix.container, a);
     // A region must overlap itself (all it's element must match)
     BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    // A region must overlap a point at its center
+    quad p(1, 1, 1, 1);
+    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
     // A region must overlap a larger region than itself
     quad b(-1, -1, 3, 3);
     BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
@@ -124,17 +127,20 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_overlap_bounds, Tp, every_quad )
     BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
     quad d(-1, -1, 3, 0);
     BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
-    quad e(1, -1, 3, 3);
+    quad e(2, -1, 3, 3);
     BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
-    quad f(-1, 1, 3, 3);
+    quad f(-1, 2, 3, 3);
     BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
   }
   { // test for lhlh_layout_tag
-    quad a(0, 1, 0, 1);
+    quad a(0, 2, 0, 2);
     overlap_bounds<quad, quad_less, lhlh_layout_tag> bounds
-      = make_overlap_bounds(fix.container, a, lhlh_layout_tag());
+      = make_overlap_bounds(fix.container, a, lhlh_layout);
     // A region must overlap itself (all it's element must match)
     BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    // A region must overlap a point at its center
+    quad p(1, 1, 1, 1);
+    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
     // A region must overlap a larger region than itself
     quad b(-1, 3, -1, 3);
     BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
@@ -143,17 +149,20 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_overlap_bounds, Tp, every_quad )
     BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
     quad d(-1, 3, -1, 0);
     BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
-    quad e(1, 3, -1, 3);
+    quad e(2, 3, -1, 3);
     BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
-    quad f(-1, 3, 1, 3);
+    quad f(-1, 3, 2, 3);
     BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
   }
   { // test for hhll_layout_tag
-    quad a(1, 1, 0, 0);
+    quad a(2, 2, 0, 0);
     overlap_bounds<quad, quad_less, hhll_layout_tag> bounds
-      = make_overlap_bounds(fix.container, a, hhll_layout_tag());
+      = make_overlap_bounds(fix.container, a, hhll_layout);
     // A region must overlap itself (all it's element must match)
     BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    // A region must overlap a point at its center
+    quad p(1, 1, 1, 1);
+    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
     // A region must overlap a larger region than itself
     quad b(3, 3, -1, -1);
     BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
@@ -162,17 +171,20 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_overlap_bounds, Tp, every_quad )
     BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
     quad d(3, 0, -1, -1);
     BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
-    quad e(3, 3, 1, -1);
+    quad e(3, 3, 2, -1);
     BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
-    quad f(3, 3, -1, 1);
+    quad f(3, 3, -1, 2);
     BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
   }
   { // test for hlhl_layout_tag
-    quad a(1, 0, 1, 0);
+    quad a(2, 0, 2, 0);
     overlap_bounds<quad, quad_less, hlhl_layout_tag> bounds
-      = make_overlap_bounds(fix.container, a, hlhl_layout_tag());
+      = make_overlap_bounds(fix.container, a, hlhl_layout);
     // A region must overlap itself (all it's element must match)
     BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    // A region must overlap a point at its center
+    quad p(1, 1, 1, 1);
+    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
     // A region must overlap a larger region than itself
     quad b(3, -1, 3, -1);
     BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
@@ -181,9 +193,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_overlap_bounds, Tp, every_quad )
     BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
     quad d(3, -1, 0, -1);
     BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
-    quad e(3, 1, 3, -1);
+    quad e(3, 2, 3, -1);
     BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
-    quad f(3, -1, 3, 1);
+    quad f(3, -1, 3, 2);
     BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
   }
 }
@@ -195,243 +207,190 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_enclosed_bounds, Tp, every_quad )
     quad a(0, 0, 3, 3);
     enclosed_bounds<quad, quad_less> bounds
       = make_enclosed_bounds(fix.container, a);
-    // A region must overlap itself (all it's element must match)
+    // A region must enclose itself (all it's element must match)
     BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
-    // A region must overlap a larger region than itself
-    quad b(-1, -1, 3, 3);
+    // A region must enclose a point at its center
+    quad p(1, 1, 1, 1);
+    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
+    // A region must enclose a smaller region than itself
+    quad b(1, 1, 2, 2);
     BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
-    // A region must *not* overlap another region whose corner only contact
-    quad c(-1, -1, 0, 3);
+    // A region must *not* enclose another larger region
+    quad c(-1, 0, 3, 3);
     BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
-    quad d(-1, -1, 3, 0);
+    quad d(0, -1, 3, 3);
     BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
-    quad e(1, -1, 3, 3);
+    quad e(0, 0, 4, 3);
     BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
-    quad f(-1, 1, 3, 3);
+    quad f(0, 0, 3, 4);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+  }
+  { // test for lhlh_layout_tag
+    quad a(0, 3, 0, 3);
+    enclosed_bounds<quad, quad_less, lhlh_layout_tag> bounds
+      = make_enclosed_bounds(fix.container, a, lhlh_layout);
+    // A region must enclose itself (all it's element must match)
+    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    // A region must enclose a point at its center
+    quad p(1, 1, 1, 1);
+    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
+    // A region must enclose a smaller region than itself
+    quad b(1, 2, 1, 2);
+    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    // A region must *not* enclose another larger region
+    quad c(-1, 3, 0,  3);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    quad d(0, 3, -1, 3);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    quad e(0, 4, 0, 3);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    quad f(0, 3, 0, 4);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+  }
+  { // test for hhll_layout_tag
+    quad a(3, 3, 0, 0);
+    enclosed_bounds<quad, quad_less, hhll_layout_tag> bounds
+      = make_enclosed_bounds(fix.container, a, hhll_layout);
+    // A region must enclose itself (all it's element must match)
+    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    // A region must enclose a point at its center
+    quad p(1, 1, 1, 1);
+    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
+    // A region must enclose a smaller region than itself
+    quad b(2, 2, 1, 1);
+    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    // A region must *not* enclose another larger region
+    quad c(3, 3, -1, 0);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    quad d(3, 3, 0, -1);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    quad e(4, 3, 0, 0);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    quad f(3, 4, 0, 0);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+  }
+  { // test for hlhl_layout_tag
+    quad a(3, 0, 3, 0);
+    enclosed_bounds<quad, quad_less, hlhl_layout_tag> bounds
+      = make_enclosed_bounds(fix.container, a, hlhl_layout);
+    // A region must enclose itself (all it's element must match)
+    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    // A region must enclose a point at its center
+    quad p(1, 1, 1, 1);
+    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
+    // A region must enclose a smaller region than itself
+    quad b(2, 1, 2, 1);
+    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    // A region must *not* enclose another larger region
+    quad c(3, -1, 3, 0);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    quad d(3, 0, 3, -1);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    quad e(4, 0, 3, 0);
+    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    quad f(3, 0, 4, 0);
     BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
   }
 }
 
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_basics, Tp, every_quad )
+{
+  Tp fix(0);
+  {
+    region_iterator<typename Tp::container_type> a, b(a);
+    region_iterator<const typename Tp::container_type> c;
+    c = a;
+    region_iterator_pair<typename Tp::container_type> p, q(a, b);
+    region_iterator_pair<const typename Tp::container_type>
+      r, s(c, c), t(p);
+    BOOST_CHECK(a == b);
+    BOOST_CHECK(!(a != c));
+    typename Tp::container_type::iterator i = a;
+    BOOST_CHECK(i == a);
+  }
+  {
+    equal_iterator<typename Tp::container_type> a, b(a);
+    equal_iterator<const typename Tp::container_type> c;
+    c = a;
+    equal_iterator_pair<typename Tp::container_type> p, q(a, b);
+    equal_iterator_pair<const typename Tp::container_type>
+      r, s(c, c), t(p);
+    BOOST_CHECK(a == b);
+    BOOST_CHECK(!(a != c));
+    typename Tp::container_type::iterator i = a;
+    BOOST_CHECK(i == a);
+  }
+  {
+    open_region_iterator<typename Tp::container_type> a, b(a);
+    open_region_iterator<const typename Tp::container_type> c;
+    c = a;
+    open_region_iterator_pair<typename Tp::container_type> p, q(a, b);
+    open_region_iterator_pair<const typename Tp::container_type>
+      r, s(c, c), t(p);
+    BOOST_CHECK(a == b);
+    BOOST_CHECK(!(a != c));
+    typename Tp::container_type::iterator i = a;
+    BOOST_CHECK(i == a);
+  }
+  {
+    closed_region_iterator<typename Tp::container_type> a, b(a);
+    closed_region_iterator<const typename Tp::container_type> c;
+    c = a;
+    closed_region_iterator_pair<typename Tp::container_type> p, q(a, b);
+    closed_region_iterator_pair<const typename Tp::container_type>
+      r, s(c, c), t(p);
+    BOOST_CHECK(a == b);
+    BOOST_CHECK(!(a != c));
+    typename Tp::container_type::iterator i = a;
+    BOOST_CHECK(i == a);
+  }
+  {
+    overlap_iterator<typename Tp::container_type> a, b(a);
+    overlap_iterator<const typename Tp::container_type> c;
+    c = a;
+    overlap_iterator_pair<typename Tp::container_type> p, q(a, b);
+    overlap_iterator_pair<const typename Tp::container_type>
+      r, s(c, c), t(p);
+    BOOST_CHECK(a == b);
+    BOOST_CHECK(!(a != c));
+    typename Tp::container_type::iterator i = a;
+    BOOST_CHECK(i == a);
+  }
+  {
+    enclosed_iterator<typename Tp::container_type> a, b(a);
+    enclosed_iterator<const typename Tp::container_type> c;
+    c = a;
+    enclosed_iterator_pair<typename Tp::container_type> p, q(a, b);
+    enclosed_iterator_pair<const typename Tp::container_type>
+      r, s(c, c), t(p);
+    BOOST_CHECK(a == b);
+    BOOST_CHECK(!(a != c));
+    typename Tp::container_type::iterator i = a;
+    BOOST_CHECK(i == a);
+  }
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_deference, Tp, double6_maps )
+{
+  Tp fix(1, same());
+  double6 l; l.assign(0.0);
+  double6 h; h.assign(1.0);
+  region_iterator<typename Tp::container_type>
+    a(fix.container, make_bounds(fix.container, l, h), fix.container.begin());
+  region_iterator<const typename Tp::container_type>
+    b(fix.container, make_bounds(fix.container, l, h), fix.container.begin());
+  BOOST_CHECK((*a).first == fix.container.begin()->first);
+  (*a).second = "some string";
+  BOOST_CHECK(a->first == fix.container.begin()->first);
+  a->second = "some other string";
+  BOOST_CHECK((*b).first == fix.container.begin()->first);
+  BOOST_CHECK(b->first == fix.container.begin()->first);
+  BOOST_CHECK(a.dimension() == fix.container.dimension());
+  BOOST_CHECK(b.dimension() == fix.container.dimension());
+}
+
 /*
-BOOST_AUTO_TEST_CASE( test_region_iterator_default_ctor )
-{
-  typedef details::Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    region_iterator_true_type;
-  typedef details::Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    region_iterator_false_type;
-  typedef details::Const_Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    const_region_iterator_true_type;
-  typedef details::Const_Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    const_region_iterator_false_type;
-  region_iterator_true_type i;
-  const_region_iterator_true_type ci;
-  region_iterator_false_type j;
-  const_region_iterator_false_type cj;
-}
-
-BOOST_AUTO_TEST_CASE( test_region_iterator_value_ctor_equal )
-{
-  typedef details::Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    region_iterator_true_type;
-  typedef details::Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    region_iterator_false_type;
-  typedef details::Const_Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    const_region_iterator_true_type;
-  typedef details::Const_Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    const_region_iterator_false_type;
-  region_bounds<pair_type, pair_less> bounds;
-  region_iterator_true_type i(details::Dynamic_rank(2), bounds, 1, 0);
-  region_iterator_false_type j(details::Dynamic_rank(2), bounds, 1, 0);
-  const_region_iterator_true_type ci
-    (details::Dynamic_rank(2), bounds, 1, 0);
-  const_region_iterator_false_type cj
-    (details::Dynamic_rank(2), bounds, 1, 0);
-  BOOST_CHECK_EQUAL(i.rank()(), 2);
-  BOOST_CHECK(i.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(i.impl_.node_dim_(), 1);
-  BOOST_CHECK_EQUAL(j.rank()(), 2);
-  BOOST_CHECK(j.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(j.impl_.node_dim_(), 1);
-  BOOST_CHECK_EQUAL(ci.rank()(), 2);
-  BOOST_CHECK(ci.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(ci.impl_.node_dim_(), 1);
-  BOOST_CHECK_EQUAL(cj.rank()(), 2);
-  BOOST_CHECK(cj.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(cj.impl_.node_dim_(), 1);
-}
-
-BOOST_AUTO_TEST_CASE( test_region_iterator_copy_ctor )
-{
-  typedef details::Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    region_iterator_true_type;
-  typedef details::Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    region_iterator_false_type;
-  typedef details::Const_Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    const_region_iterator_true_type;
-  typedef details::Const_Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    const_region_iterator_false_type;
-  region_bounds<pair_type, pair_less> bounds;
-  region_iterator_true_type k(details::Dynamic_rank(2), bounds, 1, 0);
-  region_iterator_false_type l(details::Dynamic_rank(2), bounds, 1, 0);
-  const_region_iterator_true_type ck
-    (details::Dynamic_rank(2), bounds, 1, 0);
-  const_region_iterator_false_type cl
-    (details::Dynamic_rank(2), bounds, 1, 0);
-  region_iterator_true_type copy_k(k);
-  region_iterator_false_type copy_l(l);
-  const_region_iterator_true_type copy_ck(ck);
-  const_region_iterator_false_type copy_cl(cl);
-  const_region_iterator_true_type const_copy_k(k);
-  const_region_iterator_false_type const_copy_l(l);
-  BOOST_CHECK_EQUAL(copy_k.rank()(), 2);
-  BOOST_CHECK(copy_k.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(copy_k.impl_.node_dim_(), 1);
-  BOOST_CHECK_EQUAL(copy_l.rank()(), 2);
-  BOOST_CHECK(copy_l.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(copy_l.impl_.node_dim_(), 1);
-  BOOST_CHECK_EQUAL(copy_ck.rank()(), 2);
-  BOOST_CHECK(copy_ck.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(copy_ck.impl_.node_dim_(), 1);
-  BOOST_CHECK_EQUAL(copy_cl.rank()(), 2);
-  BOOST_CHECK(copy_cl.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(copy_cl.impl_.node_dim_(), 1);
-  BOOST_CHECK_EQUAL(const_copy_k.rank()(), 2);
-  BOOST_CHECK(const_copy_k.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(const_copy_k.impl_.node_dim_(), 1);
-  BOOST_CHECK_EQUAL(const_copy_l.rank()(), 2);
-  BOOST_CHECK(const_copy_l.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(const_copy_l.impl_.node_dim_(), 1);
-}
-
-BOOST_AUTO_TEST_CASE( test_region_iterator_assignment )
-{
-  typedef details::Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    region_iterator_true_type;
-  typedef details::Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    region_iterator_false_type;
-  typedef details::Const_Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    const_region_iterator_true_type;
-  typedef details::Const_Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    const_region_iterator_false_type;
-  region_bounds<pair_type, pair_less> bounds;
-  region_iterator_true_type k(details::Dynamic_rank(2), bounds, 1, 0);
-  region_iterator_false_type l(details::Dynamic_rank(2), bounds, 1, 0);
-  const_region_iterator_true_type ck
-    (details::Dynamic_rank(2), bounds, 1, 0);
-  const_region_iterator_false_type cl
-    (details::Dynamic_rank(2), bounds, 1, 0);
-  region_iterator_true_type assign_k = k;
-  region_iterator_false_type assign_l = l;
-  const_region_iterator_true_type assign_ck = ck;
-  const_region_iterator_false_type assign_cl = cl;
-  const_region_iterator_true_type const_assign_k = k;
-  const_region_iterator_false_type const_assign_l = l;
-  BOOST_CHECK_EQUAL(assign_k.rank()(), 2);
-  BOOST_CHECK(assign_k.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(assign_k.impl_.node_dim_(), 1);
-  BOOST_CHECK_EQUAL(assign_l.rank()(), 2);
-  BOOST_CHECK(assign_l.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(assign_l.impl_.node_dim_(), 1);
-  BOOST_CHECK_EQUAL(assign_ck.rank()(), 2);
-  BOOST_CHECK(assign_ck.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(assign_ck.impl_.node_dim_(), 1);
-  BOOST_CHECK_EQUAL(assign_cl.rank()(), 2);
-  BOOST_CHECK(assign_cl.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(assign_cl.impl_.node_dim_(), 1);
-  BOOST_CHECK_EQUAL(const_assign_k.rank()(), 2);
-  BOOST_CHECK(const_assign_k.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(const_assign_k.impl_.node_dim_(), 1);
-  BOOST_CHECK_EQUAL(const_assign_l.rank()(), 2);
-  BOOST_CHECK(const_assign_l.impl_.node_ == 0);
-  BOOST_CHECK_EQUAL(const_assign_l.impl_.node_dim_(), 1);
-}
-
-BOOST_AUTO_TEST_CASE( test_region_iterator_equal )
-{
-  typedef details::Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    region_iterator_true_type;
-  typedef details::Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    region_iterator_false_type;
-  typedef details::Const_Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    const_region_iterator_true_type;
-  typedef details::Const_Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type,
-     Kdtree_node<pair_type>, region_bounds<pair_type, pair_less> >
-    const_region_iterator_false_type;
-  region_bounds<pair_type, pair_less> bounds;
-  region_iterator_true_type k(details::Dynamic_rank(2), bounds, 1, 0);
-  region_iterator_false_type l(details::Dynamic_rank(2), bounds, 1, 0);
-  const_region_iterator_true_type ck
-    (details::Dynamic_rank(2), bounds, 1, 0);
-  const_region_iterator_false_type cl
-    (details::Dynamic_rank(2), bounds, 1, 0);
-  BOOST_CHECK(k == k);
-  BOOST_CHECK(k == l);
-  BOOST_CHECK(k == ck);
-  BOOST_CHECK(k == cl);
-  BOOST_CHECK(l == cl);
-  BOOST_CHECK(l == ck);
-  BOOST_CHECK(cl == ck);
-}
-
-BOOST_AUTO_TEST_CASE( test_region_iterator_deference )
-{
-  typedef details::Region_iterator
-    <details::Dynamic_rank, pair_type, pair_type, Kdtree_node<pair_type>,
-     region_bounds<pair_type, pair_less> >
-    region_iterator_true_type;
-  Kdtree_node<pair_type> node;
-  node.parent = 0;
-  node.right = 0;
-  node.left = 0;
-  node.value = pair_type(1, 2);
-  region_bounds<pair_type, pair_less> bounds;
-  region_iterator_true_type i(details::Dynamic_rank(2), bounds, 0, &node);
-  BOOST_CHECK_EQUAL((*i).first, 1);
-  BOOST_CHECK_EQUAL((*i).second, 2);
-  BOOST_CHECK_EQUAL(i->first, 1);
-  BOOST_CHECK_EQUAL(i->second, 2);
-}
-
-BOOST_AUTO_TEST_CASE( test_region_iterator_minimum )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum_equal, Tp, every_quad )
 {
   {
     Hundred_kdtree_2D_fixture fix;
@@ -479,101 +438,6 @@ BOOST_AUTO_TEST_CASE( test_region_iterator_minimum )
   }
 }
 
-BOOST_AUTO_TEST_CASE( test_region_iterator_minimum_empty )
-{
-  {
-    Hundred_kdtree_2D_fixture fix;
-    typedef open_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // These bounds are too narrow to contain anything
-    point2d mid = { {10, 10} };
-    bounds_type empty_bounds(fix.kdtree.key_comp(), mid, mid);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::minimum
-      (fix.kdtree.rank(), empty_bounds, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
-  }
-  {
-    // These bounds do not intersect with the tree bounding box
-    Hundred_kdtree_2D_fixture fix;
-    typedef open_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // These bounds do not intersect with the tree bounding box
-    point2d low = { {20, 20} };
-    point2d high = { {30, 30} };
-    bounds_type empty_bounds(fix.kdtree.key_comp(), low, high);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::minimum
-      (fix.kdtree.rank(), empty_bounds, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
-  }
-  {
-    // These bounds do not intersect with the tree bounding box
-    Hundred_kdtree_2D_fixture fix;
-    typedef open_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type> region_iterator;
-    // These bounds do not intersect with the tree bounding box
-    point2d low = { {-10, -10} };
-    point2d high = { {0, 0} };
-    bounds_type empty_bounds(fix.kdtree.key_comp(), low, high);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::minimum
-      (fix.kdtree.rank(), empty_bounds, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
-  }
-  {
-    Hundred_kdtree_2D_fixture fix;
-    typedef closed_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // reverse in-order iteration until we hit a different key
-    for (int shrink = 0; shrink != 20; ++shrink)
-      {
-        point2d low = { { shrink, shrink } };
-        point2d high = { { 20, 20} };
-        bounds_type shrinking_bounds(fix.kdtree.key_comp(), low, high);
-        // In this case, the minimum of the interval must be equal to min.
-        region_iterator it = region_iterator::minimum
-          (fix.kdtree.rank(), shrinking_bounds,
-           0, fix.kdtree.end().node->parent);
-        Hundred_kdtree_2D_fixture::kdtree_type::iterator
-          min = fix.kdtree.begin(), end = fix.kdtree.end();
-        for (; min != end && !spatial::details::match_all
-               (fix.kdtree.rank(), *min, shrinking_bounds); ++min);
-        BOOST_CHECK(it.impl_.node_ == min.node);
-      }
-  }
-}
 
 BOOST_AUTO_TEST_CASE( test_region_iterator_maximum )
 {

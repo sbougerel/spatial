@@ -500,7 +500,7 @@ namespace spatial
        *  inserted in the tree.
        *
        *  If you need to insert and erase multiple elements continuously, consider
-       *  using a different balancing policy instead.
+       *  using other containers than the "idle" family of containers.
        *
        *  @see Relaxed_kdtree
        */

@@ -15,6 +15,7 @@
 #ifndef SPATIAL_TEST_GEOMETRY_HPP
 #define SPATIAL_TEST_GEOMETRY_HPP
 
+/*
 BOOST_AUTO_TEST_CASE( test_cast_accessor )
 {
   using namespace spatial::details::geometry;
@@ -78,21 +79,21 @@ BOOST_AUTO_TEST_CASE( test_accessor_rebind )
   using namespace spatial::details::geometry;
   {
     rebind<point2d, double,
-                    accessor_less<at_accessor<point2d,
-                                              int>, point2d> >::type
+           accessor_less<at_accessor<point2d,
+                                     int>, point2d> >::type
       must_compile;
   }
   {
     rebind<point2d, double,
-                    bracket_less<point2d> >::type must_compile;
+           bracket_less<point2d> >::type must_compile;
   }
   {
     rebind<point2d, double,
-                    paren_less<point2d> >::type must_compile;
+           paren_less<point2d> >::type must_compile;
   }
   {
     rebind<point2d, double,
-                    iterator_less<point2d> >::type must_compile;
+           iterator_less<point2d> >::type must_compile;
   }
 }
 
@@ -148,65 +149,6 @@ BOOST_AUTO_TEST_CASE( test_euclidian_distance_to_key )
         double other_dist = sqrt(static_cast<double>((p.x-q.x)*(p.x-q.x)
                                  +(p.y-q.y)*(p.y-q.y)
                                  +(p.z-q.z)*(p.z-q.z)));
-        BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
-      }
-  }
-}
-
-BOOST_AUTO_TEST_CASE( test_euclidian_distance_to_box_edge )
-{
-  using namespace spatial::details::geometry;
-  {
-    // distance between a point and a center at the same position should be null
-    double r = math::euclidian_distance_to_box_edge
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, zeros, zeros, zeros, bracket_cast_accessor<point2d, double>());
-    BOOST_CHECK_CLOSE(r, .0, .000000000001);
-  }
-  {
-    // 2 point separated by 1 on each dim should return the right amount
-    double r = math::euclidian_distance_to_box_edge
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, zeros, ones, ones, bracket_cast_accessor<point2d, double>());
-    using namespace std;
-    BOOST_CHECK_CLOSE(r, sqrt(2.0), .000000000001);
-    r = math::euclidian_distance_to_box_edge
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, zeros, zeros, ones, bracket_cast_accessor<point2d, double>());
-    BOOST_CHECK_CLOSE(r, sqrt(2.0), .000000000001);
-  }
-  {
-    // Distance between 2 points at different positions in 3D
-    for (int i=0; i<100; ++i)
-      {
-        triple p, l, h;
-        p.x = rand() % 80 - 40;
-        p.y = rand() % 80 - 40;
-        p.z = rand() % 80 - 40;
-        l.x = rand() % 80 - 40;
-        l.y = rand() % 80 - 40;
-        l.z = rand() % 80 - 40;
-        h.x = rand() % 80 - 40;
-        h.y = rand() % 80 - 40;
-        h.z = rand() % 80 - 40;
-        if (h.x < l.x) std::swap(h.x, l.x);
-        if (h.y < l.y) std::swap(h.y, l.y);
-        if (h.z < l.z) std::swap(h.z, l.z);
-        double dist = math::euclidian_distance_to_box_edge
-          <triple, cast_accessor<triple, double, triple_access>, double>
-          (3, p, l, h, cast_accessor<triple, double, triple_access>());
-        using namespace ::std;
-        double dist_x
-          = abs(static_cast<double>(p.x)-(static_cast<double>(l.x+h.x)/2.0))
-          + (static_cast<double>(h.x-l.x)/2.0);
-        double dist_y
-          = abs(static_cast<double>(p.y)-(static_cast<double>(l.y+h.y)/2.0))
-          + (static_cast<double>(h.y-l.y)/2.0);
-        double dist_z
-          = abs(static_cast<double>(p.z)-(static_cast<double>(l.z+h.z)/2.0))
-          + (static_cast<double>(h.z-l.z)/2.0);
-        double other_dist
-          = sqrt(dist_x * dist_x + dist_y * dist_y + dist_z * dist_z);
         BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
       }
   }
@@ -315,64 +257,6 @@ BOOST_AUTO_TEST_CASE( test_euclidian_square_distance_to_key )
   }
 }
 
-BOOST_AUTO_TEST_CASE( test_euclidian_square_distance_to_box_edge )
-{
-  using namespace spatial::details::geometry;
-  {
-    // distance between a point and a box at the same position should be null
-    double r = math::euclidian_square_distance_to_box_edge
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, zeros, zeros, zeros, bracket_cast_accessor<point2d, double>());
-    BOOST_CHECK_CLOSE(r, .0, .000000000001);
-  }
-  {
-    // point and box separated by 1 on each dim should return the right amount
-    double r = math::euclidian_square_distance_to_box_edge
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, zeros, ones, ones, bracket_cast_accessor<point2d, double>());
-    BOOST_CHECK_CLOSE(r, 2.0, .000000000001);
-    r = math::euclidian_square_distance_to_box_edge
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, zeros, zeros, ones, bracket_cast_accessor<point2d, double>());
-    BOOST_CHECK_CLOSE(r, 2.0, .000000000001);
-  }
-  {
-    // Distance between 2 points at different positions in 3D
-    for (int i=0; i<100; ++i)
-      {
-        triple p, l, h;
-        p.x = rand() % 80 - 40;
-        p.y = rand() % 80 - 40;
-        p.z = rand() % 80 - 40;
-        l.x = rand() % 80 - 40;
-        l.y = rand() % 80 - 40;
-        l.z = rand() % 80 - 40;
-        h.x = rand() % 80 - 40;
-        h.y = rand() % 80 - 40;
-        h.z = rand() % 80 - 40;
-        if (h.x < l.x) std::swap(h.x, l.x);
-        if (h.y < l.y) std::swap(h.y, l.y);
-        if (h.z < l.z) std::swap(h.z, l.z);
-        double dist = math::euclidian_square_distance_to_box_edge
-          <triple, cast_accessor<triple, double, triple_access>, double>
-          (3, p, l, h, cast_accessor<triple, double, triple_access>());
-        using namespace ::std;
-        double dist_x
-          = abs(static_cast<double>(p.x)-(static_cast<double>(l.x+h.x)/2.0))
-          + (static_cast<double>(h.x-l.x)/2.0);
-        double dist_y
-          = abs(static_cast<double>(p.y)-(static_cast<double>(l.y+h.y)/2.0))
-          + (static_cast<double>(h.y-l.y)/2.0);
-        double dist_z
-          = abs(static_cast<double>(p.z)-(static_cast<double>(l.z+h.z)/2.0))
-          + (static_cast<double>(h.z-l.z)/2.0);
-        double other_dist
-          = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
-        BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
-      }
-  }
-}
-
 BOOST_AUTO_TEST_CASE( test_euclidian_square_distance_to_plane )
 {
   using namespace spatial::details::geometry;
@@ -473,60 +357,6 @@ BOOST_AUTO_TEST_CASE( test_manhattan_distance_to_key )
           (3, p, q, cast_accessor<triple, double, triple_access>());
         using namespace ::std;
         double other_dist = abs(p.x-q.x) + abs(p.y-q.y) + abs(p.z-q.z);
-        BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
-      }
-  }
-}
-
-BOOST_AUTO_TEST_CASE( test_manhattan_distance_to_box_edge )
-{
-  using namespace spatial::details::geometry;
-  {
-    // distance between a point and a box at the same position should be null
-    double r = math::manhattan_distance_to_box_edge
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, zeros, zeros, zeros, bracket_cast_accessor<point2d, double>());
-    BOOST_CHECK_CLOSE(r, .0, .000000000001);
-  }
-  {
-    // point and box separated by 1 on each dim should return the right amount
-    double r = math::manhattan_distance_to_box_edge
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, zeros, ones, ones, bracket_cast_accessor<point2d, double>());
-    BOOST_CHECK_CLOSE(r, 2.0, .000000000001);
-    r = math::manhattan_distance_to_box_edge
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, zeros, zeros, ones, bracket_cast_accessor<point2d, double>());
-    BOOST_CHECK_CLOSE(r, 2.0, .000000000001);
-  }
-  {
-    // Distance between 2 points at different positions in 3D
-    for (int i=0; i<100; ++i)
-      {
-        triple p, l, h;
-        p.x = rand() % 80 - 40;
-        p.y = rand() % 80 - 40;
-        p.z = rand() % 80 - 40;
-        l.x = rand() % 80 - 40;
-        l.y = rand() % 80 - 40;
-        l.z = rand() % 80 - 40;
-        h.x = rand() % 80 - 40;
-        h.y = rand() % 80 - 40;
-        h.z = rand() % 80 - 40;
-        if (h.x < l.x) std::swap(h.x, l.x);
-        if (h.y < l.y) std::swap(h.y, l.y);
-        if (h.z < l.z) std::swap(h.z, l.z);
-        double dist = math::manhattan_distance_to_box_edge
-          <triple, cast_accessor<triple, double, triple_access>, double>
-          (3, p, l, h, cast_accessor<triple, double, triple_access>());
-        using namespace ::std;
-        double other_dist
-          = abs(static_cast<double>(p.x)-(static_cast<double>(l.x+h.x)/2.0))
-          + abs(static_cast<double>(h.x-l.x)/2.0)
-          + abs(static_cast<double>(p.y)-(static_cast<double>(l.y+h.y)/2.0))
-          + abs(static_cast<double>(h.y-l.y)/2.0)
-          + abs(static_cast<double>(p.z)-(static_cast<double>(l.z+h.z)/2.0))
-          + abs(static_cast<double>(h.z-l.z)/2.0);
         BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
       }
   }
@@ -885,5 +715,6 @@ BOOST_AUTO_TEST_CASE( test_geometry_manhattan )
     }
   }
 }
+*/
 
 #endif // SPATIAL_TEST_GEOMETRY_HPP

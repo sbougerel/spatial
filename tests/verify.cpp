@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(install_srand)
 #include "bits/spatial_test_function.hpp"
 #include "bits/spatial_test_mapping.hpp"
 #include "bits/spatial_test_region.hpp"
-//#include "bits/spatial_test_geometry.hpp"
+#include "bits/spatial_test_geometry.hpp"
 //#include "bits/spatial_test_neighbor.hpp"
 //#include "bits/spatial_test_kdtree.hpp"
 //#include "bits/spatial_test_relaxed_kdtree.hpp"
