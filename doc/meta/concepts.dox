@@ -1,6 +1,6 @@
 /**
  *  \page LinkModeConcept LinkMode
- *  A link mode defines the relationship between a node and the links that bears
+ *  A link mode defines the relationship between a node and the links that bear
  *  the node. It provides all necessary informations in order to get from the
  *  node to the link, and to access the key and value information contained in
  *  the link.
@@ -11,7 +11,7 @@
  *  of nodes all tied to their key and values through the link type.
  *
  *  There are multiple types of link in the library. Sometimes, the link derives
- *  from the node and the key and values are attributes. Some other times, the
+ *  from the node and the key and values are attributes. Other times, the
  *  value type is the link itself, and it contains the node as an
  *  attribute. This diversity explains why, in the tree algorithm, only the node
  *  is being used, and the key, the value or the link are only retreived on
@@ -82,12 +82,12 @@
  *  \concept_end
  *
  *  Values may be expressed in many more dimensions than the container in which
- *  they are stored. However, if a container as a rank of 3, therefore all the
+ *  they are stored. However, if a container has a rank of 3, therefore all the
  *  values in this container are expected to be represented in at least 3
  *  dimensions in space.
  *
- *  Models of this concepts are not normally used by the user, however, they are
- *  used internally by all containers. Their are two models of Rank in the
+ *  Models of this concept are not normally used by the user, however, they are
+ *  used internally by all containers. There are two models of Rank in the
  *  library:
  *  \ul Static_rank, which holds a value of the number of dimension that is known
  *  at compile time, and will not change during program execution. That value is
@@ -222,8 +222,8 @@
  *  };
  *  \endcode
  *
- *  In this very simple example, there are no more than one dimension being
- *  considered, so the first and last parameters are no used. As can be seen
+ *  In this very simple example, there is no more than one dimension being
+ *  considered, so the first and last parameters are not used. As can be seen
  *  from the implementation of the predicate, any value between 0 and 10
  *  included for \c key, would result in the return value equal to
  *  spatial::matching. If the value of \c key is less than 0, the lower bound of
@@ -348,8 +348,8 @@
  *
  *  - [4] for any 2 points \c origin and \c key, [3] must always return a
  *  result that is lower or equal to [2], regardless of the dimension being
- *  considered. If rule [4] is not enforced in the geometry (because of
- *  errors in approximations during the calculation, for example), then the
+ *  considered. If rule [4] is not enforced in the geometry (For example, due to
+ *  errors in approximations during the calculation), then the
  *  iterator would not work properly and would skip some items in the
  *  container. When writing Geometries for Manifolds or Riemanean spaces,
  *  you must pay special attention to this rule, since the shortest distance

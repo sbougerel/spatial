@@ -396,19 +396,19 @@ namespace spatial
     const
     {
       return (dim < (rank >> 1))
-        ? (Compare::operator()(dim + (rank >> 1), target_, dim, key)
-           ? above : matching)
-        : (Compare::operator()(dim, key, dim - (rank >> 1), target_)
-           ? below : matching);
+        ? (Compare::operator()(dim, key, dim + (rank >> 1), target_)
+           ? matching : above)
+        : (Compare::operator()(dim - (rank >> 1), target_, dim, key)
+           ? matching : below);
     }
 
     relative_order overlap_bounds_impl
-    (dimension_type dim, dimension_type rank, const Key& key, lhlh_layout_tag)
+    (dimension_type dim, dimension_type, const Key& key, lhlh_layout_tag)
     const
     {
       return ((dim % 2) == 0)
-        ? (Compare::operator()(dim + 1, target_, dim, key) ? above : matching)
-        : (Compare::operator()(dim, key, dim - 1, target_) ? below : matching);
+        ? (Compare::operator()(dim, key, dim + 1, target_) ? matching : above)
+        : (Compare::operator()(dim - 1, target_, dim, key) ? matching : below);
     }
 
     relative_order overlap_bounds_impl
@@ -416,19 +416,19 @@ namespace spatial
     const
     {
       return (dim < (rank >> 1))
-        ? (Compare::operator()(dim, key, dim + (rank >> 1), target_)
-           ? below : matching)
-        : (Compare::operator()(dim - (rank >> 1), target_, dim, key)
-           ? above : matching);
+        ? (Compare::operator()(dim + (rank >> 1), target_, dim, key)
+           ? matching : below)
+        : (Compare::operator()(dim, key, dim - (rank >> 1), target_)
+           ? matching : above);
     }
 
     relative_order overlap_bounds_impl
-    (dimension_type dim, dimension_type rank, const Key& key, hlhl_layout_tag)
+    (dimension_type dim, dimension_type, const Key& key, hlhl_layout_tag)
     const
     {
       return ((dim % 2) == 0)
-        ? (Compare::operator()(dim, key, dim + 1, target_) ? below : matching)
-        : (Compare::operator()(dim - 1, target_, dim, key) ? above : matching);
+        ? (Compare::operator()(dim + 1, target_, dim, key) ? matching : below)
+        : (Compare::operator()(dim, key, dim - 1, target_) ? matching : above);
     }
   };
 
@@ -537,7 +537,7 @@ namespace spatial
     }
 
     relative_order enclose_bounds_impl
-    (dimension_type dim, dimension_type rank, const Key& key, lhlh_layout_tag)
+    (dimension_type dim, dimension_type, const Key& key, lhlh_layout_tag)
     const
     {
       return ((dim % 2) == 0)
@@ -563,7 +563,7 @@ namespace spatial
     }
 
     relative_order enclose_bounds_impl
-    (dimension_type dim, dimension_type rank, const Key& key, hlhl_layout_tag)
+    (dimension_type dim, dimension_type, const Key& key, hlhl_layout_tag)
     const
     {
       return ((dim % 2) == 0)
@@ -632,16 +632,6 @@ namespace spatial
        typename container_traits<Ct>::rank_type,
        region_iterator<Ct, Predicate> >
   {
-    /**
-     *  Iterates over values contained within the orthogonal region expressed
-     *  in the \ref RegionPredicate. The elements returned by this iterator are
-     *  not ordered, but are guarrented to fall within the given Predicate
-     *  provided.
-     *
-     *  Uses \ref Predicate to find all matching values. \ref Predicate must
-     *  be a model of \ref RegionPredicate. See the \ref RegionPredicate concept
-     *  for more information on writing a region predicates.
-     */
   private:
     typedef typename details::Bidirectional_iterator
     <typename container_traits<Ct>::mode_type,
@@ -691,22 +681,6 @@ namespace spatial
                     dimension_type dim,
                     typename container_traits<Ct>::mode_type::node_ptr ptr)
       : Base(container.rank(), ptr, dim), pred_(predicate) { }
-
-    //@{
-    /**
-     *  This iterator can be casted silently into a container iterator. You can
-     *  therefore use this iterator as an argument to the erase function of
-     *  the container, for example.
-     *
-     *  \warning When using this iterator as an argument to the erase function
-     *  of the container, this iterator will get invalidated after erase.
-     */
-    operator typename container_traits<Ct>::iterator()
-    { return container_traits<Ct>::iterator(Base::node); }
-
-    operator typename container_traits<Ct>::const_iterator()
-    { return container_traits<Ct>::const_iterator(Base::node); }
-    //@}
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
@@ -816,19 +790,8 @@ namespace spatial
       : Base(container.rank(), ptr, dim), pred_(pred) { }
 
     //! Convertion of an iterator into a const_iterator is permitted.
-    region_iterator(const region_iterator<Ct>& iter)
+    region_iterator(const region_iterator<Ct, Predicate>& iter)
       : Base(iter.rank(), iter.node, iter.node_dim), pred_(iter.predicate()) { }
-
-    /**
-     *  This iterator can be casted silently into a container iterator. You can
-     *  therefore use this iterator as an argument to the erase function of
-     *  the container, for example.
-     *
-     *  \warning When using this iterator as an argument to the erase function
-     *  of the container, this iterator will get invalidated after erase.
-     */
-    operator typename container_traits<Ct>::const_iterator()
-    { return container_traits<Ct>::const_iterator(Base::node); }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
@@ -1047,85 +1010,200 @@ namespace spatial
       (region_begin(container, pred), region_end(container, pred));
   }
 
-  template<typename Ct>
-  struct equal_iterator
-    : region_iterator
-      <Ct, equal_bounds<typename container_traits<Ct>::key_type,
-                        typename container_traits<Ct>::key_compare> >
-  { };
-
-  template<typename Ct>
-  struct equal_iterator_pair
-    : region_iterator_pair
-      <Ct, equal_bounds<typename container_traits<Ct>::key_type,
-                        typename container_traits<Ct>::key_compare> >
-  { };
-
-  template<typename Ct>
-  struct open_region_iterator
-    : region_iterator
-      <Ct, open_bounds<typename container_traits<Ct>::key_type,
-                       typename container_traits<Ct>::key_compare> >
-  { };
-
-  template<typename Ct>
-  struct open_region_iterator_pair
-    : region_iterator_pair
-      <Ct, open_bounds<typename container_traits<Ct>::key_type,
-                       typename container_traits<Ct>::key_compare> >
-  { };
-
-  template<typename Ct>
-  struct closed_region_iterator
-    : region_iterator
-      <Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                         typename container_traits<Ct>::key_compare> >
-  { };
-
-  template<typename Ct>
-  struct closed_region_iterator_pair
-    : region_iterator_pair
-      <Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                         typename container_traits<Ct>::key_compare> >
-  { };
-
-  template<typename Ct, typename Layout = llhh_layout_tag>
-  struct enclosed_iterator
-    : region_iterator
-      <Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                           typename container_traits<Ct>::key_compare,
-                           Layout> >
-  { };
-
-  template<typename Ct, typename Layout = llhh_layout_tag>
-  struct enclosed_iterator_pair
-    : region_iterator_pair
-      <Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                           typename container_traits<Ct>::key_compare,
-                           Layout> >
-  { };
-
-  template<typename Ct, typename Layout = llhh_layout_tag>
-  struct overlap_iterator
-    : region_iterator
-      <Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                          typename container_traits<Ct>::key_compare,
-                          Layout> >
-  { };
-
-  template<typename Ct, typename Layout = llhh_layout_tag>
-  struct overlap_iterator_pair
-    : region_iterator_pair
-      <Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                          typename container_traits<Ct>::key_compare,
-                          Layout> >
-  { };
-
 /* MACRO FOR GENERATION OF FACTORIES FOR ALL TYPES OF REGION ITERATORS
  *
  * The follwing sets of macros are used to rapidly define all factories for
- * every type of region iterators.
+ * every type of region iterators as well as the type variations themselves.
  */
+
+# define SPATIAL_REGION_DEFINE(Name, Bounds)                            \
+  template<typename Ct>                                                 \
+  struct Name##_iterator                                                \
+    : region_iterator                                                   \
+       <Ct, Bounds<typename container_traits<Ct>::key_type,             \
+                   typename container_traits<Ct>::key_compare> >        \
+  {                                                                     \
+    Name##_iterator() { }                                               \
+    Name##_iterator                                                     \
+      (const region_iterator                                            \
+       <Ct, Bounds<typename container_traits<Ct>::key_type,             \
+                   typename container_traits<Ct>::key_compare> >&       \
+       other)                                                           \
+      : region_iterator                                                 \
+      <const Ct, Bounds<typename container_traits<Ct>::key_type,        \
+                        typename container_traits<Ct>::key_compare> >   \
+      (other) { }                                                       \
+  };                                                                    \
+  template<typename Ct>                                                 \
+  struct Name##_iterator<const Ct>                                      \
+    : region_iterator                                                   \
+       <const Ct, Bounds<typename container_traits<Ct>::key_type,       \
+                         typename container_traits<Ct>::key_compare> >  \
+  {                                                                     \
+    Name##_iterator() { }                                               \
+    Name##_iterator                                                     \
+      (const region_iterator                                            \
+       <const Ct, Bounds<typename container_traits<Ct>::key_type,       \
+                         typename container_traits<Ct>::key_compare> >& \
+       other)                                                           \
+      : region_iterator                                                 \
+      <const Ct, Bounds<typename container_traits<Ct>::key_type,        \
+                        typename container_traits<Ct>::key_compare> >   \
+      (other) { }                                                       \
+    Name##_iterator                                                     \
+      (const region_iterator                                            \
+       <Ct, Bounds<typename container_traits<Ct>::key_type,             \
+                   typename container_traits<Ct>::key_compare> >&       \
+       other)                                                           \
+      : region_iterator                                                 \
+      <const Ct, Bounds<typename container_traits<Ct>::key_type,        \
+                        typename container_traits<Ct>::key_compare> >   \
+      (other) { }                                                       \
+  };                                                                    \
+  template<typename Ct>                                                 \
+  struct Name##_iterator_pair                                           \
+    : region_iterator_pair                                              \
+      <Ct, Bounds<typename container_traits<Ct>::key_type,              \
+                  typename container_traits<Ct>::key_compare> >         \
+  {                                                                     \
+    Name##_iterator_pair() { }                                          \
+    Name##_iterator_pair                                                \
+      (const region_iterator                                            \
+       <Ct, Bounds<typename container_traits<Ct>::key_type,             \
+                   typename container_traits<Ct>::key_compare> >& a,    \
+       const region_iterator                                            \
+       <Ct, Bounds<typename container_traits<Ct>::key_type,             \
+                   typename container_traits<Ct>::key_compare> >& b)    \
+      : region_iterator_pair                                            \
+      <Ct, Bounds<typename container_traits<Ct>::key_type,              \
+                  typename container_traits<Ct>::key_compare> >         \
+      (a, b) { }                                                        \
+  };                                                                    \
+  template<typename Ct>                                                 \
+  struct Name##_iterator_pair<const Ct>                                 \
+    : region_iterator_pair                                              \
+    <const Ct, Bounds<typename container_traits<Ct>::key_type,          \
+                      typename container_traits<Ct>::key_compare> >     \
+  {                                                                     \
+    Name##_iterator_pair() { }                                          \
+    Name##_iterator_pair                                                \
+      (const region_iterator                                            \
+       <const Ct, Bounds<typename container_traits<Ct>::key_type,       \
+                         typename container_traits<Ct>::key_compare> >& a, \
+       const region_iterator                                            \
+       <const Ct, Bounds<typename container_traits<Ct>::key_type,       \
+                         typename container_traits<Ct>::key_compare> >& b) \
+      : region_iterator_pair                                            \
+      <const Ct, Bounds<typename container_traits<Ct>::key_type,        \
+                        typename container_traits<Ct>::key_compare> >   \
+      (a, b) { }                                                        \
+    Name##_iterator_pair(const Name##_iterator_pair<Ct>& other)         \
+      : region_iterator_pair                                            \
+      <const Ct, Bounds<typename container_traits<Ct>::key_type,        \
+                        typename container_traits<Ct>::key_compare> >   \
+      (other) { }                                                       \
+  }
+
+# define SPATIAL_REGION_DEFINE_L(Name, Bounds)                          \
+  template<typename Ct, typename Layout = llhh_layout_tag>              \
+  struct Name##_iterator                                                \
+    : region_iterator                                                   \
+       <Ct, Bounds<typename container_traits<Ct>::key_type,             \
+                   typename container_traits<Ct>::key_compare,          \
+                   Layout> >                                            \
+  {                                                                     \
+    Name##_iterator() { }                                               \
+    Name##_iterator                                                     \
+      (const region_iterator                                            \
+       <Ct, Bounds<typename container_traits<Ct>::key_type,             \
+                   typename container_traits<Ct>::key_compare,          \
+                   Layout> >& other)                                    \
+      : region_iterator                                                 \
+      <const Ct, Bounds<typename container_traits<Ct>::key_type,        \
+                        typename container_traits<Ct>::key_compare,     \
+                        Layout> >(other) { }                            \
+  };                                                                    \
+  template<typename Ct, typename Layout>                                \
+  struct Name##_iterator<const Ct, Layout>                              \
+    : region_iterator                                                   \
+      <const Ct, Bounds<typename container_traits<Ct>::key_type,        \
+                        typename container_traits<Ct>::key_compare,     \
+                        Layout> >                                       \
+  {                                                                     \
+    Name##_iterator() { }                                               \
+    Name##_iterator                                                     \
+      (const region_iterator                                            \
+       <const Ct, Bounds<typename container_traits<Ct>::key_type,       \
+                         typename container_traits<Ct>::key_compare,    \
+                         Layout> >& other)                              \
+      : region_iterator                                                 \
+      <const Ct, Bounds<typename container_traits<Ct>::key_type,        \
+                        typename container_traits<Ct>::key_compare,     \
+                        Layout> >                                       \
+      (other) { }                                                       \
+    Name##_iterator                                                     \
+      (const region_iterator                                            \
+       <Ct, Bounds<typename container_traits<Ct>::key_type,             \
+                   typename container_traits<Ct>::key_compare,          \
+                   Layout> >& other)                                    \
+      : region_iterator                                                 \
+      <const Ct, Bounds<typename container_traits<Ct>::key_type,        \
+                        typename container_traits<Ct>::key_compare,     \
+                        Layout> >                                       \
+      (other) { }                                                       \
+  };                                                                    \
+  template<typename Ct, typename Layout = llhh_layout_tag>              \
+  struct Name##_iterator_pair                                           \
+    : region_iterator_pair                                              \
+      <Ct, Bounds<typename container_traits<Ct>::key_type,              \
+                  typename container_traits<Ct>::key_compare,           \
+                  Layout> >                                             \
+  {                                                                     \
+    Name##_iterator_pair() { }                                          \
+    Name##_iterator_pair                                                \
+      (const region_iterator                                            \
+       <Ct, Bounds<typename container_traits<Ct>::key_type,             \
+                   typename container_traits<Ct>::key_compare,          \
+                   Layout> >& a,                                        \
+       const region_iterator                                            \
+       <Ct, Bounds<typename container_traits<Ct>::key_type,             \
+                   typename container_traits<Ct>::key_compare,          \
+                   Layout> >& b)                                        \
+      : region_iterator_pair                                            \
+      <Ct, Bounds<typename container_traits<Ct>::key_type,              \
+                  typename container_traits<Ct>::key_compare,           \
+                  Layout> >                                             \
+      (a, b) { }                                                        \
+  };                                                                    \
+  template<typename Ct, typename Layout>                                \
+  struct Name##_iterator_pair<const Ct, Layout>                         \
+    : region_iterator_pair                                              \
+    <const Ct, Bounds<typename container_traits<Ct>::key_type,          \
+                      typename container_traits<Ct>::key_compare,       \
+                      Layout> >                                         \
+  {                                                                     \
+    Name##_iterator_pair() { }                                          \
+    Name##_iterator_pair                                                \
+      (const region_iterator                                            \
+       <const Ct, Bounds<typename container_traits<Ct>::key_type,       \
+                         typename container_traits<Ct>::key_compare,    \
+                         Layout> >& a,                                  \
+       const region_iterator                                            \
+       <const Ct, Bounds<typename container_traits<Ct>::key_type,       \
+                         typename container_traits<Ct>::key_compare,    \
+                         Layout> >& b)                                  \
+      : region_iterator_pair                                            \
+      <const Ct, Bounds<typename container_traits<Ct>::key_type,        \
+                        typename container_traits<Ct>::key_compare,     \
+                        Layout> >                                       \
+      (a, b) { }                                                        \
+    Name##_iterator_pair(const Name##_iterator_pair<Ct>& other)         \
+      : region_iterator_pair                                            \
+      <const Ct, Bounds<typename container_traits<Ct>::key_type,        \
+                        typename container_traits<Ct>::key_compare,     \
+                        Layout> >                                       \
+      (other) { }                                                       \
+  }
 
 # define SPATIAL_REGION_MATCH_BIT(Region, Type, Bounds)                 \
   template <typename Ct>                                                \
@@ -1325,6 +1403,13 @@ namespace spatial
       (container, make_##Bounds(container, lower, upper, layout));      \
   }
 
+  SPATIAL_REGION_DEFINE(equal, equal_bounds);
+  SPATIAL_REGION_DEFINE(open_region, open_bounds);
+  SPATIAL_REGION_DEFINE(closed_region, closed_bounds);
+  SPATIAL_REGION_DEFINE_L(enclosed, enclosed_bounds);
+  SPATIAL_REGION_DEFINE_L(overlap, overlap_bounds);
+
+  // The ending ';' are not available for the following macros
   SPATIAL_REGION_MATCH(equal, equal_bounds)
   SPATIAL_REGION_INTERVAL(region, bounds)
   SPATIAL_REGION_INTERVAL(open_region, open_bounds)
@@ -1332,12 +1417,29 @@ namespace spatial
   SPATIAL_REGION_INTERVAL_L(enclosed, enclosed_bounds)
   SPATIAL_REGION_INTERVAL_L(overlap, overlap_bounds)
 
+# undef SPATIAL_REGION_DEFINE
+# undef SPATIAL_REGION_DEFINE_L
 # undef SPATIAL_REGION_MATCH_BIT
 # undef SPATIAL_REGION_MATCH
 # undef SPATIAL_REGION_INTERVAL_BIT
 # undef SPATIAL_REGION_INTERVAL
 # undef SPATIAL_REGION_INTERVAL_L_BIT
 # undef SPATIAL_REGION_INTERVAL_L
+
+  /**
+   *  This constant is used to declare a type layout tag, which is required by
+   *  the overlap and enclosed region iterators. Creation of these iterators is
+   *  facilitated by these objects.
+   *
+   *  \warning This constant is unique for each translation unit, and therefore
+   *  its address will differ for each translation unit.
+   *  @{
+   */
+  const llhh_layout_tag llhh_layout = llhh_layout_tag();
+  const lhlh_layout_tag lhlh_layout = lhlh_layout_tag();
+  const hhll_layout_tag hhll_layout = hhll_layout_tag();
+  const hlhl_layout_tag hlhl_layout = hlhl_layout_tag();
+  //@}
 
 } // namespace spatial
 

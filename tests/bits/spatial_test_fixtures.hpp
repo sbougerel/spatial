@@ -176,6 +176,65 @@ struct randomize
   }
 };
 
+/**
+ *  Boximize randomizes all values but arranges them so that they form a box.
+ */
+struct boximize
+{
+  template<typename T>
+  void order(T& a, T& b) const
+  {
+    using namespace std;
+    if (a > b) swap(a, b);
+  }
+  enum layout_type { llhh, lhlh, hhll, hlhl };
+  int lower;
+  int higher;
+  int layout;
+  boximize(int l = 0, int h = 1, layout_type v = llhh)
+    : lower(l), higher(h), layout(v) { }
+  int2& operator()(int2& p, int, int) const
+  {
+    p[0] = rand() % (higher - lower) + lower;
+    p[1] = rand() % (higher - lower) + lower;
+    if (llhh || lhlh) order(p[0], p[1]);
+    else order(p[1], p[0]);
+    return p;
+  }
+  quad& operator()(quad& p, int, int) const
+  {
+    p.x = rand() % (higher - lower) + lower;
+    p.y = rand() % (higher - lower) + lower;
+    p.z = rand() % (higher - lower) + lower;
+    p.w = rand() % (higher - lower) + lower;
+    switch(layout)
+    {
+    case llhh: order(p.x, p.z); order(p.y, p.w); break;
+    case lhlh: order(p.x, p.y); order(p.z, p.w); break;
+    case hhll: order(p.z, p.x); order(p.w, p.y); break;
+    default:   order(p.y, p.x); order(p.w, p.z);
+    }
+    return p;
+  }
+  double6& operator()(double6& d, int, int) const
+  {
+    d[0] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
+    d[1] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
+    d[2] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
+    d[3] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
+    d[4] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
+    d[5] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
+    switch(layout)
+    {
+    case llhh: order(d[0], d[3]); order(d[1], d[4]); order(d[2], d[5]); break;
+    case lhlh: order(d[0], d[1]); order(d[2], d[3]); order(d[4], d[5]); break;
+    case hhll: order(d[3], d[0]); order(d[4], d[1]); order(d[5], d[2]); break;
+    default:   order(d[1], d[0]); order(d[3], d[2]); order(d[5], d[4]);
+    }
+    return d;
+  }
+};
+
 // Implement pair comparison needed for what follows:
 template<typename Tp1, typename Tp2>
 bool operator==(const std::pair<const Tp1, Tp2>& a, const std::pair<Tp1, Tp2>& b)
@@ -724,7 +783,6 @@ typedef boost::mpl::list<pointset_fix<quad>,
                          idle_boxset_fix<quad>,
                          runtime_boxset_fix<quad>,
                          runtime_idle_boxset_fix<quad>,
-
                          pointmap_fix<quad, std::string>,
                          tight_pointmap_fix<quad, std::string>,
                          idle_pointmap_fix<quad, std::string>,

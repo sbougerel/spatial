@@ -137,6 +137,28 @@ struct quad_less
       default: throw std::out_of_range("argument 'dim' is greater than 2");
       }
   }
+  bool operator()
+  (dimension_type a, const quad& x, dimension_type b, const quad& y) const
+  {
+    int e1; int e2;
+    switch(a)
+      {
+      case 0: e1 = x.x; break;
+      case 1: e1 = x.y; break;
+      case 2: e1 = x.z; break;
+      case 3: e1 = x.w; break;
+      default: throw std::out_of_range("argument 'dim' is greater than 2");
+      }
+    switch(b)
+      {
+      case 0: e2 = y.x; break;
+      case 1: e2 = y.y; break;
+      case 2: e2 = y.z; break;
+      case 3: e2 = y.w; break;
+      default: throw std::out_of_range("argument 'dim' is greater than 2");
+      }
+    return (e1 < e2);
+  }
 };
 define_compare(quad, quad_less);
 
