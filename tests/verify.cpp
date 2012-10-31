@@ -68,4 +68,4 @@ BOOST_AUTO_TEST_CASE(install_srand)
 //#include "bits/spatial_test_neighbor.hpp"
 //#include "bits/spatial_test_kdtree.hpp"
 //#include "bits/spatial_test_relaxed_kdtree.hpp"
-//#include "bits/spatial_test_pointset.hpp"
+//#include "bits/spatial_test_containers.hpp"

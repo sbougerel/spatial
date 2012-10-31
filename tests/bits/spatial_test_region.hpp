@@ -389,201 +389,184 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_deference, Tp, double6_maps )
   BOOST_CHECK(b.dimension() == fix.container.dimension());
 }
 
-/*
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum_range, Tp, double6_sets )
 {
   {
-    Tp fix(100, boximize(-1, 1));
+    Tp fix(100, randomize(-1, 1));
     // Prove that you can find the min value with N nodes, down to 1 nodes
-    double6 l; l.assign(-1);
-    double6 h; h.assign(1);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator<typename Tp::container_type> it = region_iterator::minimum
-      (fix.kdtree.rank(), whole_tree_box, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.begin().node);
+    double6 l; l.assign(-0.8); // leave a few out...
+    double6 h; h.assign(0.8);
+    while (!fix.container.empty())
+      {
+        region_iterator<typename Tp::container_type>
+          it = region_begin(fix.container, l, h);
+        if (it == region_end(fix.container, l, h)) break;
+        // Make sure it is one within [-0.8, 0.8)
+        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
+                                       make_bounds(fix.container, l, h)));
+        region_iterator<typename Tp::container_type> tmp = it;
+        --tmp;
+        BOOST_CHECK(tmp == region_end(fix.container, l, h));
+        fix.container.erase(it);
+      }
   }
-  { // A tree where all elements are the same!
-
+  { // A tree where all elements are the same (= 100.0)!
+    Tp fix(100, same());
+    double6 k; k.assign(100.0); // leave none out...
+    while (!fix.container.empty())
+      {
+        equal_iterator<typename Tp::container_type>
+          it = equal_begin(fix.container, k);
+        BOOST_CHECK(it != equal_end(fix.container, k));
+        equal_iterator<typename Tp::container_type> tmp = it;
+        --tmp;
+        BOOST_CHECK(tmp == equal_end(fix.container, k));
+        fix.container.erase(it);
+      }
+  }
+  { // test at the limit: a tree with 0 element
+    Tp fix(0);
+    double6 k;
+    closed_region_iterator<typename Tp::container_type>
+      it = closed_region_begin(fix.container, k, k);
+    BOOST_CHECK(it == closed_region_end(fix.container, k, k));
   }
   { // test at the limit: a tree with 1 element
+    Tp fix(1, same());
+    double6 k; k.assign(1.0);
+    closed_region_iterator<typename Tp::container_type>
+      it = closed_region_begin(fix.container, k, k);
+    BOOST_CHECK(it != closed_region_end(fix.container, k, k));
   }
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
-  }
-  { // test at the limit: an unbalanced tree (i.e. insertions in order)!
-  }
-  {
-    Hundred_kdtree_2D_fixture fix;
-    typedef equal_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // reverse in-order iteration until we hit a different key
-    Hundred_kdtree_2D_fixture::kdtree_type::iterator
-      max = --fix.kdtree.end(), tmp = max, begin = fix.kdtree.begin();
-    point2d value = *max;
-    for (; tmp != begin; --tmp)
-      { if (*tmp == value) { max = tmp; } }
-    bounds_type equal(fix.kdtree.key_comp(), value);
-    // In this case, the minimum of the interval must be equal to max.
-    region_iterator it = region_iterator::minimum
-      (fix.kdtree.rank(), equal, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == max.node);
-  }
-}
-
-BOOST_AUTO_TEST_CASE( test_region_iterator_maximum )
-{
-  {
-    Hundred_kdtree_2D_fixture fix;
-    typedef closed_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // bounds totally encloses the tree, whose elements are between 0 and 20.
-    point2d low = { {0, 0} };
-    point2d high = { {20, 20} };
-    bounds_type whole_tree_box(fix.kdtree.key_comp(), low, high);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::maximum
-      (fix.kdtree.rank(), whole_tree_box, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == (--fix.kdtree.end()).node);
-  }
-  {
-    Hundred_kdtree_2D_fixture fix;
-    typedef equal_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // reverse in-order iteration until we hit a different key
-    Hundred_kdtree_2D_fixture::kdtree_type::iterator
-      min = fix.kdtree.begin(), tmp = min, end = fix.kdtree.end();
-    point2d value = *min;
-    for (; tmp != end; ++tmp) { if (*tmp == value) { min = tmp; } }
-    bounds_type equal(fix.kdtree.key_comp(), value);
-    // In this case, the minimum of the interval must be equal to max.
-    region_iterator it = region_iterator::maximum
-      (fix.kdtree.rank(), equal, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == min.node);
-  }
-  {
-    Hundred_kdtree_2D_fixture fix;
-    typedef closed_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // reverse in-order iteration until we hit a different key
-    for (int shrink = 20; shrink != 0; --shrink)
+    Tp fix(100, increase());
+    // Prove that you can find the min value with N nodes, down to 1 nodes
+    double6 l; l.assign(20.0); // leave a few out...
+    double6 h; h.assign(80.0);
+    while (!fix.container.empty())
       {
-        point2d low = { { 0, 0} };
-        point2d high = { { shrink, shrink } };
-        bounds_type shrinking_bounds(fix.kdtree.key_comp(), low, high);
-        // In this case, the minimum of the interval must be equal to max.
-        region_iterator it = region_iterator::maximum
-          (fix.kdtree.rank(), shrinking_bounds,
-           0, fix.kdtree.end().node->parent);
-        Hundred_kdtree_2D_fixture::kdtree_type::iterator
-          max = fix.kdtree.end(), begin = fix.kdtree.begin();
-        for (; max != begin && !spatial::details::match_all
-               (fix.kdtree.rank(), *(--max), shrinking_bounds););
-        if (spatial::details::match_all
-            (fix.kdtree.rank(), *max, shrinking_bounds))
-          { BOOST_CHECK(it.impl_.node_ == max.node); }
-        else
-          { BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node); }
+        open_region_iterator<typename Tp::container_type>
+          it = open_region_begin(fix.container, l, h);
+        if (it == open_region_end(fix.container, l, h)) break;
+        // Make sure it is one within (10, 90)
+        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
+                                       make_open_bounds(fix.container, l, h)));
+        open_region_iterator<typename Tp::container_type> tmp = it;
+        --tmp;
+        BOOST_CHECK(tmp == open_region_end(fix.container, l, h));
+        fix.container.erase(it);
+      }
+  }
+  { // test at the limit: an unbalanced tree (i.e. insertions in order)!
+    Tp fix(100, decrease());
+    // Prove that you can find the min value with N nodes, down to 1 nodes
+    double6 l; l.assign(20.0); // leave a few out...
+    double6 h; h.assign(80.0);
+    while (!fix.container.empty())
+      {
+        closed_region_iterator<typename Tp::container_type>
+          it = closed_region_begin(fix.container, l, h);
+        if (it == closed_region_end(fix.container, l, h)) break;
+        // Make sure it is one within (10, 90)
+        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
+                                       make_closed_bounds(fix.container, l, h)));
+        closed_region_iterator<typename Tp::container_type> tmp = it;
+        --tmp;
+        BOOST_CHECK(tmp == closed_region_end(fix.container, l, h));
+        fix.container.erase(it);
       }
   }
 }
 
-BOOST_AUTO_TEST_CASE( test_region_iterator_maximum_empty )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_iterator_maximum, Tp, double6_sets )
 {
   {
-    Hundred_kdtree_2D_fixture fix;
-    typedef open_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // These bounds are too narrow to contain anything
-    point2d mid = { {10, 10} };
-    bounds_type empty_bounds(fix.kdtree.key_comp(), mid, mid);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::maximum
-      (fix.kdtree.rank(), empty_bounds, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
+    Tp fix(100, randomize(-1, 1));
+    // Prove that you can find the max value with N nodes, down to 1 nodes
+    double6 l; l.assign(-0.8); // leave a few out...
+    double6 h; h.assign(0.8);
+    while (!fix.container.empty())
+      {
+        region_iterator<typename Tp::container_type>
+          it = region_end(fix.container, l, h);
+        --it;
+        if (it == region_end(fix.container, l, h)) break;
+        // Make sure it is one within [-0.8, 0.8)
+        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
+                                       make_bounds(fix.container, l, h)));
+        region_iterator<typename Tp::container_type> tmp = it;
+        ++tmp;
+        BOOST_CHECK(tmp == region_end(fix.container, l, h));
+        fix.container.erase(it);
+      }
   }
-  {
-    // These bounds do not intersect with the tree bounding box
-    Hundred_kdtree_2D_fixture fix;
-    typedef open_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // These bounds do not intersect with the tree bounding box
-    point2d low = { {20, 20} };
-    point2d high = { {30, 30} };
-    bounds_type empty_bounds(fix.kdtree.key_comp(), low, high);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::maximum
-      (fix.kdtree.rank(), empty_bounds, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
+  { // A tree where all elements are the same (= 100.0)!
+    Tp fix(100, same());
+    double6 k; k.assign(100.0); // leave none out...
+    while (!fix.container.empty())
+      {
+        equal_iterator<typename Tp::container_type>
+          it = equal_end(fix.container, k);
+        BOOST_CHECK(equal_begin(fix.container, k) != it);
+        --it;
+        BOOST_CHECK(it != equal_end(fix.container, k));
+        equal_iterator<typename Tp::container_type> tmp = it;
+        ++tmp;
+        BOOST_CHECK(tmp == equal_end(fix.container, k));
+        fix.container.erase(it);
+      }
   }
-  {
-    // These bounds do not intersect with the tree bounding box
-    Hundred_kdtree_2D_fixture fix;
-    typedef open_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // These bounds do not intersect with the tree bounding box
-    point2d low = { {-10, -10} };
-    point2d high = { {0, 0} };
-    bounds_type empty_bounds(fix.kdtree.key_comp(), low, high);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::maximum
-      (fix.kdtree.rank(), empty_bounds, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
+  { // test at the limit: a tree with 1 element
+    Tp fix(1, same());
+    double6 k; k.assign(1.0);
+    closed_region_iterator<typename Tp::container_type>
+      it = closed_region_end(fix.container, k, k);
+    --it;
+    BOOST_CHECK(it != closed_region_end(fix.container, k, k));
+  }
+  { // test at the limit: an unbalanced tree (i.e. insertions in order)!
+    Tp fix(100, increase());
+    // Prove that you can find the min value with N nodes, down to 1 nodes
+    double6 l; l.assign(20.0); // leave a few out...
+    double6 h; h.assign(80.0);
+    while (!fix.container.empty())
+      {
+        open_region_iterator<typename Tp::container_type>
+          it = open_region_end(fix.container, l, h);
+        --it;
+        if (it == open_region_end(fix.container, l, h)) break;
+        // Make sure it is one within (10, 90)
+        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
+                                       make_open_bounds(fix.container, l, h)));
+        open_region_iterator<typename Tp::container_type> tmp = it;
+        ++tmp;
+        BOOST_CHECK(tmp == open_region_end(fix.container, l, h));
+        fix.container.erase(it);
+      }
+  }
+  { // test at the limit: an unbalanced tree (i.e. insertions in order)!
+    Tp fix(100, decrease());
+    // Prove that you can find the min value with N nodes, down to 1 nodes
+    double6 l; l.assign(20.0); // leave a few out...
+    double6 h; h.assign(80.0);
+    while (!fix.container.empty())
+      {
+        closed_region_iterator<typename Tp::container_type>
+          it = closed_region_end(fix.container, l, h);
+        --it;
+        if (it == closed_region_end(fix.container, l, h)) break;
+        // Make sure it is one within (10, 90)
+        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
+                                       make_closed_bounds(fix.container, l, h)));
+        closed_region_iterator<typename Tp::container_type> tmp = it;
+        ++tmp;
+        BOOST_CHECK(tmp == closed_region_end(fix.container, l, h));
+        fix.container.erase(it);
+      }
   }
 }
 
+/*
 BOOST_AUTO_TEST_CASE( test_region_iterator_pre_increment )
 {
   {
@@ -778,554 +761,6 @@ BOOST_AUTO_TEST_CASE( test_region_iterator_post_increment )
       const_iterator;
     // in order region iteration.
     Hundred_kdtree_2D_fixture fix;
-    // bounds totally encloses the tree, whose elements are between 0 and 20.
-    point2d low = { {0, 0} };
-    point2d high = { {20, 20} };
-    bounds_type whole_tree_box(fix.kdtree.key_comp(), low, high);
-    // Check in-order transversal
-    region_iterator test = region_iterator::minimum
-      (fix.kdtree.rank(), whole_tree_box,
-       0, fix.kdtree.end().node->parent);
-    region_iterator before = test;
-    region_iterator after = test++;
-    BOOST_CHECK(before == after);
-    ++after;
-    BOOST_CHECK(after == test);
-}
-
-BOOST_AUTO_TEST_CASE( test_pointset_region )
-{
-  pointset<2, point2d> points;
-  // Now add some points to pointset and iterate throught these points.
-  points.insert(zeros);
-  points.insert(ones);
-  points.insert(ones);
-  points.insert(twos);
-  points.insert(twos);
-  points.insert(fours);
-  points.insert(fives);
-  region_predicate_view<pointset<2, point2d>,
-    region_bounds<typename spatial::container_traits<pointset<2, point2d> >::key_type,
-                 typename spatial::container_traits<pointset<2, point2d> >::key_compare> >
-    region1(points, make_region_bounds(points, ones, threes));
-  BOOST_CHECK(region1.begin() != region1.end());
-  BOOST_CHECK(region1.cbegin() != region1.cend());
-  region_predicate_view<pointset<2, point2d>,
-    region_bounds<typename spatial::container_traits<pointset<2, point2d> >::key_type,
-                 typename spatial::container_traits<pointset<2, point2d> >::key_compare> >
-    region2(points, make_region_bounds(points, threes, fours));
-  BOOST_CHECK(region2.begin() == region2.end());
-  BOOST_CHECK(region2.cbegin() == region2.cend());
-  region_predicate_view<const pointset<2, point2d>,
-    region_bounds<typename spatial::container_traits<pointset<2, point2d> >::key_type,
-                 typename spatial::container_traits<pointset<2, point2d> >::key_compare> >
-    region3(points, make_region_bounds(points, threes, fours));
-  BOOST_CHECK(region3.begin() == region3.end());
-  BOOST_CHECK(region3.cbegin() == region3.cend());
-  region_predicate_view<const pointset<2, point2d>,
-    region_bounds<typename spatial::container_traits<pointset<2, point2d> >::key_type,
-                 typename spatial::container_traits<pointset<2, point2d> >::key_compare> >
-    region4(points, make_region_bounds(points, ones, threes));
-  BOOST_CHECK(region4.begin() != region4.end());
-  BOOST_CHECK(region4.cbegin() != region4.cend());
-}
-
-BOOST_AUTO_TEST_CASE( test_pointset_other_region_view )
-{
-  pointset<2, point2d> points;
-  region_view<pointset<2, point2d> > view1(points, zeros, ones);
-  region_view<const pointset<2, point2d> > view2(points, zeros, ones);
-  closed_region_view<pointset<2, point2d> > view3(points, zeros, ones);
-  closed_region_view<const pointset<2, point2d> > view4(points, zeros, ones);
-  open_region_view<pointset<2, point2d> > view5(points, zeros, ones);
-  open_region_view<const pointset<2, point2d> > view6(points, zeros, ones);
-}
-
-BOOST_AUTO_TEST_CASE( test_relaxed_region_iterator_minimum )
-{
-  {
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    typedef closed_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type> region_iterator;
-    // bounds totally encloses the tree, whose elements are between 0 and 20.
-    point2d low = { {0, 0} };
-    point2d high = { {20, 20} };
-    bounds_type whole_tree_box(fix.kdtree.key_comp(), low, high);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::minimum
-      (fix.kdtree.rank(), whole_tree_box, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.begin().node);
-  }
-  {
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    typedef equal_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type> region_iterator;
-    // reverse in-order iteration until we hit a different key
-    Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::iterator
-      max = --fix.kdtree.end(), tmp = max, begin = fix.kdtree.begin();
-    point2d value = *max;
-    for (; tmp != begin; --tmp)
-      { if (*tmp == value) { max = tmp; } }
-    bounds_type equal(fix.kdtree.key_comp(), value);
-    // In this case, the minimum of the interval must be equal to max.
-    region_iterator it = region_iterator::minimum
-      (fix.kdtree.rank(), equal, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == max.node);
-  }
-}
-
-BOOST_AUTO_TEST_CASE( test_relaxed_region_iterator_minimum_empty )
-{
-  {
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    typedef open_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type> region_iterator;
-    // These bounds are too narrow to contain anything
-    point2d mid = { {10, 10} };
-    bounds_type empty_bounds(fix.kdtree.key_comp(), mid, mid);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::minimum
-      (fix.kdtree.rank(), empty_bounds, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
-  }
-  {
-    // These bounds do not intersect with the tree bounding box
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    typedef open_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // These bounds do not intersect with the tree bounding box
-    point2d low = { {20, 20} };
-    point2d high = { {30, 30} };
-    bounds_type empty_bounds(fix.kdtree.key_comp(), low, high);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::minimum
-      (fix.kdtree.rank(), empty_bounds, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
-  }
-  {
-    // These bounds do not intersect with the tree bounding box
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    typedef open_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // These bounds do not intersect with the tree bounding box
-    point2d low = { {-10, -10} };
-    point2d high = { {0, 0} };
-    bounds_type empty_bounds(fix.kdtree.key_comp(), low, high);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::minimum
-      (fix.kdtree.rank(), empty_bounds, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
-  }
-  {
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    typedef closed_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // reverse in-order iteration until we hit a different key
-    for (int shrink = 0; shrink != 20; ++shrink)
-      {
-        point2d low = { { shrink, shrink } };
-        point2d high = { { 20, 20} };
-        bounds_type shrinking_bounds(fix.kdtree.key_comp(), low, high);
-        // In this case, the minimum of the interval must be equal to min.
-        region_iterator it = region_iterator::minimum
-          (fix.kdtree.rank(), shrinking_bounds,
-           0, fix.kdtree.end().node->parent);
-        Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::iterator
-          min = fix.kdtree.begin(), end = fix.kdtree.end();
-        for (; min != end && !spatial::details::match_all
-               (fix.kdtree.rank(), *min, shrinking_bounds); ++min);
-        BOOST_CHECK(it.impl_.node_ == min.node);
-      }
-  }
-}
-
-BOOST_AUTO_TEST_CASE( test_relaxed_region_iterator_maximum )
-{
-  {
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    typedef closed_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // bounds totally encloses the tree, whose elements are between 0 and 20.
-    point2d low = { {0, 0} };
-    point2d high = { {20, 20} };
-    bounds_type whole_tree_box(fix.kdtree.key_comp(), low, high);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::maximum
-      (fix.kdtree.rank(), whole_tree_box, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == (--fix.kdtree.end()).node);
-  }
-  {
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    typedef equal_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // reverse in-order iteration until we hit a different key
-    Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::iterator
-      min = fix.kdtree.begin(), tmp = min, end = fix.kdtree.end();
-    point2d value = *min;
-    for (; tmp != end; ++tmp) { if (*tmp == value) { min = tmp; } }
-    bounds_type equal(fix.kdtree.key_comp(), value);
-    // In this case, the minimum of the interval must be equal to max.
-    region_iterator it = region_iterator::maximum
-      (fix.kdtree.rank(), equal, 0, fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == min.node);
-  }
-  {
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    typedef closed_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // reverse in-order iteration until we hit a different key
-    for (int shrink = 20; shrink != 0; --shrink)
-      {
-        point2d low = { { 0, 0} };
-        point2d high = { { shrink, shrink } };
-        bounds_type shrinking_bounds(fix.kdtree.key_comp(), low, high);
-        // In this case, the minimum of the interval must be equal to max.
-        region_iterator it = region_iterator::maximum
-          (fix.kdtree.rank(), shrinking_bounds,
-           0, fix.kdtree.end().node->parent);
-        Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::iterator
-          max = fix.kdtree.end(), begin = fix.kdtree.begin();
-        for (; max != begin && !spatial::details::match_all
-               (fix.kdtree.rank(), *(--max), shrinking_bounds););
-        if (spatial::details::match_all
-            (fix.kdtree.rank(), *max, shrinking_bounds))
-          { BOOST_CHECK(it.impl_.node_ == max.node); }
-        else
-          { BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node); }
-      }
-  }
-}
-
-BOOST_AUTO_TEST_CASE( test_relaxed_region_iterator_maximum_empty )
-{
-  {
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    typedef open_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // These bounds are too narrow to contain anything
-    point2d mid = { {10, 10} };
-    bounds_type empty_bounds(fix.kdtree.key_comp(), mid, mid);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::maximum
-      (fix.kdtree.rank(), empty_bounds, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
-  }
-  {
-    // These bounds do not intersect with the tree bounding box
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    typedef open_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // These bounds do not intersect with the tree bounding box
-    point2d low = { {20, 20} };
-    point2d high = { {30, 30} };
-    bounds_type empty_bounds(fix.kdtree.key_comp(), low, high);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::maximum
-      (fix.kdtree.rank(), empty_bounds, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
-  }
-  {
-    // These bounds do not intersect with the tree bounding box
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    typedef open_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    // These bounds do not intersect with the tree bounding box
-    point2d low = { {-10, -10} };
-    point2d high = { {0, 0} };
-    bounds_type empty_bounds(fix.kdtree.key_comp(), low, high);
-    // In this case, the minimum of the interval must be equal to begin().
-    region_iterator it = region_iterator::maximum
-      (fix.kdtree.rank(), empty_bounds, 0,
-       fix.kdtree.end().node->parent);
-    BOOST_CHECK(it.impl_.node_ == fix.kdtree.end().node);
-  }
-}
-
-BOOST_AUTO_TEST_CASE( test_relaxed_region_iterator_pre_increment )
-{
-  {
-    typedef closed_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    typedef Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::const_iterator
-      const_iterator;
-    // in order region iteration.
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    // bounds totally encloses the tree, whose elements are between 0 and 20.
-    point2d low = { {0, 0} };
-    point2d high = { {20, 20} };
-    bounds_type whole_tree_box(fix.kdtree.key_comp(), low, high);
-    // Check in-order transversal
-    region_iterator region_min = region_iterator::minimum
-      (fix.kdtree.rank(), whole_tree_box, 0,
-       fix.kdtree.end().node->parent);
-    const_iterator min; min.node = region_min.impl_.node_;
-    const_iterator end(fix.kdtree.end());
-    for(; min != end; ++min)
-      {
-        if (spatial::details::match_all
-            (fix.kdtree.rank(), *min, whole_tree_box))
-          {
-            BOOST_CHECK(region_min.impl_.node_ == min.node);
-            ++region_min;
-          }
-      }
-    BOOST_CHECK(region_min.impl_.node_ == min.node); // at end!
-  }
-  {
-    typedef open_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type> region_iterator;
-    typedef Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::const_iterator
-      const_iterator;
-    // in order region iteration.
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    // bounds encloses only a small part of the tree..
-    point2d low = { {7, 8} };
-    point2d high = { {11, 12} };
-    bounds_type small_box(fix.kdtree.key_comp(), low, high);
-    // Check in-order transversal
-    region_iterator region_min = region_iterator::minimum
-      (fix.kdtree.rank(), small_box, 0,
-       fix.kdtree.end().node->parent);
-    const_iterator min; min.node = region_min.impl_.node_;
-    const_iterator end(fix.kdtree.end());
-    for(; min != end; ++min)
-      {
-        if (spatial::details::match_all
-            (fix.kdtree.rank(), *min, small_box))
-          {
-            BOOST_CHECK(region_min.impl_.node_ == min.node);
-            ++region_min;
-          }
-      }
-    BOOST_CHECK(region_min.impl_.node_ == min.node); // at end!
-  }
-}
-
-BOOST_AUTO_TEST_CASE( test_relaxed_region_iterator_pre_decrement )
-{
-  {
-    typedef closed_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type> region_iterator;
-    typedef Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::const_iterator
-      const_iterator;
-    // in order region iteration.
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    // bounds totally encloses the tree, whose elements are between 0 and 20.
-    point2d low = { {0, 0} };
-    point2d high = { {20, 20} };
-    bounds_type whole_tree_box(fix.kdtree.key_comp(), low, high);
-    // Check in-order transversal
-    region_iterator region_max = region_iterator
-      (fix.kdtree.rank(), whole_tree_box, 1,
-       static_cast<Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type *>
-       (fix.kdtree.end().node));
-    const_iterator max; max.node = region_max.impl_.node_;
-    const_iterator begin(fix.kdtree.begin());
-    for(; max != begin; --max)
-      {
-        if (spatial::details::match_all
-            (fix.kdtree.rank(), *max, whole_tree_box))
-          {
-            --region_max;
-            BOOST_CHECK(region_max.impl_.node_ == max.node);
-          }
-      }
-  }
-  {
-    typedef open_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type> region_iterator;
-    typedef Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::const_iterator
-      const_iterator;
-    // in order region iteration.
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    // bounds encloses only a small part of the tree..
-    point2d low = { {7, 7} };
-    point2d high = { {12, 12} };
-    bounds_type small_box(fix.kdtree.key_comp(), low, high);
-    // Check in-order transversal
-    region_iterator region_max = region_iterator
-      (fix.kdtree.rank(), small_box, 1,
-       static_cast<Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type *>
-       (fix.kdtree.end().node));
-    const_iterator max; max.node = region_max.impl_.node_;
-    const_iterator begin(fix.kdtree.begin());
-    for(; max != begin; --max)
-      {
-        if (spatial::details::match_all
-            (fix.kdtree.rank(), *max, small_box))
-          {
-            --region_max;
-            BOOST_CHECK(region_max.impl_.node_ == max.node);
-          }
-      }
-  }
-}
-
-BOOST_AUTO_TEST_CASE( test_relaxed_region_iterator_post_decrement )
-{
-    typedef closed_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    typedef Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::const_iterator
-      const_iterator;
-    // in order region iteration.
-    Hundred_Relaxed_kdtree_2D_fixture fix;
-    // bounds totally encloses the tree, whose elements are between 0 and 20.
-    point2d low = { {0, 0} };
-    point2d high = { {20, 20} };
-    bounds_type whole_tree_box(fix.kdtree.key_comp(), low, high);
-    // Check in-order transversal
-    region_iterator test = region_iterator
-      (fix.kdtree.rank(), whole_tree_box, 1,
-       static_cast<Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type *>
-       (fix.kdtree.end().node));
-    region_iterator before = test;
-    region_iterator after = test--;
-    BOOST_CHECK(before == after);
-    --after;
-    BOOST_CHECK(after == test);
-}
-
-BOOST_AUTO_TEST_CASE( test_relaxed_region_iterator_post_increment )
-{
-    typedef closed_region_bounds
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::rank_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::value_type,
-      Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type> region_iterator;
-    typedef Hundred_Relaxed_kdtree_2D_fixture::kdtree_type::const_iterator
-      const_iterator;
-    // in order region iteration.
-    Hundred_Relaxed_kdtree_2D_fixture fix;
     // bounds totally encloses the tree, whose elements are between 0 and 20.
     point2d low = { {0, 0} };
     point2d high = { {20, 20} };
