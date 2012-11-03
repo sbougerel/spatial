@@ -19,6 +19,41 @@
 #ifndef SPATIAL_TEST_FIXTURES_HPP
 #define SPATIAL_TEST_FIXTURES_HPP
 
+#include <cstdlib> // rand(), srand()
+#include <memory> // std::allocator
+#include <utility> // std::pair
+#include <algorithm> // std::find() and others
+#include <vector>
+#include <limits>
+#include <iomanip>
+
+#ifdef __GLIBCXX__
+#  include <tr1/array>
+#else
+#  ifdef __IBMCPP__
+#    define __IBMCPP_TR1__
+#  endif
+#  include <array>
+#endif
+
+#include <boost/mpl/list.hpp>
+
+#define SPATIAL_ENABLE_ASSERT // detect interal issues that should not occur
+
+#include "../../src/pointset.hpp"
+#include "../../src/idle_pointset.hpp"
+#include "../../src/boxset.hpp"
+#include "../../src/idle_boxset.hpp"
+#include "../../src/pointmap.hpp"
+#include "../../src/idle_pointmap.hpp"
+#include "../../src/boxmap.hpp"
+#include "../../src/idle_boxmap.hpp"
+
+using namespace spatial;
+
+// Used to silence some warnings during the tests.
+template <typename T> void silence_unused(const T&) { }
+
 #include "spatial_test_types.hpp"
 
 /**

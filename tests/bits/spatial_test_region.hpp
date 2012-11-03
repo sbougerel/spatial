@@ -607,150 +607,187 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_increment, Tp, double6_sets )
         fix.container.erase(fix.container.begin());
       }
   }
-  { // test at the limit: a tree with 1 element
-
+  { // test at the limit: a tree with 1 element with point-box
+    Tp fix(1, same());
+    // Prove that you can iterate all N nodes, down to 1 nodes
+    double6 b; b[0] = b[1] = b[2] = b[3] = b[4] = b[5] = 1.0;
+    enclosed_iterator<typename Tp::container_type, lhlh_layout_tag>
+      i = enclosed_begin(fix.container, b, lhlh_layout),
+      j = i;
+    BOOST_CHECK(i != enclosed_end(fix.container, b, lhlh_layout));
+    BOOST_CHECK(++i == enclosed_end(fix.container, b, lhlh_layout));
+    BOOST_CHECK(j++ != enclosed_end(fix.container, b, lhlh_layout));
+    BOOST_CHECK(j == enclosed_end(fix.container, b, lhlh_layout));
   }
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
-  }
-  { // test at the limit: an unbalanced tree (i.e. insertions in order)!
-  }
-}
-
-/*
-BOOST_AUTO_TEST_CASE( test_region_iterator_pre_decrement )
-{
-  {
-    typedef closed_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type> region_iterator;
-    typedef Hundred_kdtree_2D_fixture::kdtree_type::const_iterator
-      const_iterator;
-    // in order region iteration.
-    Hundred_kdtree_2D_fixture fix;
-    // bounds totally encloses the tree, whose elements are between 0 and 20.
-    point2d low = { {0, 0} };
-    point2d high = { {20, 20} };
-    bounds_type whole_tree_box(fix.kdtree.key_comp(), low, high);
-    // Check in-order transversal
-    region_iterator region_max = region_iterator
-      (fix.kdtree.rank(), whole_tree_box, 1,
-       static_cast<Hundred_kdtree_2D_fixture::kdtree_type::node_type *>
-       (fix.kdtree.end().node));
-    const_iterator max; max.node = region_max.impl_.node_;
-    const_iterator begin(fix.kdtree.begin());
-    for(; max != begin; --max)
+    Tp fix(100, increase());
+    // Prove that you can iterate all N nodes, down to 1 nodes
+    double6 l; l[0] = l[1] = l[2] = l[3] = l[4] = l[5] = -20.0;
+    double6 h; h[0] = h[1] = h[2] = h[3] = h[4] = h[5] = 60.0;
+    while (!fix.container.empty())
       {
-        if (spatial::details::match_all
-            (fix.kdtree.rank(), *max, whole_tree_box))
+        int count_it = 0, count_re = 0;
+        open_bounds<double6, bracket_less<double6> >
+          orb = make_open_bounds(fix.container, l, h);
+        typename Tp::container_type::iterator it = fix.container.begin();
+        for (; it != fix.container.end(); ++it)
           {
-            --region_max;
-            BOOST_CHECK(region_max.impl_.node_ == max.node);
+            if (details::match_all(fix.container.rank(), *it, orb))
+              ++count_it;
           }
+        open_region_iterator<typename Tp::container_type>
+          re = open_region_begin(fix.container, l, h);
+        for (;re != open_region_end(fix.container, l, h); ++re)
+          {
+            BOOST_CHECK(details::match_all(fix.container.rank(), *re, orb));
+            ++count_re;
+          }
+        BOOST_CHECK_EQUAL(count_it, count_re);
+        fix.container.erase(fix.container.begin());
       }
   }
-  {
-    typedef open_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    typedef Hundred_kdtree_2D_fixture::kdtree_type::const_iterator
-      const_iterator;
-    // in order region iteration.
-    Hundred_kdtree_2D_fixture fix;
-    // bounds encloses only a small part of the tree..
-    point2d low = { {7, 7} };
-    point2d high = { {12, 12} };
-    bounds_type small_box(fix.kdtree.key_comp(), low, high);
-    // Check in-order transversal
-    region_iterator region_max = region_iterator
-      (fix.kdtree.rank(), small_box, 1,
-       static_cast<Hundred_kdtree_2D_fixture::kdtree_type::node_type *>
-       (fix.kdtree.end().node));
-    const_iterator max; max.node = region_max.impl_.node_;
-    const_iterator begin(fix.kdtree.begin());
-    for(; max != begin; --max)
+  { // test at the limit: an unbalanced tree (i.e. insertions in order)!
+    Tp fix(100, decrease());
+    // Prove that you can iterate all N nodes, down to 1 nodes
+    double6 l; l[0] = l[1] = l[2] = l[3] = l[4] = l[5] = 30.0;
+    double6 h; h[0] = h[1] = h[2] = h[3] = h[4] = h[5] = 120.0;
+    while (!fix.container.empty())
       {
-        if (spatial::details::match_all
-            (fix.kdtree.rank(), *max, small_box))
+        int count_it = 0, count_re = 0;
+        open_bounds<double6, bracket_less<double6> >
+          orb = make_open_bounds(fix.container, l, h);
+        typename Tp::container_type::iterator it = fix.container.begin();
+        for (; it != fix.container.end(); ++it)
           {
-            --region_max;
-            BOOST_CHECK(region_max.impl_.node_ == max.node);
+            if (details::match_all(fix.container.rank(), *it, orb))
+              ++count_it;
           }
+        open_region_iterator<typename Tp::container_type>
+          re = open_region_begin(fix.container, l, h);
+        for (;re != open_region_end(fix.container, l, h); ++re)
+          {
+            BOOST_CHECK(details::match_all(fix.container.rank(), *re, orb));
+            ++count_re;
+          }
+        BOOST_CHECK_EQUAL(count_it, count_re);
+        fix.container.erase(fix.container.begin());
       }
   }
 }
 
-BOOST_AUTO_TEST_CASE( test_region_iterator_post_decrement )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
 {
-    typedef closed_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-       Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-       bounds_type> region_iterator;
-    typedef Hundred_kdtree_2D_fixture::kdtree_type::const_iterator
-      const_iterator;
-    // in order region iteration.
-    Hundred_kdtree_2D_fixture fix;
-    // bounds totally encloses the tree, whose elements are between 0 and 20.
-    point2d low = { {0, 0} };
-    point2d high = { {20, 20} };
-    bounds_type whole_tree_box(fix.kdtree.key_comp(), low, high);
-    // Check in-order transversal
-    region_iterator test = region_iterator
-      (fix.kdtree.rank(), whole_tree_box, 1,
-       static_cast<Hundred_kdtree_2D_fixture::kdtree_type::node_type *>
-       (fix.kdtree.end().node));
-    region_iterator before = test;
-    region_iterator after = test--;
-    BOOST_CHECK(before == after);
-    --after;
-    BOOST_CHECK(after == test);
+  {
+    Tp fix(100, boximize(-1, 1));
+    // Prove that you can iterate all N nodes, down to 1 nodes
+    double6 b; b[0] = b[1] = b[2] = -0.8; b[3] = b[4] = b[5] = 0.8;
+    while (!fix.container.empty())
+      {
+        int count_it = 0, count_re = 0;
+        enclosed_bounds<double6, bracket_less<double6> >
+          eb(make_enclosed_bounds(fix.container, b));
+        typename Tp::container_type::iterator it = fix.container.begin();
+        for (; it != fix.container.end(); ++it)
+          {
+            if (details::match_all(fix.container.rank(), *it, eb))
+              ++count_it;
+          }
+        std::reverse_iterator<enclosed_iterator<typename Tp::container_type> >
+          re(enclosed_end(fix.container, b)),
+          rend(enclosed_begin(fix.container, b));
+        for (;re != rend; ++re)
+          {
+            BOOST_CHECK(details::match_all(fix.container.rank(), *re, eb));
+            ++count_re;
+          }
+        BOOST_CHECK_EQUAL(count_it, count_re);
+        fix.container.erase(fix.container.begin());
+      }
+  }
+  { // A tree where all elements are the same (= 100.0)!
+    Tp fix(100, same());
+    // Prove that you can iterate all N nodes, down to 1 nodes
+    double6 b; b[0] = b[1] = b[2] = 99.0; b[3] = b[4] = b[5] = 101.0;
+    while (!fix.container.empty())
+      {
+        std::reverse_iterator<enclosed_iterator<typename Tp::container_type> >
+          begin(enclosed_end(fix.container, b)),
+          end(enclosed_begin(fix.container, b));
+        BOOST_CHECK(std::distance(begin, end)
+                    == static_cast<std::ptrdiff_t>(fix.container.size()));
+        fix.container.erase(fix.container.begin());
+      }
+  }
+  { // test at the limit: a tree with 1 element with point-box
+    Tp fix(1, same());
+    // Prove that you can iterate all N nodes, down to 1 nodes
+    double6 b; b[0] = b[1] = b[2] = b[3] = b[4] = b[5] = 1.0;
+    enclosed_iterator<typename Tp::container_type, lhlh_layout_tag>
+      i = enclosed_end(fix.container, b, lhlh_layout),
+      j = i;
+    BOOST_CHECK(i != enclosed_begin(fix.container, b, lhlh_layout));
+    BOOST_CHECK(--i == enclosed_begin(fix.container, b, lhlh_layout));
+    BOOST_CHECK(j-- != enclosed_begin(fix.container, b, lhlh_layout));
+    BOOST_CHECK(j == enclosed_begin(fix.container, b, lhlh_layout));
+  }
+  { // test at the limit: an unbalanced tree (i.e. insertions in order)!
+    Tp fix(100, increase());
+    // Prove that you can iterate all N nodes, down to 1 nodes
+    double6 l; l[0] = l[1] = l[2] = l[3] = l[4] = l[5] = -20.0;
+    double6 h; h[0] = h[1] = h[2] = h[3] = h[4] = h[5] = 60.0;
+    while (!fix.container.empty())
+      {
+        int count_it = 0, count_re = 0;
+        open_bounds<double6, bracket_less<double6> >
+          orb = make_open_bounds(fix.container, l, h);
+        typename Tp::container_type::iterator it = fix.container.begin();
+        for (; it != fix.container.end(); ++it)
+          {
+            if (details::match_all(fix.container.rank(), *it, orb))
+              ++count_it;
+          }
+        std::reverse_iterator
+          <open_region_iterator<typename Tp::container_type> >
+          re(open_region_end(fix.container, l, h)),
+          rend(open_region_begin(fix.container, l, h));
+        for (;re != rend; ++re)
+          {
+            BOOST_CHECK(details::match_all(fix.container.rank(), *re, orb));
+            ++count_re;
+          }
+        BOOST_CHECK_EQUAL(count_it, count_re);
+        fix.container.erase(fix.container.begin());
+      }
+  }
+  { // test at the limit: an unbalanced tree (i.e. insertions in order)!
+    Tp fix(100, decrease());
+    // Prove that you can iterate all N nodes, down to 1 nodes
+    double6 l; l[0] = l[1] = l[2] = l[3] = l[4] = l[5] = 30.0;
+    double6 h; h[0] = h[1] = h[2] = h[3] = h[4] = h[5] = 120.0;
+    while (!fix.container.empty())
+      {
+        int count_it = 0, count_re = 0;
+        open_bounds<double6, bracket_less<double6> >
+          orb = make_open_bounds(fix.container, l, h);
+        typename Tp::container_type::iterator it = fix.container.begin();
+        for (; it != fix.container.end(); ++it)
+          {
+            if (details::match_all(fix.container.rank(), *it, orb))
+              ++count_it;
+          }
+        std::reverse_iterator
+          <open_region_iterator<typename Tp::container_type> >
+          re(open_region_end(fix.container, l, h)),
+          rend(open_region_begin(fix.container, l, h));
+        for (;re != rend; ++re)
+          {
+            BOOST_CHECK(details::match_all(fix.container.rank(), *re, orb));
+            ++count_re;
+          }
+        BOOST_CHECK_EQUAL(count_it, count_re);
+        fix.container.erase(fix.container.begin());
+      }
+  }
 }
-
-BOOST_AUTO_TEST_CASE( test_region_iterator_post_increment )
-{
-    typedef closed_region_bounds
-      <Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::key_compare> bounds_type;
-    typedef details::Const_Region_iterator
-      <Hundred_kdtree_2D_fixture::kdtree_type::rank_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::key_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::value_type,
-      Hundred_kdtree_2D_fixture::kdtree_type::node_type,
-      bounds_type> region_iterator;
-    typedef Hundred_kdtree_2D_fixture::kdtree_type::const_iterator
-      const_iterator;
-    // in order region iteration.
-    Hundred_kdtree_2D_fixture fix;
-    // bounds totally encloses the tree, whose elements are between 0 and 20.
-    point2d low = { {0, 0} };
-    point2d high = { {20, 20} };
-    bounds_type whole_tree_box(fix.kdtree.key_comp(), low, high);
-    // Check in-order transversal
-    region_iterator test = region_iterator::minimum
-      (fix.kdtree.rank(), whole_tree_box,
-       0, fix.kdtree.end().node->parent);
-    region_iterator before = test;
-    region_iterator after = test++;
-    BOOST_CHECK(before == after);
-    ++after;
-    BOOST_CHECK(after == test);
-}
-*/
 
 #endif // SPATIAL_TEST_REGION_HPP

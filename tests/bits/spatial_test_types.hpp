@@ -7,7 +7,8 @@
 
 /**
  *  @file   spatial_test_fixtures.hpp
- *  @brief  Desfines the types that will be used in the unit tests.
+ *
+ *  @brief  Defines the types that will be used in the unit tests.
  */
 
 #ifndef SPATIAL_TEST_TYPES_HPP
@@ -82,12 +83,12 @@ define_dimension(int2, 2);
 define_compare(int2, bracket_less<int2>);
 
 // int2 declaration for usual value
-int2 zeros(0, 0);
-int2 ones(1, 1);
-int2 twos(2, 2);
-int2 threes(3, 3);
-int2 fours(4, 4);
-int2 fives(5, 5);
+const int2 zeros(0, 0);
+const int2 ones(1, 1);
+const int2 twos(2, 2);
+const int2 threes(3, 3);
+const int2 fours(4, 4);
+const int2 fives(5, 5);
 
 // Definition of double6 below, a larger array of double type
 
