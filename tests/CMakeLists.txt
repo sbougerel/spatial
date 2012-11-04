@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 project (spatial_verify)
 if (CMAKE_COMPILER_IS_GNUCXX)
   # Make G++ very pedantic so that code compiled with it will be very portable... hopefully
-  set (CMAKE_CXX_FLAGS "-O0 -g -Wall -pedantic-errors -Wextra -Wshadow -Wcast-qual -Wconversion -Wsign-conversion")
+  set (CMAKE_CXX_FLAGS "-O0 -g -Wall -pedantic-errors -Wextra -Wshadow -Wcast-qual -Wconversion -Wsign-conversion -Wformat")
 elseif (MSVC)
   # Set MSVC Warning level to 4, code build here should also be very portable... hopefully
   if (CMAKE_CXX_FLAGS MATCHES "/W[0-4]")

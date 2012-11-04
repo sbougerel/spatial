@@ -194,74 +194,71 @@ namespace spatial
   namespace details
   {
     /**
-     *  An internal type used by auto_difference to resolve a compare
-     *  functor into a difference functor.
+     *  The internal type auto_difference is used to resolve a compare functor
+     *  provided by the library into a difference functor provided by the
+     *  library. Will not work for user defined comparators (i.e. they should
+     *  define their own geometry).
      */
     //@{
     template<typename Compare, typename Unit>
-    struct auto_difference_resolver { typedef void type; };
+    struct auto_difference { };
 
-    template<typename Tp, typename Unit>
-    struct auto_difference_resolver<bracket_less<Tp>, Unit>
+    template<typename Key, typename Unit>
+    struct auto_difference<bracket_less<Key>, Unit>
     {
-      typedef bracket_minus<Tp, Unit> type;
-      type make(const bracket_less<Tp>&) const { return type(); }
+      typedef bracket_minus<Key, Unit> type;
+      type operator() (const bracket_less<Key>&) const
+      { return type(); }
     };
 
-    template<typename Tp, typename Unit>
-    struct auto_difference_resolver<paren_less<Tp>, Unit>
+    template<typename Key, typename Unit>
+    struct auto_difference<paren_less<Key>, Unit>
     {
-      typedef paren_minus<Tp, Unit> type;
-      type make(const paren_less<Tp>&) const { return type(); }
+      typedef paren_minus<Key, Unit> type;
+      type operator() (const paren_less<Key>&) const
+      { return type(); }
     };
 
-    template<typename Tp, typename Unit>
-    struct auto_difference_resolver<iterator_less<Tp>, Unit>
+    template<typename Key, typename Unit>
+    struct auto_difference<iterator_less<Key>, Unit>
     {
-      typedef iterator_minus<Tp, Unit> type;
-      type make(const iterator_less<Tp>&) const { return type(); }
+      typedef iterator_minus<Key, Unit> type;
+      type operator() (const iterator_less<Key>&) const
+      { return type(); }
     };
 
-    template<typename Accessor, typename Tp, typename Unit>
-    struct auto_difference_resolver<accessor_less<Accessor, Tp>, Unit>
+    template<typename Key, typename Unit, typename Accessor>
+    struct auto_difference<accessor_less<Accessor, Key>, Unit>
     {
-      typedef accessor_minus<Accessor, Tp, Unit> type;
-      type make(const accessor_less<Accessor, Tp>& cmp) const
-      { return type(static_cast<const Accessor&>(cmp)); }
+      typedef accessor_minus<Accessor, Key, Unit> type;
+      type operator() (const accessor_less<Accessor, Key>& cmp) const
+      { return type(cmp.accessor()); }
     };
     //@}
 
-  } // namespace details
-
-  /**
-   *  The type auto_difference resolve the appropriate difference functor to
-   *  use if the container Ct was created with one of the comparators provided
-   *  by the library:
-   *  \ul \ref bracket_less is resolved to \ref bracket_minus,
-   *  \li \ref paren_less is resolved to \ref paren_minus,
-   *  \li \ref iterator_less is resolved to \ref iterator_minus,
-   *  \li \ref accessor_less is resolved to \ref accessor_minus with the
-   *  appropriate accessor functor.
-   *  \lu
-   *
-   *  If the comparator used for the container is not one of the comparators
-   *  provided, by the library, the auto_difference function resolves into void.
-   */
-  template <typename Ct, typename Unit>
-  struct auto_difference
-  {
-    //! The \c type that is resolved into the difference functor.
-    typedef typename details::auto_difference_resolver
-      <typename container_traits<Ct>::key_compare, Unit> type;
-
-    //! A factory that builds the difference functor from the compare functor.
-    static type make(const typename container_traits<Ct>::key_compare& cmp)
+    /**
+     *  The function difference_cast resolve the appropriate difference functor
+     *  from the comparators provided by the library are:
+     *  \ul \ref bracket_less is resolved to \ref bracket_minus,
+     *  \li \ref paren_less is resolved to \ref paren_minus,
+     *  \li \ref iterator_less is resolved to \ref iterator_minus,
+     *  \li \ref accessor_less is resolved to \ref accessor_minus with the
+     *  appropriate accessor functor.
+     *  \lu
+     *
+     *  If the comparator used for the container is not one of the comparators
+     *  provided, by the library, the difference_cast function will not compile
+     *  since the type \mono type will be non-existant.
+     */
+    template <typename Compare, typename Unit>
+    inline typename auto_difference<Compare, Unit>::type
+    difference_cast(const Compare& cmp)
     {
-      details::auto_difference_resolver
-      <typename container_traits<Ct>::key_compare, Unit> res;
-      return res.make(cmp);
+      auto_difference<Compare, Unit> factory;
+      return factory(cmp);
     }
-  };
+
+  } // namespace details
 
   /**
    *  @brief  Defines a geometry working on the Euclidian space where distances
@@ -347,12 +344,12 @@ namespace spatial
    */
   template<typename Ct>
   euclid<typename container_traits<Ct>::key_type,
-         typename auto_difference<Ct, double>::type>
+         typename details::auto_difference<Ct, double>::type>
   make_euclid_auto(const Ct& container)
   {
     return euclid<typename container_traits<Ct>::key_type,
-                  typename auto_difference<Ct, double>::type>
-      (auto_difference<Ct, double>::make(container.key_comp()));
+                  typename details::auto_difference<Ct, double>::type>
+      (details::difference_cast<Ct, double>(container.key_comp()));
   }
 
   /**
@@ -440,12 +437,13 @@ namespace spatial
    */
   template<typename Ct>
   euclidf<typename container_traits<Ct>::key_type,
-          typename auto_difference<Ct, float>::type>
+          typename details::auto_difference<Ct, float>::type>
   make_euclidf_auto(const Ct& container)
   {
     return euclidf<typename container_traits<Ct>::key_type,
-                   typename auto_difference<Ct, float>::type>
-      (auto_difference<Ct, float>::make(container.key_comp()));
+                   typename details::auto_difference<Ct, float>::type>
+      (details::difference_cast<typename container_traits<Ct>::key_compare,
+                                float>(container.key_comp()));
   }
 
   /**
@@ -529,12 +527,13 @@ namespace spatial
    */
   template<typename Ct, typename Distance>
   euclid<typename container_traits<Ct>::key_type,
-         typename auto_difference<Ct, Distance>::type>
+         typename details::auto_difference<Ct, Distance>::type>
   make_sqeuclid_auto(const Ct& container, const Distance&)
   {
     return sqeuclid<typename container_traits<Ct>::key_type,
-                    typename auto_difference<Ct, Distance>::type>
-      (auto_difference<Ct, Distance>::make(container.key_comp()));
+                    typename details::auto_difference<Ct, Distance>::type>
+      (details::difference_cast<typename container_traits<Ct>::key_compare,
+                                Distance>(container.key_comp()));
   }
 
   /**
@@ -611,12 +610,13 @@ namespace spatial
    */
   template<typename Ct, typename Distance>
   manhattan<typename container_traits<Ct>::key_type,
-            typename auto_difference<Ct, Distance>::type>
+            typename details::auto_difference<Ct, Distance>::type>
   make_manhattan_auto(const Ct& container, const Distance&)
   {
     return manhattan<typename container_traits<Ct>::key_type,
-                     typename auto_difference<Ct, Distance>::type>
-      (auto_difference<Ct, Distance>::make(container.key_comp()));
+                     typename details::auto_difference<Ct, Distance>::type>
+      (details::difference_cast<typename container_traits<Ct>::key_compare,
+                                Distance>(container.key_comp()));
   }
 
 } // namespace spatial

@@ -119,8 +119,8 @@ namespace spatial
   struct accessor_less
     : private Accessor // empty member optimization
   {
-    accessor_less(const Accessor& accessor = Accessor())
-      : Accessor(accessor)
+    accessor_less(const Accessor& access = Accessor())
+      : Accessor(access)
     { }
 
     bool
@@ -134,6 +134,9 @@ namespace spatial
     {
       return (Accessor::operator()(a, x) < Accessor::operator()(b, y));
     }
+
+    const Accessor& accessor() const
+    { return *static_cast<const Accessor*>(this); }
   };
 
   /**

@@ -15,88 +15,51 @@
 #ifndef SPATIAL_TEST_GEOMETRY_HPP
 #define SPATIAL_TEST_GEOMETRY_HPP
 
+
+BOOST_AUTO_TEST_CASE(test_difference_bracket)
+{
+  details::auto_difference<bracket_less<int2>, int>::type
+    diff = details::difference_cast<bracket_less<int2>, int>
+    (bracket_less<int2>());
+  int2 p(0, 1);
+  int2 q(2, 0);
+  BOOST_CHECK_EQUAL(diff(0, p, q), -2);
+  BOOST_CHECK_EQUAL(diff(1, p, q), 1);
+}
+
+BOOST_AUTO_TEST_CASE(test_difference_paren)
+{
+  details::auto_difference<paren_less<int2>, int>::type
+    diff = details::difference_cast<paren_less<int2>, int>(paren_less<int2>());
+  int2 p(0, 1);
+  int2 q(2, 0);
+  BOOST_CHECK_EQUAL(diff(0, p, q), -2);
+  BOOST_CHECK_EQUAL(diff(1, p, q), 1);
+}
+
+BOOST_AUTO_TEST_CASE(test_difference_iterator)
+{
+  details::auto_difference<iterator_less<int2>, int>::type
+    diff = details::difference_cast<iterator_less<int2>, int>
+    (iterator_less<int2>());
+  int2 p(0, 1);
+  int2 q(2, 0);
+  BOOST_CHECK_EQUAL(diff(0, p, q), -2);
+  BOOST_CHECK_EQUAL(diff(1, p, q), 1);
+}
+
+BOOST_AUTO_TEST_CASE(test_difference_accessor)
+{
+  details::auto_difference<accessor_less<quad_access, quad>, int>::type
+    diff = details::difference_cast<accessor_less<quad_access, quad>, int>
+    (accessor_less<quad_access, quad>());
+  quad p(0, 1, 0, 0);
+  quad q(2, 0, 0, 0);
+  BOOST_CHECK_EQUAL(diff(0, p, q), -2);
+  BOOST_CHECK_EQUAL(diff(1, p, q), 1);
+}
+
 /*
-BOOST_AUTO_TEST_CASE( test_cast_accessor )
-{
-  using namespace spatial::details::geometry;
-  cast_accessor<triple, int, triple_access> accessor;
-  triple p(0, 1, 2);
-  BOOST_CHECK_EQUAL(accessor(0, p), p.x);
-  BOOST_CHECK_EQUAL(accessor(1, p), p.y);
-  triple q(2, 3, 4);
-  accessor(0, p, q);
-  accessor(1, p, q);
-  accessor(2, p, q);
-  BOOST_CHECK_EQUAL(q.x, p.x);
-  BOOST_CHECK_EQUAL(q.y, p.y);
-  BOOST_CHECK_EQUAL(q.z, p.z);
-}
-
-BOOST_AUTO_TEST_CASE( test_bracket_cast_accessor )
-{
-  using namespace spatial::details::geometry;
-  bracket_cast_accessor<point2d, int> accessor;
-  point2d p = { { 0, 1 } };
-  BOOST_CHECK_EQUAL(accessor(0, p), p[0]);
-  BOOST_CHECK_EQUAL(accessor(1, p), p[1]);
-  point2d q = { { 1, 0 } };
-  accessor(0, p, q);
-  accessor(1, p, q);
-  BOOST_CHECK_EQUAL(q[0], p[0]);
-  BOOST_CHECK_EQUAL(q[1], p[1]);
-}
-
-BOOST_AUTO_TEST_CASE( test_paren_cast_accessor )
-{
-  using namespace spatial::details::geometry;
-  paren_cast_accessor<point2d_paren, int> accessor;
-  point2d_paren p; p[0] = 0; p[1] = 1;
-  BOOST_CHECK_EQUAL(accessor(0, p), p[0]);
-  BOOST_CHECK_EQUAL(accessor(1, p), p[1]);
-  point2d_paren q; q[0] = 1; q[1] = 0;
-  accessor(0, p, q);
-  accessor(1, p, q);
-  BOOST_CHECK_EQUAL(q[0], p[0]);
-  BOOST_CHECK_EQUAL(q[1], p[1]);
-}
-
-BOOST_AUTO_TEST_CASE( test_iterator_cast_accessor )
-{
-  using namespace spatial::details::geometry;
-  iterator_cast_accessor<point2d, int> accessor;
-  point2d p = { { 0, 1 } };
-  BOOST_CHECK_EQUAL(accessor(0, p), p[0]);
-  BOOST_CHECK_EQUAL(accessor(1, p), p[1]);
-  point2d q = { { 1, 0 } };
-  accessor(0, p, q);
-  accessor(1, p, q);
-  BOOST_CHECK_EQUAL(q[0], p[0]);
-  BOOST_CHECK_EQUAL(q[1], p[1]);
-}
-
-BOOST_AUTO_TEST_CASE( test_accessor_rebind )
-{
-  using namespace spatial::details::geometry;
-  {
-    rebind<point2d, double,
-           accessor_less<at_accessor<point2d,
-                                     int>, point2d> >::type
-      must_compile;
-  }
-  {
-    rebind<point2d, double,
-           bracket_less<point2d> >::type must_compile;
-  }
-  {
-    rebind<point2d, double,
-           paren_less<point2d> >::type must_compile;
-  }
-  {
-    rebind<point2d, double,
-           iterator_less<point2d> >::type must_compile;
-  }
-}
-
 BOOST_AUTO_TEST_CASE( test_euclidian_distance_to_key )
 {
   using namespace spatial::details::geometry;
