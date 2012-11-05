@@ -76,9 +76,9 @@ BOOST_AUTO_TEST_CASE( test_details_less_by_ref )
   BOOST_CHECK((&x < &z)
               ? details::less_by_ref(cmp, 0, x, z)
               : !details::less_by_ref(cmp, 0, x, z));
-  BOOST_CHECK((&x < &z)
-              ? !details::less_by_ref(cmp, 0, z, x)
-              : details::less_by_ref(cmp, 0, z, x));
+  BOOST_CHECK((&z < &x)
+              ? details::less_by_ref(cmp, 1, z, x)
+              : !details::less_by_ref(cmp, 1, z, x));
   BOOST_CHECK(!details::less_by_ref(cmp, 1, x, x));
 }
 
