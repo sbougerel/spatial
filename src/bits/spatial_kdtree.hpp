@@ -177,12 +177,11 @@ namespace spatial
       // Allocation/Deallocation of nodes
       struct safe_allocator // RAII for exception-safe memory management
       {
-        Link_allocator& alloc;
+        Link_allocator* alloc;
         link_ptr link;
-
-        safe_allocator(Link_allocator& a) : alloc(a), link(0)
-        { link = alloc.allocate(1); } // may throw
-        ~safe_allocator() { if (link) { alloc.deallocate(link, 1); } }
+        safe_allocator(Link_allocator& a) : alloc(&a), link(0)
+        { link = alloc->allocate(1); } // may throw
+        ~safe_allocator() { if (link) { alloc->deallocate(link, 1); } }
         link_ptr release() { link_ptr p = link; link=0; return p; }
       };
 

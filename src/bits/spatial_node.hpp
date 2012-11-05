@@ -275,8 +275,23 @@ namespace spatial
        *  In *-map containers, the value is necessarily a pair, with the first
        *  member being a key, and the second member being the mapped type. In
        *  *-set containers, the value and the key are one and the same thing.
+       *
+       *  In any case the value is always constant for keys, and therefore this
+       *  type cannot be used in assignment operations, since keys cannot be
+       *  changed. Most algorithm only use a pointer to the link_type.
        */
       Value value;
+
+    private:
+      /**
+       *  The link_type is a non-assignable type, because the key it contains
+       *  is a constant type.
+       *
+       *  Most algorthims manipulate a pointer to this element rather than this
+       *  element directly. Note that copy-construction is permitted.
+       */
+      Kdtree_link<Key, Value>&
+      operator= (const Kdtree_link<Key, Value>&);
     };
 
     /**
@@ -322,8 +337,23 @@ namespace spatial
        *  In *-map containers, the value is necessarily a pair, with the first
        *  member being a key, and the second member being the mapped type. In
        *  *-set containers, the value and the key are one and the same thing.
+       *
+       *  In any case the value is always constant for keys, and therefore this
+       *  type cannot be used in assignment operations, since keys cannot be
+       *  changed. Most algorithm only use a pointer to the link_type.
        */
       Value value;
+
+    private:
+      /**
+       *  The link_type is a non-assignable type, because the key it contains
+       *  is a constant type.
+       *
+       *  Most algorthims manipulate a pointer to this element rather than this
+       *  element directly. Note that copy-construction is permitted.
+       */
+      Relaxed_kdtree_link<Key, Value>&
+      operator= (const Relaxed_kdtree_link<Key, Value>&);
     };
 
     //@{
