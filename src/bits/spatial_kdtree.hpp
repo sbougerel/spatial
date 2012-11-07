@@ -30,6 +30,7 @@
 #include "spatial_details.hpp"
 #include "spatial_function.hpp"
 #include "spatial_node.hpp"
+#include "spatial_ordered.hpp"
 #include "spatial_mapping.hpp"
 #include "spatial_region.hpp"
 #include "spatial_neighbor.hpp"
