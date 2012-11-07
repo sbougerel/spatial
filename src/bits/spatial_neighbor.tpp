@@ -170,12 +170,8 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(near_node == 0 || distance(it) < near_distance
                            || (distance(it) == near_distance
                                && curr < near_node));
-      SPATIAL_ASSERT_CHECK(rn_dim < rank());
-      SPATIAL_ASSERT_CHECK(ln_dim < rank());
-      SPATIAL_ASSERT_CHECK(header(rn));
-      SPATIAL_ASSERT_CHECK(header(ln));
-      SPATIAL_ASSERT_CHECK(ln == rn);
-      SPATIAL_ASSERT_CHECK(ln_dim == rn_dim);
+      SPATIAL_ASSERT_CHECK(rn_dim == (rank() - 1));
+      SPATIAL_ASSERT_CHECK(ln_dim == (rank() - 1));
       if (near_node != 0)
         {
           it.node = near_node;
@@ -334,12 +330,8 @@ namespace spatial
                            || distance(it) > near_distance
                            || (distance(it) == near_distance
                                && curr > near_node));
-      SPATIAL_ASSERT_CHECK(rn_dim < rank());
-      SPATIAL_ASSERT_CHECK(ln_dim < rank());
-      SPATIAL_ASSERT_CHECK(header(rn));
-      SPATIAL_ASSERT_CHECK(header(ln));
-      SPATIAL_ASSERT_CHECK(rn == ln);
-      SPATIAL_ASSERT_CHECK(rn_dim == ln_dim);
+      SPATIAL_ASSERT_CHECK(rn_dim == (rank() - 1));
+      SPATIAL_ASSERT_CHECK(ln_dim == (rank() - 1));
       if (near_node != 0)
         {
           it.node = near_node;
