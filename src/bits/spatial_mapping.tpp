@@ -467,15 +467,14 @@ namespace spatial
         {
           if (iter.node->right != 0
               && (iter.node_dim != iter.mapping_dimension() || best == 0
-                  || !cmp(iter.mapping_dimension(),
-                          const_key(best), const_key(iter.node))))
+                  || !cmp(iter.node_dim, const_key(best),
+                          const_key(iter.node))))
             {
               iter.node = iter.node->right;
               iter.node_dim = incr_dim(rank, iter.node_dim);
               while (iter.node->left != 0
                      && (iter.node_dim != iter.mapping_dimension()
-                         || !cmp(iter.node_dim, const_key(iter.node),
-                                 bound)))
+                         || !cmp(iter.node_dim, const_key(iter.node), bound)))
                 {
                   iter.node = iter.node->left;
                   iter.node_dim = incr_dim(rank, iter.node_dim);
