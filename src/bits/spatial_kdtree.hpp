@@ -565,15 +565,6 @@ namespace spatial
             first.node_dim = modulo(first.node, rank());
           }
       }
-
-      /**
-       *  @brief  Deletes any node that matches one of the keys in the sequence
-       *  covered by the iterators.
-       */
-      template <typename InputIterator>
-      void
-      erase(InputIterator first, InputIterator last)
-      { for (; first != last; ++first) { erase(*first); } }
     };
 
     /**

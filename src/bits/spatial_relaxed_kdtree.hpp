@@ -696,23 +696,6 @@ namespace spatial
             first.node_dim = modulo(first.node, rank());
           }
       }
-
-      /**
-       *  @brief  Deletes any node that matches one of the keys in the sequence
-       *  covered by the iterators.
-       *
-       *  This function differs greatly from the standard containers such as @c
-       *  std::multiset or @c std::multimap, in which a whole range of iterators
-       *  is cut out of the map, and iterators given in argument are the
-       *  container's own.
-       *
-       *  In this function, iterators given <b>shall not</b> belong to the
-       *  container as they would get invalidated as they are erased.
-       */
-      template <typename InputIterator>
-      void
-      erase(InputIterator first, InputIterator last)
-      { for (; first != last; ++first) { erase(*first); } }
     };
 
     /**

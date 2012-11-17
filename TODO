@@ -68,6 +68,7 @@ VERSION 2.1.0
            bracket operators just like std::map and std::set. They
            would be simply pointset, boxset, pointmap and boxmap.
 
+
 VERSION 2.2.0
 
 * Apr 13 Addition of intrusive containers for every existing ones. The
@@ -77,51 +78,47 @@ VERSION 2.2.0
            them. Should take about 2 months. In progress...
 
 * Jun 13 Implementation of a new near cache oblivious allocator solely
-	   dedicated to be used with the spatial library. This cache
-	   oblivious allocator is used to speed up the frequent
+           dedicated to be used with the spatial library. This cache
+           oblivious allocator is used to speed up the frequent
            walking operation within the tree. How does it work? First,
-	   it does not use locking, and creates new allocation per
-	   container. That means it is thread-local by design and
-	   fast. Secondly, it uses extensive knownledge of how the
-	   library uses it's node and so, it is only suitable for use
-	   with the library itself, and can't be used anywhere else!
-	   This allocator create storage for a specific number of node
-	   in power of 2, minus 1. Within the same memory region, or
-	   block it will represent a sub-tree. The root of the subtree
-   	   is always the first node. One of the child node sits next
- 	   the root, while the other child node sits in the middle of
-    	   the remaining space, recursively. Due to this recursion,
- 	   regardless of block size, cache size or other parameters,
-	   there is always an entire subtree that will fit in the
-	   cache. To locate the nodes within the block, the hint
-	   pointer is used. The hint pointer given is always the
-	   parent of the node to be allocated. It uses the information
-	   of available buckets in the block and of the pointer in the
-	   parent node to find the suitable new bucket position. This
-   	   allocator is also memory efficient: if the node dealloacted
-	   was the root node of the sub-tree in the block, and was a
-  	   leaf node, the block can safely be deallocated as well.
-	   Therefore this allocator is fast and needs no extra info on
-	   top of the information in the tree itself. This allocator
-	   is therefore optimal for the library, and should speed up
-	   tree walking a lot... if we never rebalance containers.
-	   However we do rebalance containers in this library. Due to
+           it does not use locking, and creates new allocation per
+           container. That means it is thread-local by design and
+           fast. Secondly, it uses extensive knownledge of how the
+           library uses it's node and so, it is only suitable for use
+           with the library itself, and can't be used anywhere else!
+           This allocator create storage for a specific number of node
+           in power of 2, minus 1. Within the same memory region, or
+           block it will represent a sub-tree. The root of the subtree
+           is always the first node. One of the child node sits next
+           the root, while the other child node sits in the middle of
+           the remaining space, recursively. Due to this recursion,
+           regardless of block size, cache size or other parameters,
+           there is always an entire subtree that will fit in the
+           cache. To locate the nodes within the block, the hint
+           pointer is used. The hint pointer given is always the
+           parent of the node to be allocated. It uses the information
+           of available buckets in the block and of the pointer in the
+           parent node to find the suitable new bucket position. This
+           allocator is also memory efficient: if the node dealloacted
+           was the root node of the sub-tree in the block, and was a
+           leaf node, the block can safely be deallocated as well.
+           Therefore this allocator is fast and needs no extra info on
+           top of the information in the tree itself. This allocator
+           is therefore optimal for the library, and should speed up
+           tree walking a lot... if we never rebalance containers.
+           However we do rebalance containers in this library. Due to
            process of rebalancing, bucket within the block may be
-	   occupied. In this case, the subtree is simply iterated
-  	   until a block with a free bucket is found. Therefore the
- 	   rebalancing should degrade a bit performance, but it is
-	   expected that it would only degrade it considerably in
-   	   the case where only insertion occur. If both insertion and
-   	   removal happen regularly within the same subtree,
-	   rebalancing should be more rare, and if it occurs, free
-	   bukets of erased nodes will help maintain near cache-
-	   oblivious repartition of the nodes in the block.
+           occupied. In this case, the subtree is simply iterated
+           until a block with a free bucket is found. Therefore the
+           rebalancing should degrade a bit performance, but it is
+           expected that it would only degrade it considerably in the
+           case where only insertion occur. If both insertion and
+           removal happen regularly within the same subtree,
+           rebalancing should be more rare, and if it occurs, free
+           bukets of erased nodes will help maintain near cache-
+           oblivious repartition of the nodes in the block.
 
-* Apr 13 Porting Spatial to scripting/duck-typing languages or
-           frameworks? Python, Java, Lua, Ruby, .Net, others?
-
-
-VERSION 2.2.0
+VERSION 2.3.0
 
 * Jul 13 Add new iterators such at ray_iterator, which travels along a
            vector, in a given geometry. This iterator works only on
@@ -130,4 +127,7 @@ VERSION 2.2.0
            geometry quite a complex business, needing more
            documentation. Should take about 2 months.
 
-* Sep 13   Add: VP-tree?
+* Sep 13 Porting Spatial to scripting/duck-typing languages or
+           frameworks? Python, Java, Lua, Ruby, .Net, others? Create a
+           new project based on spatial in this case, using the
+           version number in the spatial.hpp header.

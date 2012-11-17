@@ -60,6 +60,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         for(typename Tp::container_type::iterator
               i = fix.container.begin(); i != fix.container.end(); ++i)
           {
+            // Follow the same ordering invarient as ordered_iterator
             if ((*i)[0] < min_value[0]
                 || ((*i)[0] == min_value[0] && (*i)[1] < min_value[1]))
               min_value = *i;
@@ -109,7 +110,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     BOOST_CHECK(--iter == ordered_end(fix.container));
   }
 }
-/*
+
 BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_ordered_maximum, Tp, int2_sets )
 {
@@ -119,24 +120,23 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     while (!fix.container.empty())
       {
         unsigned int count = 0;
-        int max_value_0 = (*fix.container.begin())[0];
-        int max_value_1 = (*fix.container.begin())[1];
+        int2 max_value = *fix.container.begin();
         for(typename Tp::container_type::iterator
               i = fix.container.begin(); i != fix.container.end(); ++i)
           {
-            int tmp = (*i)[0];
-            if (tmp > max_value_0) { max_value_0 = tmp; }
-            tmp = (*i)[1];
-            if (tmp > max_value_1) { max_value_1 = tmp; }
+            // Follow the same ordering invarient as ordered_iterator
+            if ((*i)[0] > max_value[0]
+                || ((*i)[0] == max_value[0] && (*i)[1] > max_value[1]))
+              max_value = *i;
             ++count;
           }
         BOOST_CHECK_EQUAL(count, fix.container.size());
         ordered_iterator<typename Tp::container_type> iter;
-        iter = ordered_end(fix.container, 0);
+        iter = ordered_end(fix.container);
         --iter; // When at the end, this call the 'maximum' function
-        BOOST_REQUIRE_EQUAL((*iter)[0], max_value_0);
-        iter = ordered_end(fix.container, 1); --iter;
-        BOOST_REQUIRE_EQUAL((*iter)[1], max_value_1);
+        BOOST_REQUIRE_EQUAL(*iter, max_value);
+        ordered_iterator<typename Tp::container_type> tmp(iter);
+        BOOST_CHECK(++tmp == ordered_end(fix.container));
         fix.container.erase(iter);
       }
   }
@@ -145,45 +145,37 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     // Prove that you can find the max value with N nodes, down to 1 nodes
     while (!fix.container.empty())
       {
-        unsigned int count = 0;
-        for(typename Tp::container_type::iterator
-              i = fix.container.begin(); i != fix.container.end(); ++i)
-          { ++count; }
-        BOOST_CHECK_EQUAL(count, fix.container.size());
-        ordered_iterator<typename Tp::container_type> iter;
-        iter = ordered_end(fix.container, 0); --iter;
-        BOOST_CHECK_EQUAL((*iter)[0], 100);
-        iter = ordered_end(fix.container, 1); --iter;
-        BOOST_CHECK_EQUAL((*iter)[1], 100);
+        ordered_iterator<typename Tp::container_type>
+          iter(ordered_end(fix.container)); --iter;
+        BOOST_CHECK(*iter == int2(100, 100));
+        ordered_iterator<typename Tp::container_type> tmp(iter);
+        BOOST_CHECK(++tmp == ordered_end(fix.container));
         fix.container.erase(iter);
       }
   }
   { // test at the limit: a tree with 1 element
     Tp fix(1, same());
     ordered_iterator<const typename Tp::container_type> iter;
-    iter = ordered_cend(fix.container, 0); --iter;
-    BOOST_CHECK_EQUAL((*iter)[0], 1); // should be (1, 1);
-    BOOST_CHECK_EQUAL((*iter)[1], 1);
-    iter = ordered_cend(fix.container, 1); --iter;
-    BOOST_CHECK_EQUAL((*iter)[0], 1); // should be (1, 1);
-    BOOST_CHECK_EQUAL((*iter)[1], 1);
+    iter = ordered_cend(fix.container); --iter;
+    BOOST_CHECK(*iter == int2(1, 1));
+    BOOST_CHECK(++iter == ordered_end(fix.container));
   }
   { // test at the limit: an unbalanced tree!
     Tp fix(100, decrease());
-    ordered_iterator<typename Tp::container_type> iter;
-    iter = ordered_end(fix.container, 0); --iter;
-    BOOST_CHECK_EQUAL((*iter)[0], 100); // should be (100, 100);
-    BOOST_CHECK_EQUAL((*iter)[1], 100);
+    ordered_iterator<const typename Tp::container_type>
+      iter(ordered_cend(fix.container)); --iter;
+    BOOST_CHECK(*iter == int2(100, 100));
+    BOOST_CHECK(++iter == ordered_end(fix.container));
   }
   { // test at the limit: an unbalanced tree!
     Tp fix(100, increase());
-    ordered_iterator<typename Tp::container_type> iter;
-    iter = ordered_end(fix.container, 1); --iter;
-    BOOST_CHECK_EQUAL((*iter)[0], 99); // should be (99, 99);
-    BOOST_CHECK_EQUAL((*iter)[1], 99);
+    ordered_iterator<const typename Tp::container_type>
+      iter(ordered_cend(fix.container)); --iter;
+    BOOST_CHECK(*iter == int2(99, 99));
+    BOOST_CHECK(++iter == ordered_end(fix.container));
   }
 }
-
+/*
 BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_ordered_increment, Tp, double6_sets )
 {

@@ -137,6 +137,7 @@ namespace spatial
                           || order_ref(cmp, rank, const_key(r_node),
                                        const_key(best))))
                     { best = r_node; best_dim = r_dim; }
+                  continue;
                 }
               else
                 {
@@ -272,6 +273,7 @@ namespace spatial
                           || order_ref(cmp, rank, const_key(r_node),
                                        const_key(best))))
                     { best = r_node; best_dim = r_dim; }
+                  continue;
                 }
               else
                 {
@@ -418,6 +420,7 @@ namespace spatial
                           || order_ref(cmp, rank, const_key(best),
                                        const_key(r_node))))
                     { best = r_node; best_dim = r_dim; }
+                  continue;
                 }
               else
                 {
@@ -557,6 +560,7 @@ namespace spatial
                           || order_ref(cmp, rank, const_key(best),
                                        const_key(r_node))))
                     { best = r_node; best_dim = r_dim; }
+                  continue;
                 }
               else
                 {

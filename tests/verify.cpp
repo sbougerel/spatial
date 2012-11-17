@@ -26,8 +26,6 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-//#include "bits/spatial_test_geometry.hpp"
-//#include "bits/spatial_test_neighbor.hpp"
 //#include "bits/spatial_test_kdtree.hpp"
 //#include "bits/spatial_test_relaxed_kdtree.hpp"
 //#include "bits/spatial_test_containers.hpp"
