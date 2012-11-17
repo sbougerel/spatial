@@ -330,46 +330,49 @@ namespace spatial
     //@}
 
     /**
-     *  Check that the absolute of an element has not led to an error such as
-     *  an overflow, by forcing the error itself.
+     *  This arithmetic check is only used when the macro
+     *  SPATIAL_SAFER_ARITHMETICS is defined. Check that the absolute of an
+     *  element has not led to an error such as an overflow, by forcing the
+     *  error itself.
      *
      *  This check is not the best check for arithmetic errors. There are ways
-     *  to make it better, but it's hard to make it more portable.
-     *
-     *  In particular, if \c Tp is not a base type, the author of the type must
-     *  define the numeric limits \c ::std::numeric_limits<Tp>::max() for that
-     *  type.
+     *  to make it faster, but it is intended to be portable and provide users
+     *  with the possibility to quickly check the architmectics during
+     *  computation with little efforts from their part.
      */
     template <typename Tp>
     inline Tp check_abs(const Tp& x)
     {
-      if (!::std::numeric_limits<Tp>::is_signed()) return x;
-      Tp _x = -x; _x = x > _x ? x : _x;
-      if (x - x > _x)
+      using namespace std;
+      if (x >= (x - x)) return x; // get 0 without other kind of conversions
+      if (x != -(-x))
         throw arithmetic_error
-          ("Absolute of an element has resulted in an arithmetic error");
-      return _x;
+          ("Absolute of an element resulted in an arithmetic error");
+      return -x;
     }
 
     /**
-     *  Check that the addtion of 2 elements of positive value has not led to an
-     *  error such as an overflow, by forcing the error itself.
+     *  This arithmetic check is only used when the macro
+     *  SPATIAL_SAFER_ARITHMETICS is defined. Check that the addtion of 2
+     *  elements of positive value has not led to an error such as an overflow,
+     *  by forcing the error itself.
      *
-     *  This check will only work for 2 positive element x and y. This check is
-     *  not the best check for arithmetic errors. There are ways to make it
-     *  better, but it's hard to make it more portable.
+     *  This check is not the best check for arithmetic errors. There are ways
+     *  to make it faster, but it is intended to be portable and provide users
+     *  with the possibility to quickly check the architmectics during
+     *  computation with little efforts from their part.
      *
      *  In particular, if \c Tp is not a base type, the author of the type must
-     *  define the numeric limits \c ::std::numeric_limits<Tp>::max() for that
-     *  type.
+     *  define the numeric limits \c numeric_limits<Tp>::max() for that type.
      */
     template <typename Tp>
     inline Tp check_positive_add(const Tp& x, const Tp& y)
     {
-	  // The additional bracket is to avoid conflict with MSVC min/max macros
-      if (((::std::numeric_limits<Tp>::max)() - x) < y)
+      using namespace std;
+      // The additional bracket is to avoid conflict with MSVC min/max macros
+      if (((numeric_limits<Tp>::max)() - x) < y)
         throw arithmetic_error
-          ("Addition of two elements has resulted in an arithmetic error");
+          ("Addition of two elements resulted in an arithmetic error");
       return x + y;
     }
 
@@ -378,19 +381,33 @@ namespace spatial
      *  overflown.
      *
      *  This check is not the best check for arithmetic errors. There are ways
-     *  to make it better, but it's hard to make it more portable.
+     *  to make it faster, but it is intended to be portable and provide users
+     *  with the possibility to quickly check the architmectics during
+     *  computation with little efforts from their part.
      *
      *  In particular, if \c Tp is not a base type, the author of the type must
-     *  define the numeric limits \c ::std::numeric_limits<Tp>::max() for that
-     *  type.
+     *  define the numeric limits \c numeric_limits<Tp>::max() for that type.
      */
     template <typename Tp>
     inline Tp check_square(const Tp& x)
     {
-      Tp _x = check_abs(x);
-      if (((::std::numeric_limits<Tp>::max)() / _x) < _x)
-        throw arithmetic_error
-          ("Square value of element has resulted in an arithmetic error");
+      using namespace std;
+      Tp zero = (x - x); // get 0 without other kind of conversions
+      if (x != zero)
+        {
+          if (x > zero)
+            {
+              if (((numeric_limits<Tp>::max)() / x) > x)
+                throw arithmetic_error
+                  ("Square value of element resulted in an arithmetic error");
+            }
+          else
+            {
+              if (((numeric_limits<Tp>::max)() / x) < x)
+                throw arithmetic_error
+                  ("Square value of element resulted in an arithmetic error");
+            }
+        }
       return x * x;
     }
 
@@ -409,9 +426,10 @@ namespace spatial
     template <typename Tp>
     inline Tp check_positive_mul(const Tp& x, const Tp& y)
     {
-      if (((::std::numeric_limits<Tp>::max)() / y) < x)
+      using namespace std;
+      if (((numeric_limits<Tp>::max)() / y) < x)
         throw arithmetic_error
-          ("Multiplication of two elements has resulted in an arithmetic error");
+          ("Multiplication of two elements resulted in an arithmetic error");
       return x * y;
     }
   } // namespace except

@@ -24,22 +24,40 @@ namespace spatial
 {
   namespace math
   {
-    /**
-     *  An naive abs function that works with any type that has the minus unary
-     *  operator and the comparison operator. Does not work for the lowest
-     *  number in 2's complement representation. E.g. -128 for 8-bit integers.
-     */
-    template<typename Tp>
-    inline Tp abs(const Tp& x)
+    // Not sure how else to achieve this...
+    template <typename Tp>
+    struct arithmetic_constant
     {
-#ifdef SPATIAL_SAFER_ARITHMETICS
-      return ::spatial::except::check_abs(x);
-#else
-      if (!::std::numeric_limits<Tp>::is_signed()) return x;
-      Tp _x = -x;
-      return x > _x ? x : _x;
-#endif
+      // Know a more generic/portable/type-agnostic way to get values for zero
+      // or one? Then, please send me an email...
+      static const Tp any_ = Tp();
+      static const Tp zero_ = any_ - any_;
+      static const Tp& zero() { return zero_; }
+      static const Tp& one() { return ++zero_; }
+    };
+    // specializations...
+#define SPATIAL_ARITHMETIC_CONSTANT(Type, Zero, One) \
+    template<> struct arithmetic_constant<Type>      \
+    {                                                \
+      static Type zero() { return Zero; }            \
+      static Type one() { return One; }              \
     }
+    SPATIAL_ARITHMETIC_CONSTANT(char, 0, 1);
+    SPATIAL_ARITHMETIC_CONSTANT(signed char, 0, 1);
+    SPATIAL_ARITHMETIC_CONSTANT(unsigned char, 0, 1);
+    SPATIAL_ARITHMETIC_CONSTANT(short, 0, 1);
+    SPATIAL_ARITHMETIC_CONSTANT(unsigned short, 0, 1);
+    SPATIAL_ARITHMETIC_CONSTANT(int, 0, 1);
+    SPATIAL_ARITHMETIC_CONSTANT(unsigned int, 0, 1);
+    SPATIAL_ARITHMETIC_CONSTANT(long, 0l, 1l);
+    SPATIAL_ARITHMETIC_CONSTANT(unsigned long, 0l, 1l);
+    // This is C++0x stuffs...
+    // SPATIAL_ARITHMETIC_CONSTANT(long long, 0ll, 1ll);
+    // SPATIAL_ARITHMETIC_CONSTANT(unsigned long long, 0ll, 1ll);
+    SPATIAL_ARITHMETIC_CONSTANT(float, 0.f, 1.f);
+    SPATIAL_ARITHMETIC_CONSTANT(double, 0.0, 1.0);
+    SPATIAL_ARITHMETIC_CONSTANT(long double, 0.0, 1.0);
+#undef SPATIAL_ARITHMETIC_CONSTANT
 
     /**
      *  @brief  Uses hypot algorithm in order to compute the distance: minimize
@@ -53,21 +71,26 @@ namespace spatial
      *  sqrt( x^2 + y^2 + z^2 + ... ) = abs(x) * sqrt( 1 + (y/x)^2 + (z/x)^2 )
      *
      *  Providing x statisfies x>y, x>z, etc, the second form is less likely to
-     *  overflow or underflow than the first form.
+     *  overflow than the first form.
      */
     template <typename Key, typename Difference, typename Distance>
     inline Distance
     euclid_distance_to_key
     (dimension_type rank, Key origin, Key key, Difference diff)
     {
-      const Distance zero = static_cast<Distance>(0);
-      const Distance one = static_cast<Distance>(1);
+      using namespace std;
+      const Distance zero = arithmetic_constant<Distance>::zero();
+      const Distance one = arithmetic_constant<Distance>::one();
       // Find a non zero maximum or return 0
       Distance max = zero;
       dimension_type max_dim; // uninitialized on purpose
       for (dimension_type i = 0; i < rank; ++i)
         {
-          Distance d = abs(difference(i, origin, key));
+#ifdef SPATIAL_SAFER_ARITHMETICS
+          Distance d = except::check_abs(diff(i, origin, key));
+#else
+          Distance d = abs(diff(i, origin, key));
+#endif
           if (d == zero) continue;
           if (max == zero || d > max) { max = d; max_dim = i; }
         }
@@ -81,9 +104,8 @@ namespace spatial
           sum += div * div;
         }
 #ifdef SPATIAL_SAFER_ARITHMETICS
-      return ::spatial::except::check_positive_mul(max, sqrt(one + sum));
+      return except::check_positive_mul(max, sqrt(one + sum));
 #else
-      using namespace ::std;
       return max * sqrt(one + sum);
 #endif
     }
@@ -98,7 +120,12 @@ namespace spatial
     euclid_distance_to_plane
     (dimension_type dim, Key origin, Key key, Difference diff)
     {
+#ifdef SPATIAL_SAFER_ARITHMETICS
+      return except::check_abs(diff(dim, origin, key));
+#else
+      using namespace std;
       return abs(diff(dim, origin, key));
+#endif
     }
 
     /**
@@ -108,14 +135,13 @@ namespace spatial
      */
     template <typename Key, typename Difference, typename Distance>
     inline Distance
-    sqeuclid_distance_to_plane
+    square_euclid_distance_to_plane
     (dimension_type dim, Key origin, Key key, Difference diff)
     {
+      Distance d = diff(dim, origin, key);
 #ifdef SPATIAL_SAFER_ARITHMETICS
-      Distance d = diff(dim, origin, key);
-      return ::spatial::except::check_square(d);
+      return except::check_square(d);
 #else
-      Distance d = diff(dim, origin, key);
       return d * d;
 #endif
     }
@@ -126,18 +152,18 @@ namespace spatial
      */
     template <typename Key, typename Difference, typename Distance>
     inline Distance
-    sqeuclid_distance_to_key
+    square_euclid_distance_to_key
     (dimension_type rank, Key origin, Key key, Difference diff)
     {
       Distance sum = static_cast<Distance>(0);
       for (dimension_type i=0; i<rank; ++i)
         {
 #ifdef SPATIAL_SAFER_ARITHMETICS
-          sum = ::spatial::except::check_positive_add
+          sum = except::check_positive_add
             (sqeuclid_distance_to_plane<Key, Difference, Distance>
              (i, origin, key, diff), sum);
 #else
-          sum += sqeuclid_distance_to_plane
+          sum += square_euclid_distance_to_plane
             <Key, Difference, Distance>(i, origin, key, diff);
 #endif
         }
@@ -154,6 +180,7 @@ namespace spatial
     manhattan_distance_to_plane
     (dimension_type dim, Key origin, Key key, Difference diff)
     {
+      using namespace std;
       return abs(diff(dim, origin, key));
     }
 
@@ -183,7 +210,6 @@ namespace spatial
     /*
       // For a future implementation where we take earth-like spheroid as an
       // example for non-euclidian spaces, or manifolds.
-
       math::great_circle_distance_to_key
       math::great_circle_distance_to_plane
       math::vincenty_distance_to_key
@@ -469,13 +495,13 @@ namespace spatial
    */
   template<typename Tp, typename Difference,
            typename Distance = typename Difference::difference_type>
-  struct sqeuclid
+  struct square_euclid
     : private Difference // empty-member optimization
   {
     typedef Distance distance_type;
 
     //! The constructor allows you to specify a custom difference type.
-    sqeuclid(const Difference& diff = Difference()) : Difference(diff) { }
+    square_euclid(const Difference& diff = Difference()) : Difference(diff) { }
 
     /**
      *  @brief  Compute the distance between the point of @c origin and the @c
@@ -486,7 +512,7 @@ namespace spatial
     distance_to_key(dimension_type rank,
                     const Tp& origin, const Tp& key) const
     {
-      return math::sqeuclid_distance_to_key<Tp, Difference, Distance>
+      return math::square_euclid_distance_to_key<Tp, Difference, Distance>
         (rank, origin, key, *static_cast<const Difference*>(this));
     }
 
@@ -500,7 +526,7 @@ namespace spatial
     distance_to_plane(dimension_type, dimension_type dim,
                       const Tp& origin, const Tp& key) const
     {
-      return math::sqeuclid_distance_to_plane<Tp, Difference, Distance>
+      return math::square_euclid_distance_to_plane<Tp, Difference, Distance>
         (dim, origin, key, *static_cast<const Difference*>(this));
     }
   };
@@ -510,11 +536,11 @@ namespace spatial
    *  container.
    */
   template<typename Ct, typename Difference>
-  sqeuclid<typename container_traits<Ct>::key_type, Difference>
-  make_sqeuclid(const Ct& container, const Difference& diff)
+  square_euclid<typename container_traits<Ct>::key_type, Difference>
+  make_square_euclid(const Ct& container, const Difference& diff)
   {
-    return sqeuclid<typename container_traits<Ct>::key_type,
-                    Difference>(diff);
+    return square_euclid<typename container_traits<Ct>::key_type,
+                         Difference>(diff);
   }
 
   /**
@@ -526,14 +552,14 @@ namespace spatial
    *  distance type: such as 'int()' or 'double()' or 'MyOwnType()'.
    */
   template<typename Ct, typename Distance>
-  euclid<typename container_traits<Ct>::key_type,
-         typename details::auto_difference<Ct, Distance>::type>
-  make_sqeuclid_auto(const Ct& container, const Distance&)
+  square_euclid<typename container_traits<Ct>::key_type,
+                typename details::auto_difference<Ct, Distance>::type>
+  make_square_euclid(const Ct& container, const Distance&)
   {
-    return sqeuclid<typename container_traits<Ct>::key_type,
-                    typename details::auto_difference<Ct, Distance>::type>
+    return square_euclid<typename container_traits<Ct>::key_type,
+                         typename details::auto_difference<Ct, Distance>::type>
       (details::difference_cast<typename container_traits<Ct>::key_compare,
-                                Distance>(container.key_comp()));
+       Distance>(container.key_comp()));
   }
 
   /**

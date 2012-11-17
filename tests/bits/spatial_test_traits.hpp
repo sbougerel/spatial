@@ -58,15 +58,4 @@ BOOST_AUTO_TEST_CASE(test_container_traits)
 # undef SPATIAL_TRAIT_CHECK
 }
 
-/**
- *  To test \c geometry_traits we use a real geometry and attempt to recover
- *  every of its sub-defined types.
- */
-BOOST_AUTO_TEST_CASE(test_geometry_trait)
-{
-  check_is_same
-    <geometry_traits<sqeuclid<int2, paren_minus<int2, int> > >::distance_type,
-     sqeuclid<int2, paren_minus<int2, int> >::distance_type>();
-}
-
 #endif // SPATIAL_TEST_TRAITS_HPP

@@ -15,6 +15,12 @@
 #ifndef SPATIAL_TEST_GEOMETRY_HPP
 #define SPATIAL_TEST_GEOMETRY_HPP
 
+BOOST_AUTO_TEST_CASE(test_geometry_trait)
+{
+  check_is_same
+    <geometry_traits<square_euclid<int2, paren_minus<int2, int> > >::distance_type,
+     square_euclid<int2, paren_minus<int2, int> >::distance_type>();
+}
 
 BOOST_AUTO_TEST_CASE(test_difference_bracket)
 {
