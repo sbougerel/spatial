@@ -67,7 +67,7 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       // Walk the tree in both directions: one step left, one step right, etc..
       dimension_type set_dim = 0; // number of values correctly positionned
-      node_ptr best = 0, end = 0;
+      node_ptr best = 0;
       dimension_type best_dim = 0;
       node_ptr l_node, r_node; l_node = r_node = iter.node;
       dimension_type l_dim, r_dim; l_dim = r_dim = iter.node_dim;
@@ -81,12 +81,12 @@ namespace spatial
                       || !cmp(l_dim, const_key(l_node), const_key(iter.node))))
                 {
                   l_node = l_node->left;
-                  l_dim = incr(rank, l_dim);
+                  l_dim = incr_dim(rank, l_dim);
                   while (l_node->right != 0
                          && (l_dim > set_dim
                              || best == 0 || !cmp(l_dim, const_key(best),
                                                   const_key(l_node))))
-                    { l_node = l_node->right; l_dim = incr(rank, l_dim); }
+                    { l_node = l_node->right; l_dim = incr_dim(rank, l_dim); }
                   if (order_ref(cmp, rank, const_key(iter.node),
                                 const_key(l_node))
                       && (best == 0
@@ -125,12 +125,12 @@ namespace spatial
                       || !cmp(r_dim, const_key(best), const_key(r_node))))
                 {
                   r_node = r_node->right;
-                  r_dim = incr(rank, r_dim);
+                  r_dim = incr_dim(rank, r_dim);
                   while (r_node->left != 0
                          && (r_dim > set_dim
                              || !cmp(r_dim, const_key(r_node),
                                      const_key(iter.node))))
-                    { r_node = r_node->left; r_dim = incr(rank, r_dim); }
+                    { r_node = r_node->left; r_dim = incr_dim(rank, r_dim); }
                   if (order_ref(cmp, rank, const_key(iter.node),
                                 const_key(r_node))
                       && (best == 0
@@ -199,7 +199,7 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       // Walk the tree in both directions: one step left, one step right, etc..
       dimension_type set_dim = 0; // number of values correctly positionned
-      node_ptr best = 0, end = 0;
+      node_ptr best = 0;
       dimension_type best_dim = 0;
       node_ptr l_node, r_node; l_node = r_node = iter.node;
       dimension_type l_dim, r_dim; l_dim = r_dim = iter.node_dim;
@@ -214,13 +214,13 @@ namespace spatial
                       || cmp(l_dim, const_key(iter.node), const_key(l_node))))
                 {
                   l_node = l_node->left;
-                  l_dim = incr(rank, l_dim);
+                  l_dim = incr_dim(rank, l_dim);
                   while (l_node->right != 0
                          && (l_dim > set_dim
                              || best == 0
                              || !cmp(l_dim, const_key(best),
                                      const_key(l_node))))
-                    { l_node = l_node->right; l_dim = incr(rank, l_dim); }
+                    { l_node = l_node->right; l_dim = incr_dim(rank, l_dim); }
                   if (order_ref(cmp, rank, const_key(iter.node),
                                 const_key(l_node))
                       && (best == 0
@@ -259,13 +259,13 @@ namespace spatial
                       || !cmp(r_dim, const_key(best), const_key(r_node))))
                 {
                   r_node = r_node->right;
-                  r_dim = incr(rank, r_dim);
+                  r_dim = incr_dim(rank, r_dim);
                   while (r_node->left
                          && (r_dim > set_dim
                              // strict invarient optimization
                              || cmp(r_dim, const_key(iter.node),
                                     const_key(r_node))))
-                    { r_node = r_node->left; r_dim = incr(rank, r_dim); }
+                    { r_node = r_node->left; r_dim = incr_dim(rank, r_dim); }
                   if (order_ref(cmp, rank, const_key(iter.node),
                                 const_key(r_node))
                       && (best == 0
@@ -331,7 +331,7 @@ namespace spatial
     template <typename Container>
     inline ordered_iterator<Container>&
     decrement_ordered(ordered_iterator<Container>& iter,
-                      relaxed_invariant_tag())
+                      relaxed_invariant_tag)
     {
       typedef typename ordered_iterator<Container>::node_ptr node_ptr;
       const typename container_traits<Container>::rank_type&
@@ -348,7 +348,7 @@ namespace spatial
         }
       // Walk the tree in both directions: one step left, one step right, etc..
       dimension_type set_dim = 0; // number of values correctly positionned
-      node_ptr best = 0, end = 0;
+      node_ptr best = 0;
       dimension_type best_dim = 0;
       node_ptr l_node, r_node; l_node = r_node = iter.node;
       dimension_type l_dim, r_dim; l_dim = r_dim = iter.node_dim;
@@ -363,12 +363,12 @@ namespace spatial
                       || !cmp(l_dim, const_key(l_node), const_key(best))))
                 {
                   l_node = l_node->left;
-                  l_dim = incr(rank, l_dim);
+                  l_dim = incr_dim(rank, l_dim);
                   while (l_node->right
                          && (l_dim > set_dim
                              || !cmp(l_dim, const_key(iter.node),
                                      const_key(l_node))))
-                    { l_node = l_node->right; l_dim = incr(rank, l_dim); }
+                    { l_node = l_node->right; l_dim = incr_dim(rank, l_dim); }
                   if (order_ref(cmp, rank, const_key(l_node),
                                 const_key(iter.node))
                       && (best == 0
@@ -406,12 +406,12 @@ namespace spatial
                       || !cmp(r_dim, const_key(iter.node), const_key(r_node))))
                 {
                   r_node = r_node->right;
-                  r_dim = incr(rank, r_dim);
+                  r_dim = incr_dim(rank, r_dim);
                   while (r_node->left
                          && (r_dim > set_dim
                              || best == 0
                              || !cmp(r_dim, const_key(r_node), const_key(best))))
-                    { r_node = r_node->left; r_dim = incr(rank, r_dim); }
+                    { r_node = r_node->left; r_dim = incr_dim(rank, r_dim); }
                   if (order_ref(cmp, rank, const_key(r_node),
                                 const_key(iter.node))
                       && (best == 0
@@ -468,7 +468,7 @@ namespace spatial
     template <typename Container>
     inline ordered_iterator<Container>&
     decrement_ordered(ordered_iterator<Container>& iter,
-                      strict_invariant_tag())
+                      strict_invariant_tag)
     {
       typedef typename ordered_iterator<Container>::node_ptr node_ptr;
       const typename container_traits<Container>::rank_type&
@@ -485,7 +485,7 @@ namespace spatial
         }
       // Walk the tree in both directions: one step left, one step right, etc..
       dimension_type set_dim = 0; // number of values correctly positionned
-      node_ptr best = 0, end = 0;
+      node_ptr best = 0;
       dimension_type best_dim = 0;
       node_ptr l_node, r_node; l_node = r_node = iter.node;
       dimension_type l_dim, r_dim; l_dim = r_dim = iter.node_dim;
@@ -501,12 +501,12 @@ namespace spatial
                       || cmp(l_dim, const_key(best), const_key(l_node))))
                 {
                   l_node = l_node->left;
-                  l_dim = incr(rank, l_dim);
+                  l_dim = incr_dim(rank, l_dim);
                   while (l_node->right
                          && (l_dim > set_dim
                              || !cmp(l_dim, const_key(iter.node),
                                      const_key(l_node))))
-                    { l_node = l_node->right; l_dim = incr(rank, l_dim); }
+                    { l_node = l_node->right; l_dim = incr_dim(rank, l_dim); }
                   if (order_ref(cmp, rank, const_key(l_node),
                                 const_key(iter.node))
                       && (best == 0
@@ -544,13 +544,13 @@ namespace spatial
                       || !cmp(r_dim, const_key(iter.node), const_key(r_node))))
                 {
                   r_node = r_node->right;
-                  r_dim = incr(rank, r_dim);
+                  r_dim = incr_dim(rank, r_dim);
                   while (r_node->left
                          && (r_dim > set_dim
                              || best == 0
                              // optimization for strict invarient
                              || cmp(r_dim, const_key(best), const_key(r_node))))
-                    { r_node = r_node->left; r_dim = incr(rank, r_dim); }
+                    { r_node = r_node->left; r_dim = incr_dim(rank, r_dim); }
                   if (order_ref(cmp, rank, const_key(r_node),
                                 const_key(iter.node))
                       && (best == 0
@@ -624,14 +624,14 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
       SPATIAL_ASSERT_CHECK(iter.node != 0);
-      node_ptr end = iter->parent;
+      node_ptr end = iter.node->parent;
       dimension_type set_dim = 0;
       while (iter.node->left != 0)
         {
           iter.node = iter.node->left;
-          iter.node_dim = incr(rank, iter.node_dim);
+          iter.node_dim = incr_dim(rank, iter.node_dim);
         }
-      node_ptr best = iter;
+      node_ptr best = iter.node;
       dimension_type best_dim = iter.node_dim;
       do
         {
@@ -644,9 +644,9 @@ namespace spatial
                       || !cmp(node_dim, const_key(best), const_key(node))))
                 {
                   node = node->right;
-                  node_dim = incr(rank, node_dim);
+                  node_dim = incr_dim(rank, node_dim);
                   while (node->left != 0)
-                    { node = node->left; node_dim = incr(rank, node_dim); }
+                    { node = node->left; node_dim = incr_dim(rank, node_dim); }
                   if (order_ref(cmp, rank,
                                 const_key(node), const_key(best)))
                     { best = node; best_dim = node_dim; }
@@ -692,14 +692,14 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
-      node_ptr end = iter->parent;
+      node_ptr end = iter.node->parent;
       dimension_type set_dim = 0;
       while (iter.node->right != 0)
         {
           iter.node = iter.node->right;
-          iter.node_dim = incr(rank, iter.node_dim);
+          iter.node_dim = incr_dim(rank, iter.node_dim);
         }
-      node_ptr best = iter;
+      node_ptr best = iter.node;
       dimension_type best_dim = iter.node_dim;
       do
         {
@@ -712,9 +712,9 @@ namespace spatial
                       || !cmp(node_dim, const_key(node), const_key(best))))
                 {
                   node = node->left;
-                  node_dim = incr(rank, node_dim);
+                  node_dim = incr_dim(rank, node_dim);
                   while (node->right != 0)
-                    { node = node->right; node_dim = incr(rank, node_dim); }
+                    { node = node->right; node_dim = incr_dim(rank, node_dim); }
                   if (order_ref(cmp, rank,
                                 const_key(best), const_key(node)))
                     { best = node; best_dim = node_dim; }
@@ -760,14 +760,14 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
-      node_ptr end = iter->parent;
+      node_ptr end = iter.node->parent;
       dimension_type set_dim = 0;
       while (iter.node->right != 0)
         {
           iter.node = iter.node->right;
-          iter.node_dim = incr(rank, iter.node_dim);
+          iter.node_dim = incr_dim(rank, iter.node_dim);
         }
-      node_ptr best = iter;
+      node_ptr best = iter.node;
       dimension_type best_dim = iter.node_dim;
       do
         {
@@ -779,9 +779,9 @@ namespace spatial
               if (node->left != 0 && node_dim > set_dim)
                 {
                   node = node->left;
-                  node_dim = incr(rank, node_dim);
+                  node_dim = incr_dim(rank, node_dim);
                   while (node->right != 0)
-                    { node = node->right; node_dim = incr(rank, node_dim); }
+                    { node = node->right; node_dim = incr_dim(rank, node_dim); }
                   if (order_ref(cmp, rank,
                                 const_key(best), const_key(node)))
                     { best = node; best_dim = node_dim; }
@@ -837,7 +837,7 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
-      node_ptr end = iter->parent;
+      node_ptr end = iter.node->parent;
       dimension_type set_dim = 0;
       node_ptr best = 0;
       dimension_type best_dim = 0;
@@ -860,13 +860,13 @@ namespace spatial
                       || !cmp(node_dim, const_key(best), const_key(node))))
                 {
                   node = node->right;
-                  node_dim = incr(rank, node_dim);
+                  node_dim = incr_dim(rank, node_dim);
                   while (node->left != 0
                          && (node_dim > set_dim
                              || !cmp(node_dim, const_key(node), bound)))
                     {
                       node = node->left;
-                      node_dim = incr(rank, node_dim);
+                      node_dim = incr_dim(rank, node_dim);
                     }
                   if (!order_less(cmp, set_dim, const_key(node), bound)
                       && (best == 0
@@ -917,7 +917,7 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
-      node_ptr end = iter->parent;
+      node_ptr end = iter.node->parent;
       dimension_type set_dim = 0;
       node_ptr best = 0;
       dimension_type best_dim = 0;
@@ -941,14 +941,14 @@ namespace spatial
                       || !cmp(node_dim, const_key(best), const_key(node))))
                 {
                   node = node->right;
-                  node_dim = incr(rank, node_dim);
+                  node_dim = incr_dim(rank, node_dim);
                   while (node->left != 0
                          && (node_dim > set_dim
                              // optimization for strict invarient
                              || cmp(node_dim, bound, const_key(node))))
                     {
                       node = node->left;
-                      node_dim = incr(rank, node_dim);
+                      node_dim = incr_dim(rank, node_dim);
                     }
                   if (!order_less(cmp, set_dim, const_key(node), bound)
                       && (best == 0
@@ -1009,7 +1009,7 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
-      node_ptr end = iter->parent;
+      node_ptr end = iter.node->parent;
       dimension_type set_dim = 0;
       node_ptr best = 0;
       dimension_type best_dim = 0;
@@ -1032,13 +1032,13 @@ namespace spatial
                       || !cmp(node_dim, const_key(best), const_key(node))))
                 {
                   node = node->right;
-                  node_dim = incr(rank, node_dim);
+                  node_dim = incr_dim(rank, node_dim);
                   while (node->left != 0
                          && (node_dim > set_dim
                              || !cmp(node_dim, bound, const_key(node))))
                     {
                       node = node->left;
-                      node_dim = incr(rank, node_dim);
+                      node_dim = incr_dim(rank, node_dim);
                     }
                   if (order_less(cmp, set_dim, bound, const_key(node))
                       && (best == 0

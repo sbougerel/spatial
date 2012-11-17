@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 {
   {
     Tp fix(100, randomize(-20, 20));
-    // Prove that you can find the max value with N nodes, down to 1 nodes
+    // Prove that you can find the min value with N nodes, down to 1 nodes
     while (!fix.container.empty())
       {
         unsigned int count = 0;
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
   { // A tree where all elements are the same!
     Tp fix(100, same());
-    // Prove that you can find the max value with N nodes, down to 1 nodes
+    // Prove that you can find the min value with N nodes, down to 1 nodes
     while (!fix.container.empty())
       {
         unsigned int count = 0;

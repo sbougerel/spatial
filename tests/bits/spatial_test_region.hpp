@@ -405,8 +405,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
         BOOST_CHECK(details::match_all(fix.container.rank(), *it,
                                        make_bounds(fix.container, l, h)));
         region_iterator<typename Tp::container_type> tmp = it;
-        --tmp;
-        BOOST_CHECK(tmp == region_end(fix.container, l, h));
+        BOOST_CHECK(--tmp == region_end(fix.container, l, h));
         fix.container.erase(it);
       }
   }

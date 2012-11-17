@@ -119,21 +119,18 @@ namespace spatial
      */
     struct iterator : details::Bidirectional_iterator
                       <typename container_traits<Ct>::mode_type,
-                       typename container_traits<Ct>::rank_type,
-                       iterator>
+                       typename container_traits<Ct>::rank_type>
     {
     private:
       typedef typename details::Bidirectional_iterator
         <typename container_traits<Ct>::mode_type,
-         typename container_traits<Ct>::rank_type,
-         iterator> Base;
+         typename container_traits<Ct>::rank_type> Base;
 
       template<typename Iterator> struct Rebind
       {
         typedef typename ::spatial::details::Bidirectional_iterator
         <typename container_traits<Ct>::mode_type,
-         typename container_traits<Ct>::rank_type,
-         Iterator> type;
+         typename container_traits<Ct>::rank_type> type;
       };
 
     public:
@@ -272,21 +269,18 @@ namespace spatial
     struct iterator
       : details::Const_bidirectional_iterator
         <typename container_traits<Ct>::mode_type,
-         typename container_traits<Ct>::rank_type,
-         iterator>
+         typename container_traits<Ct>::rank_type>
     {
     private:
       typedef typename details::Const_bidirectional_iterator
         <typename container_traits<Ct>::mode_type,
-         typename container_traits<Ct>::rank_type,
-         iterator> Base;
+         typename container_traits<Ct>::rank_type> Base;
 
       template<typename Iterator> struct Rebind
       {
         typedef typename ::spatial::details::Const_bidirectional_iterator
         <typename container_traits<Ct>::mode_type,
-         typename container_traits<Ct>::rank_type,
-         Iterator> type;
+         typename container_traits<Ct>::rank_type> type;
       };
 
     public:

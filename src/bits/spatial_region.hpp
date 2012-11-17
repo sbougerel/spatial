@@ -629,13 +629,12 @@ namespace spatial
   struct region_iterator
     : details::Bidirectional_iterator
       <typename container_traits<Ct>::mode_type,
-       typename container_traits<Ct>::rank_type,
-       region_iterator<Ct, Predicate> >
+       typename container_traits<Ct>::rank_type>
   {
   private:
     typedef typename details::Bidirectional_iterator
     <typename container_traits<Ct>::mode_type,
-     typename container_traits<Ct>::rank_type, region_iterator> Base;
+     typename container_traits<Ct>::rank_type> Base;
 
   public:
     //! Uninitialized iterator.
@@ -736,13 +735,12 @@ namespace spatial
   struct region_iterator<const Ct, Predicate>
     : details::Const_bidirectional_iterator
       <typename container_traits<Ct>::mode_type,
-       typename container_traits<Ct>::rank_type,
-       region_iterator<const Ct, Predicate> >
+       typename container_traits<Ct>::rank_type>
   {
   private:
     typedef details::Const_bidirectional_iterator
     <typename container_traits<Ct>::mode_type,
-     typename container_traits<Ct>::rank_type, region_iterator> Base;
+     typename container_traits<Ct>::rank_type> Base;
 
   public:
     //! Uninitialized iterator.

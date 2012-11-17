@@ -837,9 +837,8 @@ namespace spatial
      *  \tparam Mode      The mode used to \ref LinkMode "link nodes to
      *                    their values".
      *  \tparam Rank      The rank of the iterator.
-     *  \tparam Iterator  The real type of iterator.
      */
-    template <typename Mode, typename Rank, typename Iterator>
+    template <typename Mode, typename Rank>
     struct Bidirectional_iterator : private Rank
     {
       //! The \c value_type can receive a copy of the reference pointed to be
@@ -947,9 +946,8 @@ namespace spatial
      *  \tparam Mode      The mode used to \ref LinkMode "link nodes to
      *                    their values".
      *  \tparam Rank      The rank of the iterator.
-     *  \tparam Iterator  The real type of iterator.
      */
-    template <typename Mode, typename Rank, typename Iterator>
+    template <typename Mode, typename Rank>
     struct Const_bidirectional_iterator : private Rank
     {
       //! The \c value_type can receive a copy of the reference pointed to be

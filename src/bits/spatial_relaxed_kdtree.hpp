@@ -678,6 +678,26 @@ namespace spatial
       erase(const key_type& key);
 
       /**
+       *  Deletes the range of nodes pointed to by the tree's own iterators.
+       *
+       *  This function leverages on the fact that when nodes are erased in the
+       *  tree, the in-memory locations of other nodes do not change. Only the
+       *  position of the node relative to other nodes in the tree changes.
+       */
+      void
+      erase(const Bidirectional_iterator<mode_type, rank_type>& first,
+            const Bidirectional_iterator<mode_type, rank_type>& last)
+      {
+        while (first != last)
+          {
+            iterator tmp = first++;
+            erase(tmp); // this could be optimized to pass around node_dim;
+            // Since the tree might be rebalanced, node_dim must be updated...
+            first.node_dim = modulo(first.node, rank());
+          }
+      }
+
+      /**
        *  @brief  Deletes any node that matches one of the keys in the sequence
        *  covered by the iterators.
        *
@@ -693,7 +713,6 @@ namespace spatial
       void
       erase(InputIterator first, InputIterator last)
       { for (; first != last; ++first) { erase(*first); } }
-
     };
 
     /**

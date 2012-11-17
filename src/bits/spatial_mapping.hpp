@@ -110,14 +110,12 @@ namespace spatial
   struct mapping_iterator
     : details::Bidirectional_iterator
       <typename container_traits<Ct>::mode_type,
-       typename container_traits<Ct>::rank_type,
-       mapping_iterator<Ct> >
+       typename container_traits<Ct>::rank_type>
   {
   private:
     typedef details::Bidirectional_iterator
     <typename container_traits<Ct>::mode_type,
-     typename container_traits<Ct>::rank_type,
-     mapping_iterator<Ct> > Base;
+     typename container_traits<Ct>::rank_type> Base;
 
   public:
     typedef typename container_traits<Ct>::key_compare key_compare;
@@ -254,14 +252,12 @@ namespace spatial
   struct mapping_iterator<const Ct>
     : details::Const_bidirectional_iterator
       <typename container_traits<Ct>::mode_type,
-       typename container_traits<Ct>::rank_type,
-       mapping_iterator<const Ct> >
+       typename container_traits<Ct>::rank_type>
   {
   private:
     typedef details::Const_bidirectional_iterator
     <typename container_traits<Ct>::mode_type,
-     typename container_traits<Ct>::rank_type,
-     mapping_iterator<const Ct> > Base;
+     typename container_traits<Ct>::rank_type> Base;
 
   public:
     //! Alias for the key_compare type used by the iterator.

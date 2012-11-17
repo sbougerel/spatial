@@ -47,81 +47,66 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   BOOST_CHECK(b->first == fix.container.begin()->first);
 }
 
-
 BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_ordered_minimum, Tp, int2_sets )
 {
   {
     Tp fix(100, randomize(-20, 20));
-    // Prove that you can find the max value with N nodes, down to 1 nodes
+    // Prove that you can find the min value with N nodes, down to 1 nodes
     while (!fix.container.empty())
       {
         unsigned int count = 0;
-        int min_value_0 = (*fix.container.begin())[0];
-        int min_value_1 = (*fix.container.begin())[1];
+        int2 min_value = *fix.container.begin();
         for(typename Tp::container_type::iterator
               i = fix.container.begin(); i != fix.container.end(); ++i)
           {
-            int tmp = (*i)[0];
-            if (tmp < min_value_0) { min_value_0 = tmp; }
-            tmp = (*i)[1];
-            if (tmp < min_value_1) { min_value_1 = tmp; }
+            if ((*i)[0] < min_value[0]
+                || ((*i)[0] == min_value[0] && (*i)[1] < min_value[1]))
+              min_value = *i;
             ++count;
           }
         BOOST_CHECK_EQUAL(count, fix.container.size());
         ordered_iterator<typename Tp::container_type> iter;
-        dimension_type ordered_dim = 0;
-        iter = ordered_begin(fix.container, ordered_dim);
-        BOOST_CHECK_EQUAL((*iter)[ordered_dim], min_value_0);
-        ordered_dim = 1;
-        iter = ordered_begin(fix.container, ordered_dim);
-        BOOST_CHECK_EQUAL((*iter)[ordered_dim], min_value_1);
+        iter = ordered_begin(fix.container);
+        BOOST_CHECK(*iter == min_value);
+        ordered_iterator<typename Tp::container_type> tmp(iter);
+        BOOST_CHECK(--tmp == ordered_end(fix.container));
         fix.container.erase(iter);
       }
   }
   { // A tree where all elements are the same!
     Tp fix(100, same());
-    // Prove that you can find the max value with N nodes, down to 1 nodes
+    // Prove that you can find the min value with N nodes, down to 1 nodes
     while (!fix.container.empty())
       {
-        unsigned int count = 0;
-        for(typename Tp::container_type::iterator
-              i = fix.container.begin(); i != fix.container.end(); ++i)
-          { ++count; }
-        BOOST_CHECK_EQUAL(count, fix.container.size());
-        ordered_iterator<typename Tp::container_type> iter;
-        iter = ordered_begin(fix.container, 0);
-        BOOST_CHECK_EQUAL((*iter)[0], 100);
-        iter = ordered_begin(fix.container, 1);
-        BOOST_CHECK_EQUAL((*iter)[1], 100);
+        ordered_iterator<typename Tp::container_type>
+          iter(ordered_begin(fix.container));
+        BOOST_CHECK(*iter == int2(100, 100));
+        ordered_iterator<typename Tp::container_type> tmp(iter);
+        BOOST_CHECK(--tmp == ordered_end(fix.container));
         fix.container.erase(iter);
       }
   }
   { // test at the limit: a tree with 1 element
     Tp fix(1, same());
     ordered_iterator<const typename Tp::container_type> iter;
-    iter = ordered_cbegin(fix.container, 0);
-    BOOST_CHECK_EQUAL((*iter)[0], 1); // should be (1, 1);
-    BOOST_CHECK_EQUAL((*iter)[1], 1);
-    iter = ordered_cbegin(fix.container, 1);
-    BOOST_CHECK_EQUAL((*iter)[0], 1); // should be (1, 1);
-    BOOST_CHECK_EQUAL((*iter)[1], 1);
+    iter = ordered_cbegin(fix.container);
+    BOOST_CHECK(*iter == int2(1, 1));
+    BOOST_CHECK(--iter == ordered_end(fix.container));
   }
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
     Tp fix(100, decrease());
-    ordered_iterator<typename Tp::container_type> iter;
-    dimension_type ordered_dim = 0;
-    iter = ordered_begin(fix.container, ordered_dim);
-    BOOST_CHECK_EQUAL((*iter)[0], 1); // should be (1, 1);
-    BOOST_CHECK_EQUAL((*iter)[1], 1);
+    ordered_iterator<const typename Tp::container_type>
+      iter(ordered_cbegin(fix.container));
+    BOOST_CHECK(*iter == int2(1, 1));
+    BOOST_CHECK(--iter == ordered_end(fix.container));
   }
   { // test at the limit: an unbalanced tree (i.e insertions in order)!
     Tp fix(100, increase());
-    ordered_iterator<typename Tp::container_type> iter;
-    dimension_type ordered_dim = 1;
-    iter = ordered_begin(fix.container, ordered_dim);
-    BOOST_CHECK_EQUAL((*iter)[0], 0); // should be (0, 0);
-    BOOST_CHECK_EQUAL((*iter)[1], 0);
+    ordered_iterator<const typename Tp::container_type>
+      iter(ordered_cbegin(fix.container));
+    BOOST_CHECK(*iter == int2(0, 0));
+    BOOST_CHECK(--iter == ordered_end(fix.container));
   }
 }
 /*
