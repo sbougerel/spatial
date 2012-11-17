@@ -850,7 +850,7 @@ namespace spatial
       dimension_type best_dim = 0;
       while (iter.node->left != 0
              && (iter.node_dim != iter.mapping_dimension()
-                 || cmp(iter.node_dim, bound, const_key(iter.node))))
+                 || !cmp(iter.node_dim, const_key(iter.node), bound)))
         {
           iter.node = iter.node->left;
           iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -868,8 +868,7 @@ namespace spatial
               iter.node_dim = incr_dim(rank, iter.node_dim);
               while (iter.node->left != 0
                      && (iter.node_dim != iter.mapping_dimension()
-                         || cmp(iter.node_dim, bound,
-                                const_key(iter.node))))
+                         || !cmp(iter.node_dim, const_key(iter.node), bound)))
                 {
                   iter.node = iter.node->left;
                   iter.node_dim = incr_dim(rank, iter.node_dim);

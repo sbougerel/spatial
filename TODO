@@ -1,8 +1,9 @@
 Spatial TODO List
 =================
 
-(Also used as a detailed roadmap, may change according to user
-expectations or interests)
+(Also used as a detailed roadmap, and changes according to user
+expectations, interests or simply progress...)
+
 
 VERSION 2.0.0
 
@@ -16,8 +17,8 @@ VERSION 2.0.0
 * Jun 11 Some documentation and unit test missing on the first
            release, so we just need to add them. Just a few are
            missing, only. Additionaly, check that the library is
-           compiling fine on Visual Studio. Plus add better examples.
-           In progress...
+           compiling fine on Visual Studio.
+           DONE!
 
 * Jul 11 Add interator_cast() operators to cast a view interator into
            a container iterator, to facilitate erasing a node from a
@@ -25,7 +26,26 @@ VERSION 2.0.0
            messy use of iterator constructor. DONE! (Iterator casting
            is supported in the iterator themselves)
 
-* Aug 11 Complete General doxygen documention with details on
+* Dec 11 Implementation of pointmap containers. Need to add quite a
+           bit of unit testing, cause they differ from pointset in the
+           sense that their iterator are not always constant. It
+           should also take about 2 months. DONE!
+
+* Feb 12 Work on boxset containers, add a new type of iterator:
+           contain_iterator and intersect_iterator which walk through
+           all the boxes that are contained in a range or that are
+           intersecting a range, respectively. With unit tests, that
+           should take a good 3 months. DONE!
+
+* May 12 Add the boxmap family of iterators. DONE!
+
+* Oct 12 Add a new type of iterator known as ordered_iterator. This
+           iterator always walks through the nodes of the tree in the
+           same order. This iterator is absolutely necessary to
+           properly implement some elementary functions such as "=="
+           between containers. In progress...
+
+* Dec 12 Complete General doxygen documention with details on
            container and views, elaboration of how to write geometry,
            etc. This documentation should serve as a complete user
            manual, it should be accompanied by a bit of library
@@ -33,34 +53,10 @@ VERSION 2.0.0
            milestone 1.0 release, and the end of the beta period, if
            enough people have used it. In progress...
 
-* Dec 11 Implementation of pointmap containers. Need to add quite a
-           bit of unit testing, cause they differ from pointset in the
-           sense that their iterator are not always constant. It
-           should also take about 2 months. It would mark the 1.1
-           release. DONE!
-
-* Feb 12 Work on boxset containers, add a new type of iterator:
-           contain_iterator and intersect_iterator which walk through
-           all the boxes that are contained in a range or that are
-           intersecting a range, respectively. With unit tests, that
-           should take a good 3 months. It would also mark the 1.2
-           release. DONE!
-
-* Apr 12 Add a new type of iterator known as ordered_iterator. This
-           iterator always walks through the nodes of the tree in the
-           same order. This iterator is absolutely necessary to
-           properly implement some elementary functions such as "=="
-           between containers. In progress...
-
-* Sep 12 Add the boxmap family of iterators. That would mark the 1.3
-           release and that would probably be the last release before
-           a long, long period of bug fixing and compatibility
-           improvements. DONE!
-
 
 VERSION 2.1.0
 
-* Dec 12 Final optimization: work on adding performance-based tests
+* Jan 13 Final optimization: work on adding performance-based tests
            and comparison with other libraries in the market. Wouldn't
            it be nice to see how it fares against ANN or libkdtree++?
 
@@ -68,16 +64,20 @@ VERSION 2.1.0
            bracket operators just like std::map and std::set. They
            would be simply pointset, boxset, pointmap and boxmap.
 
+* Apr 13 Add a range erase function that operates on 2 basic tree
+           iterators. This is complicated to write because of the
+           invarient.
+
 
 VERSION 2.2.0
 
-* Apr 13 Addition of intrusive containers for every existing ones. The
+* Jun 13 Addition of intrusive containers for every existing ones. The
            intrusive containers should have a rather limited inpact on
            the existing code if possible, but should make a great
            difference in terms of performance for those who need
            them. Should take about 2 months. In progress...
 
-* Jun 13 Implementation of a new near cache oblivious allocator solely
+* Sep 13 Implementation of a new near cache oblivious allocator solely
            dedicated to be used with the spatial library. This cache
            oblivious allocator is used to speed up the frequent
            walking operation within the tree. How does it work? First,
@@ -105,29 +105,37 @@ VERSION 2.2.0
            Therefore this allocator is fast and needs no extra info on
            top of the information in the tree itself. This allocator
            is therefore optimal for the library, and should speed up
-           tree walking a lot... if we never rebalance containers.
+           tree walking a lot... if we never rebalanced containers.
            However we do rebalance containers in this library. Due to
-           process of rebalancing, bucket within the block may be
+           the process of rebalancing, bucket within the block may be
            occupied. In this case, the subtree is simply iterated
            until a block with a free bucket is found. Therefore the
-           rebalancing should degrade a bit performance, but it is
-           expected that it would only degrade it considerably in the
-           case where only insertion occur. If both insertion and
-           removal happen regularly within the same subtree,
-           rebalancing should be more rare, and if it occurs, free
-           bukets of erased nodes will help maintain near cache-
-           oblivious repartition of the nodes in the block.
+           rebalancing would probably cancel the positive effect of
+           the allocator, but it is expected that it would only
+           degrade it considerably in the case where only insertion
+           occur. If both insertion and removal happen regularly
+           within the same subtree, rebalancing should be more rare,
+           and if it occurs, free bukets of erased nodes will help
+           maintain near cache-obliviousness.
+
 
 VERSION 2.3.0
 
-* Jul 13 Add new iterators such at ray_iterator, which travels along a
+* Nov 13 Add new iterators such at ray_iterator, which travels along a
            vector, in a given geometry. This iterator works only on
            boxset family of iterators. Some new functions for geometry
            should appear and therefore, it would make defining a
            geometry quite a complex business, needing more
            documentation. Should take about 2 months.
 
-* Sep 13 Porting Spatial to scripting/duck-typing languages or
+* Dec 13 Porting Spatial to scripting/duck-typing languages or
            frameworks? Python, Java, Lua, Ruby, .Net, others? Create a
            new project based on spatial in this case, using the
            version number in the spatial.hpp header.
+
+
+VERSION 3.0.0
+
+* ??? ?? Version 3.0.0 marks the new major release, breaking backward
+           compatibility. What would the future hold for the spatial
+           library?

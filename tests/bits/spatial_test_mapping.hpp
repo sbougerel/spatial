@@ -250,8 +250,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
           post = mapping_cbegin(fix.container, mapping_dim),
           end = mapping_cend(fix.container, mapping_dim);
         BOOST_CHECK(pre != end);
-                BOOST_CHECK(++pre != post++);
-                BOOST_CHECK(pre == post);
+        BOOST_CHECK(++pre != post++);
+        BOOST_CHECK(pre == post);
         BOOST_CHECK(post++ != end);
         BOOST_CHECK(++pre == end);
         BOOST_CHECK(post == end);
@@ -306,7 +306,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
          ++mapping_dim)
       {
         std::reverse_iterator
-              <mapping_iterator<typename Tp::container_type> >
+          <mapping_iterator<typename Tp::container_type> >
           iter(mapping_end(fix.container, mapping_dim)),
           end(mapping_begin(fix.container, mapping_dim));
         int count = 0;
@@ -326,7 +326,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
          ++mapping_dim)
       {
         std::reverse_iterator
-                  <mapping_iterator<typename Tp::container_type> >
+          <mapping_iterator<typename Tp::container_type> >
           iter(mapping_end(fix.container, mapping_dim)),
           end(mapping_begin(fix.container, mapping_dim));
         int count = 0;
@@ -348,8 +348,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
           post = mapping_cend(fix.container, mapping_dim),
           begin = mapping_cbegin(fix.container, mapping_dim);
         BOOST_CHECK(pre != begin);
-                BOOST_CHECK(--pre != post--);
-                BOOST_CHECK(pre == post);
+        BOOST_CHECK(--pre != post--);
+        BOOST_CHECK(pre == post);
         BOOST_CHECK(post-- != begin);
         BOOST_CHECK(--pre == begin);
         BOOST_CHECK(post == begin);
@@ -361,7 +361,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
          ++mapping_dim)
       {
         std::reverse_iterator
-                  <mapping_iterator<typename Tp::container_type> >
+          <mapping_iterator<typename Tp::container_type> >
           iter(mapping_end(fix.container, mapping_dim)),
           end(mapping_begin(fix.container, mapping_dim));
         int count = 0;
@@ -380,7 +380,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     for (dimension_type mapping_dim = 0; mapping_dim < 6;
          ++mapping_dim)
       {
-                std::reverse_iterator
+        std::reverse_iterator
           <mapping_iterator<typename Tp::container_type> >
           iter(mapping_end(fix.container, mapping_dim)),
           end(mapping_begin(fix.container, mapping_dim));
@@ -408,86 +408,86 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     for (dimension_type mapping_dim = 0; mapping_dim < 4;
          ++mapping_dim)
       {
-                mapping_iterator<typename Tp::container_type>
-                  iter (mapping_lower_bound(fix.container, mapping_dim, in));
-                BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim)
-                                || !quad_less()(mapping_dim, *iter, in));
-                BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim)
-                                || quad_less()(mapping_dim, *--iter, in));
-                iter = mapping_lower_bound(fix.container, mapping_dim, lower);
-                BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
-                iter = mapping_lower_bound(fix.container, mapping_dim, upper);
-                BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
+        mapping_iterator<typename Tp::container_type>
+          iter (mapping_lower_bound(fix.container, mapping_dim, in));
+        BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim)
+                    || !quad_less()(mapping_dim, *iter, in));
+        BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim)
+                    || quad_less()(mapping_dim, *--iter, in));
+        iter = mapping_lower_bound(fix.container, mapping_dim, lower);
+        BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+        iter = mapping_lower_bound(fix.container, mapping_dim, upper);
+        BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
       }
   }
   { // same test with a tree filled with similar values
     Tp fix(100, same());
     quad lower (99, 99, 99, 99);
     quad in (100, 100, 100, 100);
-        quad upper (101, 101, 101, 101);
+    quad upper (101, 101, 101, 101);
     for (dimension_type mapping_dim = 0; mapping_dim < 4;
          ++mapping_dim)
       {
-                mapping_iterator<typename Tp::container_type>
-                  iter (mapping_lower_bound(fix.container, mapping_dim, lower));
-                BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
-                iter = mapping_lower_bound(fix.container, mapping_dim, in);
-                BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
-                iter = mapping_lower_bound(fix.container, mapping_dim, upper);
-                BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
+        mapping_iterator<typename Tp::container_type>
+          iter (mapping_lower_bound(fix.container, mapping_dim, lower));
+        BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+        iter = mapping_lower_bound(fix.container, mapping_dim, in);
+        BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+        iter = mapping_lower_bound(fix.container, mapping_dim, upper);
+        BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
       }
   }
   { // test at the limit: tree with 1 value
     Tp fix(1, same());
     quad lower (0, 0, 0, 0);
     quad in (1, 1, 1, 1);
-        quad upper (2, 2, 2, 2);
+    quad upper (2, 2, 2, 2);
     for (dimension_type mapping_dim = 0; mapping_dim < 4;
          ++mapping_dim)
       {
-                mapping_iterator<const typename Tp::container_type>
-                  iter (mapping_clower_bound(fix.container, mapping_dim, lower));
-                BOOST_CHECK(iter == mapping_cbegin(fix.container, mapping_dim));
-                iter = mapping_clower_bound(fix.container, mapping_dim, in);
-                BOOST_CHECK(iter == mapping_cbegin(fix.container, mapping_dim));
-                iter = mapping_clower_bound(fix.container, mapping_dim, upper);
-                BOOST_CHECK(iter == mapping_cend(fix.container, mapping_dim));
+        mapping_iterator<const typename Tp::container_type>
+          iter (mapping_clower_bound(fix.container, mapping_dim, lower));
+        BOOST_CHECK(iter == mapping_cbegin(fix.container, mapping_dim));
+        iter = mapping_clower_bound(fix.container, mapping_dim, in);
+        BOOST_CHECK(iter == mapping_cbegin(fix.container, mapping_dim));
+        iter = mapping_clower_bound(fix.container, mapping_dim, upper);
+        BOOST_CHECK(iter == mapping_cend(fix.container, mapping_dim));
       }
   }
   { // test at the limit: tree filled with decreasing values
     Tp fix(100, decrease()); // first (100, 100, 100, 100), last (1, 1, 1, 1)
-        quad lower(1, 1, 1, 1);
-        quad in (100, 100, 100, 100);
-        quad upper(101, 101, 101, 101);
+    quad lower(1, 1, 1, 1);
+    quad in (100, 100, 100, 100);
+    quad upper(101, 101, 101, 101);
     for (dimension_type mapping_dim = 0; mapping_dim < 4;
          ++mapping_dim)
       {
-                mapping_iterator<typename Tp::container_type>
-                  iter (mapping_lower_bound(fix.container, mapping_dim, lower));
-                BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
-                iter = mapping_lower_bound(fix.container, mapping_dim, in);
-                BOOST_CHECK(iter != mapping_end(fix.container, mapping_dim)
-                        && ++iter == mapping_end(fix.container, mapping_dim));
-                iter = mapping_lower_bound(fix.container, mapping_dim, upper);
-                BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
+        mapping_iterator<typename Tp::container_type>
+          iter (mapping_lower_bound(fix.container, mapping_dim, lower));
+        BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+        iter = mapping_lower_bound(fix.container, mapping_dim, in);
+        BOOST_CHECK(iter != mapping_end(fix.container, mapping_dim)
+                    && ++iter == mapping_end(fix.container, mapping_dim));
+        iter = mapping_lower_bound(fix.container, mapping_dim, upper);
+        BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
       }
   }
   { // test at the limit: tree filled with increasing values
     Tp fix(100, increase()); // first (0, 0, 0, 0), last (99, 99, 99, 99)
-        quad lower(0, 0, 0, 0);
-        quad in(99, 99, 99, 99);
-        quad upper (100, 100, 100, 100);
+    quad lower(0, 0, 0, 0);
+    quad in(99, 99, 99, 99);
+    quad upper (100, 100, 100, 100);
     for (dimension_type mapping_dim = 0; mapping_dim < 4;
          ++mapping_dim)
       {
-                mapping_iterator<typename Tp::container_type>
-                  iter (mapping_lower_bound(fix.container, mapping_dim, lower));
-                BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
-                iter = mapping_lower_bound(fix.container, mapping_dim, in);
-                BOOST_CHECK(iter != mapping_end(fix.container, mapping_dim)
-                        && ++iter == mapping_end(fix.container, mapping_dim));
-                iter = mapping_lower_bound(fix.container, mapping_dim, upper);
-                BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
+        mapping_iterator<typename Tp::container_type>
+          iter (mapping_lower_bound(fix.container, mapping_dim, lower));
+        BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+        iter = mapping_lower_bound(fix.container, mapping_dim, in);
+        BOOST_CHECK(iter != mapping_end(fix.container, mapping_dim)
+                    && ++iter == mapping_end(fix.container, mapping_dim));
+        iter = mapping_lower_bound(fix.container, mapping_dim, upper);
+        BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
       }
   }
 }
@@ -503,86 +503,86 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     for (dimension_type mapping_dim = 0; mapping_dim < 4;
          ++mapping_dim)
       {
-                mapping_iterator<typename Tp::container_type>
-                  iter (mapping_upper_bound(fix.container, mapping_dim, in));
-                BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim)
-                                || quad_less()(mapping_dim, in, iter->first));
-                BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim)
-                                || !quad_less()(mapping_dim, (--iter)->first, in));
-                iter = mapping_upper_bound(fix.container, mapping_dim, lower);
-                BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
-                iter = mapping_upper_bound(fix.container, mapping_dim, upper);
-                BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
+        mapping_iterator<typename Tp::container_type>
+          iter (mapping_upper_bound(fix.container, mapping_dim, in));
+        BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim)
+                    || quad_less()(mapping_dim, in, iter->first));
+        BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim)
+                    || !quad_less()(mapping_dim, (--iter)->first, in));
+        iter = mapping_upper_bound(fix.container, mapping_dim, lower);
+        BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+        iter = mapping_upper_bound(fix.container, mapping_dim, upper);
+        BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
       }
   }
   { // same test with a tree filled with similar values
     Tp fix(100, same());
     quad lower (99, 99, 99, 99);
     quad in (100, 100, 100, 100);
-        quad upper (101, 101, 101, 101);
+    quad upper (101, 101, 101, 101);
     for (dimension_type mapping_dim = 0; mapping_dim < 4;
          ++mapping_dim)
       {
-                mapping_iterator<typename Tp::container_type>
-                  iter (mapping_upper_bound(fix.container, mapping_dim, lower));
-                BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
-                iter = mapping_upper_bound(fix.container, mapping_dim, in);
-                BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
-                iter = mapping_upper_bound(fix.container, mapping_dim, upper);
-                BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
+        mapping_iterator<typename Tp::container_type>
+          iter (mapping_upper_bound(fix.container, mapping_dim, lower));
+        BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+        iter = mapping_upper_bound(fix.container, mapping_dim, in);
+        BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
+        iter = mapping_upper_bound(fix.container, mapping_dim, upper);
+        BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
       }
   }
   { // test at the limit: tree with 1 value
     Tp fix(1, same());
     quad lower (0, 0, 0, 0);
     quad in (1, 1, 1, 1);
-        quad upper (2, 2, 2, 2);
+    quad upper (2, 2, 2, 2);
     for (dimension_type mapping_dim = 0; mapping_dim < 4;
          ++mapping_dim)
       {
-                mapping_iterator<const typename Tp::container_type>
-                  iter (mapping_cupper_bound(fix.container, mapping_dim, lower));
-                BOOST_CHECK(iter == mapping_cbegin(fix.container, mapping_dim));
-                iter = mapping_cupper_bound(fix.container, mapping_dim, in);
-                BOOST_CHECK(iter == mapping_cend(fix.container, mapping_dim));
-                iter = mapping_cupper_bound(fix.container, mapping_dim, upper);
-                BOOST_CHECK(iter == mapping_cend(fix.container, mapping_dim));
+        mapping_iterator<const typename Tp::container_type>
+          iter (mapping_cupper_bound(fix.container, mapping_dim, lower));
+        BOOST_CHECK(iter == mapping_cbegin(fix.container, mapping_dim));
+        iter = mapping_cupper_bound(fix.container, mapping_dim, in);
+        BOOST_CHECK(iter == mapping_cend(fix.container, mapping_dim));
+        iter = mapping_cupper_bound(fix.container, mapping_dim, upper);
+        BOOST_CHECK(iter == mapping_cend(fix.container, mapping_dim));
       }
   }
   { // test at the limit: tree filled with decreasing values
     Tp fix(100, decrease()); // first (100, 100, 100, 100), last (1, 1, 1, 1)
-        quad lower(0, 0, 0, 0);
-        quad in (99, 99, 99, 99);
-        quad upper(100, 100, 100, 100);
+    quad lower(0, 0, 0, 0);
+    quad in (99, 99, 99, 99);
+    quad upper(100, 100, 100, 100);
     for (dimension_type mapping_dim = 0; mapping_dim < 4;
          ++mapping_dim)
       {
-                mapping_iterator<typename Tp::container_type>
-                  iter (mapping_upper_bound(fix.container, mapping_dim, lower));
-                BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
-                iter = mapping_upper_bound(fix.container, mapping_dim, in);
-                BOOST_CHECK(iter != mapping_end(fix.container, mapping_dim)
-                        && ++iter == mapping_end(fix.container, mapping_dim));
-                iter = mapping_upper_bound(fix.container, mapping_dim, upper);
-                BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
+        mapping_iterator<typename Tp::container_type>
+          iter (mapping_upper_bound(fix.container, mapping_dim, lower));
+        BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+        iter = mapping_upper_bound(fix.container, mapping_dim, in);
+        BOOST_CHECK(iter != mapping_end(fix.container, mapping_dim)
+                    && ++iter == mapping_end(fix.container, mapping_dim));
+        iter = mapping_upper_bound(fix.container, mapping_dim, upper);
+        BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
       }
   }
   { // test at the limit: tree filled with increasing values
     Tp fix(100, increase()); // first (0, 0, 0, 0), last (99, 99, 99, 99)
-        quad lower(-1, -1, -1, -1);
-        quad in(98, 98, 98, 98);
-        quad upper (99, 99, 99, 99);
+    quad lower(-1, -1, -1, -1);
+    quad in(98, 98, 98, 98);
+    quad upper (99, 99, 99, 99);
     for (dimension_type mapping_dim = 0; mapping_dim < 4;
          ++mapping_dim)
       {
-                mapping_iterator<typename Tp::container_type>
-                  iter (mapping_upper_bound(fix.container, mapping_dim, lower));
-                BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
-                iter = mapping_upper_bound(fix.container, mapping_dim, in);
-                BOOST_CHECK(iter != mapping_end(fix.container, mapping_dim)
-                        && ++iter == mapping_end(fix.container, mapping_dim));
-                iter = mapping_upper_bound(fix.container, mapping_dim, upper);
-                BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
+        mapping_iterator<typename Tp::container_type>
+          iter (mapping_upper_bound(fix.container, mapping_dim, lower));
+        BOOST_CHECK(iter == mapping_begin(fix.container, mapping_dim));
+        iter = mapping_upper_bound(fix.container, mapping_dim, in);
+        BOOST_CHECK(iter != mapping_end(fix.container, mapping_dim)
+                    && ++iter == mapping_end(fix.container, mapping_dim));
+        iter = mapping_upper_bound(fix.container, mapping_dim, upper);
+        BOOST_CHECK(iter == mapping_end(fix.container, mapping_dim));
       }
   }
 }
@@ -590,32 +590,32 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 BOOST_AUTO_TEST_CASE( test_mapping_dimension )
 {
   { // with mutable iterator
-        pointset_fix<double6> fix;
-        mapping_iterator<typename pointset_fix<double6>::container_type> iter;
-        iter = mapping_begin(fix.container, 5u);
-        BOOST_CHECK_EQUAL(mapping_dimension(iter), 5u);
-        mapping_dimension(iter, 3u);
-        BOOST_CHECK_EQUAL(mapping_dimension(iter), 3u);
-        mapping_iterator<const typename pointset_fix<double6>
-                             ::container_type> citer;
-        citer = mapping_cbegin(fix.container, 5u);
-        BOOST_CHECK_EQUAL(mapping_dimension(citer), 5u);
-        mapping_dimension(citer, 3u);
-        BOOST_CHECK_EQUAL(mapping_dimension(citer), 3u);
+    pointset_fix<double6> fix;
+    mapping_iterator<typename pointset_fix<double6>::container_type> iter;
+    iter = mapping_begin(fix.container, 5u);
+    BOOST_CHECK_EQUAL(mapping_dimension(iter), 5u);
+    mapping_dimension(iter, 3u);
+    BOOST_CHECK_EQUAL(mapping_dimension(iter), 3u);
+    mapping_iterator<const typename pointset_fix<double6>
+                     ::container_type> citer;
+    citer = mapping_cbegin(fix.container, 5u);
+    BOOST_CHECK_EQUAL(mapping_dimension(citer), 5u);
+    mapping_dimension(citer, 3u);
+    BOOST_CHECK_EQUAL(mapping_dimension(citer), 3u);
   }
   { // Check invalid dimension exception
-        pointset_fix<double6> fix;
-        mapping_iterator<typename pointset_fix<double6>::container_type>
-          iter(mapping_begin(fix.container, 5u));
-        BOOST_CHECK_THROW(mapping_dimension(iter, 6u), invalid_dimension);
-        BOOST_CHECK_THROW(mapping_begin(fix.container, 6u),
-                              invalid_dimension);
-        BOOST_CHECK_THROW(mapping_end(fix.container, 6u),
-                                  invalid_dimension);
-        BOOST_CHECK_THROW(mapping_lower_bound(fix.container, 6u, double6()),
-                              invalid_dimension);
-        BOOST_CHECK_THROW(mapping_upper_bound(fix.container, 6u, double6()),
-                              invalid_dimension);
+    pointset_fix<double6> fix;
+    mapping_iterator<typename pointset_fix<double6>::container_type>
+      iter(mapping_begin(fix.container, 5u));
+    BOOST_CHECK_THROW(mapping_dimension(iter, 6u), invalid_dimension);
+    BOOST_CHECK_THROW(mapping_begin(fix.container, 6u),
+                      invalid_dimension);
+    BOOST_CHECK_THROW(mapping_end(fix.container, 6u),
+                      invalid_dimension);
+    BOOST_CHECK_THROW(mapping_lower_bound(fix.container, 6u, double6()),
+                      invalid_dimension);
+    BOOST_CHECK_THROW(mapping_upper_bound(fix.container, 6u, double6()),
+                      invalid_dimension);
   }
 }
 
@@ -624,28 +624,28 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 {
   Tp fix(20, randomize(-100, 100));
   { // non-const
-        mapping_iterator_pair<typename Tp::container_type>
+    mapping_iterator_pair<typename Tp::container_type>
       pair(mapping_range(fix.container, 2u));
-        BOOST_CHECK(pair.first ==  mapping_begin(fix.container, 2u));
-        BOOST_CHECK(pair.second == mapping_end(fix.container, 2u));
-        mapping_iterator_pair<typename Tp::container_type> pair2;
-        pair2 = mapping_range(fix.container, 3u);
-        BOOST_CHECK(pair2.first ==  mapping_begin(fix.container, 3u));
-        BOOST_CHECK(pair2.second == mapping_end(fix.container, 3u));
+    BOOST_CHECK(pair.first ==  mapping_begin(fix.container, 2u));
+    BOOST_CHECK(pair.second == mapping_end(fix.container, 2u));
+    mapping_iterator_pair<typename Tp::container_type> pair2;
+    pair2 = mapping_range(fix.container, 3u);
+    BOOST_CHECK(pair2.first ==  mapping_begin(fix.container, 3u));
+    BOOST_CHECK(pair2.second == mapping_end(fix.container, 3u));
   }
   { // const
-        mapping_iterator_pair<const typename Tp::container_type>
+    mapping_iterator_pair<const typename Tp::container_type>
       pair0(mapping_range(fix.container, 1u)); // cast constructor
-        BOOST_CHECK(pair0.first ==  mapping_begin(fix.container, 1u));
-        BOOST_CHECK(pair0.second == mapping_end(fix.container, 1u));
-        mapping_iterator_pair<const typename Tp::container_type>
+    BOOST_CHECK(pair0.first ==  mapping_begin(fix.container, 1u));
+    BOOST_CHECK(pair0.second == mapping_end(fix.container, 1u));
+    mapping_iterator_pair<const typename Tp::container_type>
       pair1(mapping_crange(fix.container, 2u)); // copy constructor
-        BOOST_CHECK(pair1.first ==  mapping_begin(fix.container, 2u));
-        BOOST_CHECK(pair1.second == mapping_end(fix.container, 2u));
-        mapping_iterator_pair<const typename Tp::container_type> pair2;
-        pair2 = mapping_crange(fix.container, 3u); // assignment operator
-        BOOST_CHECK(pair2.first ==  mapping_cbegin(fix.container, 3u));
-        BOOST_CHECK(pair2.second == mapping_cend(fix.container, 3u));
+    BOOST_CHECK(pair1.first ==  mapping_begin(fix.container, 2u));
+    BOOST_CHECK(pair1.second == mapping_end(fix.container, 2u));
+    mapping_iterator_pair<const typename Tp::container_type> pair2;
+    pair2 = mapping_crange(fix.container, 3u); // assignment operator
+    BOOST_CHECK(pair2.first ==  mapping_cbegin(fix.container, 3u));
+    BOOST_CHECK(pair2.second == mapping_cend(fix.container, 3u));
   }
 }
 

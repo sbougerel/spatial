@@ -1,3 +1,8 @@
+2012-11-17  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * New ordered_iterator finally added with its unit test. New
+        cross-container operators can now be written properly.
+
 2012-09-23  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * task_3432355 After a long quiet time not working on the library, I'm

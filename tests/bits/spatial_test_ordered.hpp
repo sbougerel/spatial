@@ -175,297 +175,236 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     BOOST_CHECK(++iter == ordered_end(fix.container));
   }
 }
-/*
+
 BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_ordered_increment, Tp, double6_sets )
 {
   { // test the invarient of the increment
     Tp fix(100, randomize(-1, 1));
-    for (dimension_type ordered_dim = 0; ordered_dim < 6;
-         ++ordered_dim)
+    ordered_iterator<typename Tp::container_type>
+      iter = ordered_begin(fix.container),
+      end = ordered_end(fix.container);
+    int count = 0;
+    double6 tmp = *iter;
+    for (; iter != end; ++iter)
       {
-        ordered_iterator<typename Tp::container_type>
-          iter = ordered_begin(fix.container, ordered_dim),
-          end = ordered_end(fix.container, ordered_dim);
-        int count = 0;
-        double tmp = (*iter)[ordered_dim];
-        for (; iter != end; ++iter)
-          {
-            BOOST_CHECK_LE(tmp, (*iter)[ordered_dim]);
-            tmp = (*iter)[ordered_dim];
-            if (++count > 100) break;
-          }
-        BOOST_CHECK_EQUAL(count, 100);
+        BOOST_CHECK(!double6_ordered_less()(*iter, tmp));
+        tmp = *iter;
+        if (++count > 100) break;
       }
+    BOOST_CHECK_EQUAL(count, 100);
   }
   { // test at the limit: a tree where all elements are the same
     Tp fix(100, same());
-    for (dimension_type ordered_dim = 0; ordered_dim < 6;
-         ++ordered_dim)
+    ordered_iterator<typename Tp::container_type>
+      iter = ordered_begin(fix.container),
+      end = ordered_end(fix.container);
+    int count = 0;
+    double6 expected; expected.assign(100.0);
+    for (; iter != end; ++iter)
       {
-        ordered_iterator<typename Tp::container_type>
-          iter = ordered_begin(fix.container, ordered_dim),
-          end = ordered_end(fix.container, ordered_dim);
-        int count = 0;
-        for (; iter != end; ++iter)
-          {
-            BOOST_CHECK_EQUAL(100, (*iter)[ordered_dim]);
-            if (++count > 100) break;
-          }
-        BOOST_CHECK_EQUAL(count, 100);
+        BOOST_CHECK(*iter == expected);
+        if (++count > 100) break;
       }
+    BOOST_CHECK_EQUAL(count, 100);
   }
   { // test at the limit: a tree with 2 elements
     Tp fix(2, same());
-    for (dimension_type ordered_dim = 0; ordered_dim < 6;
-         ++ordered_dim)
-      {
-        ordered_iterator<const typename Tp::container_type>
-          pre = ordered_cbegin(fix.container, ordered_dim),
-          post = ordered_cbegin(fix.container, ordered_dim),
-          end = ordered_cend(fix.container, ordered_dim);
-        BOOST_CHECK(pre != end);
-                BOOST_CHECK(++pre != post++);
-                BOOST_CHECK(pre == post);
-        BOOST_CHECK(post++ != end);
-        BOOST_CHECK(++pre == end);
-        BOOST_CHECK(post == end);
-      }
+    ordered_iterator<const typename Tp::container_type>
+      pre = ordered_cbegin(fix.container),
+      post = ordered_cbegin(fix.container),
+      end = ordered_cend(fix.container);
+    BOOST_CHECK(pre != end);
+    BOOST_CHECK(++pre != post++);
+    BOOST_CHECK(pre == post);
+    BOOST_CHECK(post++ != end);
+    BOOST_CHECK(++pre == end);
+    BOOST_CHECK(post == end);
   }
   { // test at the limit: a right-unbalanced tree (pre-increment)
     Tp fix(100, increase());
-    for (dimension_type ordered_dim = 0; ordered_dim < 6;
-         ++ordered_dim)
+    ordered_iterator<const typename Tp::container_type>
+      iter(ordered_cbegin(fix.container)),
+      end(ordered_cend(fix.container));
+    int count = 1;
+    double6 tmp = *(iter++);
+    for (; iter != end; ++iter)
       {
-        ordered_iterator<typename Tp::container_type>
-          iter = ordered_begin(fix.container, ordered_dim),
-          end = ordered_end(fix.container, ordered_dim);
-        int count = 0;
-        double tmp = (*iter)[ordered_dim];
-        for (; iter != end; ++iter)
-          {
-            BOOST_CHECK_LE(tmp, (*iter)[ordered_dim]);
-            tmp = (*iter)[ordered_dim];
-            if (++count > 100) break;
-          }
-        BOOST_CHECK_EQUAL(count, 100);
+        BOOST_CHECK(double6_ordered_less()(tmp, *iter));
+        tmp = *iter;
+        if (++count > 100) break;
       }
+    BOOST_CHECK_EQUAL(count, 100);
   }
   { // test at the limit: a left-unbalanced tree (post-increment)
     Tp fix(100, decrease());
-    for (dimension_type ordered_dim = 0; ordered_dim < 6;
-         ++ordered_dim)
+    ordered_iterator<const typename Tp::container_type>
+      iter(ordered_begin(fix.container)),
+      end(ordered_end(fix.container));
+    int count = 1;
+    double6 tmp = *(iter++);
+    for (; iter != end; ++iter)
       {
-        ordered_iterator<typename Tp::container_type>
-          iter = ordered_begin(fix.container, ordered_dim),
-          end = ordered_end(fix.container, ordered_dim);
-        int count = 0;
-        double tmp = (*iter)[ordered_dim];
-        for (; iter != end; iter++)
-          {
-            BOOST_CHECK_LE(tmp, (*iter)[ordered_dim]);
-            tmp = (*iter)[ordered_dim];
-            if (++count > 100) break;
-          }
-        BOOST_CHECK_EQUAL(count, 100);
+        BOOST_CHECK(double6_ordered_less()(tmp, *iter));
+        tmp = *iter;
+        if (++count > 100) break;
       }
+    BOOST_CHECK_EQUAL(count, 100);
   }
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
-( test_ordered_decrement, Tp, double6_maps )
+( test_ordered_decrement, Tp, double6_sets )
 {
   { // test the invarient of the increment
     Tp fix(100, randomize(-1, 1));
-    for (dimension_type ordered_dim = 0; ordered_dim < 6;
-         ++ordered_dim)
+    std::reverse_iterator<ordered_iterator<typename Tp::container_type> >
+      iter(ordered_end(fix.container)),
+      end(ordered_begin(fix.container));
+    int count = 0;
+    double6 tmp = *iter;
+    for (; iter != end; ++iter)
       {
-        std::reverse_iterator
-              <ordered_iterator<typename Tp::container_type> >
-          iter(ordered_end(fix.container, ordered_dim)),
-          end(ordered_begin(fix.container, ordered_dim));
-        int count = 0;
-        double tmp = iter->first[ordered_dim];
-        for (; iter != end; ++iter)
-          {
-            BOOST_CHECK_GE(tmp, iter->first[ordered_dim]);
-            tmp = iter->first[ordered_dim];
-            if (++count > 100) break;
-          }
-        BOOST_CHECK_EQUAL(count, 100);
+        BOOST_CHECK(!double6_ordered_less()(tmp, *iter));
+        tmp = *iter;
+        if (++count > 100) break;
       }
+    BOOST_CHECK_EQUAL(count, 100);
   }
   { // test at the limit: a tree where all elements are the same
     Tp fix(100, same());
-    for (dimension_type ordered_dim = 0; ordered_dim < 6;
-         ++ordered_dim)
+    std::reverse_iterator<ordered_iterator<typename Tp::container_type> >
+      iter(ordered_end(fix.container)),
+      end(ordered_begin(fix.container));
+    int count = 0;
+    double6 expected; expected.assign(100.0);
+    for (; iter != end; ++iter)
       {
-        std::reverse_iterator
-                  <ordered_iterator<typename Tp::container_type> >
-          iter(ordered_end(fix.container, ordered_dim)),
-          end(ordered_begin(fix.container, ordered_dim));
-        int count = 0;
-        for (; iter != end; ++iter)
-          {
-            BOOST_CHECK_EQUAL(100, iter->first[ordered_dim]);
-            if (++count > 100) break;
-          }
-        BOOST_CHECK_EQUAL(count, 100);
+        BOOST_CHECK(*iter == expected);
+        if (++count > 100) break;
       }
+    BOOST_CHECK_EQUAL(count, 100);
   }
   { // test at the limit: a tree with 2 elements
     Tp fix(2, same());
-    for (dimension_type ordered_dim = 0; ordered_dim < 6;
-         ++ordered_dim)
-      {
-        ordered_iterator<const typename Tp::container_type>
-          pre = ordered_cend(fix.container, ordered_dim),
-          post = ordered_cend(fix.container, ordered_dim),
-          begin = ordered_cbegin(fix.container, ordered_dim);
-        BOOST_CHECK(pre != begin);
-                BOOST_CHECK(--pre != post--);
-                BOOST_CHECK(pre == post);
-        BOOST_CHECK(post-- != begin);
-        BOOST_CHECK(--pre == begin);
-        BOOST_CHECK(post == begin);
-      }
+    ordered_iterator<const typename Tp::container_type>
+      pre = ordered_cend(fix.container),
+      post = ordered_cend(fix.container),
+      end = ordered_cbegin(fix.container);
+    BOOST_CHECK(pre != end);
+    BOOST_CHECK(--pre != post--);
+    BOOST_CHECK(pre == post);
+    BOOST_CHECK(post-- != end);
+    BOOST_CHECK(--pre == end);
+    BOOST_CHECK(post == end);
   }
   { // test at the limit: a right-unbalanced tree (pre-increment)
     Tp fix(100, increase());
-    for (dimension_type ordered_dim = 0; ordered_dim < 6;
-         ++ordered_dim)
+    std::reverse_iterator<ordered_iterator<const typename Tp::container_type> >
+      iter(ordered_cend(fix.container)),
+      end(ordered_cbegin(fix.container));
+    int count = 1;
+    double6 tmp = *(iter++);
+    for (; iter != end; ++iter)
       {
-        std::reverse_iterator
-                  <ordered_iterator<typename Tp::container_type> >
-          iter(ordered_end(fix.container, ordered_dim)),
-          end(ordered_begin(fix.container, ordered_dim));
-        int count = 0;
-        double tmp = iter->first[ordered_dim];
-        for (; iter != end; ++iter)
-          {
-            BOOST_CHECK_GE(tmp, iter->first[ordered_dim]);
-            tmp = iter->first[ordered_dim];
-            if (++count > 100) break;
-          }
-        BOOST_CHECK_EQUAL(count, 100);
+        BOOST_CHECK(double6_ordered_less()(*iter, tmp));
+        tmp = *iter;
+        if (++count > 100) break;
       }
+    BOOST_CHECK_EQUAL(count, 100);
   }
   { // test at the limit: a left-unbalanced tree (post-increment)
     Tp fix(100, decrease());
-    for (dimension_type ordered_dim = 0; ordered_dim < 6;
-         ++ordered_dim)
+    std::reverse_iterator<ordered_iterator<const typename Tp::container_type> >
+      iter(ordered_end(fix.container)),
+      end(ordered_begin(fix.container));
+    int count = 1;
+    double6 tmp = *(iter++);
+    for (; iter != end; ++iter)
       {
-                std::reverse_iterator
-          <ordered_iterator<typename Tp::container_type> >
-          iter(ordered_end(fix.container, ordered_dim)),
-          end(ordered_begin(fix.container, ordered_dim));
-        int count = 0;
-        double tmp = iter->first[ordered_dim];
-        for (; iter != end; iter++)
-          {
-            BOOST_CHECK_GE(tmp, iter->first[ordered_dim]);
-            tmp = iter->first[ordered_dim];
-            if (++count > 100) break;
-          }
-        BOOST_CHECK_EQUAL(count, 100);
+        BOOST_CHECK(double6_ordered_less()(*iter, tmp));
+        tmp = *iter;
+        if (++count > 100) break;
       }
+    BOOST_CHECK_EQUAL(count, 100);
   }
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
-( test_ordered_lower_bound, Tp, quad_sets )
+( test_ordered_lower_bound, Tp, quad_maps )
 {
   { // find the smallest element that is greater or equal to key
     Tp fix(100, randomize(-2, 2));
     quad lower (-2, -2, -2, -2);
     quad in (1, 1, 1, 1);
     quad upper (2, 2, 2, 2);
-    for (dimension_type ordered_dim = 0; ordered_dim < 4;
-         ++ordered_dim)
-      {
-                ordered_iterator<typename Tp::container_type>
-                  iter (ordered_lower_bound(fix.container, ordered_dim, in));
-                BOOST_CHECK(iter == ordered_end(fix.container, ordered_dim)
-                                || !quad_less()(ordered_dim, *iter, in));
-                BOOST_CHECK(iter == ordered_begin(fix.container, ordered_dim)
-                                || quad_less()(ordered_dim, *--iter, in));
-                iter = ordered_lower_bound(fix.container, ordered_dim, lower);
-                BOOST_CHECK(iter == ordered_begin(fix.container, ordered_dim));
-                iter = ordered_lower_bound(fix.container, ordered_dim, upper);
-                BOOST_CHECK(iter == ordered_end(fix.container, ordered_dim));
-      }
+    ordered_iterator<typename Tp::container_type>
+      iter (ordered_lower_bound(fix.container, in));
+    BOOST_CHECK(iter == ordered_end(fix.container)
+                || !quad_ordered_less()(iter->first, in));
+    BOOST_CHECK(iter == ordered_begin(fix.container)
+                || quad_ordered_less()((--iter)->first, in));
+    iter = ordered_lower_bound(fix.container, lower);
+    BOOST_CHECK(iter == ordered_begin(fix.container));
+    iter = ordered_lower_bound(fix.container, upper);
+    BOOST_CHECK(iter == ordered_end(fix.container));
   }
   { // same test with a tree filled with similar values
     Tp fix(100, same());
     quad lower (99, 99, 99, 99);
     quad in (100, 100, 100, 100);
-        quad upper (101, 101, 101, 101);
-    for (dimension_type ordered_dim = 0; ordered_dim < 4;
-         ++ordered_dim)
-      {
-                ordered_iterator<typename Tp::container_type>
-                  iter (ordered_lower_bound(fix.container, ordered_dim, lower));
-                BOOST_CHECK(iter == ordered_begin(fix.container, ordered_dim));
-                iter = ordered_lower_bound(fix.container, ordered_dim, in);
-                BOOST_CHECK(iter == ordered_begin(fix.container, ordered_dim));
-                iter = ordered_lower_bound(fix.container, ordered_dim, upper);
-                BOOST_CHECK(iter == ordered_end(fix.container, ordered_dim));
-      }
+    quad upper (101, 101, 101, 101);
+    ordered_iterator<typename Tp::container_type>
+      iter (ordered_lower_bound(fix.container, lower));
+    BOOST_CHECK(iter == ordered_begin(fix.container));
+    iter = ordered_lower_bound(fix.container, in);
+    BOOST_CHECK(iter == ordered_begin(fix.container));
+    iter = ordered_lower_bound(fix.container, upper);
+    BOOST_CHECK(iter == ordered_end(fix.container));
   }
   { // test at the limit: tree with 1 value
     Tp fix(1, same());
     quad lower (0, 0, 0, 0);
     quad in (1, 1, 1, 1);
-        quad upper (2, 2, 2, 2);
-    for (dimension_type ordered_dim = 0; ordered_dim < 4;
-         ++ordered_dim)
-      {
-                ordered_iterator<const typename Tp::container_type>
-                  iter (ordered_clower_bound(fix.container, ordered_dim, lower));
-                BOOST_CHECK(iter == ordered_cbegin(fix.container, ordered_dim));
-                iter = ordered_clower_bound(fix.container, ordered_dim, in);
-                BOOST_CHECK(iter == ordered_cbegin(fix.container, ordered_dim));
-                iter = ordered_clower_bound(fix.container, ordered_dim, upper);
-                BOOST_CHECK(iter == ordered_cend(fix.container, ordered_dim));
-      }
+    quad upper (2, 2, 2, 2);
+    ordered_iterator<const typename Tp::container_type>
+      iter (ordered_clower_bound(fix.container, lower));
+    BOOST_CHECK(iter == ordered_cbegin(fix.container));
+    iter = ordered_clower_bound(fix.container, in);
+    BOOST_CHECK(iter == ordered_cbegin(fix.container));
+    iter = ordered_clower_bound(fix.container, upper);
+    BOOST_CHECK(iter == ordered_cend(fix.container));
   }
   { // test at the limit: tree filled with decreasing values
     Tp fix(100, decrease()); // first (100, 100, 100, 100), last (1, 1, 1, 1)
-        quad lower(1, 1, 1, 1);
-        quad in (100, 100, 100, 100);
-        quad upper(101, 101, 101, 101);
-    for (dimension_type ordered_dim = 0; ordered_dim < 4;
-         ++ordered_dim)
-      {
-                ordered_iterator<typename Tp::container_type>
-                  iter (ordered_lower_bound(fix.container, ordered_dim, lower));
-                BOOST_CHECK(iter == ordered_begin(fix.container, ordered_dim));
-                iter = ordered_lower_bound(fix.container, ordered_dim, in);
-                BOOST_CHECK(iter != ordered_end(fix.container, ordered_dim)
-                        && ++iter == ordered_end(fix.container, ordered_dim));
-                iter = ordered_lower_bound(fix.container, ordered_dim, upper);
-                BOOST_CHECK(iter == ordered_end(fix.container, ordered_dim));
-      }
+    quad lower(1, 1, 1, 1);
+    quad in (100, 100, 100, 100);
+    quad upper(101, 101, 101, 101);
+    ordered_iterator<typename Tp::container_type>
+      iter (ordered_lower_bound(fix.container, lower));
+    BOOST_CHECK(iter == ordered_begin(fix.container));
+    iter = ordered_lower_bound(fix.container, in);
+    BOOST_CHECK(iter != ordered_end(fix.container)
+                && ++iter == ordered_end(fix.container));
+    iter = ordered_lower_bound(fix.container, upper);
+    BOOST_CHECK(iter == ordered_end(fix.container));
   }
   { // test at the limit: tree filled with increasing values
     Tp fix(100, increase()); // first (0, 0, 0, 0), last (99, 99, 99, 99)
-        quad lower(0, 0, 0, 0);
-        quad in(99, 99, 99, 99);
-        quad upper (100, 100, 100, 100);
-    for (dimension_type ordered_dim = 0; ordered_dim < 4;
-         ++ordered_dim)
-      {
-                ordered_iterator<typename Tp::container_type>
-                  iter (ordered_lower_bound(fix.container, ordered_dim, lower));
-                BOOST_CHECK(iter == ordered_begin(fix.container, ordered_dim));
-                iter = ordered_lower_bound(fix.container, ordered_dim, in);
-                BOOST_CHECK(iter != ordered_end(fix.container, ordered_dim)
-                        && ++iter == ordered_end(fix.container, ordered_dim));
-                iter = ordered_lower_bound(fix.container, ordered_dim, upper);
-                BOOST_CHECK(iter == ordered_end(fix.container, ordered_dim));
-      }
+    quad lower(0, 0, 0, 0);
+    quad in(99, 99, 99, 99);
+    quad upper (100, 100, 100, 100);
+    ordered_iterator<typename Tp::container_type>
+      iter (ordered_lower_bound(fix.container, lower));
+    BOOST_CHECK(iter == ordered_begin(fix.container));
+    iter = ordered_lower_bound(fix.container, in);
+    BOOST_CHECK(iter != ordered_end(fix.container)
+                && ++iter == ordered_end(fix.container));
+    iter = ordered_lower_bound(fix.container, upper);
+    BOOST_CHECK(iter == ordered_end(fix.container));
   }
 }
+
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_ordered_upper_bound, Tp, quad_maps )
@@ -475,122 +414,70 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     quad lower (-3, -3, -3, -3);
     quad in (-1, -1, -1, -1);
     quad upper (1, 1, 1, 1);
-    for (dimension_type ordered_dim = 0; ordered_dim < 4;
-         ++ordered_dim)
-      {
-                ordered_iterator<typename Tp::container_type>
-                  iter (ordered_upper_bound(fix.container, ordered_dim, in));
-                BOOST_CHECK(iter == ordered_end(fix.container, ordered_dim)
-                                || quad_less()(ordered_dim, in, iter->first));
-                BOOST_CHECK(iter == ordered_begin(fix.container, ordered_dim)
-                                || !quad_less()(ordered_dim, (--iter)->first, in));
-                iter = ordered_upper_bound(fix.container, ordered_dim, lower);
-                BOOST_CHECK(iter == ordered_begin(fix.container, ordered_dim));
-                iter = ordered_upper_bound(fix.container, ordered_dim, upper);
-                BOOST_CHECK(iter == ordered_end(fix.container, ordered_dim));
-      }
+    ordered_iterator<typename Tp::container_type>
+      iter (ordered_upper_bound(fix.container, in));
+    BOOST_CHECK(iter == ordered_end(fix.container)
+                || quad_ordered_less()(in, iter->first));
+    BOOST_CHECK(iter == ordered_begin(fix.container)
+                || !quad_ordered_less()((--iter)->first, in));
+    iter = ordered_upper_bound(fix.container, lower);
+    BOOST_CHECK(iter == ordered_begin(fix.container));
+    iter = ordered_upper_bound(fix.container, upper);
+    BOOST_CHECK(iter == ordered_end(fix.container));
   }
   { // same test with a tree filled with similar values
     Tp fix(100, same());
     quad lower (99, 99, 99, 99);
     quad in (100, 100, 100, 100);
-        quad upper (101, 101, 101, 101);
-    for (dimension_type ordered_dim = 0; ordered_dim < 4;
-         ++ordered_dim)
-      {
-                ordered_iterator<typename Tp::container_type>
-                  iter (ordered_upper_bound(fix.container, ordered_dim, lower));
-                BOOST_CHECK(iter == ordered_begin(fix.container, ordered_dim));
-                iter = ordered_upper_bound(fix.container, ordered_dim, in);
-                BOOST_CHECK(iter == ordered_end(fix.container, ordered_dim));
-                iter = ordered_upper_bound(fix.container, ordered_dim, upper);
-                BOOST_CHECK(iter == ordered_end(fix.container, ordered_dim));
-      }
+    quad upper (101, 101, 101, 101);
+    ordered_iterator<typename Tp::container_type>
+      iter (ordered_upper_bound(fix.container, lower));
+    BOOST_CHECK(iter == ordered_begin(fix.container));
+    iter = ordered_upper_bound(fix.container, in);
+    BOOST_CHECK(iter == ordered_end(fix.container));
+    iter = ordered_upper_bound(fix.container, upper);
+    BOOST_CHECK(iter == ordered_end(fix.container));
   }
   { // test at the limit: tree with 1 value
     Tp fix(1, same());
     quad lower (0, 0, 0, 0);
     quad in (1, 1, 1, 1);
-        quad upper (2, 2, 2, 2);
-    for (dimension_type ordered_dim = 0; ordered_dim < 4;
-         ++ordered_dim)
-      {
-                ordered_iterator<const typename Tp::container_type>
-                  iter (ordered_cupper_bound(fix.container, ordered_dim, lower));
-                BOOST_CHECK(iter == ordered_cbegin(fix.container, ordered_dim));
-                iter = ordered_cupper_bound(fix.container, ordered_dim, in);
-                BOOST_CHECK(iter == ordered_cend(fix.container, ordered_dim));
-                iter = ordered_cupper_bound(fix.container, ordered_dim, upper);
-                BOOST_CHECK(iter == ordered_cend(fix.container, ordered_dim));
-      }
+    quad upper (2, 2, 2, 2);
+    ordered_iterator<const typename Tp::container_type>
+      iter (ordered_cupper_bound(fix.container, lower));
+    BOOST_CHECK(iter == ordered_cbegin(fix.container));
+    iter = ordered_cupper_bound(fix.container, in);
+    BOOST_CHECK(iter == ordered_cend(fix.container));
+    iter = ordered_cupper_bound(fix.container, upper);
+    BOOST_CHECK(iter == ordered_cend(fix.container));
   }
   { // test at the limit: tree filled with decreasing values
     Tp fix(100, decrease()); // first (100, 100, 100, 100), last (1, 1, 1, 1)
-        quad lower(0, 0, 0, 0);
-        quad in (99, 99, 99, 99);
-        quad upper(100, 100, 100, 100);
-    for (dimension_type ordered_dim = 0; ordered_dim < 4;
-         ++ordered_dim)
-      {
-                ordered_iterator<typename Tp::container_type>
-                  iter (ordered_upper_bound(fix.container, ordered_dim, lower));
-                BOOST_CHECK(iter == ordered_begin(fix.container, ordered_dim));
-                iter = ordered_upper_bound(fix.container, ordered_dim, in);
-                BOOST_CHECK(iter != ordered_end(fix.container, ordered_dim)
-                        && ++iter == ordered_end(fix.container, ordered_dim));
-                iter = ordered_upper_bound(fix.container, ordered_dim, upper);
-                BOOST_CHECK(iter == ordered_end(fix.container, ordered_dim));
-      }
+    quad lower(0, 0, 0, 0);
+    quad in (99, 99, 99, 99);
+    quad upper(100, 100, 100, 100);
+    ordered_iterator<typename Tp::container_type>
+      iter (ordered_upper_bound(fix.container, lower));
+    BOOST_CHECK(iter == ordered_begin(fix.container));
+    iter = ordered_upper_bound(fix.container, in);
+    BOOST_CHECK(iter != ordered_end(fix.container)
+                && ++iter == ordered_end(fix.container));
+    iter = ordered_upper_bound(fix.container, upper);
+    BOOST_CHECK(iter == ordered_end(fix.container));
   }
   { // test at the limit: tree filled with increasing values
     Tp fix(100, increase()); // first (0, 0, 0, 0), last (99, 99, 99, 99)
-        quad lower(-1, -1, -1, -1);
-        quad in(98, 98, 98, 98);
-        quad upper (99, 99, 99, 99);
-    for (dimension_type ordered_dim = 0; ordered_dim < 4;
-         ++ordered_dim)
-      {
-                ordered_iterator<typename Tp::container_type>
-                  iter (ordered_upper_bound(fix.container, ordered_dim, lower));
-                BOOST_CHECK(iter == ordered_begin(fix.container, ordered_dim));
-                iter = ordered_upper_bound(fix.container, ordered_dim, in);
-                BOOST_CHECK(iter != ordered_end(fix.container, ordered_dim)
-                        && ++iter == ordered_end(fix.container, ordered_dim));
-                iter = ordered_upper_bound(fix.container, ordered_dim, upper);
-                BOOST_CHECK(iter == ordered_end(fix.container, ordered_dim));
-      }
-  }
-}
-
-BOOST_AUTO_TEST_CASE( test_ordered_dimension )
-{
-  { // with mutable iterator
-        pointset_fix<double6> fix;
-        ordered_iterator<typename pointset_fix<double6>::container_type> iter;
-        iter = ordered_begin(fix.container, 5u);
-        BOOST_CHECK_EQUAL(ordered_dimension(iter), 5u);
-        ordered_dimension(iter, 3u);
-        BOOST_CHECK_EQUAL(ordered_dimension(iter), 3u);
-        ordered_iterator<const typename pointset_fix<double6>
-                             ::container_type> citer;
-        citer = ordered_cbegin(fix.container, 5u);
-        BOOST_CHECK_EQUAL(ordered_dimension(citer), 5u);
-        ordered_dimension(citer, 3u);
-        BOOST_CHECK_EQUAL(ordered_dimension(citer), 3u);
-  }
-  { // Check invalid dimension exception
-        pointset_fix<double6> fix;
-        ordered_iterator<typename pointset_fix<double6>::container_type>
-          iter(ordered_begin(fix.container, 5u));
-        BOOST_CHECK_THROW(ordered_dimension(iter, 6u), invalid_dimension);
-        BOOST_CHECK_THROW(ordered_begin(fix.container, 6u),
-                              invalid_dimension);
-        BOOST_CHECK_THROW(ordered_end(fix.container, 6u),
-                                  invalid_dimension);
-        BOOST_CHECK_THROW(ordered_lower_bound(fix.container, 6u, double6()),
-                              invalid_dimension);
-        BOOST_CHECK_THROW(ordered_upper_bound(fix.container, 6u, double6()),
-                              invalid_dimension);
+    quad lower(-1, -1, -1, -1);
+    quad in(98, 98, 98, 98);
+    quad upper (99, 99, 99, 99);
+    ordered_iterator<typename Tp::container_type>
+      iter (ordered_upper_bound(fix.container, lower));
+    BOOST_CHECK(iter == ordered_begin(fix.container));
+    iter = ordered_upper_bound(fix.container, in);
+    BOOST_CHECK(iter != ordered_end(fix.container)
+                && ++iter == ordered_end(fix.container));
+    iter = ordered_upper_bound(fix.container, upper);
+    BOOST_CHECK(iter == ordered_end(fix.container));
   }
 }
 
@@ -599,29 +486,29 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 {
   Tp fix(20, randomize(-100, 100));
   { // non-const
-        ordered_iterator_pair<typename Tp::container_type>
-      pair(ordered_range(fix.container, 2u));
-        BOOST_CHECK(pair.first ==  ordered_begin(fix.container, 2u));
-        BOOST_CHECK(pair.second == ordered_end(fix.container, 2u));
-        ordered_iterator_pair<typename Tp::container_type> pair2;
-        pair2 = ordered_range(fix.container, 3u);
-        BOOST_CHECK(pair2.first ==  ordered_begin(fix.container, 3u));
-        BOOST_CHECK(pair2.second == ordered_end(fix.container, 3u));
+    ordered_iterator_pair<typename Tp::container_type>
+      pair(ordered_range(fix.container));
+    BOOST_CHECK(pair.first ==  ordered_begin(fix.container));
+    BOOST_CHECK(pair.second == ordered_end(fix.container));
+    ordered_iterator_pair<typename Tp::container_type> pair2;
+    pair2 = ordered_range(fix.container);
+    BOOST_CHECK(pair2.first ==  ordered_begin(fix.container));
+    BOOST_CHECK(pair2.second == ordered_end(fix.container));
   }
   { // const
-        ordered_iterator_pair<const typename Tp::container_type>
-      pair0(ordered_range(fix.container, 1u)); // cast constructor
-        BOOST_CHECK(pair0.first ==  ordered_begin(fix.container, 1u));
-        BOOST_CHECK(pair0.second == ordered_end(fix.container, 1u));
-        ordered_iterator_pair<const typename Tp::container_type>
-      pair1(ordered_crange(fix.container, 2u)); // copy constructor
-        BOOST_CHECK(pair1.first ==  ordered_begin(fix.container, 2u));
-        BOOST_CHECK(pair1.second == ordered_end(fix.container, 2u));
-        ordered_iterator_pair<const typename Tp::container_type> pair2;
-        pair2 = ordered_crange(fix.container, 3u); // assignment operator
-        BOOST_CHECK(pair2.first ==  ordered_cbegin(fix.container, 3u));
-        BOOST_CHECK(pair2.second == ordered_cend(fix.container, 3u));
+    ordered_iterator_pair<const typename Tp::container_type>
+      pair0(ordered_range(fix.container)); // cast constructor
+    BOOST_CHECK(pair0.first ==  ordered_begin(fix.container));
+    BOOST_CHECK(pair0.second == ordered_end(fix.container));
+    ordered_iterator_pair<const typename Tp::container_type>
+      pair1(ordered_crange(fix.container)); // copy constructor
+    BOOST_CHECK(pair1.first ==  ordered_begin(fix.container));
+    BOOST_CHECK(pair1.second == ordered_end(fix.container));
+    ordered_iterator_pair<const typename Tp::container_type> pair2;
+    pair2 = ordered_crange(fix.container); // assignment operator
+    BOOST_CHECK(pair2.first ==  ordered_cbegin(fix.container));
+    BOOST_CHECK(pair2.second == ordered_cend(fix.container));
   }
 }
-*/
+
 #endif // SPATIAL_TEST_ORDERED_HPP

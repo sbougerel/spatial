@@ -97,6 +97,26 @@ typedef std::tr1::array<double, 6> double6;
 define_dimension(double6, 6);
 define_compare(double6, bracket_less<double6>);
 
+//! Used in ordered_iterator tests
+struct double6_ordered_less
+{
+  bool operator() (const double6& a, const double6& b) const
+  {
+    double6::const_iterator i(a.begin()), j(b.begin());
+    return (*i < *j
+            || (*i == *j // 0
+                && (*++i < *++j
+                    || (*i == *j // 1
+                        && (*++i < *++j
+                            || (*i == *j // 2
+                                && (*++i < *++j
+                                    || (*i == *j // 3
+                                        && (*++i < *++j
+                                            || (*i == *j // 4
+                                                && *++i < *++j)))))))))); // 5
+  }
+};
+
 // Definition of quad below, a structure of simple type
 
 /**
@@ -162,6 +182,21 @@ struct quad_less
   }
 };
 define_compare(quad, quad_less);
+
+//! Used in ordered_iterator tests
+struct quad_ordered_less
+{
+  bool operator() (const quad& a, const quad& b) const
+  {
+    return (a.x < b.x
+            || (a.x == b.x
+                && (a.y < b.y
+                    || (a.y == b.y
+                        && (a.z < b.z
+                            || (a.z == b.z
+                                && a.w < b.w))))));
+  }
+};
 
 //! An accessor for the type quad
 struct quad_access
