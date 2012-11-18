@@ -18,8 +18,33 @@
 BOOST_AUTO_TEST_CASE(test_geometry_trait)
 {
   check_is_same
-    <geometry_traits<square_euclid<int2, paren_minus<int2, int> > >::distance_type,
-     square_euclid<int2, paren_minus<int2, int> >::distance_type>();
+    <geometry_traits<square_euclidian<pointset<2, int2>, int,
+                                      paren_minus<int2, int> > >::distance_type,
+     square_euclidian<pointset<2, int2>, int,
+                      paren_minus<int2, int> >::distance_type>();
+  check_is_same
+    <geometry_traits<square_euclidian<pointmap<6, double6, std::string>,
+                                      double> >::distance_type,
+     square_euclidian<pointmap<6, double6, std::string>,
+                      double>::distance_type>();
+  check_is_same
+    <geometry_traits<euclidian<boxset<3, double6>, double,
+                               bracket_minus<double6, double> > >::distance_type,
+     euclidian<boxset<3, double6>, double,
+               bracket_minus<double6, double> >::distance_type>();
+  check_is_same
+    <geometry_traits<euclidian<boxmap<3, double6, std::string>,
+                               double> >::distance_type,
+     euclidian<boxmap<3, double6, std::string>, double>::distance_type>();
+  check_is_same
+    <geometry_traits<manhattan<idle_pointset<2, int2>, int,
+                               paren_minus<int2, int> > >::distance_type,
+     manhattan<idle_pointset<2, int2>, int,
+               paren_minus<int2, int> >::distance_type>();
+  check_is_same
+    <geometry_traits<manhattan<idle_pointmap<2, int2, std::string>,
+                               int> >::distance_type,
+     manhattan<idle_pointmap<2, int2, std::string>, int>::distance_type>();
 }
 
 BOOST_AUTO_TEST_CASE(test_difference_bracket)
