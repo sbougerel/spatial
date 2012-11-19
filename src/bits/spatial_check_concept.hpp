@@ -21,6 +21,16 @@
 #  error "Do not include this file directly in your project."
 #endif
 
+// is_integer, is_floating_point, is_arithmetic, etc...
+#ifdef __GLIBCXX__
+#  include <tr1/type_traits>
+#else
+#  ifdef __IBMCPP__
+#    define __IBMCPP_TR1__
+#  endif
+#  include <type_traits>
+#endif
+
 namespace spatial
 {
   /**
@@ -39,12 +49,14 @@ namespace spatial
    *  http://en.cppreference.com/w/cpp/types/enable_if
    */
   //@{
-  template <bool, typename = void>
-  struct enable_if { };
+  template <bool B, typename Tp = void> struct enable_if_c { };
 
-  template <typename Tp>
-  struct enable_if<true, Tp> { typedef Tp type; };
+  template <typename Tp> struct enable_if_c<true, Tp> { typedef Tp type; };
+
+  template <typename Cond, typename Tp = void>
+  struct enable_if : public enable_if_c<Cond::value, Tp> { };
   //@}
+
 } // namespace spatial
 
 #endif // SPATIAL_CHECK_CONCEPT_HPP

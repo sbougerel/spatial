@@ -123,11 +123,13 @@ namespace spatial
            typename Diff
            = typename details::auto_difference
            <typename container_traits<Ct>::key_compare, Unit>::type,
-           bool = std::tr1::is_floating_point<Unit>::value> // fence
-  class euclidian { };
+           typename Enable = void>
+  class euclidian_geometry { }; // Sink for non floating-point types
 
   template<typename Ct, typename Unit, typename Diff>
-  class euclidian<Ct, Unit, Diff, true>
+  class euclidian_geometry
+  <Ct, Unit, Diff,
+   typename enable_if<std::tr1::is_floating_point<Unit> >::type>
   {
     /**
      *  The rank_type of the container being used for calculations.
@@ -151,7 +153,7 @@ namespace spatial
     typedef Unit distance_type;
 
     //! The constructors allows you to specify a custom difference type.
-    euclidian(const Diff& diff = Diff()) : diff_(diff) { }
+    euclidian_geometry(const Diff& diff = Diff()) : diff_(diff) { }
 
     /**
      *  @brief  Compute the distance between the point of @c origin and the @c
@@ -212,11 +214,13 @@ namespace spatial
            typename Diff
            = typename details::auto_difference
            <typename container_traits<Ct>::key_compare, Unit>::type,
-           bool = std::tr1::is_arithmetic<Unit>::value> // fence
-  class square_euclidian { };
+           typename Enable = void> // Sink for non-arithmetic types
+  class square_euclidian_geometry { };
 
   template<typename Ct, typename Unit, typename Diff>
-  class square_euclidian<Ct, Unit, Diff, true>
+  class square_euclidian_geometry
+  <Ct, Unit, Diff,
+   typename enable_if<std::tr1::is_arithmetic<Unit> >::type>
   {
     /**
      *  The rank_type of the container being used for calculations.
@@ -237,7 +241,7 @@ namespace spatial
     typedef Unit distance_type;
 
     //! The constructor allows you to specify a custom difference type.
-    square_euclidian(const Diff& diff = Diff()) : diff_(diff) { }
+    square_euclidian_geometry(const Diff& diff = Diff()) : diff_(diff) { }
 
     /**
      *  @brief  Compute the distance between the point of @c origin and the @c
@@ -286,11 +290,13 @@ namespace spatial
   template<typename Ct, typename Unit,
            typename Diff = typename details::auto_difference
            <typename container_traits<Ct>::key_compare, Unit>::type,
-           bool = std::tr1::is_arithmetic<Unit>::value> // fence
-  class manhattan { };
+           typename Enable = void> // Sink for non-arithmetic types
+  class manhattan_geometry { };
 
   template<typename Ct, typename Unit, typename Diff>
-  class manhattan<Ct, Unit, Diff, true>
+  class manhattan_geometry
+  <Ct, Unit, Diff,
+   typename enable_if<std::tr1::is_arithmetic<Unit> >::type>
   {
     /**
      *  The rank_type of the container being used for calculations.
@@ -311,7 +317,7 @@ namespace spatial
     typedef Unit distance_type;
 
     //! A constructor that allows you to specify the Difference type.
-    manhattan (const Diff& diff = Diff()) : diff_(diff) { }
+    manhattan_geometry(const Diff& diff = Diff()) : diff_(diff) { }
 
     /**
      *  @brief  Compute the distance between the point of @c origin and the @c

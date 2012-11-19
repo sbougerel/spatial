@@ -18,33 +18,41 @@
 BOOST_AUTO_TEST_CASE(test_geometry_trait)
 {
   check_is_same
-    <geometry_traits<square_euclidian<pointset<2, int2>, int,
-                                      paren_minus<int2, int> > >::distance_type,
-     square_euclidian<pointset<2, int2>, int,
-                      paren_minus<int2, int> >::distance_type>();
+    <geometry_traits<square_euclidian_geometry
+                     <pointset<2, int2>, int,
+                      paren_minus<int2, int> > >::distance_type,
+     square_euclidian_geometry<pointset<2, int2>, int,
+                               paren_minus<int2, int> >::distance_type>();
   check_is_same
-    <geometry_traits<square_euclidian<pointmap<6, double6, std::string>,
-                                      double> >::distance_type,
-     square_euclidian<pointmap<6, double6, std::string>,
-                      double>::distance_type>();
+    <geometry_traits<square_euclidian_geometry
+                     <pointmap<6, double6, std::string>,
+                      double> >::distance_type,
+     square_euclidian_geometry<pointmap<6, double6, std::string>,
+                               double>::distance_type>();
   check_is_same
-    <geometry_traits<euclidian<boxset<3, double6>, double,
-                               bracket_minus<double6, double> > >::distance_type,
-     euclidian<boxset<3, double6>, double,
-               bracket_minus<double6, double> >::distance_type>();
+    <geometry_traits<euclidian_geometry
+                     <boxset<3, double6>, double,
+                      bracket_minus<double6, double> > >::distance_type,
+     euclidian_geometry<boxset<3, double6>, double,
+                        bracket_minus<double6, double> >::distance_type>();
   check_is_same
-    <geometry_traits<euclidian<boxmap<3, double6, std::string>,
-                               double> >::distance_type,
-     euclidian<boxmap<3, double6, std::string>, double>::distance_type>();
+    <geometry_traits<euclidian_geometry
+                     <boxmap<3, double6, std::string>,
+                      double> >::distance_type,
+     euclidian_geometry<boxmap<3, double6, std::string>,
+                        double>::distance_type>();
   check_is_same
-    <geometry_traits<manhattan<idle_pointset<2, int2>, int,
-                               paren_minus<int2, int> > >::distance_type,
-     manhattan<idle_pointset<2, int2>, int,
-               paren_minus<int2, int> >::distance_type>();
+    <geometry_traits<manhattan_geometry
+                     <idle_pointset<2, int2>, int,
+                      paren_minus<int2, int> > >::distance_type,
+     manhattan_geometry<idle_pointset<2, int2>, int,
+                        paren_minus<int2, int> >::distance_type>();
   check_is_same
-    <geometry_traits<manhattan<idle_pointmap<2, int2, std::string>,
-                               int> >::distance_type,
-     manhattan<idle_pointmap<2, int2, std::string>, int>::distance_type>();
+    <geometry_traits<manhattan_geometry
+                     <idle_pointmap<2, int2, std::string>,
+                      int> >::distance_type,
+     manhattan_geometry<idle_pointmap<2, int2, std::string>,
+                        int>::distance_type>();
 }
 
 BOOST_AUTO_TEST_CASE(test_difference_bracket)
@@ -89,30 +97,30 @@ BOOST_AUTO_TEST_CASE(test_difference_accessor)
   BOOST_CHECK_EQUAL(diff(0, p, q), -2);
   BOOST_CHECK_EQUAL(diff(1, p, q), 1);
 }
-
 /*
-BOOST_AUTO_TEST_CASE( test_euclidian_distance_to_key )
+BOOST_AUTO_TEST_CASE( test_euclid_distance_to_key )
 {
-  using namespace spatial::details::geometry;
+  // randomize with different pair or point and same points, test the geometry
+  // directly with different type combination. -> Goes faster.
   {
     // distance between 2 points at the same position should be null.
     point2d x = zeros;
-    double r = math::euclidian_distance_to_key
+    double r = math::euclid_distance_to_key
       <point2d, bracket_cast_accessor<point2d, double>, double>
       (2, x, x, bracket_cast_accessor<point2d, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
     x = ones;
-    r = math::euclidian_distance_to_key
+    r = math::euclid_distance_to_key
       <point2d, bracket_cast_accessor<point2d, double>, double>
       (2, x, x, bracket_cast_accessor<point2d, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
     x = twos;
-    r = math::euclidian_distance_to_key
+    r = math::euclid_distance_to_key
       <point2d, bracket_cast_accessor<point2d, double>, double>
       (2, x, x, bracket_cast_accessor<point2d, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
     x = threes;
-    r = math::euclidian_distance_to_key
+    r = math::euclid_distance_to_key
       <point2d, bracket_cast_accessor<point2d, double>, double>
       (2, x, x, bracket_cast_accessor<point2d, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
