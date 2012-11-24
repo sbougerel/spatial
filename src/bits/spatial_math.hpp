@@ -194,6 +194,19 @@ namespace spatial
   namespace math
   {
     /**
+     *  Compute the distance between the @p origin and the closest point to the
+     *  plane orthogonal to the axis of dimension @c dim and passing by @c key.
+     */
+    template <typename Key, typename Difference, typename Unit>
+    inline typename enable_if<std::tr1::is_floating_point<Unit>, Unit>::type
+    euclid_distance_to_plane
+    (dimension_type dim, Key origin, Key key, Difference diff)
+    {
+      using namespace std;
+      return abs(diff(dim, origin, key));
+    }
+
+    /**
      *  Uses the hypot() algorithm in order to compute the distance: minimize
      *  possibilities of loss of precision due to overflow and underflow.
      *
@@ -213,11 +226,13 @@ namespace spatial
     {
       using namespace std;
       // Find a non zero maximum or return 0
-      Unit max = abs(diff(0, origin, key));
+      Unit max = euclid_distance_to_plane<Key, Difference, Unit>
+        (0, origin, key, diff);
       dimension_type max_dim = 0;
       for (dimension_type i = 1; i < rank(); ++i)
         {
-          Unit d = abs(diff(i, origin, key));
+          Unit d = euclid_distance_to_plane<Key, Difference, Unit>
+            (i, origin, key, diff);
           if (d > max) { max = d; max_dim = i; }
         }
       const Unit zero = Unit();
@@ -230,26 +245,12 @@ namespace spatial
           Unit div = diff(i, origin, key) / max;
           sum += div * div;
         }
-      const Unit one = ((Unit) 1.0);
+      const Unit one = ((Unit) 1.0); // Not sure how to represent it otherwise
 #ifdef SPATIAL_SAFER_ARITHMETICS
       return except::check_positive_mul(max, sqrt(one + sum));
 #else
       return max * sqrt(one + sum);
 #endif
-    }
-
-    /**
-     *  @brief  Compute the distance between the @p origin and the closest point
-     *  to the plane orthogonal to the axis of dimension @c dim and passing by
-     *  @c key.
-     */
-    template <typename Key, typename Difference, typename Unit>
-    inline typename enable_if<std::tr1::is_floating_point<Unit>, Unit>::type
-    euclid_distance_to_plane
-    (dimension_type dim, Key origin, Key key, Difference diff)
-    {
-      using namespace std;
-      return abs(diff(dim, origin, key));
     }
 
     /**
