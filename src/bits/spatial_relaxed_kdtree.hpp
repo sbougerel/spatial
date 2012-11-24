@@ -257,7 +257,8 @@ namespace spatial
       {
         Link_allocator* alloc;
         link_ptr link;
-        safe_allocator(Link_allocator& a) : alloc(&a), link(0)
+        safe_allocator(Link_allocator& a)
+          : alloc(&a), link(0)
         { link = alloc->allocate(1); } // may throw
         ~safe_allocator() { if (link) { alloc->deallocate(link, 1); } }
         link_ptr release() { link_ptr p = link; link=0; return p; }
@@ -279,9 +280,9 @@ namespace spatial
       }
 
       node_ptr
-      clone_node(const_node_ptr node)
+      clone_node(const_node_ptr node, const_node_ptr parent)
       {
-        node_ptr new_node = create_node(const_value(node));
+        node_ptr new_node = create_node(const_value(node), parent);
         link(new_node).weight = const_link(node).weight;
         return new_node; // silently cast into base type node_ptr.
       }
@@ -314,7 +315,8 @@ namespace spatial
       copy_structure(const Self& other);
 
       /**
-       *  @brief  Insert the new node @c new_node into the tree located at node.
+       *  Insert the new node @c new_node into the tree located at node. If the
+       *  last parameter is 0, the node will also be created.
        *
        *  @param node_dim  The current dimension for the node.
        *  @param node      The node below which the new key shall be inserted.

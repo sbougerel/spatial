@@ -41,6 +41,19 @@ template <typename Tp> struct compare_traits { };
   { typedef Cmp type; }
 
 /**
+ *  The unit_traits resolves a given type into a type used for
+ *  neighbor_iterators
+ */
+template <typename Tp> struct unit_traits { };
+
+/**
+ *  An helper macro to define the unit of key types.
+ */
+#define define_unit(Tp, Unit)                   \
+  template<> struct unit_traits<Tp>             \
+  { typedef Unit type; }
+
+/**
  *  Reports an error if type Tp1 differs from type Tp2.
  */
 //@{
@@ -81,6 +94,7 @@ struct int2 : std::tr1::array<int, 2>
 };
 define_dimension(int2, 2);
 define_compare(int2, bracket_less<int2>);
+define_unit(int2, int);
 
 // int2 declaration for usual value
 const int2 zeros(0, 0);
@@ -96,6 +110,18 @@ const int2 fives(5, 5);
 typedef std::tr1::array<double, 6> double6;
 define_dimension(double6, 6);
 define_compare(double6, bracket_less<double6>);
+define_unit(double6, double);
+
+//! Quick initialization of double6
+inline double6
+make_double6(double a) { double6 x; x.assign(a); return x; }
+inline double6
+make_double6(double a, double b, double c, double d, double e, double f)
+{
+  double6 x;
+  x[0] = a; x[1] = b; x[2] = c; x[3] = d; x[4] = e; x[5] = f;
+  return x;
+}
 
 //! Used in ordered_iterator tests
 struct double6_ordered_less
@@ -130,6 +156,7 @@ struct quad
   quad(int a, int b, int c, int d) : x(a), y(b), z(c), w(d) { }
 };
 define_dimension(quad, 4);
+define_unit(quad, int);
 
 //! \return true if 2 quads contain the same values
 inline bool operator== (const quad& a, const quad& b)

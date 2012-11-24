@@ -91,262 +91,307 @@ namespace spatial
       return factory(cmp);
     }
 
+    /**
+     *  Defines a geometry working on the Euclidian space where distances are
+     *  expressed in \c double and the distance between 2 points is calculated
+     *  via the functor \c Difference, a concept of \ref ElementDifference.
+     *
+     *  @concept euclid is a concept of \ref Geometry.
+     *
+     *  @attention The type returned by \c Difference shall allow casting into
+     *  the plain old data type \c double.
+     *
+     *  @attention \c euclid is written to work on doubles. It will not work on
+     *  integral types, not even approximately. If you are looking computing
+     *  distances in Euclidian geometry using integers, consider using \ref
+     *  sqeuclid. It is very fast because it omits the square root calculation
+     *  and it is as precise as the integral types permits.
+     *
+     *  \c euclid attempts to compute distances while limitting loss of
+     *  precision due to overflow during the computation. For the \c double
+     *  type, \c euclid could be more precise than \ref sqeuclid in some cases,
+     *  but it will be slower in all cases.
+     *
+     *  \c euclid computes distances that are expressed in \c double. If you
+     *  need to express your distances in \c float, the geometry \ref euclidf is
+     *  working on \c float.
+     */
+    //@{
+    template<typename Ct, typename Unit, typename Diff,
+             typename Enable = void>  // Sink for non floating-point types
+    class euclidian_geometry { };
+
+    template<typename Ct, typename Unit, typename Diff>
+    class euclidian_geometry
+    <Ct, Unit, Diff,
+     typename enable_if<std::tr1::is_floating_point<Unit> >::type>
+    {
+      /**
+       *  The rank_type of the container being used for calculations.
+       */
+      typedef typename container_traits<Ct>::rank_type rank_type;
+
+      /**
+       *  The key_type of the container being used for calculations.
+       */
+      typedef typename container_traits<Ct>::key_type key_type;
+
+      /**
+       *  Placeholder for the 'difference' functor.
+       */
+      Diff diff_;
+
+    public:
+      /**
+       *  The distance type being used for distance calculations.
+       */
+      typedef Unit distance_type;
+
+      //! The constructors allows you to specify a custom difference type.
+      euclidian_geometry(const Diff& diff = Diff()) : diff_(diff) { }
+
+      /**
+       *  Compute the distance between the point of @c origin and the @c key.
+       *  @return The resulting distance.
+       */
+      distance_type
+      distance_to_key(const rank_type& rank,
+                      const key_type& origin, const key_type& key) const
+      {
+        return math::euclid_distance_to_key
+          <rank_type, key_type, Diff, Unit>(rank, origin, key, diff_);
+      }
+
+      /**
+       *  The distance between the point of @c origin and the closest point to
+       *  the plane orthogonal to the axis of dimension @c dim and crossing @c
+       *  key.
+       *
+       *  Given any 2 points 'origin' and 'key', the result of distance_to_plane
+       *  must always be less or equal to the result of distance_to_key.
+       *
+       *  \return The resulting distance.
+       */
+      distance_type
+      distance_to_plane(const rank_type&, dimension_type dim,
+                        const key_type& origin, const key_type& key) const
+      {
+        return math::euclid_distance_to_plane
+          <key_type, Diff, Unit>(dim, origin, key, diff_);
+      }
+    };
+    //@}
+
+    /**
+     *  Defines the geometry for the euclidian space where only the square of
+     *  the distances are being computed into a scalar value expressed as a
+     *  double.
+     *
+     *  This method of distance calculation is very portable: it works with all
+     *  signed and unsigned base types, as well as any user-defined type for
+     *  which the basic operations substraction, addition and multiplication
+     *  have been defined.
+     *
+     *  When using this geometry, if you must read the distance value, you must
+     *  remember that you are reading the square of the distance, and not the
+     *  real distance. Thus, you should use square root to recover the real
+     *  distance.
+     *
+     *  This geometry has one important drawback: if you are working with large
+     *  value over the entire range permissible by the value type, then chances
+     *  that the computation overflows is non-negligible. To receive an \ref
+     *  arithmetic_error exception upon overflow, compile your application with
+     *  \c #define \c SPATIAL_SAFER_ARITHEMTICS.
+     */
+    //@{
+    template<typename Ct, typename Unit, typename Diff,
+             typename Enable = void> // Sink for non-arithmetic types
+    class square_euclidian_geometry { };
+
+    template<typename Ct, typename Unit, typename Diff>
+    class square_euclidian_geometry
+    <Ct, Unit, Diff,
+     typename enable_if<std::tr1::is_arithmetic<Unit> >::type>
+    {
+      /**
+       *  The rank_type of the container being used for calculations.
+       */
+      typedef typename container_traits<Ct>::rank_type rank_type;
+
+      /**
+       *  The key_type of the container being used for calculations.
+       */
+      typedef typename container_traits<Ct>::key_type key_type;
+
+      /**
+       *  Placeholder for the 'difference' functor.
+       */
+      Diff diff_;
+
+    public:
+      typedef Unit distance_type;
+
+      //! The constructor allows you to specify a custom difference type.
+      square_euclidian_geometry(const Diff& diff = Diff()) : diff_(diff) { }
+
+      /**
+       *  Compute the distance between the point of @c origin and the @c key.
+       *  @return The resulting square distance.
+       */
+      distance_type
+      distance_to_key(const rank_type& rank,
+                      const key_type& origin, const key_type& key) const
+      {
+        return math::square_euclid_distance_to_key
+          <key_type, Diff, Unit>(rank, origin, key, diff_);
+      }
+
+      /**
+       *  The distance between the point of @c origin and the closest point to
+       *  the plane orthogonal to the axis of dimension @c dim and crossing @c
+       *  key.
+       *  \return The resulting square distance.
+       */
+      distance_type
+      distance_to_plane(const rank_type&, dimension_type dim,
+                        const key_type& origin, const key_type& key) const
+      {
+        return math::square_euclid_distance_to_plane
+          <key_type, Diff, Unit>(dim, origin, key, diff_);
+      }
+    };
+    //@}
+
+    /**
+     *  Defines a geometry for the euclidian space where distances are the sum
+     *  of all the elements of a vector. Also known as the taxicab geometry.
+     *
+     *  This method of distance calculation is very portable: it works with all
+     *  signed and unsigned base types, as well as any user-defined type for
+     *  which the basic operations substraction and addition have been defined.
+     *
+     *  This geometry has one important drawback: if you are working with large
+     *  values over the entire range permissible by the value type, then chances
+     *  that the computation overflows is non-negligible. To receive an \ref
+     *  arithmetic_error exception upon overflow, compile your application with
+     *  \c #define \c SPATIAL_SAFER_ARITHEMTICS.
+     */
+    //@{
+    template<typename Ct, typename Unit, typename Diff,
+             typename Enable = void> // Sink for non-arithmetic types
+    class manhattan_geometry { };
+
+    template<typename Ct, typename Unit, typename Diff>
+    class manhattan_geometry
+    <Ct, Unit, Diff,
+     typename enable_if<std::tr1::is_arithmetic<Unit> >::type>
+    {
+      /**
+       *  The rank_type of the container being used for calculations.
+       */
+      typedef typename container_traits<Ct>::rank_type rank_type;
+
+      /**
+       *  The key_type of the container being used for calculations.
+       */
+      typedef typename container_traits<Ct>::key_type key_type;
+
+      /**
+       *  Placeholder for the 'difference' functor.
+       */
+      Diff diff_;
+
+    public:
+      typedef Unit distance_type;
+
+      //! A constructor that allows you to specify the Difference type.
+      manhattan_geometry(const Diff& diff = Diff()) : diff_(diff) { }
+
+      /**
+       *  Compute the distance between the point of @c origin and the @c key.
+       *  @return The resulting square distance.
+       */
+      distance_type
+      distance_to_key(const rank_type& rank,
+                      const key_type& origin, const key_type& key) const
+      {
+        return math::manhattan_distance_to_key
+          <key_type, Diff, Unit>(rank, origin, key, diff_);
+      }
+
+      /**
+       *  The distance between the point of @c origin and the closest point to
+       *  the plane orthogonal to the axis of dimension @c dim and crossing @c
+       *  key.
+       *
+       *  @return The resulting square distance.
+       */
+      distance_type
+      distance_to_plane(const rank_type&, dimension_type dim,
+                        const key_type& origin, const key_type& key) const
+      {
+        return math::manhattan_distance_to_plane
+          <key_type, Diff, Unit>(dim, origin, key, diff_);
+      }
+    };
+    //@}
   } // namespace details
 
-  /**
-   *  @brief  Defines a geometry working on the Euclidian space where distances
-   *  are expressed in \c double and the distance between 2 points is calculated
-   *  via the functor \c Difference, a concept of \ref ElementDifference.
-   *
-   *  @concept euclid is a concept of \ref Geometry.
-   *
-   *  @attention The type returned by \c Difference shall allow casting into the
-   *  plain old data type \c double.
-   *
-   *  @attention \c euclid is written to work on doubles. It will not work
-   *  on integral types, not even approximately. If you are looking computing
-   *  distances in Euclidian geometry using integers, consider using \ref
-   *  sqeuclid. It is very fast because it omits the square root calculation
-   *  and it is as precise as the integral types permits.
-   *
-   *  \c euclid attempts to compute distances while limitting loss of
-   *  precision due to overflow during the computation. For the \c double type,
-   *  \c euclid could be more precise than \ref sqeuclid in some cases,
-   *  but it will be slower in all cases.
-   *
-   *  \c euclid computes distances that are expressed in \c double. If you
-   *  need to express your distances in \c float, the geometry \ref euclidf
-   *  is working on \c float.
-   */
-  //@{
-  template<typename Ct, typename Unit,
-           typename Diff
-           = typename details::auto_difference
-           <typename container_traits<Ct>::key_compare, Unit>::type,
-           typename Enable = void>
-  class euclidian_geometry { }; // Sink for non floating-point types
-
-  template<typename Ct, typename Unit, typename Diff>
-  class euclidian_geometry
-  <Ct, Unit, Diff,
-   typename enable_if<std::tr1::is_floating_point<Unit> >::type>
-  {
-    /**
-     *  The rank_type of the container being used for calculations.
-     */
-    typedef typename container_traits<Ct>::rank_type rank_type;
-
-    /**
-     *  The key_type of the container being used for calculations.
-     */
-    typedef typename container_traits<Ct>::key_type key_type;
-
-    /**
-     *  Placeholder for the 'difference' functor.
-     */
-    Diff diff_;
-
-  public:
-    /**
-     *  The distance type being used for distance calculations.
-     */
-    typedef Unit distance_type;
-
-    //! The constructors allows you to specify a custom difference type.
-    euclidian_geometry(const Diff& diff = Diff()) : diff_(diff) { }
-
-    /**
-     *  @brief  Compute the distance between the point of @c origin and the @c
-     *  key.
-     *  @return  The resulting distance.
-     */
-    distance_type
-    distance_to_key(const rank_type& rank,
-                    const key_type& origin, const key_type& key) const
-    {
-      return math::euclid_distance_to_key
-        <rank_type, key_type, Diff, Unit>(rank, origin, key, diff_);
-    }
-
-    /**
-     *  The distance between the point of @c origin and the closest
-     *  point to the plane orthogonal to the axis of dimension @c dim and
-     *  crossing @c key.
-     *
-     *  Given any 2 points 'origin' and 'key', the result of distance_to_plane
-     *  must always be less or equal to the result of distance_to_key.
-     *
-     *  \return The resulting distance.
-     */
-    distance_type
-    distance_to_plane(const rank_type&, dimension_type dim,
-                      const key_type& origin, const key_type& key) const
-    {
-      return math::euclid_distance_to_plane
-        <key_type, Diff, Unit>(dim, origin, key, diff_);
-    }
-  };
-  //@}
+  // forward declaration
+  template<typename Container, typename Geometry>
+  struct neighbor_iterator;
 
   /**
-   *  @brief  Defines the geometry for the euclidian space where only the square
-   *  of the distances are being computed into a scalar value expressed as a
-   *  double.
-   *
-   *  This method of distance calculation is very portable: it works with
-   *  all signed and unsigned base types, as well as any user-defined type for
-   *  which the basic operations substraction, addition and multiplication have
-   *  been defined.
-   *
-   *  When using this geometry, if you must read the distance value, you must
-   *  remember that you are reading the square of the distance, and not the
-   *  real distance. Thus, you should use square root to recover the real
-   *  distance.
-   *
-   *  This geometry has one important drawback: if you are working with large
-   *  value over the entire range permissible by the value type, then chances
-   *  that the computation overflows is non-negligible. To receive an
-   *  \ref arithmetic_error exception upon overflow, compile your application
-   *  with \c #define \c SPATIAL_SAFER_ARITHEMTICS.
+   *  Through the nested \c rebind type, create an \ref neighbor_iterator based
+   *  on the \c euclidian_geometry.
    */
-  //@{
-  template<typename Ct, typename Unit,
-           typename Diff
-           = typename details::auto_difference
-           <typename container_traits<Ct>::key_compare, Unit>::type,
-           typename Enable = void> // Sink for non-arithmetic types
-  class square_euclidian_geometry { };
-
-  template<typename Ct, typename Unit, typename Diff>
-  class square_euclidian_geometry
-  <Ct, Unit, Diff,
-   typename enable_if<std::tr1::is_arithmetic<Unit> >::type>
+  template <typename Unit>
+  struct euclidian
   {
-    /**
-     *  The rank_type of the container being used for calculations.
-     */
-    typedef typename container_traits<Ct>::rank_type rank_type;
-
-    /**
-     *  The key_type of the container being used for calculations.
-     */
-    typedef typename container_traits<Ct>::key_type key_type;
-
-    /**
-     *  Placeholder for the 'difference' functor.
-     */
-    Diff diff_;
-
-  public:
-    typedef Unit distance_type;
-
-    //! The constructor allows you to specify a custom difference type.
-    square_euclidian_geometry(const Diff& diff = Diff()) : diff_(diff) { }
-
-    /**
-     *  @brief  Compute the distance between the point of @c origin and the @c
-     *  key.
-     *  @return The resulting square distance.
-     */
-    distance_type
-    distance_to_key(const rank_type& rank,
-                    const key_type& origin, const key_type& key) const
+    template <typename Ct,
+              typename Diff = typename details::auto_difference
+              <typename container_traits<Ct>::key_compare, Unit>::type>
+    struct rebind
     {
-      return math::square_euclid_distance_to_key
-        <key_type, Diff, Unit>(rank, origin, key, diff_);
-    }
-
-    /**
-     *  @brief  The distance between the point of @c origin and the closest
-     *  point to the plane orthogonal to the axis of dimension @c dim and
-     *  crossing @c key.
-     *  @return The resulting square distance.
-     */
-    distance_type
-    distance_to_plane(const rank_type&, dimension_type dim,
-                      const key_type& origin, const key_type& key) const
-    {
-      return math::square_euclid_distance_to_plane
-        <key_type, Diff, Unit>(dim, origin, key, diff_);
-    }
+      typedef neighbor_iterator
+      <Ct, details::euclidian_geometry<Ct, Unit, Diff> > type;
+    };
   };
-  //@}
 
   /**
-   *  @brief  Defines a geometry for the euclidian space where distances are the
-   *  sum of all the elements of a vector. Also known as the taxicab geometry.
-   *
-   *  This method of distance calculation is very portable: it works with
-   *  all signed and unsigned base types, as well as any user-defined type for
-   *  which the basic operations substraction and addition have been defined.
-   *
-   *  This geometry has one important drawback: if you are working with large
-   *  values over the entire range permissible by the value type, then chances
-   *  that the computation overflows is non-negligible. To receive an
-   *  \ref arithmetic_error exception upon overflow, compile your application
-   *  with \c #define \c SPATIAL_SAFER_ARITHEMTICS.
+   *  Through the nested \c rebind type, create an \ref neighbor_iterator based
+   *  on the \c square_euclidian_geometry.
    */
-  //@{
-  template<typename Ct, typename Unit,
-           typename Diff = typename details::auto_difference
-           <typename container_traits<Ct>::key_compare, Unit>::type,
-           typename Enable = void> // Sink for non-arithmetic types
-  class manhattan_geometry { };
-
-  template<typename Ct, typename Unit, typename Diff>
-  class manhattan_geometry
-  <Ct, Unit, Diff,
-   typename enable_if<std::tr1::is_arithmetic<Unit> >::type>
+  template <typename Unit>
+  struct square_euclidian
   {
-    /**
-     *  The rank_type of the container being used for calculations.
-     */
-    typedef typename container_traits<Ct>::rank_type rank_type;
-
-    /**
-     *  The key_type of the container being used for calculations.
-     */
-    typedef typename container_traits<Ct>::key_type key_type;
-
-    /**
-     *  Placeholder for the 'difference' functor.
-     */
-    Diff diff_;
-
-  public:
-    typedef Unit distance_type;
-
-    //! A constructor that allows you to specify the Difference type.
-    manhattan_geometry(const Diff& diff = Diff()) : diff_(diff) { }
-
-    /**
-     *  @brief  Compute the distance between the point of @c origin and the @c
-     *  key.
-     *  @return The resulting square distance.
-     */
-    distance_type
-    distance_to_key(const rank_type& rank,
-                    const key_type& origin, const key_type& key) const
+    template <typename Ct,
+              typename Diff = typename details::auto_difference
+              <typename container_traits<Ct>::key_compare, Unit>::type>
+    struct rebind
     {
-      return math::manhattan_distance_to_key
-        <key_type, Diff, Unit>(rank, origin, key, diff_);
-    }
-
-    /**
-     *  @brief  The distance between the point of @c origin and the closest
-     *  point to the plane orthogonal to the axis of dimension @c dim and
-     *  crossing @c key.
-     *  @return The resulting square distance.
-     */
-    distance_type
-    distance_to_plane(const rank_type&, dimension_type dim,
-                      const key_type& origin, const key_type& key) const
-    {
-      return math::manhattan_distance_to_plane
-        <key_type, Diff, Unit>(dim, origin, key, diff_);
-    }
+      typedef neighbor_iterator
+      <Ct, details::square_euclidian_geometry<Ct, Unit, Diff> > type;
+    };
   };
-  //@}
+
+  /**
+   *  Through the nested \c rebind type, create an \ref neighbor_iterator based
+   *  on the \c manhattan_geometry.
+   */
+  template <typename Unit>
+  struct manhattan
+  {
+    template <typename Ct,
+              typename Diff = typename details::auto_difference
+              <typename container_traits<Ct>::key_compare, Unit>::type>
+    struct rebind
+    {
+      typedef neighbor_iterator
+      <Ct, details::manhattan_geometry<Ct, Unit, Diff> > type;
+    };
+  };
+
 
 } // namespace spatial
 

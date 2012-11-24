@@ -17,6 +17,7 @@
 
 BOOST_AUTO_TEST_CASE(test_geometry_trait)
 {
+  using namespace spatial::details;
   check_is_same
     <geometry_traits<square_euclidian_geometry
                      <pointset<2, int2>, int,
@@ -24,35 +25,26 @@ BOOST_AUTO_TEST_CASE(test_geometry_trait)
      square_euclidian_geometry<pointset<2, int2>, int,
                                paren_minus<int2, int> >::distance_type>();
   check_is_same
-    <geometry_traits<square_euclidian_geometry
-                     <pointmap<6, double6, std::string>,
-                      double> >::distance_type,
-     square_euclidian_geometry<pointmap<6, double6, std::string>,
-                               double>::distance_type>();
-  check_is_same
     <geometry_traits<euclidian_geometry
                      <boxset<3, double6>, double,
                       bracket_minus<double6, double> > >::distance_type,
      euclidian_geometry<boxset<3, double6>, double,
                         bracket_minus<double6, double> >::distance_type>();
-  check_is_same
-    <geometry_traits<euclidian_geometry
-                     <boxmap<3, double6, std::string>,
-                      double> >::distance_type,
-     euclidian_geometry<boxmap<3, double6, std::string>,
-                        double>::distance_type>();
+  // The following will not compile, but I comment it out to test enable_if
+  //check_is_same
+  //  <geometry_traits<euclidian_geometry
+  //                   <boxmap<2, quad, std::string>, int,
+  //                    accessor_minus<quad_access, quad, int> > >
+  //                   ::distance_type,
+  //   euclidian_geometry<boxmap<2, quad, std::string>, int,
+  //                      accessor_minus<quad_access, quad, int> >
+  //                      ::distance_type>();
   check_is_same
     <geometry_traits<manhattan_geometry
                      <idle_pointset<2, int2>, int,
                       paren_minus<int2, int> > >::distance_type,
      manhattan_geometry<idle_pointset<2, int2>, int,
                         paren_minus<int2, int> >::distance_type>();
-  check_is_same
-    <geometry_traits<manhattan_geometry
-                     <idle_pointmap<2, int2, std::string>,
-                      int> >::distance_type,
-     manhattan_geometry<idle_pointmap<2, int2, std::string>,
-                        int>::distance_type>();
 }
 
 BOOST_AUTO_TEST_CASE(test_difference_bracket)
@@ -69,7 +61,8 @@ BOOST_AUTO_TEST_CASE(test_difference_bracket)
 BOOST_AUTO_TEST_CASE(test_difference_paren)
 {
   details::auto_difference<paren_less<int2>, int>::type
-    diff = details::difference_cast<paren_less<int2>, int>(paren_less<int2>());
+    diff = details::difference_cast<paren_less<int2>, int>
+    (paren_less<int2>());
   int2 p(0, 1);
   int2 q(2, 0);
   BOOST_CHECK_EQUAL(diff(0, p, q), -2);
@@ -97,87 +90,85 @@ BOOST_AUTO_TEST_CASE(test_difference_accessor)
   BOOST_CHECK_EQUAL(diff(0, p, q), -2);
   BOOST_CHECK_EQUAL(diff(1, p, q), 1);
 }
-/*
-BOOST_AUTO_TEST_CASE( test_euclid_distance_to_key )
+
+
+BOOST_AUTO_TEST_CASE(test_euclid_distance_to_key)
 {
-  // randomize with different pair or point and same points, test the geometry
-  // directly with different type combination. -> Goes faster.
   {
     // distance between 2 points at the same position should be null.
-    point2d x = zeros;
+    double6 x; x.assign(.0);
     double r = math::euclid_distance_to_key
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, x, x, bracket_cast_accessor<point2d, double>());
+      <details::Static_rank<6>, double6, bracket_minus<double6, double>, double>
+      (details::Static_rank<6>(), x, x, bracket_minus<double6, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
-    x = ones;
+    x.assign(-1.);
     r = math::euclid_distance_to_key
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, x, x, bracket_cast_accessor<point2d, double>());
+      <details::Static_rank<6>, double6, bracket_minus<double6, double>, double>
+      (details::Static_rank<6>(), x, x, bracket_minus<double6, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
-    x = twos;
+    x.assign(1.);
     r = math::euclid_distance_to_key
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, x, x, bracket_cast_accessor<point2d, double>());
-    BOOST_CHECK_CLOSE(r, .0, .000000000001);
-    x = threes;
-    r = math::euclid_distance_to_key
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, x, x, bracket_cast_accessor<point2d, double>());
+      <details::Static_rank<6>, double6, bracket_minus<double6, double>, double>
+      (details::Static_rank<6>(), x, x, bracket_minus<double6, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
   }
   {
     // 2 point separated by 1 on each dim should return the right amount
-    double r = math::euclidian_distance_to_key
-      <point2d, bracket_cast_accessor<point2d, double>, double>
-      (2, zeros, ones, bracket_cast_accessor<point2d, double>());
+    double r = math::euclid_distance_to_key
+      <details::Static_rank<6>, double6, bracket_minus<double6, double>, double>
+      (details::Static_rank<6>(),
+       make_double6(-1.,  0., 1., 2., 3., 4.),
+       make_double6(-2., -1., 0., 1., 2., 3.),
+       bracket_minus<double6, double>());
     using namespace std;
-    BOOST_CHECK_CLOSE(r, sqrt(2.0), .000000000001);
+    BOOST_CHECK_CLOSE(r, sqrt(6.0), .000000000001);
   }
   {
     // Distance between 2 points at different positions in 3D
     for (int i=0; i<100; ++i)
       {
-        triple p, q;
-        p.x = rand() % 80 - 40;
-        p.y = rand() % 80 - 40;
-        p.z = rand() % 80 - 40;
-        q.x = rand() % 80 - 40;
-        q.y = rand() % 80 - 40;
-        q.z = rand() % 80 - 40;
-        double dist = math::euclidian_distance_to_key
-          <triple, cast_accessor<triple, double, triple_access>, double>
-          (3, p, q, cast_accessor<triple, double, triple_access>());
+        double6 p = make_double6(drand(), drand(), drand(),
+                                 drand(), drand(), drand());
+        double6 q = make_double6(drand(), drand(), drand(),
+                                 drand(), drand(), drand());
+        double dist = math::euclid_distance_to_key
+          <details::Static_rank<6>, double6, bracket_minus<double6, double>, double>
+          (details::Static_rank<6>(), p, q, bracket_minus<double6, double>());
         using namespace ::std;
-        double other_dist = sqrt(static_cast<double>((p.x-q.x)*(p.x-q.x)
-                                 +(p.y-q.y)*(p.y-q.y)
-                                 +(p.z-q.z)*(p.z-q.z)));
+        double other_dist = sqrt((p[0] - q[0]) * (p[0] - q[0])
+                                 + (p[1] - q[1]) * (p[1] - q[1])
+                                 + (p[2] - q[2]) * (p[2] - q[2])
+                                 + (p[3] - q[3]) * (p[3] - q[3])
+                                 + (p[4] - q[4]) * (p[4] - q[4])
+                                 + (p[5] - q[5]) * (p[5] - q[5]));
         BOOST_CHECK_CLOSE(dist, other_dist, .000000000001);
       }
   }
 }
 
-BOOST_AUTO_TEST_CASE( test_euclidian_distance_to_plane )
+/*
+BOOST_AUTO_TEST_CASE( test_euclid_distance_to_plane )
 {
   using namespace spatial::details::geometry;
   {
     // distance between points and plane at the same position should be null.
     point2d x = zeros;
-    float r = math::euclidian_distance_to_plane
+    float r = math::euclid_distance_to_plane
       <point2d, bracket_cast_accessor<point2d, float>, float>
       (0, x, x, bracket_cast_accessor<point2d, float>());
     BOOST_CHECK_CLOSE(r, .0f, .0000001f);
     x = ones;
-    r = math::euclidian_distance_to_plane
+    r = math::euclid_distance_to_plane
       <point2d, bracket_cast_accessor<point2d, float>, float>
       (1, x, x, bracket_cast_accessor<point2d, float>());
     BOOST_CHECK_CLOSE(r, .0f, .0000001f);
     x = twos;
-    r = math::euclidian_distance_to_plane
+    r = math::euclid_distance_to_plane
       <point2d, bracket_cast_accessor<point2d, float>, float>
       (0, x, x, bracket_cast_accessor<point2d, float>());
     BOOST_CHECK_CLOSE(r, .0f, .0000001f);
     x = threes;
-    r = math::euclidian_distance_to_plane
+    r = math::euclid_distance_to_plane
       <point2d, bracket_cast_accessor<point2d, float>, float>
       (1, x, x, bracket_cast_accessor<point2d, float>());
     BOOST_CHECK_CLOSE(r, .0f, .0000001f);
@@ -211,29 +202,29 @@ BOOST_AUTO_TEST_CASE( test_euclidian_square_distance_to_key )
   {
     // distance between 2 points at the same position should be null.
     point2d x = zeros;
-    double r = math::euclidian_square_distance_to_key
+    double r = math::euclid_square_distance_to_key
       <point2d, bracket_cast_accessor<point2d, double>, double>
       (2, x, x, bracket_cast_accessor<point2d, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
     x = ones;
-    r = math::euclidian_square_distance_to_key
+    r = math::euclid_square_distance_to_key
       <point2d, bracket_cast_accessor<point2d, double>, double>
       (2, x, x, bracket_cast_accessor<point2d, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
     x = twos;
-    r = math::euclidian_square_distance_to_key
+    r = math::euclid_square_distance_to_key
       <point2d, bracket_cast_accessor<point2d, double>, double>
       (2, x, x, bracket_cast_accessor<point2d, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
     x = threes;
-    r = math::euclidian_square_distance_to_key
+    r = math::euclid_square_distance_to_key
       <point2d, bracket_cast_accessor<point2d, double>, double>
       (2, x, x, bracket_cast_accessor<point2d, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
   }
   {
     // 2 point separated by 1 on each dim should return the right amount
-    double r = math::euclidian_square_distance_to_key
+    double r = math::euclid_square_distance_to_key
       <point2d, bracket_cast_accessor<point2d, double>, double>
       (2, zeros, ones, bracket_cast_accessor<point2d, double>());
     BOOST_CHECK_CLOSE(r, 2.0, .000000000001);
@@ -249,7 +240,7 @@ BOOST_AUTO_TEST_CASE( test_euclidian_square_distance_to_key )
         q.x = rand() % 80 - 40;
         q.y = rand() % 80 - 40;
         q.z = rand() % 80 - 40;
-        double dist = math::euclidian_square_distance_to_key
+        double dist = math::euclid_square_distance_to_key
           <triple, cast_accessor<triple, double, triple_access>, double>
           (3, p, q, cast_accessor<triple, double, triple_access>());
         double other_dist = (p.x-q.x)*(p.x-q.x) + (p.y-q.y)*(p.y-q.y)

@@ -213,19 +213,11 @@ namespace spatial
     {
       using namespace std;
       // Find a non zero maximum or return 0
-#ifdef SPATIAL_SAFER_ARITHMETICS
-      Unit max = except::check_abs(diff(0, origin, key));
-#else
       Unit max = abs(diff(0, origin, key));
-#endif
       dimension_type max_dim = 0;
       for (dimension_type i = 1; i < rank(); ++i)
         {
-#ifdef SPATIAL_SAFER_ARITHMETICS
-          Unit d = except::check_abs(diff(i, origin, key));
-#else
           Unit d = abs(diff(i, origin, key));
-#endif
           if (d > max) { max = d; max_dim = i; }
         }
       const Unit zero = Unit();
@@ -256,12 +248,8 @@ namespace spatial
     euclid_distance_to_plane
     (dimension_type dim, Key origin, Key key, Difference diff)
     {
-#ifdef SPATIAL_SAFER_ARITHMETICS
-      return except::check_abs(diff(dim, origin, key));
-#else
       using namespace std;
       return abs(diff(dim, origin, key));
-#endif
     }
 
     /**

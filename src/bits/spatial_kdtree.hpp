@@ -180,7 +180,8 @@ namespace spatial
       {
         Link_allocator* alloc;
         link_ptr link;
-        safe_allocator(Link_allocator& a) : alloc(&a), link(0)
+        safe_allocator(Link_allocator& a)
+          : alloc(&a), link(0)
         { link = alloc->allocate(1); } // may throw
         ~safe_allocator() { if (link) { alloc->deallocate(link, 1); } }
         link_ptr release() { link_ptr p = link; link=0; return p; }
