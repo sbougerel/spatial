@@ -91,7 +91,6 @@ BOOST_AUTO_TEST_CASE(test_difference_accessor)
   BOOST_CHECK_EQUAL(diff(1, p, q), 1);
 }
 
-
 BOOST_AUTO_TEST_CASE(test_euclid_distance_to_key)
 {
   {

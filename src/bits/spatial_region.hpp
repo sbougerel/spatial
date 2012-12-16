@@ -827,52 +827,6 @@ namespace spatial
     Predicate pred_;
   };
 
-  namespace details
-  {
-    template <typename Ct, typename Predicate>
-    region_iterator<Ct, Predicate>&
-    increment_region(region_iterator<Ct, Predicate>& iter);
-
-    template <typename Ct, typename Predicate>
-    region_iterator<Ct, Predicate>&
-    decrement_region(region_iterator<Ct, Predicate>& iter);
-
-    /**
-     *  @brief  From @c x, find the node with the minimum value in the region
-     *  delimited by p. If multiple nodes are matching, return the first
-     *  matching node in in-order transversal.
-     *
-     *  @param node_dim  The current dimension for @c node.
-     *  @param node  The node from which to find the minimum.
-     *  @param key_dimension  The number of dimensions of key.
-     *  @param predicate  The predicate for the orthogonal region query.
-     *  @return  An iterator pointing the minimum, or to the parent of @c node.
-     *
-     *  If @c node is a header node, the search will stop immediately.
-     */
-    template <typename Ct, typename Predicate>
-    region_iterator<Ct, Predicate>&
-    minimum_region(region_iterator<Ct, Predicate>& iter);
-
-    /**
-     *  @brief  From @c x, find the node with the maximum value in the region
-     *  delimited by p. If multiple nodes are matching, return the last
-     *  matching node in in-order transversal.
-     *
-     *  @param node_dim  The current dimension for @c node.
-     *  @param node  The node from which to find the minimum.
-     *  @param key_dimension  The number of dimensions of key.
-     *  @param predicate  The predicate for the orthogonal region query.
-     *  @return  An iterator pointing the maximum, or to the parent of @c node.
-     *
-     *  If @c node is a header node, the search will stop immediately.
-     */
-    template <typename Ct, typename Predicate>
-    region_iterator<Ct, Predicate>&
-    maximum_region(region_iterator<Ct, Predicate>& iter);
-
-  } // namespace details
-
   /**
    *  This structure defines a pair of mutable region iterator.
    *
@@ -935,6 +889,52 @@ namespace spatial
     region_iterator_pair(const region_iterator_pair<Ct, Predicate>& p)
       : Base(p.first, p.second) { }
   };
+
+  namespace details
+  {
+    template <typename Ct, typename Predicate>
+    region_iterator<Ct, Predicate>&
+    increment_region(region_iterator<Ct, Predicate>& iter);
+
+    template <typename Ct, typename Predicate>
+    region_iterator<Ct, Predicate>&
+    decrement_region(region_iterator<Ct, Predicate>& iter);
+
+    /**
+     *  @brief  From @c x, find the node with the minimum value in the region
+     *  delimited by p. If multiple nodes are matching, return the first
+     *  matching node in in-order transversal.
+     *
+     *  @param node_dim  The current dimension for @c node.
+     *  @param node  The node from which to find the minimum.
+     *  @param key_dimension  The number of dimensions of key.
+     *  @param predicate  The predicate for the orthogonal region query.
+     *  @return  An iterator pointing the minimum, or to the parent of @c node.
+     *
+     *  If @c node is a header node, the search will stop immediately.
+     */
+    template <typename Ct, typename Predicate>
+    region_iterator<Ct, Predicate>&
+    minimum_region(region_iterator<Ct, Predicate>& iter);
+
+    /**
+     *  @brief  From @c x, find the node with the maximum value in the region
+     *  delimited by p. If multiple nodes are matching, return the last
+     *  matching node in in-order transversal.
+     *
+     *  @param node_dim  The current dimension for @c node.
+     *  @param node  The node from which to find the minimum.
+     *  @param key_dimension  The number of dimensions of key.
+     *  @param predicate  The predicate for the orthogonal region query.
+     *  @return  An iterator pointing the maximum, or to the parent of @c node.
+     *
+     *  If @c node is a header node, the search will stop immediately.
+     */
+    template <typename Ct, typename Predicate>
+    region_iterator<Ct, Predicate>&
+    maximum_region(region_iterator<Ct, Predicate>& iter);
+
+  } // namespace details
 
   template <typename Ct, typename Predicate>
   inline region_iterator<Ct, Predicate>
@@ -1392,16 +1392,16 @@ namespace spatial
   SPATIAL_REGION_DEFINE(equal, equal_bounds);
   SPATIAL_REGION_DEFINE(open_region, open_bounds);
   SPATIAL_REGION_DEFINE(closed_region, closed_bounds);
-  SPATIAL_REGION_DEFINE_L(enclosed, enclosed_bounds);
-  SPATIAL_REGION_DEFINE_L(overlap, overlap_bounds);
+  SPATIAL_REGION_DEFINE_L(enclosed_region, enclosed_bounds);
+  SPATIAL_REGION_DEFINE_L(overlap_region, overlap_bounds);
 
   // The ending ';' are not available for the following macros
   SPATIAL_REGION_MATCH(equal, equal_bounds)
   SPATIAL_REGION_INTERVAL(region, bounds)
   SPATIAL_REGION_INTERVAL(open_region, open_bounds)
   SPATIAL_REGION_INTERVAL(closed_region, closed_bounds)
-  SPATIAL_REGION_INTERVAL_L(enclosed, enclosed_bounds)
-  SPATIAL_REGION_INTERVAL_L(overlap, overlap_bounds)
+  SPATIAL_REGION_INTERVAL_L(enclosed_region, enclosed_bounds)
+  SPATIAL_REGION_INTERVAL_L(overlap_region, overlap_bounds)
 
 # undef SPATIAL_REGION_DEFINE
 # undef SPATIAL_REGION_DEFINE_L

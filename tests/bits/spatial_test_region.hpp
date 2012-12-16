@@ -345,11 +345,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_basics, Tp, every_quad )
     BOOST_CHECK(i == a);
   }
   {
-    overlap_iterator<typename Tp::container_type> a, b(a);
-    overlap_iterator<const typename Tp::container_type> c;
+    overlap_region_iterator<typename Tp::container_type> a, b(a);
+    overlap_region_iterator<const typename Tp::container_type> c;
     c = a;
-    overlap_iterator_pair<typename Tp::container_type> p, q(a, b);
-    overlap_iterator_pair<const typename Tp::container_type>
+    overlap_region_iterator_pair<typename Tp::container_type> p, q(a, b);
+    overlap_region_iterator_pair<const typename Tp::container_type>
       r, s(c, c), t(p);
     BOOST_CHECK(a == b);
     BOOST_CHECK(!(a != c));
@@ -357,11 +357,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_basics, Tp, every_quad )
     BOOST_CHECK(i == a);
   }
   {
-    enclosed_iterator<typename Tp::container_type> a, b(a);
-    enclosed_iterator<const typename Tp::container_type> c;
+    enclosed_region_iterator<typename Tp::container_type> a, b(a);
+    enclosed_region_iterator<const typename Tp::container_type> c;
     c = a;
-    enclosed_iterator_pair<typename Tp::container_type> p, q(a, b);
-    enclosed_iterator_pair<const typename Tp::container_type>
+    enclosed_region_iterator_pair<typename Tp::container_type> p, q(a, b);
+    enclosed_region_iterator_pair<const typename Tp::container_type>
       r, s(c, c), t(p);
     BOOST_CHECK(a == b);
     BOOST_CHECK(!(a != c));
@@ -583,9 +583,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_increment, Tp, double6_sets )
             if (details::match_all(fix.container.rank(), *it, eb))
               ++count_it;
           }
-        enclosed_iterator<typename Tp::container_type>
-          re = enclosed_begin(fix.container, b);
-        for (;re != enclosed_end(fix.container, b); ++re)
+        enclosed_region_iterator<typename Tp::container_type>
+          re = enclosed_region_begin(fix.container, b);
+        for (;re != enclosed_region_end(fix.container, b); ++re)
           {
             BOOST_CHECK(details::match_all(fix.container.rank(), *re, eb));
             ++count_re;
@@ -600,8 +600,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_increment, Tp, double6_sets )
     double6 b; b[0] = b[1] = b[2] = 99.0; b[3] = b[4] = b[5] = 101.0;
     while (!fix.container.empty())
       {
-        BOOST_CHECK(std::distance(enclosed_begin(fix.container, b),
-                                  enclosed_end(fix.container, b))
+        BOOST_CHECK(std::distance(enclosed_region_begin(fix.container, b),
+                                  enclosed_region_end(fix.container, b))
                     == static_cast<std::ptrdiff_t>(fix.container.size()));
         fix.container.erase(fix.container.begin());
       }
@@ -610,13 +610,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_increment, Tp, double6_sets )
     Tp fix(1, same());
     // Prove that you can iterate all N nodes, down to 1 nodes
     double6 b; b[0] = b[1] = b[2] = b[3] = b[4] = b[5] = 1.0;
-    enclosed_iterator<typename Tp::container_type, lhlh_layout_tag>
-      i = enclosed_begin(fix.container, b, lhlh_layout),
+    enclosed_region_iterator<typename Tp::container_type, lhlh_layout_tag>
+      i = enclosed_region_begin(fix.container, b, lhlh_layout),
       j = i;
-    BOOST_CHECK(i != enclosed_end(fix.container, b, lhlh_layout));
-    BOOST_CHECK(++i == enclosed_end(fix.container, b, lhlh_layout));
-    BOOST_CHECK(j++ != enclosed_end(fix.container, b, lhlh_layout));
-    BOOST_CHECK(j == enclosed_end(fix.container, b, lhlh_layout));
+    BOOST_CHECK(i != enclosed_region_end(fix.container, b, lhlh_layout));
+    BOOST_CHECK(++i == enclosed_region_end(fix.container, b, lhlh_layout));
+    BOOST_CHECK(j++ != enclosed_region_end(fix.container, b, lhlh_layout));
+    BOOST_CHECK(j == enclosed_region_end(fix.container, b, lhlh_layout));
   }
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
     Tp fix(100, increase());
@@ -691,9 +691,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
             if (details::match_all(fix.container.rank(), *it, eb))
               ++count_it;
           }
-        std::reverse_iterator<enclosed_iterator<typename Tp::container_type> >
-          re(enclosed_end(fix.container, b)),
-          rend(enclosed_begin(fix.container, b));
+        std::reverse_iterator
+          <enclosed_region_iterator<typename Tp::container_type> >
+          re(enclosed_region_end(fix.container, b)),
+          rend(enclosed_region_begin(fix.container, b));
         for (;re != rend; ++re)
           {
             BOOST_CHECK(details::match_all(fix.container.rank(), *re, eb));
@@ -709,9 +710,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
     double6 b; b[0] = b[1] = b[2] = 99.0; b[3] = b[4] = b[5] = 101.0;
     while (!fix.container.empty())
       {
-        std::reverse_iterator<enclosed_iterator<typename Tp::container_type> >
-          begin(enclosed_end(fix.container, b)),
-          end(enclosed_begin(fix.container, b));
+        std::reverse_iterator
+          <enclosed_region_iterator<typename Tp::container_type> >
+          begin(enclosed_region_end(fix.container, b)),
+          end(enclosed_region_begin(fix.container, b));
         BOOST_CHECK(std::distance(begin, end)
                     == static_cast<std::ptrdiff_t>(fix.container.size()));
         fix.container.erase(fix.container.begin());
@@ -721,13 +723,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
     Tp fix(1, same());
     // Prove that you can iterate all N nodes, down to 1 nodes
     double6 b; b[0] = b[1] = b[2] = b[3] = b[4] = b[5] = 1.0;
-    enclosed_iterator<typename Tp::container_type, lhlh_layout_tag>
-      i = enclosed_end(fix.container, b, lhlh_layout),
+    enclosed_region_iterator<typename Tp::container_type, lhlh_layout_tag>
+      i = enclosed_region_end(fix.container, b, lhlh_layout),
       j = i;
-    BOOST_CHECK(i != enclosed_begin(fix.container, b, lhlh_layout));
-    BOOST_CHECK(--i == enclosed_begin(fix.container, b, lhlh_layout));
-    BOOST_CHECK(j-- != enclosed_begin(fix.container, b, lhlh_layout));
-    BOOST_CHECK(j == enclosed_begin(fix.container, b, lhlh_layout));
+    BOOST_CHECK(i != enclosed_region_begin(fix.container, b, lhlh_layout));
+    BOOST_CHECK(--i == enclosed_region_begin(fix.container, b, lhlh_layout));
+    BOOST_CHECK(j-- != enclosed_region_begin(fix.container, b, lhlh_layout));
+    BOOST_CHECK(j == enclosed_region_begin(fix.container, b, lhlh_layout));
   }
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
     Tp fix(100, increase());

@@ -75,9 +75,9 @@ namespace spatial
        *  \param n The node dimension for the node pointed to by the iterator.
        */
       Neighbor_data
-      (const Ct& c, const Geometry& g,
+      (const typename container_traits<Ct>::key_compare& c, const Geometry& g,
        const typename container_traits<Ct>::key_type& k)
-        : container_traits<Ct>::key_compare(c.key_comp()), target(g, k)
+        : container_traits<Ct>::key_compare(c), target(g, k)
       { }
 
       /**
@@ -165,7 +165,7 @@ namespace spatial
                       const typename container_traits<Ct>::key_type& target,
                       const typename container_traits<Ct>::iterator& iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        data_(container, geo, target) { }
+        data_(container.key_comp(), geo, target) { }
 
     /**
      *  When the information of the dimension for the current node being
@@ -194,7 +194,7 @@ namespace spatial
                       dimension_type node_dim,
                       typename container_traits<Ct>::mode_type::node_ptr node)
       : Base(container.rank(), node, node_dim),
-        data_(container, geo, target) { }
+        data_(container.key_comp(), geo, target) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
@@ -321,7 +321,7 @@ namespace spatial
                       const typename container_traits<Ct>::key_type& target,
                       typename container_traits<Ct>::iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        data_(container, geo, target) { }
+        data_(container.key_comp(), geo, target) { }
 
     /**
      *  When the information of the dimension for the current node being
@@ -350,7 +350,7 @@ namespace spatial
                       dimension_type node_dim,
                       typename container_traits<Ct>::mode_type::node_ptr node)
       : Base(container.rank(), node, node_dim),
-        data_(container, geo, target) { }
+        data_(container.key_comp(), geo, target) { }
 
     //! Covertion of mutable iterator into a constant iterator is permitted.
     neighbor_iterator(const neighbor_iterator<Ct, Geometry>& iter)
@@ -410,53 +410,88 @@ namespace spatial
     details::Neighbor_data<Ct, Geometry> data_;
   };
 
-  //! Return true if 2 iterators are equal
-  template<typename Ct, typename Geom>
-  bool operator==(const neighbor_iterator<Ct, Geom>& a,
-                  const neighbor_iterator<Ct, Geom>& b)
-  { return a.node == b.node; }
+  /**
+   *  A quick accessor for neighbor iterators that retrieve the last valid
+   *  calculated distance from the target. The distance read is only relevant if
+   *  the iterator does not point past-the-end.
+   */
+  template <typename Ct, typename Geometry>
+  inline const typename Geometry::distance&
+  distance(const neighbor_iterator<Ct, Geometry>& iter)
+  { return iter.distance(); }
 
-  //! Return true if 2 iterators are equal
-  template<typename Ct, typename Geom>
-  bool operator==(const neighbor_iterator<const Ct, Geom>& a,
-                  const neighbor_iterator<const Ct, Geom>& b)
-  { return a.node == b.node; }
+  /**
+   *  A quick accessor for neighbor iterators that retrive the key that is the
+   *  target for the nearest neighbor iteration.
+   */
+  template <typename Ct, typename Geometry>
+  inline const typename container_traits<Ct>::key_type&
+  target_key(const neighbor_iterator<Ct, Geometry>& iter)
+  { return iter.target_key(); }
 
-  //! Return true if 2 iterators are equal
-  template<typename Ct, typename Geom>
-  bool operator==(const neighbor_iterator<Ct, Geom>& a,
-                  const neighbor_iterator<const Ct, Geom>& b)
-  { return a.node == b.node; }
+  /**
+   *  This structure defines a pair of neighbor iterator.
+   *
+   *  \tparam Ct The container to which these iterator relate to.
+   *  \tparam Geometry The geometry used by the iterator.
+   *  \see mapping_iterator
+   */
+  template <typename Ct, typename Geometry>
+  struct neighbor_iterator_pair
+    : std::pair<neighbor_iterator<Ct, Geometry>,
+                neighbor_iterator<Ct, Geometry> >
+  {
+    /**
+     *  A pair of iterators that represents a range (that is: a range of
+     *  elements to iterate, and not an orthogonal range).
+     */
+    typedef std::pair<neighbor_iterator<Ct, Geometry>,
+                      neighbor_iterator<Ct, Geometry> > Base;
 
-  //! Return true if 2 iterators are equal
-  template<typename Ct, typename Geom>
-  bool operator==(const neighbor_iterator<const Ct, Geom>& a,
-                  const neighbor_iterator<Ct, Geom>& b)
-  { return a.node == b.node; }
+    //! Empty constructor.
+    neighbor_iterator_pair() { }
 
-  //! Return true if 2 iterator are different
-  template<typename Ct, typename Geom>
-  bool operator!=(const neighbor_iterator<Ct, Geom>& a,
-                  const neighbor_iterator<Ct, Geom>& b)
-  { return !(a == b); }
+    //! Regular constructor that builds a neighbor_iterator_pair out of 2
+    //! neighbor_iterators.
+    neighbor_iterator_pair(const neighbor_iterator<Ct, Geometry>& a,
+                           const neighbor_iterator<Ct, Geometry>& b)
+      : Base(a, b) { }
+  };
 
-  //! Return true if 2 iterator are different
-  template<typename Ct, typename Geom>
-  bool operator!=(const neighbor_iterator<const Ct, Geom>& a,
-                  const neighbor_iterator<const Ct, Geom>& b)
-  { return !(a == b); }
+  /**
+   *  This structure defines a pair of constant neighbor iterator.
+   *
+   *  \tparam Ct The container to which these iterator relate to.
+   *  \tparam Geometry The geometry used by the iterator.
+   *  \see neighbor_iterator
+   */
+  template <typename Ct, typename Geometry>
+  struct neighbor_iterator_pair<const Ct, Geometry>
+    : std::pair<neighbor_iterator<const Ct, Geometry>,
+                neighbor_iterator<const Ct, Geometry> >
+  {
+    /**
+     *  A pair of iterators that represents a range (that is: a range of
+     *  elements to iterate, and not an orthogonal range).
+     */
+    typedef std::pair<neighbor_iterator<const Ct, Geometry>,
+                      neighbor_iterator<const Ct, Geometry> > Base;
 
-  //! Return true if 2 iterator are different
-  template<typename Ct, typename Geom>
-  bool operator!=(const neighbor_iterator<Ct, Geom>& a,
-                  const neighbor_iterator<const Ct, Geom>& b)
-  { return !(a == b); }
+    //! Empty constructor.
+    neighbor_iterator_pair() { }
 
-  //! Return true if 2 iterator are different
-  template<typename Ct, typename Geom>
-  bool operator!=(const neighbor_iterator<const Ct, Geom>& a,
-                  const neighbor_iterator<Ct, Geom>& b)
-  { return !(a == b); }
+    //! Regular constructor that builds a neighbor_iterator_pair out of 2
+    //! neighbor_iterators.
+    neighbor_iterator_pair(const neighbor_iterator<const Ct, Geometry>& a,
+                           const neighbor_iterator<const Ct, Geometry>& b)
+      : Base(a, b)
+    { }
+
+    //! Convert a mutable neighbor iterator pair into a const neighbor iterator
+    //!pair.
+    neighbor_iterator_pair(const neighbor_iterator_pair<Ct, Geometry>& p)
+      : Base(p.first, p.second) { }
+  };
 
   namespace details
   {
@@ -487,25 +522,6 @@ namespace spatial
                          const typename Geometry::distance_type& bound);
 
   } // namespace details
-
-  /**
-   *  A quick accessor for neighbor iterators that retrieve the last valid
-   *  calculated distance from the target. The distance read is only relevant if
-   *  the iterator does not point past-the-end.
-   */
-  template <typename Ct, typename Geometry>
-  inline const typename Geometry::distance&
-  distance(const neighbor_iterator<Ct, Geometry>& iter)
-  { return iter.distance(); }
-
-  /**
-   *  A quick accessor for neighbor iterators that retrive the key that is the
-   *  target for the nearest neighbor iteration.
-   */
-  template <typename Ct, typename Geometry>
-  inline const typename container_traits<Ct>::key_type&
-  target_key(const neighbor_iterator<Ct, Geometry>& iter)
-  { return iter.target_key(); }
 
   template <typename Ct, typename Geometry>
   inline neighbor_iterator<Ct, Geometry>

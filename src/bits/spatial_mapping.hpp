@@ -379,53 +379,85 @@ namespace spatial
     details::Mapping_data<Ct> data_;
   };
 
-  //! Return true if 2 iterators are equal
-  template<typename Ct>
-  bool operator==(const mapping_iterator<Ct>& a,
-                  const mapping_iterator<Ct>& b)
-  { return a.node == b.node; }
+  /**
+   *  Return the mapping dimension of the iterator.
+   *  \param it the iterator where the mapping dimension is retreived.
+   */
+  template <typename Container>
+  inline dimension_type
+  mapping_dimension(const mapping_iterator<Container>& it)
+  { return it.mapping_dimension(); }
 
-  //! Return true if 2 iterators are equal
-  template<typename Ct>
-  bool operator==(const mapping_iterator<const Ct>& a,
-                  const mapping_iterator<const Ct>& b)
-  { return a.node == b.node; }
+  /**
+   *  Sets the mapping dimension of the iterator.
+   *  \param it The iterator where the mapping dimension is set.
+   *  \param mapping_dim The new mapping dimension to use.
+   */
+  template <typename Container>
+  inline void
+  mapping_dimension(mapping_iterator<Container>& it,
+                    dimension_type mapping_dim)
+  {
+    except::check_dimension(it.dimension(), mapping_dim);
+    it.mapping_dimension() = mapping_dim;
+  }
 
-  //! Return true if 2 iterators are equal
-  template<typename Ct>
-  bool operator==(const mapping_iterator<Ct>& a,
-                  const mapping_iterator<const Ct>& b)
-  { return a.node == b.node; }
+  /**
+   *  This structure defines a pair of mutable mapping iterator.
+   *
+   *  \tparam Ct The container to which these iterator relate to.
+   *  \see mapping_iterator
+   */
+  template <typename Ct>
+  struct mapping_iterator_pair
+    : std::pair<mapping_iterator<Ct>, mapping_iterator<Ct> >
+  {
+    /**
+     *  A pair of iterators that represents a range (that is: a range of
+     *  elements to iterate, and not an orthogonal range).
+     */
+    typedef std::pair<mapping_iterator<Ct>, mapping_iterator<Ct> > Base;
 
-  //! Return true if 2 iterators are equal
-  template<typename Ct>
-  bool operator==(const mapping_iterator<const Ct>& a,
-                  const mapping_iterator<Ct>& b)
-  { return a.node == b.node; }
+    //! Empty constructor.
+    mapping_iterator_pair() { }
 
-  //! Return true if 2 iterator are different
-  template<typename Ct>
-  bool operator!=(const mapping_iterator<Ct>& a,
-                  const mapping_iterator<Ct>& b)
-  { return !(a == b); }
+    //! Regular constructor that builds a mapping_iterator_pair out of 2
+    //! mapping_iterators.
+    mapping_iterator_pair(const mapping_iterator<Ct>& a,
+                          const mapping_iterator<Ct>& b) : Base(a, b) { }
+  };
 
-  //! Return true if 2 iterator are different
-  template<typename Ct>
-  bool operator!=(const mapping_iterator<const Ct>& a,
-                  const mapping_iterator<const Ct>& b)
-  { return !(a == b); }
+  /**
+   *  This structure defines a pair of constant mapping iterator.
+   *
+   *  \tparam Ct The container to which these iterator relate to.
+   *  \see mapping_iterator
+   */
+  template <typename Ct>
+  struct mapping_iterator_pair<const Ct>
+    : std::pair<mapping_iterator<const Ct>, mapping_iterator<const Ct> >
+  {
+    /**
+     *  A pair of iterators that represents a range (that is: a range of
+     *  elements to iterate, and not an orthogonal range).
+     */
+    typedef std::pair<mapping_iterator<const Ct>, mapping_iterator<const Ct> >
+    Base;
 
-  //! Return true if 2 iterator are different
-  template<typename Ct>
-  bool operator!=(const mapping_iterator<Ct>& a,
-                  const mapping_iterator<const Ct>& b)
-  { return !(a == b); }
+    //! Empty constructor.
+    mapping_iterator_pair() { }
 
-  //! Return true if 2 iterator are different
-  template<typename Ct>
-  bool operator!=(const mapping_iterator<const Ct>& a,
-                  const mapping_iterator<Ct>& b)
-  { return !(a == b); }
+    //! Regular constructor that builds a mapping_iterator_pair out of 2
+    //! mapping_iterators.
+    mapping_iterator_pair(const mapping_iterator<const Ct>& a,
+                          const mapping_iterator<const Ct>& b) : Base(a, b)
+    { }
+
+    //! Convert a mutable mapping iterator pair into a const mapping iterator
+    //!pair.
+    mapping_iterator_pair(const mapping_iterator_pair<Ct>& p)
+      : Base(p.first, p.second) { }
+  };
 
   namespace details
   {
@@ -577,86 +609,6 @@ namespace spatial
      const typename container_traits<Container>::key_type& bound);
 
   } // namespace details
-
-  /**
-   *  This structure defines a pair of mutable mapping iterator.
-   *
-   *  \tparam Ct The container to which these iterator relate to.
-   *  \see mapping_iterator
-   */
-  template <typename Ct>
-  struct mapping_iterator_pair
-        : std::pair<mapping_iterator<Ct>, mapping_iterator<Ct> >
-  {
-    /**
-     *  A pair of iterators that represents a range (that is: a range of
-     *  elements to iterate, and not an orthogonal range).
-     */
-    typedef std::pair<mapping_iterator<Ct>, mapping_iterator<Ct> > Base;
-
-    //! Empty constructor.
-    mapping_iterator_pair() { }
-
-    //! Regular constructor that builds a mapping_iterator_pair out of 2
-    //! mapping_iterators.
-    mapping_iterator_pair(const mapping_iterator<Ct>& a,
-                          const mapping_iterator<Ct>& b) : Base(a, b) { }
-  };
-
-  /**
-   *  This structure defines a pair of constant mapping iterator.
-   *
-   *  \tparam Ct The container to which these iterator relate to.
-   *  \see mapping_iterator
-   */
-  template <typename Ct>
-  struct mapping_iterator_pair<const Ct>
-        : std::pair<mapping_iterator<const Ct>, mapping_iterator<const Ct> >
-  {
-    /**
-     *  A pair of iterators that represents a range (that is: a range of
-     *  elements to iterate, and not an orthogonal range).
-     */
-    typedef std::pair<mapping_iterator<const Ct>, mapping_iterator<const Ct> >
-          Base;
-
-    //! Empty constructor.
-    mapping_iterator_pair() { }
-
-    //! Regular constructor that builds a mapping_iterator_pair out of 2
-    //! mapping_iterators.
-    mapping_iterator_pair(const mapping_iterator<const Ct>& a,
-                          const mapping_iterator<const Ct>& b) : Base(a, b)
-    { }
-
-    //! Convert a mutable mapping iterator pair into a const mapping iterator
-    //!pair.
-    mapping_iterator_pair(const mapping_iterator_pair<Ct>& p)
-      : Base(p.first, p.second) { }
-  };
-
-  /**
-   *  Return the mapping dimension of the iterator.
-   *  \param it the iterator where the mapping dimension is retreived.
-   */
-  template <typename Container>
-  inline dimension_type
-  mapping_dimension(const mapping_iterator<Container>& it)
-  { return it.mapping_dimension(); }
-
-  /**
-   *  Sets the mapping dimension of the iterator.
-   *  \param it The iterator where the mapping dimension is set.
-   *  \param mapping_dim The new mapping dimension to use.
-   */
-  template <typename Container>
-  inline void
-  mapping_dimension(mapping_iterator<Container>& it,
-                    dimension_type mapping_dim)
-  {
-    except::check_dimension(it.dimension(), mapping_dim);
-    it.mapping_dimension() = mapping_dim;
-  }
 
   /**
    *  Finds the past-the-end position in \c container for this constant
