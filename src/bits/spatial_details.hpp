@@ -84,6 +84,46 @@ namespace spatial
     inline Tp*
     mutate_pointer(Tp* p) { return p; } // hoping this one gets optimized away
     //@}
+  } // namespace details
+
+  // Forward declarations for builtin compartors
+  template<typename Tp> struct bracket_less;
+  template<typename Tp> struct paren_less;
+  template<typename Tp> struct iterator_less;
+  template<typename Tp1, typename Tp2> struct accessor_less;
+
+  namespace details
+  {
+    /**
+     * Help to resolve whether the type used is a builtin comparator or not. It
+     * is used as the base type of \ref is_compare_builtin.
+     */
+    //@{
+    template <typename>
+    struct is_compare_builtin_helper : std::tr1::false_type { };
+    template <typename Tp>
+    struct is_compare_builtin_helper<bracket_less<Tp> >
+      : std::tr1::true_type { };
+    template <typename Tp>
+    struct is_compare_builtin_helper<paren_less<Tp> >
+      : std::tr1::true_type { };
+    template <typename Tp>
+    struct is_compare_builtin_helper<iterator_less<Tp> >
+      : std::tr1::true_type { };
+    template <typename Tp1, typename Tp2>
+    struct is_compare_builtin_helper<accessor_less<Tp1, Tp2> >
+      : std::tr1::true_type { };
+    //@}
+
+    /**
+     *  Statically resolve if key_compare used in the container \c corresponds
+     *  to one of the builtin library comparators or not. Designed to be used
+     *  with \ref enable_if.
+     */
+    template <typename Ct>
+    struct is_compare_builtin
+      : is_compare_builtin_helper<typename container_traits<Ct>::key_compare>
+    { };
 
     /**
      *  Uses the empty base class optimization in order to compress a

@@ -203,7 +203,7 @@ namespace spatial
     (dimension_type dim, Key origin, Key key, Difference diff)
     {
       using namespace std;
-      return abs(diff(dim, origin, key));
+      return abs(diff(dim, origin, key)); // floating types abs is always okay!
     }
 
     /**

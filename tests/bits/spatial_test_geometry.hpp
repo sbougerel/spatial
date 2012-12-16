@@ -19,26 +19,26 @@ BOOST_AUTO_TEST_CASE(test_geometry_trait)
 {
   using namespace spatial::details;
   check_is_same
-    <geometry_traits<square_euclidian_geometry
+    <geometry_traits<square_euclid_geometry
                      <pointset<2, int2>, int,
                       paren_minus<int2, int> > >::distance_type,
-     square_euclidian_geometry<pointset<2, int2>, int,
-                               paren_minus<int2, int> >::distance_type>();
+     square_euclid_geometry<pointset<2, int2>, int,
+                            paren_minus<int2, int> >::distance_type>();
   check_is_same
-    <geometry_traits<euclidian_geometry
+    <geometry_traits<euclid_geometry
                      <boxset<3, double6>, double,
                       bracket_minus<double6, double> > >::distance_type,
-     euclidian_geometry<boxset<3, double6>, double,
-                        bracket_minus<double6, double> >::distance_type>();
+     euclid_geometry<boxset<3, double6>, double,
+                     bracket_minus<double6, double> >::distance_type>();
   // The following will not compile, but I comment it out to test enable_if
   //check_is_same
-  //  <geometry_traits<euclidian_geometry
+  //  <geometry_traits<euclid_geometry
   //                   <boxmap<2, quad, std::string>, int,
   //                    accessor_minus<quad_access, quad, int> > >
   //                   ::distance_type,
-  //   euclidian_geometry<boxmap<2, quad, std::string>, int,
-  //                      accessor_minus<quad_access, quad, int> >
-  //                      ::distance_type>();
+  //   euclid_geometry<boxmap<2, quad, std::string>, int,
+  //                   accessor_minus<quad_access, quad, int> >
+  //                   ::distance_type>();
   check_is_same
     <geometry_traits<manhattan_geometry
                      <idle_pointset<2, int2>, int,
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(test_geometry_trait)
 BOOST_AUTO_TEST_CASE(test_difference_bracket)
 {
   details::auto_difference<bracket_less<int2>, int>::type
-    diff = details::difference_cast<bracket_less<int2>, int>
+    diff = details::auto_difference_cast<bracket_less<int2>, int>
     (bracket_less<int2>());
   int2 p(0, 1);
   int2 q(2, 0);
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(test_difference_bracket)
 BOOST_AUTO_TEST_CASE(test_difference_paren)
 {
   details::auto_difference<paren_less<int2>, int>::type
-    diff = details::difference_cast<paren_less<int2>, int>
+    diff = details::auto_difference_cast<paren_less<int2>, int>
     (paren_less<int2>());
   int2 p(0, 1);
   int2 q(2, 0);
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(test_difference_paren)
 BOOST_AUTO_TEST_CASE(test_difference_iterator)
 {
   details::auto_difference<iterator_less<int2>, int>::type
-    diff = details::difference_cast<iterator_less<int2>, int>
+    diff = details::auto_difference_cast<iterator_less<int2>, int>
     (iterator_less<int2>());
   int2 p(0, 1);
   int2 q(2, 0);
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(test_difference_iterator)
 BOOST_AUTO_TEST_CASE(test_difference_accessor)
 {
   details::auto_difference<accessor_less<quad_access, quad>, int>::type
-    diff = details::difference_cast<accessor_less<quad_access, quad>, int>
+    diff = details::auto_difference_cast<accessor_less<quad_access, quad>, int>
     (accessor_less<quad_access, quad>());
   quad p(0, 1, 0, 0);
   quad q(2, 0, 0, 0);

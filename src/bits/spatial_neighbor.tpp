@@ -27,8 +27,8 @@ namespace spatial
   {
 
     template <typename Container, typename Geometry>
-    inline typename neighbor<Container, Geometry>::iterator&
-    increment(typename neighbor<Container, Geometry>::iterator& it)
+    inline neighbor_iterator<Container, Geometry>&
+    increment_neighbor(neighbor_iterator<Container, Geometry>& it)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
       const Geometry& geo = it.data.compare.base();
@@ -190,8 +190,8 @@ namespace spatial
     // the children of the current best, so, descend into the children of node
     // first.
     template <typename Container, typename Geometry>
-    inline typename neighbor<Container, Geometry>::iterator&
-    decrement(typename neighbor<Container, Geometry>::iterator& it)
+    inline neighbor_iterator<Container, Geometry>&
+    decrement_neighbor(neighbor_iterator<Container, Geometry>& it)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
       const Geometry& geo = it.data.compare.base();
@@ -349,8 +349,8 @@ namespace spatial
     // Find the minimum from node and stop when reaching the parent. Iterate
     // in left-first fashion.
     template <typename Container, typename Geometry>
-    inline typename neighbor<Container, Geometry>::iterator&
-    minimum(typename neighbor<Container, Geometry>::iterator& it)
+    inline neighbor_iterator<Container, Geometry>&
+    minimum_neighbor(neighbor_iterator<Container, Geometry>& it)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
       const Geometry& geo = it.data.compare.base();
@@ -468,8 +468,8 @@ namespace spatial
     // Find the minimum from node and stop when reaching the parent. Iterate
     // in left-first fashion.
     template <typename Container, typename Geometry>
-    inline typename neighbor<Container, Geometry>::iterator&
-    maximum(typename neighbor<Container, Geometry>::iterator& it)
+    inline neighbor_iterator<Container, Geometry>&
+    maximum_neighbor(neighbor_iterator<Container, Geometry>& it)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
       const Geometry& geo = it.data.compare.base();
@@ -540,9 +540,9 @@ namespace spatial
     }
 
     template <typename Container, typename Geometry>
-    inline typename neighbor<Container, Geometry>::iterator&
-    lower_bound(typename neighbor<Container, Geometry>::iterator& it,
-                const typename Geometry::distance_type bound)
+    inline neighbor_iterator<Container, Geometry>&
+    lower_bound_neighbor(neighbor_iterator<Container, Geometry>& it,
+                         const typename Geometry::distance_type bound)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
       const Geometry& geo = it.data.compare.base();
@@ -666,9 +666,9 @@ namespace spatial
     }
 
     template <typename Container, typename Geometry>
-    inline typename neighbor<Container, Geometry>::iterator&
-    upper_bound(typename neighbor<Container, Geometry>::iterator& it,
-                const typename Geometry::distance_type bound)
+    inline neighbor_iterator<Container, Geometry>&
+    upper_bound_neighbor(neighbor_iterator<Container, Geometry>& it,
+                         const typename Geometry::distance_type bound)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
       const Geometry& geo = it.data.compare.base();

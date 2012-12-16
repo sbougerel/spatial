@@ -591,12 +591,12 @@ BOOST_AUTO_TEST_CASE( test_mapping_dimension )
 {
   { // with mutable iterator
     pointset_fix<double6> fix;
-    mapping_iterator<typename pointset_fix<double6>::container_type> iter;
+    mapping_iterator<pointset_fix<double6>::container_type> iter;
     iter = mapping_begin(fix.container, 5u);
     BOOST_CHECK_EQUAL(mapping_dimension(iter), 5u);
     mapping_dimension(iter, 3u);
     BOOST_CHECK_EQUAL(mapping_dimension(iter), 3u);
-    mapping_iterator<const typename pointset_fix<double6>
+    mapping_iterator<const pointset_fix<double6>
                      ::container_type> citer;
     citer = mapping_cbegin(fix.container, 5u);
     BOOST_CHECK_EQUAL(mapping_dimension(citer), 5u);
@@ -605,7 +605,7 @@ BOOST_AUTO_TEST_CASE( test_mapping_dimension )
   }
   { // Check invalid dimension exception
     pointset_fix<double6> fix;
-    mapping_iterator<typename pointset_fix<double6>::container_type>
+    mapping_iterator<pointset_fix<double6>::container_type>
       iter(mapping_begin(fix.container, 5u));
     BOOST_CHECK_THROW(mapping_dimension(iter, 6u), invalid_dimension);
     BOOST_CHECK_THROW(mapping_begin(fix.container, 6u),
