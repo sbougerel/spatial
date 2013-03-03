@@ -17,5 +17,5 @@
 
 #include "bits/spatial_test_fixtures.hpp"
 #include "bits/spatial_test_output.hpp"
-#include "bits/spatial_test_geometry.hpp"
+#include "bits/spatial_test_metric.hpp"
 #include "bits/spatial_test_neighbor.hpp"

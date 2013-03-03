@@ -8,7 +8,7 @@
 /**
  *  @file   spatial_traits.hpp
  *  @brief  Define several trait classes for types in the library, including
- *  containers and geometry types.
+ *  containers and metric types.
  */
 
 #ifndef SPATIAL_TRAITS_HPP
@@ -126,19 +126,19 @@ namespace spatial
   };
 
   /**
-   *  \brief  The traits type for all geometries in the spatial
+   *  \brief  The traits type for all metrics in the spatial
    *  namespace. Defines all the types that must be published or resolved from a
-   *  geometry.
+   *  metric.
    */
   template <typename Tp>
-  struct geometry_traits
+  struct metric_traits
   {
     /**
-     *  \brief  The type used by the geometry to represent distances.
+     *  \brief  The type used by the metric to represent distances.
      *
-     *  Distance may be user defined in some geometry such as
+     *  Distance may be user defined in some metric such as
      *  spatial::manhathan, but in this case, the type must follow specific
-     *  rules to the geometry, such as overload of specific operators.
+     *  rules to the metric, such as overload of specific operators.
      */
     typedef typename Tp::distance_type         distance_type;
   };

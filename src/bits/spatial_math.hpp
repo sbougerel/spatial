@@ -8,13 +8,13 @@
 /**
  *  @file   spatial_math.hpp
  *  @brief  Gather in one file all the mathematical operations, mainly for the
- *  geometry types.
+ *  metric types.
  *
  *  Most of the mathematical operations written in this file are not very well
  *  optimized, and for a given compiler or architecture it would be easy to
  *  write more efficient algorithms. Therefore, if you are really looking to
  *  increase the speed of your computation, you might want to write your own
- *  geometry.
+ *  metric optimized for the type you are working with.
  *
  *  \see neighbor
  */
@@ -131,9 +131,6 @@ namespace spatial
      *  to make it faster, but it is intended to be portable and provide users
      *  with the possibility to quickly check the architmectics during
      *  computation with little efforts from their part.
-     *
-     *  In particular, if \c Tp is not a base type, the author of the type must
-     *  define the numeric limits \c numeric_limits<Tp>::max() for that type.
      */
     template <typename Tp>
     inline typename enable_if<std::tr1::is_arithmetic<Tp>, Tp>::type

@@ -270,19 +270,19 @@
  */
 
 /**
- *  \page GeometryConcept Geometry
- *  This concept defines the requirements for a Geometry to be used with
+ *  \page MetricConcept Metric
+ *  This concept defines the requirements for a Metric to be used with
  *  neighbor iterators. Neighbor iterators implement the nearest neighbor search
  *  algorithm on the container. Initializing the iterator to its begining makes
  *  it stop at the nearest neighbor of the given point of origin.
  *
- *  \concept Definition of the Geometry concept.
+ *  \concept Definition of the Metric concept.
  *
  *  The models of RegionPredicate shall publicly provide the following
  *  interfaces:
  *  \concept_tab
  *  \concept_leg P
- *  \concept_des A type that is a model of Geometry
+ *  \concept_des A type that is a model of Metric
  *  \concept_leg V
  *  \concept_des A type that is the key of the spatial container.
  *  \concept_leg D
@@ -303,20 +303,20 @@
  *  dimension \c rank.
  *  \concept_end
  *
- *  The purpose of the Geometry itself is to represent the metric space in which
+ *  The purpose of the Metric itself is to represent the metric space in which
  *  the metric calculation in between elements of the container take place.
- *  Because of the way Geometries are defined, any metric space that is a
+ *  Because of the way Metrics are defined, any metric space that is a
  *  continous space topology can be expressed. And so, it is possible to write a
- *  Geometry where calculation for \c distance_to_key and \c distance_to_plane
+ *  Metric where calculation for \c distance_to_key and \c distance_to_plane
  *  take place in a Manifold, and not just a regular Euclidean space. (However
- *  the Geomerty provided by default only represent more simple Euclidean
+ *  the Metric provided by default only represent more simple Euclidean
  *  spaces.)
  *
- *  If you were to write a Geometry on your own, you would start from the stub
+ *  If you were to write a Metric on your own, you would start from the stub
  *  below:
  *
  *  @code
- *  struct Geometry
+ *  struct Metric
  *  {
  *    typedef my_distance_type distance_type;                     // [1]
  *
@@ -330,7 +330,7 @@
  *  };
  *  @code
  *
- *  The details of the Geometry type are as follow:
+ *  The details of the Metric type are as follow:
  *
  *  - [1] is the definition of the type used for the computation of the
  *  distance, generally defined as double.
@@ -348,13 +348,13 @@
  *
  *  - [4] for any 2 points \c origin and \c key, [3] must always return a
  *  result that is lower or equal to [2], regardless of the dimension being
- *  considered. If rule [4] is not enforced in the geometry (For example, due to
+ *  considered. If rule [4] is not enforced in the metric (For example, due to
  *  errors in approximations during the calculation), then the
  *  iterator would not work properly and would skip some items in the
- *  container. When writing Geometries for Manifolds or Riemanean spaces,
+ *  container. When writing Metrics for Manifolds or Riemanean spaces,
  *  you must pay special attention to this rule, since the shortest distance
  *  between the key and the plane is not always easy to represent mentally.
  *
- *  Spatial provides ready-made models of Geometry such as \ref euclidian_geom
- *  and \ref manhattan_geom.
+ *  Spatial provides ready-made models of Metric such as \ref euclidian
+ *  and \ref manhattan.
  */

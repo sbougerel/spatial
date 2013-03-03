@@ -6,44 +6,44 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_test_geometry.hpp
- *  @brief  All tests for the elements defined in spatial_geometry.hpp are
+ *  @file   spatial_test_metric.hpp
+ *  @brief  All tests for the elements defined in spatial_metric.hpp are
  *  located in this file.
- *  @see spatial_geometry.hpp
+ *  @see spatial_metric.hpp
  */
 
-#ifndef SPATIAL_TEST_GEOMETRY_HPP
-#define SPATIAL_TEST_GEOMETRY_HPP
+#ifndef SPATIAL_TEST_METRIC_HPP
+#define SPATIAL_TEST_METRIC_HPP
 
-BOOST_AUTO_TEST_CASE(test_geometry_trait)
+BOOST_AUTO_TEST_CASE(test_metric_trait)
 {
   using namespace spatial::details;
   check_is_same
-    <geometry_traits<square_euclid_geometry
+    <metric_traits<quadrance
                      <pointset<2, int2>, int,
                       paren_minus<int2, int> > >::distance_type,
-     square_euclid_geometry<pointset<2, int2>, int,
+     quadrance<pointset<2, int2>, int,
                             paren_minus<int2, int> >::distance_type>();
   check_is_same
-    <geometry_traits<euclid_geometry
+    <metric_traits<euclidian
                      <boxset<3, double6>, double,
                       bracket_minus<double6, double> > >::distance_type,
-     euclid_geometry<boxset<3, double6>, double,
+     euclidian<boxset<3, double6>, double,
                      bracket_minus<double6, double> >::distance_type>();
   // The following will not compile, but I comment it out to test enable_if
   //check_is_same
-  //  <geometry_traits<euclid_geometry
+  //  <metric_traits<euclidian
   //                   <boxmap<2, quad, std::string>, int,
   //                    accessor_minus<quad_access, quad, int> > >
   //                   ::distance_type,
-  //   euclid_geometry<boxmap<2, quad, std::string>, int,
+  //   euclidian<boxmap<2, quad, std::string>, int,
   //                   accessor_minus<quad_access, quad, int> >
   //                   ::distance_type>();
   check_is_same
-    <geometry_traits<manhattan_geometry
+    <metric_traits<manhattan
                      <idle_pointset<2, int2>, int,
                       paren_minus<int2, int> > >::distance_type,
-     manhattan_geometry<idle_pointset<2, int2>, int,
+     manhattan<idle_pointset<2, int2>, int,
                         paren_minus<int2, int> >::distance_type>();
 }
 
@@ -221,4 +221,4 @@ BOOST_AUTO_TEST_CASE( test_manhattan_distance_to_key )
   }
 }
 
-#endif // SPATIAL_TEST_GEOMETRY_HPP
+#endif // SPATIAL_TEST_METRIC_HPP
