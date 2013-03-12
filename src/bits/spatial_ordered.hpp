@@ -61,7 +61,7 @@ namespace spatial
     ordered_iterator(Ct& container,
                      const typename container_traits<Ct>::iterator& iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        cmp_(container.key_comp())
+        _cmp(container.key_comp())
     { }
 
     /**
@@ -88,7 +88,7 @@ namespace spatial
      */
     ordered_iterator(Ct& container, dimension_type dim,
                      typename container_traits<Ct>::mode_type::node_ptr ptr)
-      : Base(container.rank(), ptr, dim), cmp_(container.key_comp())
+      : Base(container.rank(), ptr, dim), _cmp(container.key_comp())
     { except::check_dimension(container.dimension(), dim); }
 
     //! Increments the iterator and returns the incremented value. Prefer to
@@ -121,11 +121,11 @@ namespace spatial
 
     //! Return the key_comparator used by the iterator
     const key_compare&
-    key_comp() const { return cmp_; }
+    key_comp() const { return _cmp; }
 
   private:
     //! The related data for the iterator.
-    key_compare cmp_;
+    key_compare _cmp;
   };
 
   /**
@@ -173,7 +173,7 @@ namespace spatial
     ordered_iterator(const Ct& container,
                      const typename container_traits<Ct>::const_iterator& iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        cmp_(container.key_comp())
+        _cmp(container.key_comp())
     { }
 
     /**
@@ -204,12 +204,12 @@ namespace spatial
     ordered_iterator(const Ct& container, dimension_type dim,
                      typename container_traits<Ct>::mode_type::const_node_ptr
                      ptr)
-      : Base(container.rank(), ptr, dim), cmp_(container.key_comp())
+      : Base(container.rank(), ptr, dim), _cmp(container.key_comp())
     { except::check_dimension(container.dimension(), dim); }
 
     //! Convertion of mutable iterator into a constant iterator is permitted.
     ordered_iterator(const ordered_iterator<Ct>& iter)
-      : Base(iter.rank(), iter.node, iter.node_dim), cmp_(iter.key_comp())
+      : Base(iter.rank(), iter.node, iter.node_dim), _cmp(iter.key_comp())
     { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
@@ -242,11 +242,11 @@ namespace spatial
 
     //! Return the key_comparator used by the iterator
     const key_compare&
-    key_comp() const { return cmp_; }
+    key_comp() const { return _cmp; }
 
   private:
     //! The related data for the iterator.
-    key_compare cmp_;
+    key_compare _cmp;
   };
 
   //! Return true if 2 iterators are equal

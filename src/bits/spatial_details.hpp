@@ -90,7 +90,7 @@ namespace spatial
   template<typename Tp> struct bracket_less;
   template<typename Tp> struct paren_less;
   template<typename Tp> struct iterator_less;
-  template<typename Tp1, typename Tp2> struct accessor_less;
+  template<typename Accessor, typename Tp> struct accessor_less;
 
   namespace details
   {
@@ -110,8 +110,8 @@ namespace spatial
     template <typename Tp>
     struct is_compare_builtin_helper<iterator_less<Tp> >
       : std::tr1::true_type { };
-    template <typename Tp1, typename Tp2>
-    struct is_compare_builtin_helper<accessor_less<Tp1, Tp2> >
+    template <typename Accessor, typename Tp>
+    struct is_compare_builtin_helper<accessor_less<Accessor, Tp> >
       : std::tr1::true_type { };
     //@}
 
@@ -146,13 +146,13 @@ namespace spatial
       //! Compressed member with uninitialized base.
       //! \param compressed_base The value of the \c Base type.
       explicit Compress(const Base& compressed_base)
-        : Base(compressed_base), member_() { }
+        : Base(compressed_base), _member() { }
 
       //! Standard initializer with \c Base and \c Member values
       //! \param compressed_base The value of the \c Base type.
       //! \param memeber The value of the \c Member type.
       Compress(const Base& compressed_base, const Member& member)
-        : Base(compressed_base), member_(member) { }
+        : Base(compressed_base), _member(member) { }
 
       //@{
       /**
@@ -173,16 +173,16 @@ namespace spatial
        */
       const Member&
       operator()() const
-      { return member_; }
+      { return _member; }
 
       Member&
       operator()()
-      { return member_; }
+      { return _member; }
       //@}
 
     private:
       //! Storage for the member value.
-      Member member_;
+      Member _member;
     };
 
     /**
@@ -206,20 +206,20 @@ namespace spatial
      */
     struct Dynamic_rank
     {
-      //! Returns the dimension for the rank stored in \c rank_
+      //! Returns the dimension for the rank stored in \c _rank
       dimension_type operator()() const
-      { return rank_; }
+      { return _rank; }
 
       //! Build a rank with a default dimension of 1.
       //! \param rank The specified rank dimension.
       explicit
       Dynamic_rank(dimension_type rank = 1)
-        : rank_(rank)
+        : _rank(rank)
       { }
 
     private:
       //! The value that stores the rank dimension.
-      dimension_type rank_;
+      dimension_type _rank;
     };
 
     //@{

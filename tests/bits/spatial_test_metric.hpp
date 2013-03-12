@@ -49,9 +49,9 @@ BOOST_AUTO_TEST_CASE(test_metric_trait)
 
 BOOST_AUTO_TEST_CASE(test_difference_bracket)
 {
-  details::auto_difference<bracket_less<int2>, int>::type
-    diff = details::auto_difference_cast<bracket_less<int2>, int>
-    (bracket_less<int2>());
+  details::with_builtin_difference<pointset<2, int2>, int>::type
+    diff = details::with_builtin_difference<pointset<2, int2>, int>()
+    (pointset<2, int2>());
   int2 p(0, 1);
   int2 q(2, 0);
   BOOST_CHECK_EQUAL(diff(0, p, q), -2);
@@ -60,9 +60,10 @@ BOOST_AUTO_TEST_CASE(test_difference_bracket)
 
 BOOST_AUTO_TEST_CASE(test_difference_paren)
 {
-  details::auto_difference<paren_less<int2>, int>::type
-    diff = details::auto_difference_cast<paren_less<int2>, int>
-    (paren_less<int2>());
+  typedef pointset<2, int2, paren_less<int2> > pointset_type;
+  details::with_builtin_difference<pointset_type, int>::type
+    diff = details::with_builtin_difference<pointset_type, int>()
+    (pointset_type());
   int2 p(0, 1);
   int2 q(2, 0);
   BOOST_CHECK_EQUAL(diff(0, p, q), -2);
@@ -71,9 +72,10 @@ BOOST_AUTO_TEST_CASE(test_difference_paren)
 
 BOOST_AUTO_TEST_CASE(test_difference_iterator)
 {
-  details::auto_difference<iterator_less<int2>, int>::type
-    diff = details::auto_difference_cast<iterator_less<int2>, int>
-    (iterator_less<int2>());
+  typedef pointset<2, int2, iterator_less<int2> > pointset_type;
+  details::with_builtin_difference<pointset_type, int>::type
+    diff = details::with_builtin_difference<pointset_type, int>()
+    (pointset_type());
   int2 p(0, 1);
   int2 q(2, 0);
   BOOST_CHECK_EQUAL(diff(0, p, q), -2);
@@ -82,9 +84,10 @@ BOOST_AUTO_TEST_CASE(test_difference_iterator)
 
 BOOST_AUTO_TEST_CASE(test_difference_accessor)
 {
-  details::auto_difference<accessor_less<quad_access, quad>, int>::type
-    diff = details::auto_difference_cast<accessor_less<quad_access, quad>, int>
-    (accessor_less<quad_access, quad>());
+  typedef pointset<4, quad, accessor_less<quad_access, quad> > pointset_type;
+  details::with_builtin_difference<pointset_type, int>::type
+    diff = details::with_builtin_difference<pointset_type, int>()
+    (pointset_type());
   quad p(0, 1, 0, 0);
   quad q(2, 0, 0, 0);
   BOOST_CHECK_EQUAL(diff(0, p, q), -2);

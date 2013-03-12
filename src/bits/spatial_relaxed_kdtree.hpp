@@ -181,75 +181,75 @@ namespace spatial
       {
         Implementation(const rank_type& rank, const key_compare& compare,
                        const Balancing& balance, const Link_allocator& alloc)
-          : Rank(rank), compare_(balance, compare),
-            header_(alloc, Node<mode_type>()) { initialize(); }
+          : Rank(rank), _compare(balance, compare),
+            _header(alloc, Node<mode_type>()) { initialize(); }
 
         Implementation(const Implementation& impl)
-          : Rank(impl), compare_(impl.compare_.base(), impl.compare_()),
-            header_(impl.header_.base()) { initialize(); }
+          : Rank(impl), _compare(impl._compare.base(), impl._compare()),
+            _header(impl._header.base()) { initialize(); }
 
         void initialize()
         {
-          header_().parent = &header_();
-          header_().left = &header_(); // the end marker, *must* not change!
-          header_().right = &header_();
-          leftmost_ = &header_();      // the substitute left most pointer
+          _header().parent = &_header();
+          _header().left = &_header(); // the end marker, *must* not change!
+          _header().right = &_header();
+          _leftmost = &_header();      // the substitute left most pointer
         }
 
-        ::spatial::details::Compress<Balancing, key_compare> compare_;
-        ::spatial::details::Compress<Link_allocator, Node<mode_type> > header_;
-        node_ptr leftmost_;
-      } impl_;
+        ::spatial::details::Compress<Balancing, key_compare> _compare;
+        ::spatial::details::Compress<Link_allocator, Node<mode_type> > _header;
+        node_ptr _leftmost;
+      } _impl;
 
     private:
       // Internal mutable accessor
       node_ptr get_header()
-      { return static_cast<node_ptr>(&impl_.header_()); }
+      { return static_cast<node_ptr>(&_impl._header()); }
 
       const_node_ptr get_header() const
-      { return static_cast<const_node_ptr>(&impl_.header_()); }
+      { return static_cast<const_node_ptr>(&_impl._header()); }
 
       node_ptr get_leftmost()
-      { return impl_.leftmost_; }
+      { return _impl._leftmost; }
 
       const_node_ptr get_leftmost() const
-      { return impl_.leftmost_; }
+      { return _impl._leftmost; }
 
       void set_leftmost(node_ptr x)
-      { impl_.leftmost_ = x; }
+      { _impl._leftmost = x; }
 
       node_ptr get_rightmost()
-      { return impl_.header_().right; }
+      { return _impl._header().right; }
 
       const_node_ptr get_rightmost() const
-      { return impl_.header_().right; }
+      { return _impl._header().right; }
 
       void set_rightmost(node_ptr x)
-      { impl_.header_().right = x; }
+      { _impl._header().right = x; }
 
       node_ptr get_root()
-      { return impl_.header_().parent; }
+      { return _impl._header().parent; }
 
       const_node_ptr get_root() const
-      { return impl_.header_().parent; }
+      { return _impl._header().parent; }
 
       void set_root(node_ptr x)
-      { impl_.header_().parent = x; }
+      { _impl._header().parent = x; }
 
       rank_type& get_rank()
-      { return *static_cast<Rank*>(&impl_); }
+      { return *static_cast<Rank*>(&_impl); }
 
       key_compare& get_compare()
-      { return impl_.compare_(); }
+      { return _impl._compare(); }
 
       balancing_policy& get_balancing()
-      { return impl_.compare_.base(); }
+      { return _impl._compare.base(); }
 
       Link_allocator& get_link_allocator()
-      { return impl_.header_.base(); }
+      { return _impl._header.base(); }
 
       Value_allocator get_value_allocator() const
-      { return impl_.header_.base(); }
+      { return _impl._header.base(); }
 
     private:
       // Allocation/Deallocation of nodes
@@ -420,7 +420,7 @@ namespace spatial
        */
       const balancing_policy&
       balancing() const
-      { return impl_.compare_.base(); }
+      { return _impl._compare.base(); }
 
       /**
        *  Returns the rank type used internally to get the number of dimensions
@@ -428,7 +428,7 @@ namespace spatial
        */
       const rank_type&
       rank() const
-      { return *static_cast<const rank_type*>(&impl_); }
+      { return *static_cast<const rank_type*>(&_impl); }
 
       /**
        *  Returns the dimension of the container.
@@ -442,14 +442,14 @@ namespace spatial
        */
       const key_compare&
       key_comp() const
-      { return impl_.compare_(); }
+      { return _impl._compare(); }
 
       /**
        *  Returns the compare function used for the value.
        */
       const value_compare&
       value_comp() const
-      { return value_compare(impl_.compare_()); }
+      { return value_compare(_impl._compare()); }
 
       /**
        *  Returns the allocator used by the tree.
@@ -487,7 +487,7 @@ namespace spatial
        */
       size_type
       max_size() const
-      { return impl_.header_.base().max_size(); }
+      { return _impl._header.base().max_size(); }
 
       //@{
       /**
@@ -514,25 +514,25 @@ namespace spatial
 
     public:
       Relaxed_kdtree()
-        : impl_(rank_type(), key_compare(), balancing_policy(),
+        : _impl(rank_type(), key_compare(), balancing_policy(),
                 Link_allocator()) { }
 
       explicit Relaxed_kdtree(const rank_type& r)
-        : impl_(r, Compare(), Balancing(), Link_allocator())
+        : _impl(r, Compare(), Balancing(), Link_allocator())
       { }
 
       Relaxed_kdtree(const rank_type& r, const key_compare& c)
-        : impl_(r, c, Balancing(), Link_allocator())
+        : _impl(r, c, Balancing(), Link_allocator())
       { }
 
       Relaxed_kdtree(const rank_type& r, const key_compare& c,
                      const balancing_policy& b)
-        : impl_(r, c, b, Link_allocator())
+        : _impl(r, c, b, Link_allocator())
       { }
 
       Relaxed_kdtree(const rank_type& r, const key_compare& c,
                      const balancing_policy& b, const allocator_type& a)
-        : impl_(r, c, b, a)
+        : _impl(r, c, b, a)
       { }
 
       /**
@@ -542,7 +542,7 @@ namespace spatial
        *  tree. Therefore, all operations should behave similarly to both trees
        *  after the copy.
        */
-      Relaxed_kdtree(const Relaxed_kdtree& other) : impl_(other.impl_)
+      Relaxed_kdtree(const Relaxed_kdtree& other) : _impl(other._impl)
       { if (!other.empty()) { copy_structure(other); } }
 
       /**
@@ -566,7 +566,7 @@ namespace spatial
               ::do_it(get_compare(), other.key_comp());
             template_member_assign<balancing_policy>
               ::do_it(get_balancing(), other.balancing());
-            impl_.initialize();
+            _impl.initialize();
             if (!other.empty()) { copy_structure(other); }
           }
         return *this;
@@ -599,25 +599,25 @@ namespace spatial
           (get_balancing(), other.get_balancing());
         template_member_swap<Link_allocator>::do_it
           (get_link_allocator(), other.get_link_allocator());
-        if (impl_.header_().parent == &impl_.header_())
+        if (_impl._header().parent == &_impl._header())
           {
-            impl_.header_().parent = &other.impl_.header_();
-            impl_.header_().right = &other.impl_.header_();
-            impl_.leftmost_ = &other.impl_.header_();
+            _impl._header().parent = &other._impl._header();
+            _impl._header().right = &other._impl._header();
+            _impl._leftmost = &other._impl._header();
           }
-        else if (other.impl_.header_().parent == &other.impl_.header_())
+        else if (other._impl._header().parent == &other._impl._header())
           {
-            other.impl_.header_().parent = &impl_.header_();
-            other.impl_.header_().right = &impl_.header_();
-            other.impl_.leftmost_ = &impl_.header_();
+            other._impl._header().parent = &_impl._header();
+            other._impl._header().right = &_impl._header();
+            other._impl._leftmost = &_impl._header();
           }
-        std::swap(impl_.header_().parent, other.impl_.header_().parent);
-        std::swap(impl_.header_().right, other.impl_.header_().right);
-        std::swap(impl_.leftmost_, other.impl_.leftmost_);
-        if (impl_.header_().parent != &impl_.header_())
-          { impl_.header_().parent->parent = &impl_.header_(); }
-        if (other.impl_.header_().parent != &other.impl_.header_())
-          { other.impl_.header_().parent->parent = &other.impl_.header_(); }
+        std::swap(_impl._header().parent, other._impl._header().parent);
+        std::swap(_impl._header().right, other._impl._header().right);
+        std::swap(_impl._leftmost, other._impl._leftmost);
+        if (_impl._header().parent != &_impl._header())
+          { _impl._header().parent->parent = &_impl._header(); }
+        if (other._impl._header().parent != &other._impl._header())
+          { other._impl._header().parent->parent = &other._impl._header(); }
       }
 
       /**
@@ -627,7 +627,7 @@ namespace spatial
       clear()
       {
         destroy_all_nodes();
-        impl_.initialize();
+        _impl.initialize();
       }
 
       /**

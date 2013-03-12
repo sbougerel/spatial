@@ -140,7 +140,7 @@ namespace spatial
     mapping_iterator(Ct& container, dimension_type mapping_dim,
                      const typename container_traits<Ct>::iterator& iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        data_(container, mapping_dim)
+        _data(container, mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
 
     /**
@@ -171,7 +171,7 @@ namespace spatial
     mapping_iterator(Ct& container, dimension_type mapping_dim,
                      dimension_type dim,
                      typename container_traits<Ct>::mode_type::node_ptr ptr)
-      : Base(container.rank(), ptr, dim), data_(container, mapping_dim)
+      : Base(container.rank(), ptr, dim), _data(container, mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
 
     //! Increments the iterator and returns the incremented value. Prefer to
@@ -204,7 +204,7 @@ namespace spatial
 
     //! Return the key_comparator used by the iterator
     const key_compare&
-    key_comp() const { return static_cast<const key_compare&>(data_); }
+    key_comp() const { return static_cast<const key_compare&>(_data); }
 
     /**
      *  Accessor to the mapping dimension used by the iterator.
@@ -223,14 +223,14 @@ namespace spatial
      *  @{
      */
     dimension_type
-    mapping_dimension() const { return data_.mapping_dim; }
+    mapping_dimension() const { return _data.mapping_dim; }
     dimension_type&
-    mapping_dimension() { return data_.mapping_dim; }
+    mapping_dimension() { return _data.mapping_dim; }
     //@}
 
   private:
     //! The related data for the iterator.
-    details::Mapping_data<Ct> data_;
+    details::Mapping_data<Ct> _data;
   };
 
   /**
@@ -280,7 +280,7 @@ namespace spatial
     mapping_iterator(const Ct& container, dimension_type mapping_dim,
                      const typename container_traits<Ct>::const_iterator& iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        data_(container, mapping_dim)
+        _data(container, mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
 
     /**
@@ -312,13 +312,13 @@ namespace spatial
                      dimension_type mapping_dim, dimension_type dim,
                      typename container_traits<Ct>::mode_type::const_node_ptr
                      ptr)
-      : Base(container.rank(), ptr, dim), data_(container, mapping_dim)
+      : Base(container.rank(), ptr, dim), _data(container, mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
 
     //! Convertion of mutable iterator into a constant iterator is permitted.
     mapping_iterator(const mapping_iterator<Ct>& iter)
       : Base(iter.rank(), iter.node, iter.node_dim),
-        data_(iter.key_comp(), iter.mapping_dimension()) { }
+        _data(iter.key_comp(), iter.mapping_dimension()) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
@@ -350,7 +350,7 @@ namespace spatial
 
     //! Return the key_comparator used by the iterator
     const key_compare&
-    key_comp() const { return static_cast<const key_compare&>(data_); }
+    key_comp() const { return static_cast<const key_compare&>(_data); }
 
     /**
      *  Accessor to the mapping dimension used by the iterator.
@@ -369,14 +369,14 @@ namespace spatial
      *  @{
      */
     dimension_type
-    mapping_dimension() const { return data_.mapping_dim; }
+    mapping_dimension() const { return _data.mapping_dim; }
     dimension_type&
-    mapping_dimension() { return data_.mapping_dim; }
+    mapping_dimension() { return _data.mapping_dim; }
     //@}
 
   private:
     //! The related data for the iterator.
-    details::Mapping_data<Ct> data_;
+    details::Mapping_data<Ct> _data;
   };
 
   /**

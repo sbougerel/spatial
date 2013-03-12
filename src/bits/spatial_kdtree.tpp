@@ -72,12 +72,12 @@ namespace spatial
       dimension_type node_dim = 0;
       if (header(node))
         {
-          SPATIAL_ASSERT_CHECK(impl_.count_() == 0);
+          SPATIAL_ASSERT_CHECK(_impl._count() == 0);
           target_node->parent = get_header();
           set_root(target_node);
           set_leftmost(target_node);
           set_rightmost(target_node);
-          ++impl_.count_();
+          ++_impl._count();
         }
       else
         {
@@ -96,7 +96,7 @@ namespace spatial
                       node->left = target_node;
                       target_node->parent = node;
                       if (node == get_leftmost()) { set_leftmost(target_node); }
-                      ++impl_.count_();
+                      ++_impl._count();
                       break;
                     }
                 }
@@ -113,14 +113,14 @@ namespace spatial
                       target_node->parent = node;
                       if (node == get_rightmost())
                       { set_rightmost(target_node); }
-                      ++impl_.count_();
+                      ++_impl._count();
                       break;
                     }
                 }
             }
         }
       SPATIAL_ASSERT_CHECK(empty() == false);
-      SPATIAL_ASSERT_CHECK(impl_.count_() != 0);
+      SPATIAL_ASSERT_CHECK(_impl._count() != 0);
       SPATIAL_ASSERT_CHECK(target_node->right == 0);
       SPATIAL_ASSERT_CHECK(target_node->left == 0);
       SPATIAL_ASSERT_CHECK(target_node->parent != 0);
@@ -191,7 +191,7 @@ namespace spatial
         { clear(); throw; } // clean-up before re-throw
       set_leftmost(minimum(get_root()));
       set_rightmost(maximum(get_root()));
-      impl_.count_() = other.size();
+      _impl._count() = other.size();
       SPATIAL_ASSERT_CHECK(size() != 0);
     }
 
@@ -274,8 +274,8 @@ namespace spatial
       ptr_store.reserve(size()); // may throw
       for(iterator i = begin(); i != end(); ++i)
         { ptr_store.push_back(i.node); }
-      impl_.initialize();
-      impl_.count_() = 0;
+      _impl.initialize();
+      _impl._count() = 0;
       rebalance_node_insert(ptr_store.begin(), ptr_store.end(), 0);
       SPATIAL_ASSERT_CHECK(!empty());
       SPATIAL_ASSERT_CHECK(size() != 0);
@@ -352,9 +352,9 @@ namespace spatial
           p->right = 0;
           if (get_rightmost() == node) { set_rightmost(p); }
         }
-      --impl_.count_();
+      --_impl._count();
       SPATIAL_ASSERT_CHECK((get_header() == get_root())
-                           ? (impl_.count_() == 0) : true);
+                           ? (_impl._count() == 0) : true);
       destroy_node(node);
     }
 

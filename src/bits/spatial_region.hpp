@@ -41,13 +41,13 @@ namespace spatial
      *  @brief  The default constructor leaves everything un-initialized
      */
     equal_bounds()
-      : Compare(), match_() { }
+      : Compare(), _match() { }
 
     /**
      *  @brief  Set the key for the boundaries.
      */
     equal_bounds(const Compare &compare, const Key& match)
-      : Compare(compare), match_(match)
+      : Compare(compare), _match(match)
     { }
 
     /**
@@ -56,9 +56,9 @@ namespace spatial
     relative_order
     operator()(dimension_type dim, dimension_type, const Key& key) const
     {
-      return (Compare::operator()(dim, key, match_)
+      return (Compare::operator()(dim, key, _match)
               ? below
-              : (Compare::operator()(dim, match_, key)
+              : (Compare::operator()(dim, _match, key)
                  ? above
                  : matching));
     }
@@ -68,7 +68,7 @@ namespace spatial
      *  the equal region iterator.
      */
   private:
-    Key match_;
+    Key _match;
   };
 
   /**
@@ -106,7 +106,7 @@ namespace spatial
      *  @brief  The default constructor leaves everything un-initialized
      */
     open_bounds()
-      : Compare(), lower_(), upper_() { }
+      : Compare(), _lower(), _upper() { }
 
     /**
      *  @brief  Set the lower and upper boundary for the orthogonal range
@@ -119,7 +119,7 @@ namespace spatial
      */
     open_bounds(const Compare& compare, const Key& lower,
                       const Key& upper)
-      : Compare(compare), lower_(lower), upper_(upper)
+      : Compare(compare), _lower(lower), _upper(upper)
     { }
 
     /**
@@ -128,9 +128,9 @@ namespace spatial
     relative_order
     operator()(dimension_type dim, dimension_type, const Key& key) const
     {
-      return (!Compare::operator()(dim, lower_, key)
+      return (!Compare::operator()(dim, _lower, key)
               ? below
-              : (Compare::operator()(dim, key, upper_)
+              : (Compare::operator()(dim, key, _upper)
                  ? matching
                  : above));
     }
@@ -139,12 +139,12 @@ namespace spatial
     /**
      *  @brief  The lower bound for the orthogonal region iterator.
      */
-    Key lower_;
+    Key _lower;
 
     /**
      *  @brief  The upper bound for the orthogonal region iterator.
      */
-    Key upper_;
+    Key _upper;
   };
 
   /**
@@ -189,14 +189,14 @@ namespace spatial
      *  @brief  The default constructor leaves everything un-initialized
      */
     bounds()
-      : Compare(), lower_(), upper_() { }
+      : Compare(), _lower(), _upper() { }
 
     /**
      *  @brief  Set the lower and upper boundary for the orthogonal region
      *  search.
      */
     bounds(const Compare& compare, const Key& lower, const Key& upper)
-      : Compare(compare), lower_(lower), upper_(upper)
+      : Compare(compare), _lower(lower), _upper(upper)
     { }
 
     /**
@@ -205,9 +205,9 @@ namespace spatial
     relative_order
     operator()(dimension_type dim, dimension_type, const Key& key) const
     {
-      return (Compare::operator()(dim, key, lower_)
+      return (Compare::operator()(dim, key, _lower)
               ? below
-              : (Compare::operator()(dim, key, upper_)
+              : (Compare::operator()(dim, key, _upper)
                  ? matching
                  : above));
     }
@@ -216,12 +216,12 @@ namespace spatial
     /**
      *  @brief  The lower bound for the orthogonal region iterator.
      */
-    Key lower_;
+    Key _lower;
 
     /**
      *  @brief  The upper bound for the orthogonal region iterator.
      */
-    Key upper_;
+    Key _upper;
   };
 
   /**
@@ -267,7 +267,7 @@ namespace spatial
     /**
      *  @brief  The default constructor leaves everything un-initialized
      */
-    closed_bounds() : Compare(), lower_(), upper_() { }
+    closed_bounds() : Compare(), _lower(), _upper() { }
 
     /**
      *  @brief  Set the lower and upper boundary for the orthogonal region
@@ -278,7 +278,7 @@ namespace spatial
      */
     closed_bounds(const Compare& compare, const Key& lower,
                         const Key& upper)
-      : Compare(compare), lower_(lower), upper_(upper)
+      : Compare(compare), _lower(lower), _upper(upper)
     { }
 
     /**
@@ -287,9 +287,9 @@ namespace spatial
     relative_order
     operator()(dimension_type dim, dimension_type, const Key& key) const
     {
-      return (Compare::operator()(dim, key, lower_)
+      return (Compare::operator()(dim, key, _lower)
               ? below
-              : (Compare::operator()(dim, upper_, key)
+              : (Compare::operator()(dim, _upper, key)
                  ? above
                  : matching));
     }
@@ -298,12 +298,12 @@ namespace spatial
     /**
      *  @brief  The lower bound for the orthogonal region iterator.
      */
-    Key lower_;
+    Key _lower;
 
     /**
      *  @brief  The upper bound for the orthogonal region iterator.
      */
-    Key upper_;
+    Key _upper;
   };
 
   /**
@@ -351,12 +351,12 @@ namespace spatial
    *  Each layout provides information on how to interpret the coordinates
    *  returned for each dimension of the boxes values.
    *
-   *  For a given target box @f$P_{(x, y)}@f$, this region predicate matches any
-   *  box @f$B_{(x, y)}@f$ in a space of rank @f$r@f$ such as:
+   *  For a given target box @f$_P{(x, y)}@f$, this region predicate matches any
+   *  box @f$_B{(x, y)}@f$ in a space of rank @f$r@f$ such as:
    *
    *  @f[
-   *  \sum_{i=1}^{r} \left( B_{x_i} \le P_{x_i} \le B_{y_i}
-   *                        \; or \; B_{x_i} \le P_{y_i} \le B_{y_i} \right)
+   *  \_sum{i=1}^{r} \left( _B{x_i} \le _P{x_i} \le _B{y_i}
+   *                        \; or \; _B{x_i} \le _P{y_i} \le _B{y_i} \right)
    *  @f]
    */
   template <typename Key, typename Compare,
@@ -367,13 +367,13 @@ namespace spatial
     /**
      *  @brief  The default constructor leaves everything un-initialized
      */
-    overlap_bounds() : Compare(), target_() { }
+    overlap_bounds() : Compare(), _target() { }
 
     /**
      *  @brief  Set the target box and the comparator to the appropriate value.
      */
     overlap_bounds(const Compare& compare, const Key& target)
-      : Compare(compare), target_(target)
+      : Compare(compare), _target(target)
     { }
 
     /**
@@ -389,16 +389,16 @@ namespace spatial
     /**
      *  @brief  The box value that will be used for overlaping comparison.
      */
-    Key target_;
+    Key _target;
 
     relative_order overlap_bounds_impl
     (dimension_type dim, dimension_type rank, const Key& key, llhh_layout_tag)
     const
     {
       return (dim < (rank >> 1))
-        ? (Compare::operator()(dim, key, dim + (rank >> 1), target_)
+        ? (Compare::operator()(dim, key, dim + (rank >> 1), _target)
            ? matching : above)
-        : (Compare::operator()(dim - (rank >> 1), target_, dim, key)
+        : (Compare::operator()(dim - (rank >> 1), _target, dim, key)
            ? matching : below);
     }
 
@@ -407,8 +407,8 @@ namespace spatial
     const
     {
       return ((dim % 2) == 0)
-        ? (Compare::operator()(dim, key, dim + 1, target_) ? matching : above)
-        : (Compare::operator()(dim - 1, target_, dim, key) ? matching : below);
+        ? (Compare::operator()(dim, key, dim + 1, _target) ? matching : above)
+        : (Compare::operator()(dim - 1, _target, dim, key) ? matching : below);
     }
 
     relative_order overlap_bounds_impl
@@ -416,9 +416,9 @@ namespace spatial
     const
     {
       return (dim < (rank >> 1))
-        ? (Compare::operator()(dim + (rank >> 1), target_, dim, key)
+        ? (Compare::operator()(dim + (rank >> 1), _target, dim, key)
            ? matching : below)
-        : (Compare::operator()(dim, key, dim - (rank >> 1), target_)
+        : (Compare::operator()(dim, key, dim - (rank >> 1), _target)
            ? matching : above);
     }
 
@@ -427,8 +427,8 @@ namespace spatial
     const
     {
       return ((dim % 2) == 0)
-        ? (Compare::operator()(dim + 1, target_, dim, key) ? matching : below)
-        : (Compare::operator()(dim, key, dim - 1, target_) ? matching : above);
+        ? (Compare::operator()(dim + 1, _target, dim, key) ? matching : below)
+        : (Compare::operator()(dim, key, dim - 1, _target) ? matching : above);
     }
   };
 
@@ -483,12 +483,12 @@ namespace spatial
    *  Each layout provides information on how to interpret the coordinates
    *  returned for each dimension of the boxes values.
    *
-   *  For a given target box @f$P_{(x, y)}@f$, this region predicate matches any
-   *  box @f$B_{(x, y)}@f$ in a space of rank @f$r@f$ such as:
+   *  For a given target box @f$_P{(x, y)}@f$, this region predicate matches any
+   *  box @f$_B{(x, y)}@f$ in a space of rank @f$r@f$ such as:
    *
    *  @f[
-   *  \sum_{i=1}^{r} \left( P_{x_i} \le B_{x_i} \; and \;
-   *                        B_{y_i} \le P_{y_i} \right)
+   *  \_sum{i=1}^{r} \left( _P{x_i} \le _B{x_i} \; and \;
+   *                        _B{y_i} \le _P{y_i} \right)
    *  @f]
    */
   template <typename Key, typename Compare,
@@ -499,13 +499,13 @@ namespace spatial
     /**
      *  @brief  The default constructor leaves everything un-initialized
      */
-    enclosed_bounds() : Compare(), target_() { }
+    enclosed_bounds() : Compare(), _target() { }
 
     /**
      *  @brief  Set the target box and the comparator to the appropriate value.
      */
     enclosed_bounds(const Compare& compare, const Key& target)
-      : Compare(compare), target_(target)
+      : Compare(compare), _target(target)
     { }
 
     /**
@@ -521,18 +521,18 @@ namespace spatial
     /**
      *  @brief  The box value that will be used for the enclosing comparison.
      */
-    Key target_;
+    Key _target;
 
     relative_order enclose_bounds_impl
     (dimension_type dim, dimension_type rank, const Key& key, llhh_layout_tag)
     const
     {
       return (dim < (rank >> 1))
-        ? (Compare::operator()(dim , key, target_)
-           ? below : (Compare::operator()(dim + (rank >> 1), target_, dim, key)
+        ? (Compare::operator()(dim , key, _target)
+           ? below : (Compare::operator()(dim + (rank >> 1), _target, dim, key)
                       ? above : matching))
-        : (Compare::operator()(dim, key, dim - (rank >> 1), target_)
-           ? below : (Compare::operator()(dim, target_, key)
+        : (Compare::operator()(dim, key, dim - (rank >> 1), _target)
+           ? below : (Compare::operator()(dim, _target, key)
                       ? above : matching));
     }
 
@@ -541,11 +541,11 @@ namespace spatial
     const
     {
       return ((dim % 2) == 0)
-        ? (Compare::operator()(dim , key, target_)
-           ? below : (Compare::operator()(dim + 1, target_, dim, key)
+        ? (Compare::operator()(dim , key, _target)
+           ? below : (Compare::operator()(dim + 1, _target, dim, key)
                       ? above : matching))
-        : (Compare::operator()(dim, key, dim - 1, target_)
-           ? below : (Compare::operator()(dim, target_, key)
+        : (Compare::operator()(dim, key, dim - 1, _target)
+           ? below : (Compare::operator()(dim, _target, key)
                       ? above : matching));
     }
 
@@ -554,11 +554,11 @@ namespace spatial
     const
     {
       return (dim < (rank >> 1))
-        ? (Compare::operator()(dim , target_, key)
-           ? above : (Compare::operator()(dim, key, dim + (rank >> 1), target_)
+        ? (Compare::operator()(dim , _target, key)
+           ? above : (Compare::operator()(dim, key, dim + (rank >> 1), _target)
                       ? below : matching))
-        : (Compare::operator()(dim - (rank >> 1), target_, dim, key)
-           ? above : (Compare::operator()(dim, key, target_)
+        : (Compare::operator()(dim - (rank >> 1), _target, dim, key)
+           ? above : (Compare::operator()(dim, key, _target)
                       ? below : matching));
     }
 
@@ -567,11 +567,11 @@ namespace spatial
     const
     {
       return ((dim % 2) == 0)
-        ? (Compare::operator()(dim , target_, key)
-           ? above : (Compare::operator()(dim, key, dim + 1, target_)
+        ? (Compare::operator()(dim , _target, key)
+           ? above : (Compare::operator()(dim, key, dim + 1, _target)
                       ? below : matching))
-        : (Compare::operator()(dim - 1, target_, dim, key)
-           ? above : (Compare::operator()(dim, key, target_)
+        : (Compare::operator()(dim - 1, _target, dim, key)
+           ? above : (Compare::operator()(dim, key, _target)
                       ? below : matching));
     }
   };
@@ -657,7 +657,7 @@ namespace spatial
     region_iterator(Ct& container, const Predicate& pred,
                     typename container_traits<Ct>::iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        pred_(pred) { }
+        _pred(pred) { }
 
     /**
      *  Build a region iterator from the node and current dimension of a
@@ -679,7 +679,7 @@ namespace spatial
     region_iterator(Ct& container, const Predicate& pred,
                     dimension_type dim,
                     typename container_traits<Ct>::mode_type::node_ptr ptr)
-      : Base(container.rank(), ptr, dim), pred_(pred) { }
+      : Base(container.rank(), ptr, dim), _pred(pred) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
@@ -710,11 +710,11 @@ namespace spatial
     }
 
     //! Return the key_comparator used by the iterator
-    const Predicate& predicate() const { return pred_; }
+    const Predicate& predicate() const { return _pred; }
 
   private:
     //! The related data for the iterator.
-    Predicate pred_;
+    Predicate _pred;
   };
 
   /**
@@ -763,7 +763,7 @@ namespace spatial
     region_iterator(const Ct& container, const Predicate& pred,
                     typename container_traits<Ct>::const_iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        pred_(pred) { }
+        _pred(pred) { }
 
     /**
      *  Build a region iterator from the node and current dimension of a
@@ -785,11 +785,11 @@ namespace spatial
                     dimension_type dim,
                     typename container_traits<Ct>::mode_type::const_node_ptr
                     ptr)
-      : Base(container.rank(), ptr, dim), pred_(pred) { }
+      : Base(container.rank(), ptr, dim), _pred(pred) { }
 
     //! Convertion of an iterator into a const_iterator is permitted.
     region_iterator(const region_iterator<Ct, Predicate>& iter)
-      : Base(iter.rank(), iter.node, iter.node_dim), pred_(iter.predicate()) { }
+      : Base(iter.rank(), iter.node, iter.node_dim), _pred(iter.predicate()) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
@@ -820,11 +820,11 @@ namespace spatial
     }
 
     //! Return the key_comparator used by the iterator
-    const Predicate& predicate() const { return pred_; }
+    const Predicate& predicate() const { return _pred; }
 
   private:
     //! The related data for the iterator.
-    Predicate pred_;
+    Predicate _pred;
   };
 
   /**
@@ -1304,7 +1304,7 @@ namespace spatial
   Region##_##Type(const Ct& container,                                  \
                   const typename container_traits<Ct>::key_type& target) \
   {                                                                     \
-    return region_##Type                                                \
+    return _region##Type                                                \
       (container, make_##Bounds(container, target, llhh_layout_tag())); \
   }                                                                     \
   template <typename Ct, typename Layout>                               \

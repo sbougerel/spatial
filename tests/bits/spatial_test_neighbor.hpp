@@ -16,29 +16,44 @@
 #define SPATIAL_TEST_NEIGHBOR_HPP
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
-( test_mapping_basics, Tp, every_quad )
+( test_mapping_constructor, Tp, every_quad )
 {
   Tp fix(0);
   neighbor_iterator
     <typename Tp::container_type,
-     details::euclid_geometry<typename Tp::container_type, double,
-                              accessor_minus<quad_access, quad, double> > >
+     euclidian<typename Tp::container_type, double,
+               accessor_minus<quad_access, quad, double> > >
     a, b(a);
   neighbor_iterator
     <const typename Tp::container_type,
-     details::euclid_geometry<typename Tp::container_type, double,
-                              accessor_minus<quad_access, quad, double> > > c;
+     euclidian<typename Tp::container_type, double,
+               accessor_minus<quad_access, quad, double> > > c;
   c = a;
   neighbor_iterator_pair
     <typename Tp::container_type,
-     details::euclid_geometry<typename Tp::container_type, double,
-                              accessor_minus<quad_access, quad, double> > >
+     euclidian<typename Tp::container_type, double,
+               accessor_minus<quad_access, quad, double> > >
     p, q(a, b);
   neighbor_iterator_pair
     <const typename Tp::container_type,
-     details::euclid_geometry<typename Tp::container_type, double,
-                              accessor_minus<quad_access, quad, double> > >
+     euclidian<typename Tp::container_type, double,
+               accessor_minus<quad_access, quad, double> > >
     r, s(c, c), t(p);
+  BOOST_CHECK(a == b);
+  BOOST_CHECK(!(a != c));
+  typename Tp::container_type::iterator i = a;
+  BOOST_CHECK(i == a);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_mapping_builtin_constructor, Tp, double6_maps )
+{
+  Tp fix(0);
+  neighbor_iterator<typename Tp::container_type> a, b(a);
+  neighbor_iterator<const typename Tp::container_type> c;
+  c = a;
+  neighbor_iterator_pair<typename Tp::container_type> p, q(a, b);
+  neighbor_iterator_pair<const typename Tp::container_type> r, s(c, c), t(p);
   BOOST_CHECK(a == b);
   BOOST_CHECK(!(a != c));
   typename Tp::container_type::iterator i = a;

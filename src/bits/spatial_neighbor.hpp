@@ -41,7 +41,7 @@ namespace spatial
      *  \tparam Metric The type of metric applied to the iterator.
      *  \tparam DistanceType The type used to store the distance value.
      */
-    template<typename Ct, typename DistanceType, typename Metric>
+    template<typename Ct, typename Metric>
     struct Neighbor_data : container_traits<Ct>::key_compare
     {
       //! Build an unintialized neighbor data object.
@@ -71,9 +71,8 @@ namespace spatial
        *  The last valid computed value of the distance. The value stored is
        *  only valid if the iterator is not past-the-end.
        */
-      typename DistanceType distance;
+      typename Metric::distance_type distance;
     };
-
   } // namespace details
 
   /**
@@ -110,10 +109,12 @@ namespace spatial
    *  explanation in \ref Metric.
    */
   template <typename Ct, typename Metric =
-            euclidian<Ct, double,
-                      typename with_builtin_difference<Ct, double>::type> >
-  struct neighbor_iterator
-    : details::Bidirectional_iterator
+            euclidian<typename details::mutate<Ct>::type,
+                      double,
+                      typename details::with_builtin_difference
+                      <Ct, double>::type> >
+  class neighbor_iterator
+    : public details::Bidirectional_iterator
   <typename container_traits<Ct>::mode_type,
    typename container_traits<Ct>::rank_type>
   {
@@ -130,7 +131,7 @@ namespace spatial
     typedef Metric metric_type;
 
     //! The distance type that is read from metric_type
-    typedef typename DistanceType distance_type;
+    typedef typename Metric::distance_type distance_type;
 
     //! The key type that is used as a target for the nearest neighbor search
     typedef typename container_traits<Ct>::key_type key_type;
@@ -147,11 +148,12 @@ namespace spatial
      *  \param target The target of the neighbor iteration.
      *  \param it An iterator on container.
      */
-    neighbor_iterator(Ct& container, const Metric& metric,
-                      const typename container_traits<Ct>::key_type& target,
-                      const typename container_traits<Ct>::iterator& iter)
-      : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        data_(container.key_comp(), metric, target) { }
+    neighbor_iterator(Ct& container_, const Metric& metric_,
+                      const typename container_traits<Ct>::key_type& target_,
+                      const typename container_traits<Ct>::iterator& iter_)
+      : Base(container_.rank(), iter_.node,
+             modulo(iter_.node, container_.rank())),
+        _data(container_.key_comp(), metric_, target_) { }
 
     /**
      *  When the information of the dimension for the current node being
@@ -175,12 +177,12 @@ namespace spatial
      *  \param node Use the value of node as the start point for the
      *  iteration.
      */
-    neighbor_iterator(Ct& container, const Metric& metric,
-                      const typename container_traits<Ct>::key_type& target,
-                      dimension_type node_dim,
-                      typename container_traits<Ct>::mode_type::node_ptr node)
-      : Base(container.rank(), node, node_dim),
-        data_(container.key_comp(), metric, target) { }
+    neighbor_iterator(Ct& container_, const Metric& metric_,
+                      const typename container_traits<Ct>::key_type& target_,
+                      dimension_type node_dim_,
+                      typename container_traits<Ct>::mode_type::node_ptr node_)
+      : Base(container_.rank(), node_, node_dim_),
+        _data(container_.key_comp(), metric_, target_) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
@@ -212,27 +214,27 @@ namespace spatial
 
     //! Return the key_comparator used by the iterator
     const key_compare&
-    key_comp() const { return static_cast<const key_compare&>(data_); }
+    key_comp() const { return static_cast<const key_compare&>(_data); }
 
     //! Return the metric used by the iterator
     const metric_type&
-    metric() const { return data_.target.base(); }
+    metric() const { return _data.target.base(); }
 
     //! Accessor to the last valid distance of the iterator
     const distance_type&
-    distance() const { return data_.distance; }
+    distance() const { return _data.distance; }
 
     //! Read-only accessor to the target of the iterator
     const key_type&
-    target_key() const { return data_.target(); }
+    target_key() const { return _data.target(); }
 
     //! Read/write accessor to the target of the iterator
     key_type&
-    target_key() { return data_.target(); }
+    target_key() { return _data.target(); }
 
   private:
     //! The related data for the iterator.
-    details::Neighbor_data<Ct, Metric> data_;
+    details::Neighbor_data<Ct, Metric> _data;
   };
 
   /**
@@ -271,9 +273,7 @@ namespace spatial
    *  \tparam DistanceType The type used to represent distances.
    *  \tparam Metric An type that follow the \ref Metric concept.
    */
-  template<typename Ct, typename Metric =
-           euclidian<Ct, double,
-                     typename with_builtin_difference<Ct, double>::type> >
+  template<typename Ct, typename Metric>
   struct neighbor_iterator<const Ct, Metric>
     : details::Const_bidirectional_iterator
       <typename container_traits<Ct>::mode_type,
@@ -309,11 +309,12 @@ namespace spatial
      *  \param target The target of the neighbor iteration.
      *  \param iter An iterator on \c container.
      */
-    neighbor_iterator(const Ct& container, const Metric& metric,
-                      const typename container_traits<Ct>::key_type& target,
-                      typename container_traits<Ct>::iterator iter)
-      : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        data_(container.key_comp(), metric, target) { }
+    neighbor_iterator(const Ct& container_, const Metric& metric_,
+                      const typename container_traits<Ct>::key_type& target_,
+                      typename container_traits<Ct>::iterator iter_)
+      : Base(container_.rank(), iter_.node,
+             modulo(iter_.node, container_.rank())),
+        _data(container_.key_comp(), metric_, target_) { }
 
     /**
      *  When the information of the dimension for the current node being
@@ -337,17 +338,17 @@ namespace spatial
      *  \param node Use the value of node as the start point for the
      *  iteration.
      */
-    neighbor_iterator(const Ct& container, const Metric& metric,
-                      const typename container_traits<Ct>::key_type& target,
-                      dimension_type node_dim,
-                      typename container_traits<Ct>::mode_type::node_ptr node)
-      : Base(container.rank(), node, node_dim),
-        data_(container.key_comp(), metric, target) { }
+    neighbor_iterator(const Ct& container_, const Metric& metric_,
+                      const typename container_traits<Ct>::key_type& target_,
+                      dimension_type node_dim_,
+                      typename container_traits<Ct>::mode_type::node_ptr node_)
+      : Base(container_.rank(), node_, node_dim_),
+        _data(container_.key_comp(), metric_, target_) { }
 
     //! Covertion of mutable iterator into a constant iterator is permitted.
     neighbor_iterator(const neighbor_iterator<Ct, Metric>& iter)
       : Base(iter.rank(), iter.node, iter.node_dim),
-        data_(iter.key_comp(), iter.metric(), iter.target_key()) { }
+        _data(iter.key_comp(), iter.metric(), iter.target_key()) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
@@ -379,27 +380,27 @@ namespace spatial
 
     //! Return the key_comparator used by the iterator
     const key_compare&
-    key_comp() const { return static_cast<const key_compare&>(data_); }
+    key_comp() const { return static_cast<const key_compare&>(_data); }
 
     //! Return the metric used by the iterator
     const metric_type&
-    metric() const { return data_.target.base(); }
+    metric() const { return _data.target.base(); }
 
     //! Accessor to the last valid distance of the iterator
     const distance_type&
-    distance() const { return data_.distance; }
+    distance() const { return _data.distance; }
 
     //! Read-only accessor to the target of the iterator
     const key_type&
-    target_key() const { return data_.target(); }
+    target_key() const { return _data.target(); }
 
     //! Read/write accessor to the target of the iterator
     key_type&
-    target_key() { return data_.target(); }
+    target_key() { return _data.target(); }
 
   private:
     //! The related data for the iterator.
-    details::Neighbor_data<Ct, Metric> data_;
+    details::Neighbor_data<Ct, Metric> _data;
   };
 
   /**
@@ -428,7 +429,10 @@ namespace spatial
    *  \tparam Metric The metric used by the iterator.
    *  \see mapping_iterator
    */
-  template <typename Ct, typename Metric>
+  template <typename Ct, typename Metric
+            = euclidian<typename details::mutate<Ct>::type,
+                        double, typename details::with_builtin_difference
+                        <Ct, double>::type> >
   struct neighbor_iterator_pair
     : std::pair<neighbor_iterator<Ct, Metric>,
                 neighbor_iterator<Ct, Metric> >
