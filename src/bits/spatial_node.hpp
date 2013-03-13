@@ -839,8 +839,9 @@ namespace spatial
      *  \tparam Rank      The rank of the iterator.
      */
     template <typename Mode, typename Rank>
-    struct Bidirectional_iterator : private Rank
+    class Bidirectional_iterator : private Rank
     {
+    public:
       //! The \c value_type can receive a copy of the reference pointed to be
       //! the iterator.
       typedef typename mutate<typename Mode::value_type>::type value_type;
@@ -861,8 +862,9 @@ namespace spatial
       Bidirectional_iterator() { }
 
       //! Initialize the node at construction time
-      Bidirectional_iterator(const Rank& r, node_ptr x, dimension_type n)
-        : Rank(r), node(x), node_dim(n) { }
+      Bidirectional_iterator(const Rank& rank_, node_ptr node_,
+                             dimension_type node_dim_)
+        : Rank(rank_), node(node_), node_dim(node_dim_) { }
 
       //! Returns the reference to the value pointed to by the iterator.
       reference operator*()
@@ -948,8 +950,9 @@ namespace spatial
      *  \tparam Rank      The rank of the iterator.
      */
     template <typename Mode, typename Rank>
-    struct Const_bidirectional_iterator : private Rank
+    class Const_bidirectional_iterator : private Rank
     {
+    public:
       //! The \c value_type can receive a copy of the reference pointed to be
       //! the iterator.
       typedef typename mutate<typename Mode::value_type>::type value_type;
@@ -970,8 +973,9 @@ namespace spatial
       Const_bidirectional_iterator() { }
 
       //! Initialize the node at construction time
-      Const_bidirectional_iterator(const Rank& r, node_ptr x, dimension_type n)
-        : Rank(r), node(x), node_dim(n) { }
+      Const_bidirectional_iterator(const Rank& rank_, node_ptr node_,
+                                   dimension_type node_dim_)
+        : Rank(rank_), node(node_), node_dim(node_dim_) { }
 
       //! Returns the reference to the value pointed to by the iterator.
       reference operator*()

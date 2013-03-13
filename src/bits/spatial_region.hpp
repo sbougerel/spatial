@@ -34,9 +34,10 @@ namespace spatial
    *  @concept equal_bounds is a model of RegionPredicate.
    */
   template <typename Key, typename Compare>
-  struct equal_bounds
+  class equal_bounds
     : private Compare // empty member optimization
   {
+  public:
     /**
      *  @brief  The default constructor leaves everything un-initialized
      */
@@ -99,9 +100,10 @@ namespace spatial
    *  @concept open_bounds is a model of RegionPredicate.
    */
   template <typename Key, typename Compare>
-  struct open_bounds
+  class open_bounds
     : private Compare // empty member optimization
   {
+  public:
     /**
      *  @brief  The default constructor leaves everything un-initialized
      */
@@ -182,9 +184,10 @@ namespace spatial
    *  @concept bounds is a model of RegionPredicate.
    */
   template <typename Key, typename Compare>
-  struct bounds
+  class bounds
     : private Compare // empty member optimization
   {
+  public:
     /**
      *  @brief  The default constructor leaves everything un-initialized
      */
@@ -261,9 +264,10 @@ namespace spatial
    *  @concept closed_bounds is a model of RegionPredicate.
    */
   template <typename Key, typename Compare>
-  struct closed_bounds
+  class closed_bounds
     : private Compare // empty member optimization
   {
+  public:
     /**
      *  @brief  The default constructor leaves everything un-initialized
      */
@@ -361,9 +365,10 @@ namespace spatial
    */
   template <typename Key, typename Compare,
             typename Layout = llhh_layout_tag>
-  struct overlap_bounds
+  class overlap_bounds
     : private Compare
   {
+  public:
     /**
      *  @brief  The default constructor leaves everything un-initialized
      */
@@ -493,9 +498,10 @@ namespace spatial
    */
   template <typename Key, typename Compare,
             typename Layout = llhh_layout_tag>
-  struct enclosed_bounds
+  class enclosed_bounds
     : private Compare
   {
+  public:
     /**
      *  @brief  The default constructor leaves everything un-initialized
      */
@@ -626,8 +632,8 @@ namespace spatial
   template <typename Ct, typename Predicate
             = bounds<typename container_traits<Ct>::key_type,
                      typename container_traits<Ct>::key_compare> >
-  struct region_iterator
-    : details::Bidirectional_iterator
+  class region_iterator
+    : public details::Bidirectional_iterator
       <typename container_traits<Ct>::mode_type,
        typename container_traits<Ct>::rank_type>
   {
@@ -732,8 +738,8 @@ namespace spatial
    *  \see region_query<>::const_iterator
    */
   template <typename Ct, typename Predicate>
-  struct region_iterator<const Ct, Predicate>
-    : details::Const_bidirectional_iterator
+  class region_iterator<const Ct, Predicate>
+    : public details::Const_bidirectional_iterator
       <typename container_traits<Ct>::mode_type,
        typename container_traits<Ct>::rank_type>
   {
@@ -901,34 +907,34 @@ namespace spatial
     decrement_region(region_iterator<Ct, Predicate>& iter);
 
     /**
-     *  @brief  From @c x, find the node with the minimum value in the region
+     *  From \c x, find the node with the minimum value in the region
      *  delimited by p. If multiple nodes are matching, return the first
      *  matching node in in-order transversal.
      *
-     *  @param node_dim  The current dimension for @c node.
-     *  @param node  The node from which to find the minimum.
-     *  @param key_dimension  The number of dimensions of key.
-     *  @param predicate  The predicate for the orthogonal region query.
-     *  @return  An iterator pointing the minimum, or to the parent of @c node.
+     *  \param node_dim  The current dimension for @c node.
+     *  \param node  The node from which to find the minimum.
+     *  \param key_dimension  The number of dimensions of key.
+     *  \param predicate  The predicate for the orthogonal region query.
+     *  \return  An iterator pointing the minimum, or to the parent of @c node.
      *
-     *  If @c node is a header node, the search will stop immediately.
+     *  If \c node is a header node, the search will stop immediately.
      */
     template <typename Ct, typename Predicate>
     region_iterator<Ct, Predicate>&
     minimum_region(region_iterator<Ct, Predicate>& iter);
 
     /**
-     *  @brief  From @c x, find the node with the maximum value in the region
+     *  From \c x, find the node with the maximum value in the region
      *  delimited by p. If multiple nodes are matching, return the last
      *  matching node in in-order transversal.
      *
-     *  @param node_dim  The current dimension for @c node.
-     *  @param node  The node from which to find the minimum.
-     *  @param key_dimension  The number of dimensions of key.
-     *  @param predicate  The predicate for the orthogonal region query.
-     *  @return  An iterator pointing the maximum, or to the parent of @c node.
+     *  \param node_dim  The current dimension for @c node.
+     *  \param node  The node from which to find the minimum.
+     *  \param key_dimension  The number of dimensions of key.
+     *  \param predicate  The predicate for the orthogonal region query.
+     *  \return  An iterator pointing the maximum, or to the parent of @c node.
      *
-     *  If @c node is a header node, the search will stop immediately.
+     *  If \c node is a header node, the search will stop immediately.
      */
     template <typename Ct, typename Predicate>
     region_iterator<Ct, Predicate>&
