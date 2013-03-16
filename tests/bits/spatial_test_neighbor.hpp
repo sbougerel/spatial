@@ -16,7 +16,7 @@
 #define SPATIAL_TEST_NEIGHBOR_HPP
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
-( test_mapping_constructor, Tp, every_quad )
+( test_neighbor_default, Tp, every_quad )
 {
   Tp fix(0);
   neighbor_iterator
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
-( test_mapping_builtin_constructor, Tp, double6_maps )
+( test_neighbor_compact, Tp, double6_maps )
 {
   Tp fix(0);
   neighbor_iterator<typename Tp::container_type> a, b(a);
@@ -60,65 +60,74 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   BOOST_CHECK(i == a);
 }
 
-/*
-BOOST_AUTO_TEST_CASE( test_neighbor_equal )
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_neighbor_accessors, Tp, double6_maps )
 {
-  using namespace spatial::details::geometry;
-  details::Neighbor_iterator<details::Static_rank<2>, point2d, point2d,
-                    Kdtree_node<point2d>, bracket_less<point2d>,
-                    euclidian_double<point2d,
-                                     bracket_cast_accessor<point2d, double> > >
-    iter;
-  details::Const_Neighbor_iterator<details::Static_rank<2>, point2d, point2d,
-                          Kdtree_node<point2d>, bracket_less<point2d>,
-                          euclidian_double<point2d,
-                                           bracket_cast_accessor<point2d, double> > >
-    citer;
-  iter.impl_.node_ = 0;
-  citer.impl_.node_ = 0;
-  BOOST_CHECK(iter == citer);
-  BOOST_CHECK(!(iter != citer));
+  Tp fix(0);
+  neighbor_iterator<typename Tp::container_type>
+    a(fix.container, typename neighbor_iterator<typename Tp::container_type>
+      ::metric_type(), make_double6(0., 1., 2., 3., 4., 5.),
+      fix.container.end());
+  BOOST_CHECK(target_key(a) == make_double6(0., 1., 2., 3., 4., 5.));
+  // There is no way to force the value of distance, so we just check it's
+  // accessible
+  silence_unused(distance(a));
+  // This will also be checked in others tests below
 }
 
-BOOST_AUTO_TEST_CASE( test_neighbor_distance )
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_neighbor_deference, Tp, double6_maps )
 {
-  using namespace spatial::details::geometry;
-  details::Neighbor_iterator<details::Static_rank<2>, point2d, point2d,
-                    Kdtree_node<point2d>, bracket_less<point2d>,
-                    euclidian_double<point2d,
-                                     bracket_cast_accessor<point2d, double> > >
-    iter;
-  iter.impl_.distance_ = .1;
-  BOOST_CHECK_EQUAL(iter.distance(), .1);
+  Tp fix(2);
+  neighbor_iterator<typename Tp::container_type>
+    a(fix.container, typename neighbor_iterator<typename Tp::container_type>
+      ::metric_type(), make_double6(0., 1., 2., 3., 4., 5.),
+      fix.container.begin());
+  BOOST_CHECK(*a == *fix.container.begin());
+  BOOST_CHECK(a->first == fix.container.begin()->first);
+  a->second = "Value assignment must work.";
 }
 
-BOOST_AUTO_TEST_CASE( test_neighbor_deference )
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_neighbor_begin, Tp, double6_sets )
 {
-  using namespace spatial::details::geometry;
-  details::Neighbor_iterator<details::Static_rank<2>, point2d, point2d,
-                    Kdtree_node<point2d>, bracket_less<point2d>,
-                    euclidian_double<point2d,
-                                     bracket_cast_accessor<point2d, double> > >
-    iter;
-  details::Const_Neighbor_iterator<details::Static_rank<2>, point2d, point2d,
-                          Kdtree_node<point2d>, bracket_less<point2d>,
-                          euclidian_double<point2d,
-                                           bracket_cast_accessor<point2d, double> > >
-    citer;
-  Kdtree_node<point2d> node;
-  iter.impl_.node_ = &node;
-  node.value = ones;
-  BOOST_CHECK(*iter == ones);
-  citer.impl_.node_ = &node;
-  node.value = twos;
-  BOOST_CHECK(*citer == twos);
-  *iter = threes;
-  BOOST_CHECK(node.value == threes);
-}
-
-BOOST_AUTO_TEST_CASE( test_neighbor_minimum )
-{
+  // Prove that you can find the closest value with N nodes, down to 1 node
   {
+    Tp fix(100, randomize(-20, 20));
+    neighbor_iterator<typename Tp::container_type> iter;
+    typename neighbor_iterator<typename Tp::container_type>::metric_type
+      metric(iter.metric());
+    double6 target;
+    typedef typename neighbor_iterator<typename Tp::container_type>
+      ::distance_type distance_type;
+    while (!fix.container.empty())
+      {
+        randomize(-20, 20)(target, 0, 0);
+        unsigned int count = 0;
+        distance_type min_dist = metric.distance_to_key
+          (fix.container.rank(), target, *fix.container.begin());
+        for(typename Tp::container_type::iterator
+              i = fix.container.begin(); i != fix.container.end(); ++i)
+          {
+            distance_type tmp = metric.distance_to_key(fix.container.rank(),
+                                                       target, *i);
+            if (tmp < min_dist) { min_dist = tmp; }
+            ++count;
+          }
+        BOOST_CHECK_EQUAL(count, fix.container.size());
+        iter = neighbor_begin(fix.container, target);
+        BOOST_CHECK_CLOSE(distance(iter), min_dist, 0.0000000001);
+        fix.container.erase(iter);
+      }
+  }
+  // Prove that you can find the min in N nodes, all the same
+  {
+
+  }
+  // Prove that you can find the min if a tree has a single element
+  // Prove that you can find the min in a very unbalanced tree
+  // Prove that you can find the min in an opposite unbalanced tree
+  /*
     using namespace spatial::details::geometry;
     typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
     typedef euclidian_double
@@ -217,8 +226,9 @@ BOOST_AUTO_TEST_CASE( test_neighbor_minimum )
         BOOST_CHECK_CLOSE(min.distance(), best_distance, .000000000001);
       }
   }
+  */
 }
-
+/*
 BOOST_AUTO_TEST_CASE( test_neighbor_maximum )
 {
   {

@@ -58,20 +58,20 @@ namespace spatial
       Neighbor_data
       (const typename container_traits<Ct>::key_compare& c, const Metric& g,
        const typename container_traits<Ct>::key_type& k)
-        : container_traits<Ct>::key_compare(c), target(g, k)
+        : container_traits<Ct>::key_compare(c), _target(g, k)
       { }
 
       /**
        *  The target of the iteration; element of the container are iterate
        *  from the closest to the element furthest away from the target.
        */
-      Compress<Metric, typename container_traits<Ct>::key_type> target;
+      Compress<Metric, typename container_traits<Ct>::key_type> _target;
 
       /**
        *  The last valid computed value of the distance. The value stored is
        *  only valid if the iterator is not past-the-end.
        */
-      typename Metric::distance_type distance;
+      typename Metric::distance_type _distance;
     };
   } // namespace details
 
@@ -218,19 +218,23 @@ namespace spatial
 
     //! Return the metric used by the iterator
     const metric_type&
-    metric() const { return _data.target.base(); }
+    metric() const { return _data._target.base(); }
 
-    //! Accessor to the last valid distance of the iterator
+    //! Read-only accessor to the last valid distance of the iterator
     const distance_type&
-    distance() const { return _data.distance; }
+    distance() const { return _data._distance; }
+
+    //! Read/write accessor to the last valid distance of the iterator
+    distance_type&
+    distance() { return _data._distance; }
 
     //! Read-only accessor to the target of the iterator
     const key_type&
-    target_key() const { return _data.target(); }
+    target_key() const { return _data._target(); }
 
     //! Read/write accessor to the target of the iterator
     key_type&
-    target_key() { return _data.target(); }
+    target_key() { return _data._target(); }
 
   private:
     //! The related data for the iterator.
@@ -331,11 +335,11 @@ namespace spatial
      *  constructor if you are not sure about this dimension, and use the
      *  other constructors instead.
      *
-     *  \param container The container to iterate.
-     *  \param metric The metric applied during the iteration.
-     *  \param target The target of the neighbor iteration.
-     *  \param node_dim The dimension of the node pointed to by iterator.
-     *  \param node Use the value of node as the start point for the
+     *  \param container_ The container to iterate.
+     *  \param metric_ The metric applied during the iteration.
+     *  \param target_ The target of the neighbor iteration.
+     *  \param node_dim_ The dimension of the node pointed to by iterator.
+     *  \param node_ Use the value of node as the start point for the
      *  iteration.
      */
     neighbor_iterator(const Ct& container_, const Metric& metric_,
@@ -384,19 +388,23 @@ namespace spatial
 
     //! Return the metric used by the iterator
     const metric_type&
-    metric() const { return _data.target.base(); }
+    metric() const { return _data._target.base(); }
 
-    //! Accessor to the last valid distance of the iterator
+    //! Read-only accessor to the last valid distance of the iterator
     const distance_type&
-    distance() const { return _data.distance; }
+    distance() const { return _data._distance; }
+
+    //! Read/write accessor to the last valid distance of the iterator
+    distance_type&
+    distance() { return _data._distance; }
 
     //! Read-only accessor to the target of the iterator
     const key_type&
-    target_key() const { return _data.target(); }
+    target_key() const { return _data._target(); }
 
     //! Read/write accessor to the target of the iterator
     key_type&
-    target_key() { return _data.target(); }
+    target_key() { return _data._target(); }
 
   private:
     //! The related data for the iterator.
@@ -521,6 +529,9 @@ namespace spatial
 
   /**
    *  Build a past-the-end neighbor iterator with a user-defined \ref Metric.
+   *  \param container The container in which a neighbor must be found.
+   *  \param metric The metric to use in search of the neighbor.
+   *  \param target The target key used in the neighbor search.
    */
   //@{
   template <typename Ct, typename Metric>
@@ -552,8 +563,10 @@ namespace spatial
 
   /**
    *  Build a past-the-end neighbor iterator, assuming an euclidian metric with
-   *  distances expressed in double. It is required that the container used was
+   *  distances expressed in double. It requires that the container used was
    *  defined with a built-in key compare functor.
+   *  \param container The container in which a neighbor must be found.
+   *  \param target The target key used in the neighbor search.
    */
   //@{
   template <typename Ct>
@@ -585,6 +598,14 @@ namespace spatial
   }
   //@}
 
+  /**
+   *  Build a \ref neighbor_iterator<> pointing to the nearest neighbor of \c
+   *  target using a user-defined \ref Metric.
+   *  \param container The container in which a neighbor must be found.
+   *  \param metric The metric to use in search of the neighbor.
+   *  \param target The target key used in the neighbor search.
+   */
+  //@{
   template <typename Ct, typename Metric>
   inline neighbor_iterator<Ct, Metric>
   neighbor_begin(Ct& container, const Metric& metric,
@@ -592,7 +613,7 @@ namespace spatial
   {
     if (container.empty()) return neighbor_end(container, metric, target);
     neighbor_iterator<Ct, Metric>
-      it(container, metric, target, 0, container.top()); // At root dim = 0
+      it(container, metric, target, 0, container.end().node->parent);
     return details::minimum_neighbor(it);
   }
 
@@ -603,7 +624,7 @@ namespace spatial
   {
     if (container.empty()) return mapping_end(container, metric, target);
     neighbor_iterator<const Ct, Metric>
-      it(container, metric, target, 0, container.top()); // At root dim = 0
+      it(container, metric, target, 0, container.end().node->parent);
     return details::minimum_neighbor(it);
   }
 
@@ -612,6 +633,45 @@ namespace spatial
   neighbor_cbegin(const Ct& container, const Metric& metric,
                   const typename container_traits<Ct>::key_type& target)
   { return neighbor_begin(container, metric, target); }
+  //@}
+
+  /**
+   *  Build a \ref neighbor_iterator<> pointing to the nearest neighbor of \c
+   *  target assuming an euclidian metric with distances expressed in double. It
+   *  requires that the container used was defined with a built-in key compare
+   *  functor.
+   *  \param container The container in which a neighbor must be found.
+   *  \param target The target key used in the neighbor search.
+   */
+  //@{
+  template <typename Ct>
+  inline typename enable_if<details::is_compare_builtin<Ct>,
+                            neighbor_iterator<Ct> >::type
+  neighbor_begin(Ct& container,
+                 const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_begin
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+         (details::with_builtin_difference<Ct, double>()(container)),
+       target);
+  }
+
+  template <typename Ct>
+  inline typename enable_if<details::is_compare_builtin<Ct>,
+                            neighbor_iterator<const Ct> >::type
+  neighbor_begin(const Ct& container,
+                 const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_begin
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+         (details::with_builtin_difference<Ct, double>()(container)),
+       target);
+  }
+  //@}
 
   template <typename Ct, typename Metric>
   inline neighbor_iterator<Ct, Metric>

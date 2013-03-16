@@ -1,25 +1,34 @@
+2013-03-16  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * task_3432355 Used a new, more common standard to name private or
+        restricted class members (pre-fix _) by opposition to shadowing function
+        parameters (post-fix _).
+
+        * task_3432355 Interface for the neighbor_iterator is finally finalized
+        and now the unit testing of neighbor_iterator can restart.
+
+        * task_3432355 Using ordered_iterator to add the relative operators to
+        all containers.
+
 2012-11-17  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
-        * New ordered_iterator finally added with its unit test. New
-        cross-container operators can now be written properly.
+        * task_3432355 New ordered_iterator finally added with its unit
+        test. New cross-container operators can now be written properly.
 
 2012-09-23  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
-        * task_3432355 After a long quiet time not working on the library, I'm
-        finally moving forward in unit testing. A new fixture framework has been
-        created in order to make an efficient use of test template and
-        considerably reduce the number of tests required while increasing the
-        portions of code actually tested.
+        * task_3432355 A new fixture framework has been created in order to make
+        an efficient use of test template and considerably reduce the number of
+        tests required while increasing the portions of code actually tested.
 
 2011-11-08  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * task_3432355 Adding more documentation on complexity of mapping function.
 
-        * task_3432355 Rewriting spatial_mapping.hpp is now
-        done. spatial_mapping.tpp is now being adapted to fit the new
-        interface. Other iterator will follow soon. The newer interface is a big
-        departure from the former one, however it provides a much cleaner
-        approach.
+        * task_3432355 Rewriting spatial_mapping.hpp is now done.
+        spatial_mapping.tpp is now being adapted to fit the new interface. Other
+        iterator will follow soon. The newer interface is a big departure from
+        the former one, however it provides a much cleaner approach.
 
         * task_3432355 Rewriting spatial_node.hpp is now done. Fixed constness
         of Key object in links with pairs of key, value types.
@@ -33,7 +42,7 @@
 
         * Revamp large amount of code to add support for pair<key, mapped>
         values in container, and further down the road, paved the way for
-        intrusive container support. However no of it is documented nor unit
+        intrusive container support. However none of it is documented nor unit
         tested. So it is still in stage of infancy. At least the rest works. In
         the process, I rearranged includes and remove some of the files from the
         index, that have no use now.

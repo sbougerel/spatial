@@ -24,6 +24,7 @@
 #  error "Do not include this file directly in your project."
 #endif
 
+#include <algorithm> // for std::equal and std::lexicographical_compare
 #include "spatial_traits.hpp"
 #include "spatial_exceptions.hpp"
 #include "spatial_assert.hpp"
@@ -39,7 +40,6 @@ namespace spatial
 {
   namespace details
   {
-
     /**
      *  Detailed implementation of the kd-tree. Used by point_set,
      *  point_multiset, point_map, point_multimap, box_set, box_multiset and
@@ -383,20 +383,21 @@ namespace spatial
         : _impl(rank_type(), key_compare(), allocator_type())
       { }
 
-      explicit Kdtree(const rank_type& r)
-        : _impl(r, key_compare(), allocator_type())
+      explicit Kdtree(const rank_type& rank_)
+        : _impl(rank_, key_compare(), allocator_type())
       { }
 
-      explicit Kdtree(const key_compare& c)
-        : _impl(rank_type(), c, allocator_type())
+      explicit Kdtree(const key_compare& compare_)
+        : _impl(rank_type(), compare_, allocator_type())
       { }
 
-      Kdtree(const rank_type& r, const key_compare& c)
-        : _impl(r, c, allocator_type())
+      Kdtree(const rank_type& rank_, const key_compare& compare_)
+        : _impl(rank_, compare_, allocator_type())
       { }
 
-      Kdtree(const rank_type& r, const key_compare& c, const allocator_type& a)
-        : _impl(r, c, a)
+      Kdtree(const rank_type& rank_, const key_compare& compare_,
+             const allocator_type& allocator_)
+        : _impl(rank_, compare_, allocator_)
       { }
 
       /**
@@ -579,34 +580,74 @@ namespace spatial
     { left.swap(right); }
 
     /**
-     *  Returns true if <tt>a.size() == b.size()</tt>, if <tt>a.dimension() ==
-     *  b.dimension()</tt> for runtime containers.
-     *
-     *  @todo: this operation does not tally with the behavior of the standard
-     *  containers and should be modified to also test that all elements of both
-     *  containers are matching. At the moment this is difficult to do with
-     *  better than @f[ O(2nlog(n)) @f] complexity. However this will change
-     *  when mapping_iterator will get support for ordering over all dimensions.
+     *  The == and != operations is performed by first comparing sizes, and if
+     *  they match, the elements are compared sequentially using algorithm
+     *  std::equal, which stops at the first mismatch. The sequence of element
+     *  in each container is extracted using \ref ordered_iterator<>.
+     *  \param lhs Left-hand side container.
+     *  \param rhs Right-hand side container.
      */
+    //@{
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Alloc>
     inline bool
-    operator==(const Kdtree<Rank, Key, Value, Compare, Alloc>& a,
-               const Kdtree<Rank, Key, Value, Compare, Alloc>& b)
-    { return (a.size() == b.size() && a.dimension() == b.dimension()); }
+    operator==(const Kdtree<Rank, Key, Value, Compare, Alloc>& lhs,
+               const Kdtree<Rank, Key, Value, Compare, Alloc>& rhs)
+    {
+      return lhs.size() == rhs.size()
+        && std::equal(ordered_begin(lhs), ordered_end(lhs),
+                      ordered_begin(rhs));
+    }
+
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
+    inline bool
+    operator!=(const Kdtree<Rank, Key, Value, Compare, Alloc>& lhs,
+               const Kdtree<Rank, Key, Value, Compare, Alloc>& rhs)
+    { return !(lhs.size() == rhs.size()); }
+    //@}
 
     /**
-     *  Returns true if <tt>a.size() != b.size()</tt> or if <tt>a.dimension() !=
-     *  b.dimension()</tt> for runtime containers.
-     *
-     *  More details are given on operator=.
+     *  Operations <, >, <= and >= behave as if using algorithm
+     *  lexicographical_compare, which compares the elements sequentially using
+     *  operator< reflexively, stopping at the first mismatch. The sequence of
+     *  element in each container is extracted using \ref ordered_iterator<>.
+     *  \param lhs Left-hand side container.
+     *  \param rhs Right-hand side container.
      */
+    //@{
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Alloc>
     inline bool
-    operator!=(const Kdtree<Rank, Key, Value, Compare, Alloc>& a,
-               const Kdtree<Rank, Key, Value, Compare, Alloc>& b)
-    { return !(a.size() == b.size()); }
+    operator<(const Kdtree<Rank, Key, Value, Compare, Alloc>& lhs,
+              const Kdtree<Rank, Key, Value, Compare, Alloc>& rhs)
+    {
+      return std::lexicographical_compare
+        (ordered_begin(lhs), ordered_end(lhs),
+         ordered_begin(rhs), ordered_end(rhs));
+    }
+
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
+    inline bool
+    operator>(const Kdtree<Rank, Key, Value, Compare, Alloc>& lhs,
+               const Kdtree<Rank, Key, Value, Compare, Alloc>& rhs)
+    { return rhs < lhs; }
+
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
+    inline bool
+    operator<=(const Kdtree<Rank, Key, Value, Compare, Alloc>& lhs,
+               const Kdtree<Rank, Key, Value, Compare, Alloc>& rhs)
+    { return !(rhs < lhs); }
+
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
+    inline bool
+    operator>=(const Kdtree<Rank, Key, Value, Compare, Alloc>& lhs,
+               const Kdtree<Rank, Key, Value, Compare, Alloc>& rhs)
+    { return !(lhs < rhs); }
+    //@}
 
   } // namespace details
 } // namespace spatial
