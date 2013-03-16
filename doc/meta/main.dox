@@ -10,19 +10,19 @@
 
 \prev \ref intro \next \ref changelog \endprevnext
 
-<!-- Sarah start work here -->
-
-\section intro Introduction
-
 \quote
 Man's mind, once stretched by a new idea, never regains its original
 dimensions. <br> -- Oliver Wendell Holmes, Jr.
 \endquote
 
+<!-- Sarah start work here -->
+
+\section intro Introduction
+
 \section feature Library Features
 
 Like \libkdtree, \Spatial is a header-only C++ library providing template
-multi-dimension in-memory containers that are reusable and tuned to adapt 
+multi-dimension in-memory containers that are reusable and tuned to adapt
 to an array of uses. Like its parent,
 \Spatial borrows heavily from the \STL, and strives to follow \STL's interface.
 
@@ -65,7 +65,7 @@ If you have a Git client and which to use this instead of the packages, you
 can clone the repository using the following command:
 
 \code
-git clone git://spatial.git.sourceforge.net/gitroot/spatial/spatial
+git clone git://git.code.sf.net/p/spatial/code spatial
 \endcode
 
 The above will only give you readonly access. If you wish to become a
@@ -75,7 +75,7 @@ administrators, listed on the \project_page. Once your access is granted, you
 can use the following command to clone the repository:
 
 \code
-git clone ssh://<your_name>@spatial.git.sourceforge.net/gitroot/spatial/spatial
+git clone ssh://your_username@git.code.sf.net/p/spatial/code spatial
 \endcode
 
 \prev \ref intro \next \ref changelog \endprevnext
