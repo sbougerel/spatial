@@ -116,13 +116,28 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
           }
         BOOST_CHECK_EQUAL(count, fix.container.size());
         iter = neighbor_begin(fix.container, target);
-        BOOST_CHECK_CLOSE(distance(iter), min_dist, 0.0000000001);
+        BOOST_CHECK(iter != neighbor_end(fix.container, target));
+        BOOST_CHECK_CLOSE(distance(iter), min_dist, 0.000000001);
         fix.container.erase(iter);
       }
   }
-  // Prove that you can find the min in N nodes, all the same
+  // Prove that you can find the min in N nodes, with target = nodes
   {
-
+    Tp fix(100, same());
+    neighbor_iterator<typename Tp::container_type> iter;
+    typename neighbor_iterator<typename Tp::container_type>::metric_type
+      metric(iter.metric());
+    double6 target;
+    typedef typename neighbor_iterator<typename Tp::container_type>
+      ::distance_type distance_type;
+    while (!fix.container.empty())
+      {
+        same()(target, 0, 100);
+        iter = neighbor_begin(fix.container, target);
+        BOOST_CHECK(iter != neighbor_end(fix.container, target));
+        BOOST_CHECK_CLOSE(distance(iter), 0.0, 0.000000001);
+        fix.container.erase(iter);
+      }
   }
   // Prove that you can find the min if a tree has a single element
   // Prove that you can find the min in a very unbalanced tree

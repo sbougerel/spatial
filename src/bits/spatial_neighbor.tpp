@@ -367,7 +367,7 @@ namespace spatial
       typename Metric::distance_type tmp;
       // Depth traversal starts with left first
       while(node->left != 0
-            && (!cmp(node_dim, const_key(it.node), target_key(it))
+            && (!cmp(node_dim, const_key(node), target_key(it))
                 || near_distance
                 >= met.distance_to_plane(rank, node_dim, target_key(it),
                                          const_key(node))))

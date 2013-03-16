@@ -35,7 +35,7 @@ operator << (std::ostream& o, const quad& x)
 inline std::ostream&
 operator << (std::ostream& o, const double6& x)
 {
-  o << "{<quad:" << &x << "> items:["
+  o << "{<double6:" << &x << "> items:["
     << x[0] << ", " << x[1] << ", " << x[2] << ", "
     << x[3] << ", " << x[4] << ", " << x[5] << "]}";
   return o;
