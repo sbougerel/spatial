@@ -297,7 +297,7 @@ namespace spatial
    *  arithmetic_error exception upon overflow, compile your application with
    *  \c #define \c SPATIAL_SAFER_ARITHEMTICS.
    */
-  //@{
+  ///@{
   template<typename Ct, typename DistanceType, typename Diff,
            typename Enable = void> // Sink for non-arithmetic types
   class manhattan { };
@@ -355,7 +355,7 @@ namespace spatial
         <key_type, Diff, DistanceType>(dim, origin, key, diff_);
     }
   };
-  //@}
+  ///@}
 
 } // namespace spatial
 

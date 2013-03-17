@@ -59,7 +59,7 @@ namespace spatial
      *                     iteration.
      */
     ordered_iterator(Ct& container,
-                     const typename container_traits<Ct>::iterator& iter)
+                     typename container_traits<Ct>::iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
         _cmp(container.key_comp())
     { }
@@ -171,7 +171,7 @@ namespace spatial
      *  iteration.
      */
     ordered_iterator(const Ct& container,
-                     const typename container_traits<Ct>::const_iterator& iter)
+                     typename container_traits<Ct>::const_iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
         _cmp(container.key_comp())
     { }
@@ -201,9 +201,9 @@ namespace spatial
      *  \param ptr Use the value of \c node as the start point for the
      *             iteration.
      */
-    ordered_iterator(const Ct& container, dimension_type dim,
-                     typename container_traits<Ct>::mode_type::const_node_ptr
-                     ptr)
+    ordered_iterator
+    (const Ct& container, dimension_type dim,
+     typename container_traits<Ct>::mode_type::const_node_ptr ptr)
       : Base(container.rank(), ptr, dim), _cmp(container.key_comp())
     { except::check_dimension(container.dimension(), dim); }
 

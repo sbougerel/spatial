@@ -138,7 +138,7 @@ namespace spatial
      *                     iteration.
      */
     mapping_iterator(Ct& container, dimension_type mapping_dim,
-                     const typename container_traits<Ct>::iterator& iter)
+                     typename container_traits<Ct>::iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
         _data(container, mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
@@ -278,7 +278,7 @@ namespace spatial
      *  iteration.
      */
     mapping_iterator(const Ct& container, dimension_type mapping_dim,
-                     const typename container_traits<Ct>::const_iterator& iter)
+                     typename container_traits<Ct>::const_iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
         _data(container, mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
@@ -308,10 +308,9 @@ namespace spatial
      *  \param ptr Use the value of \c node as the start point for the
      *             iteration.
      */
-    mapping_iterator(const Ct& container,
-                     dimension_type mapping_dim, dimension_type dim,
-                     typename container_traits<Ct>::mode_type::const_node_ptr
-                     ptr)
+    mapping_iterator
+    (const Ct& container, dimension_type mapping_dim, dimension_type dim,
+     typename container_traits<Ct>::mode_type::const_node_ptr ptr)
       : Base(container.rank(), ptr, dim), _data(container, mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
 

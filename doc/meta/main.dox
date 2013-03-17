@@ -1,8 +1,7 @@
 /**
 \mainpage Spatial Manual
+\tableofcontents
 
-- \ref intro
-- \ref source
 - \subpage changelog
 - \subpage install
 - \subpage structure
@@ -15,27 +14,31 @@ Man's mind, once stretched by a new idea, never regains its original
 dimensions. <br> -- Oliver Wendell Holmes, Jr.
 \endquote
 
-<!-- Sarah start work here -->
-
 \section intro Introduction
+
+\Spatial is a generic header-only C++ library providing
+multi-dimensional in-memory containers, iterators and functionals. Its
+familiar iterface combined with large number of algorithms makes it
+easy to search for nearest neighors, orthogonal ranges, or perform
+ordering of objects in any number of dimensions.
+
+\Spatial's design borrows heavily from the \STL, and strives to follow
+it's interface; therefore \Spatial's containers, iterators and
+functionals integrate well with the \STL. Good overall performance is
+a major objective of this general-purpose library. To satisfy this
+requirement, \Spatial implements self-balancing \kdtree-based
+containers, capable of object removal in fracitional amortized time.
+
+\Spatial shines in tracking analysis or real-time positioning, but its
+focus on good overall performance and large number algorithms could
+make it your go to library should you needed any kind of spatial
+analysis in your application.
 
 \section feature Library Features
 
-Like \libkdtree, \Spatial is a header-only C++ library providing template
-multi-dimension in-memory containers that are reusable and tuned to adapt
-to an array of uses. Like its parent,
-\Spatial borrows heavily from the \STL, and strives to follow \STL's interface.
+A brief overview of spatial features is provided below:
 
-Just like the \STL containers \c ::std::multiset and \c ::std::multimap,
-\Spatial is designed to handle element insertion and removal from its
-containers in logarithmic amortized time. With such characteristics,
-\Spatial is particularly well suited for tracking analysis, real-time
-positioning, or geographic information systems.
-
-Features include:
-
-- multi-dimension template containers with an unlimited number of dimensions to
-  store points in space,
+- \ref pointset<>,
 - dimensions may be of different types,
 - static or dynamic time determination of the number of dimensions,
 - <i>O(log(n))</i> class of complexity on insertion and removal,
@@ -50,8 +53,6 @@ Features include:
 \Spatial was inspired from \libkdtree, and aims at providing a library that
 retains all the great benefits of \libkdtree while broadening its horizons.
 
-
-<!-- Sarah don't do anything here -->
 \section source Getting the Source and Sending Feedbacks
 
 You can access all the above from the \project_page. Some packages are

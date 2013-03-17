@@ -58,8 +58,7 @@ namespace spatial
       Neighbor_data
       (const typename container_traits<Ct>::key_compare& c, const Metric& g,
        const typename container_traits<Ct>::key_type& k)
-        : container_traits<Ct>::key_compare(c), _target(g, k)
-      { }
+        : container_traits<Ct>::key_compare(c), _target(g, k) { }
 
       /**
        *  The target of the iteration; element of the container are iterate
@@ -148,9 +147,10 @@ namespace spatial
      *  \param target The target of the neighbor iteration.
      *  \param it An iterator on container.
      */
-    neighbor_iterator(Ct& container_, const Metric& metric_,
-                      const typename container_traits<Ct>::key_type& target_,
-                      const typename container_traits<Ct>::iterator& iter_)
+    neighbor_iterator
+    (Ct& container_, const Metric& metric_,
+     const typename container_traits<Ct>::key_type& target_,
+     const typename container_traits<Ct>::iterator& iter_)
       : Base(container_.rank(), iter_.node,
              modulo(iter_.node, container_.rank())),
         _data(container_.key_comp(), metric_, target_) { }
@@ -177,12 +177,44 @@ namespace spatial
      *  \param node Use the value of node as the start point for the
      *  iteration.
      */
-    neighbor_iterator(Ct& container_, const Metric& metric_,
-                      const typename container_traits<Ct>::key_type& target_,
-                      dimension_type node_dim_,
-                      typename container_traits<Ct>::mode_type::node_ptr node_)
+    neighbor_iterator
+    (Ct& container_, const Metric& metric_,
+     const typename container_traits<Ct>::key_type& target_,
+     dimension_type node_dim_,
+     typename container_traits<Ct>::mode_type::node_ptr node_)
       : Base(container_.rank(), node_, node_dim_),
         _data(container_.key_comp(), metric_, target_) { }
+
+    /**
+     *  Build the iterator with a given rank and key compare functor, if the
+     *  container is not available.
+     *
+     *  In order to iterate through nodes in the \kdtree built in the
+     *  container, the algorithm must know at each node which dimension is
+     *  used to partition the space. Some algorithms will provide this
+     *  dimension, such as the function \ref modulo().
+     *
+     *  \attention Specifying the incorrect dimension value for the node will
+     *  result in unknown behavior. It is recommended that you do not use this
+     *  constructor if you are not sure about this dimension, and use the
+     *  other constructors instead.
+     *
+     *  \param rank_ The rank of the container being iterated.
+     *  \param key_comp_ The key compare functor associated with the iterator.
+     *  \param metric_ The metric applied during the iteration.
+     *  \param target_ The target of the neighbor iteration.
+     *  \param node_dim_ The dimension of the node pointed to by iterator.
+     *  \param node_ Use the value of node as the start point for the
+     *  iteration.
+     */
+    neighbor_iterator
+    (const typename container_traits<Ct>::rank_type& rank_,
+     const typename container_traits<Ct>::key_compare& key_comp_,
+     const Metric& metric_,
+     const typename container_traits<Ct>::key_type& target_,
+     dimension_type node_dim_,
+     typename container_traits<Ct>::mode_type::node_ptr node_)
+      : Base(rank_, node_, node_dim_), _data(key_comp_, metric_, target_) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
@@ -313,9 +345,10 @@ namespace spatial
      *  \param target The target of the neighbor iteration.
      *  \param iter An iterator on \c container.
      */
-    neighbor_iterator(const Ct& container_, const Metric& metric_,
-                      const typename container_traits<Ct>::key_type& target_,
-                      typename container_traits<Ct>::iterator iter_)
+    neighbor_iterator
+    (const Ct& container_, const Metric& metric_,
+     const typename container_traits<Ct>::key_type& target_,
+     typename container_traits<Ct>::const_iterator iter_)
       : Base(container_.rank(), iter_.node,
              modulo(iter_.node, container_.rank())),
         _data(container_.key_comp(), metric_, target_) { }
@@ -342,12 +375,45 @@ namespace spatial
      *  \param node_ Use the value of node as the start point for the
      *  iteration.
      */
-    neighbor_iterator(const Ct& container_, const Metric& metric_,
-                      const typename container_traits<Ct>::key_type& target_,
-                      dimension_type node_dim_,
-                      typename container_traits<Ct>::mode_type::node_ptr node_)
+    neighbor_iterator
+    (const Ct& container_, const Metric& metric_,
+     const typename container_traits<Ct>::key_type& target_,
+     dimension_type node_dim_,
+     typename container_traits<Ct>::mode_type::const_node_ptr node_)
       : Base(container_.rank(), node_, node_dim_),
         _data(container_.key_comp(), metric_, target_) { }
+
+    /**
+     *  Build the iterator with a given rank and key compare functor, if the
+     *  container is not available. It requires the node information to be
+     *  known but is a fast constructor.
+     *
+     *  In order to iterate through nodes in the \kdtree built in the
+     *  container, the algorithm must know at each node which dimension is
+     *  used to partition the space. Some algorithms will provide this
+     *  dimension, such as the function \ref modulo().
+     *
+     *  \attention Specifying the incorrect dimension value for the node will
+     *  result in unknown behavior. It is recommended that you do not use this
+     *  constructor if you are not sure about this dimension, and use the
+     *  other constructors instead.
+     *
+     *  \param rank_ The rank of the container being iterated.
+     *  \param key_comp_ The key compare functor associated with the iterator.
+     *  \param metric_ The metric applied during the iteration.
+     *  \param target_ The target of the neighbor iteration.
+     *  \param node_dim_ The dimension of the node pointed to by iterator.
+     *  \param node_ Use the value of node as the start point for the
+     *  iteration.
+     */
+    neighbor_iterator
+    (const typename container_traits<Ct>::rank_type& rank_,
+     const typename container_traits<Ct>::key_compare& key_comp_,
+     const Metric& metric_,
+     const typename container_traits<Ct>::key_type& target_,
+     dimension_type node_dim_,
+     typename container_traits<Ct>::mode_type::const_node_ptr node_)
+      : Base(rank_, node_, node_dim_), _data(key_comp_, metric_, target_) { }
 
     //! Covertion of mutable iterator into a constant iterator is permitted.
     neighbor_iterator(const neighbor_iterator<Ct, Metric>& iter)
@@ -604,6 +670,20 @@ namespace spatial
          (details::with_builtin_difference<Ct, double>()(container)),
        target);
   }
+
+  template <typename Ct>
+  inline typename enable_if<details::is_compare_builtin<Ct>,
+                            neighbor_iterator<const Ct> >::type
+  neighbor_cend(const Ct& container,
+                const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_end
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+         (details::with_builtin_difference<Ct, double>()(container)),
+       target);
+  }
   //@}
 
   /**
@@ -671,6 +751,20 @@ namespace spatial
                             neighbor_iterator<const Ct> >::type
   neighbor_begin(const Ct& container,
                  const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_begin
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+         (details::with_builtin_difference<Ct, double>()(container)),
+       target);
+  }
+
+  template <typename Ct>
+  inline typename enable_if<details::is_compare_builtin<Ct>,
+                            neighbor_iterator<const Ct> >::type
+  neighbor_cbegin(const Ct& container,
+                  const typename container_traits<Ct>::key_type& target)
   {
     return neighbor_begin
       (container,
@@ -763,6 +857,21 @@ namespace spatial
          (details::with_builtin_difference<Ct, double>()(container)),
        target, bound);
   }
+
+  template <typename Ct>
+  inline typename enable_if<details::is_compare_builtin<Ct>,
+                            neighbor_iterator<const Ct> >::type
+  neighbor_clower_bound(const Ct& container,
+                        const typename container_traits<Ct>::key_type& target,
+                        double bound)
+  {
+    return neighbor_lower_bound
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+         (details::with_builtin_difference<Ct, double>()(container)),
+       target, bound);
+  }
   //@}
 
   /**
@@ -847,7 +956,24 @@ namespace spatial
          (details::with_builtin_difference<Ct, double>()(container)),
        target, bound);
   }
+
+  template <typename Ct>
+  inline typename enable_if<details::is_compare_builtin<Ct>,
+                            neighbor_iterator<const Ct> >::type
+  neighbor_cupper_bound(const Ct& container,
+                        const typename container_traits<Ct>::key_type& target,
+                        double bound)
+  {
+    return neighbor_upper_bound
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+         (details::with_builtin_difference<Ct, double>()(container)),
+       target, bound);
+  }
   //@}
+
+  // neighbor_range
 
 } // namespace spatial
 

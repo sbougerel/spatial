@@ -682,9 +682,9 @@ namespace spatial
      *  \param dim The node's dimension for the node pointed to by node.
      *  \param container The container being iterated.
      */
-    region_iterator(Ct& container, const Predicate& pred,
-                    dimension_type dim,
-                    typename container_traits<Ct>::mode_type::node_ptr ptr)
+    region_iterator
+    (Ct& container, const Predicate& pred, dimension_type dim,
+     typename container_traits<Ct>::mode_type::node_ptr ptr)
       : Base(container.rank(), ptr, dim), _pred(pred) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
@@ -787,10 +787,9 @@ namespace spatial
      *  \param predicate A model of the \ref RegionPredicate concept.
      *  \param iter An iterator on the type Ct.
      */
-    region_iterator(const Ct& container, const Predicate& pred,
-                    dimension_type dim,
-                    typename container_traits<Ct>::mode_type::const_node_ptr
-                    ptr)
+    region_iterator
+    (const Ct& container, const Predicate& pred, dimension_type dim,
+     typename container_traits<Ct>::mode_type::const_node_ptr ptr)
       : Base(container.rank(), ptr, dim), _pred(pred) { }
 
     //! Convertion of an iterator into a const_iterator is permitted.
@@ -851,7 +850,7 @@ namespace spatial
      *  elements to iterate, and not an orthogonal range).
      */
     typedef std::pair<region_iterator<Ct, Predicate>,
-                              region_iterator<Ct, Predicate> > Base;
+                      region_iterator<Ct, Predicate> > Base;
 
     //! Empty constructor.
     region_iterator_pair() { }
@@ -1091,12 +1090,12 @@ namespace spatial
   {                                                                     \
     Name##_iterator_pair() { }                                          \
     Name##_iterator_pair                                                \
-      (const region_iterator                                            \
-       <const Ct, Bounds<typename container_traits<Ct>::key_type,       \
-                         typename container_traits<Ct>::key_compare> >& a, \
-       const region_iterator                                            \
-       <const Ct, Bounds<typename container_traits<Ct>::key_type,       \
-                         typename container_traits<Ct>::key_compare> >& b) \
+    (const region_iterator                                              \
+     <const Ct, Bounds<typename container_traits<Ct>::key_type,         \
+                       typename container_traits<Ct>::key_compare> >& a, \
+     const region_iterator                                              \
+     <const Ct, Bounds<typename container_traits<Ct>::key_type,         \
+                       typename container_traits<Ct>::key_compare> >& b) \
       : region_iterator_pair                                            \
       <const Ct, Bounds<typename container_traits<Ct>::key_type,        \
                         typename container_traits<Ct>::key_compare> >   \
