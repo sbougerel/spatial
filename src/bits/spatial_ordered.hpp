@@ -31,10 +31,10 @@ namespace spatial
    *  the largest value of their key's coordinate along a single dimension.
    */
   template<typename Ct>
-  struct ordered_iterator
-    : details::Bidirectional_iterator
-      <typename container_traits<Ct>::mode_type,
-       typename container_traits<Ct>::rank_type>
+  class ordered_iterator
+    : public details::Bidirectional_iterator
+  <typename container_traits<Ct>::mode_type,
+   typename container_traits<Ct>::rank_type>
   {
   private:
     typedef details::Bidirectional_iterator
@@ -120,7 +120,7 @@ namespace spatial
     }
 
     //! Return the key_comparator used by the iterator
-    const key_compare&
+    key_compare
     key_comp() const { return _cmp; }
 
   private:
@@ -144,10 +144,10 @@ namespace spatial
    *  Object deferenced by this iterator are always constant.
    */
   template<typename Ct>
-  struct ordered_iterator<const Ct>
-    : details::Const_bidirectional_iterator
-      <typename container_traits<Ct>::mode_type,
-       typename container_traits<Ct>::rank_type>
+  class ordered_iterator<const Ct>
+    : public details::Const_bidirectional_iterator
+  <typename container_traits<Ct>::mode_type,
+   typename container_traits<Ct>::rank_type>
   {
   private:
     typedef details::Const_bidirectional_iterator
@@ -241,61 +241,13 @@ namespace spatial
     }
 
     //! Return the key_comparator used by the iterator
-    const key_compare&
+    key_compare
     key_comp() const { return _cmp; }
 
   private:
     //! The related data for the iterator.
     key_compare _cmp;
   };
-
-  //! Return true if 2 iterators are equal
-  template<typename Ct>
-  bool operator==(const ordered_iterator<Ct>& a,
-                  const ordered_iterator<Ct>& b)
-  { return a.node == b.node; }
-
-  //! Return true if 2 iterators are equal
-  template<typename Ct>
-  bool operator==(const ordered_iterator<const Ct>& a,
-                  const ordered_iterator<const Ct>& b)
-  { return a.node == b.node; }
-
-  //! Return true if 2 iterators are equal
-  template<typename Ct>
-  bool operator==(const ordered_iterator<Ct>& a,
-                  const ordered_iterator<const Ct>& b)
-  { return a.node == b.node; }
-
-  //! Return true if 2 iterators are equal
-  template<typename Ct>
-  bool operator==(const ordered_iterator<const Ct>& a,
-                  const ordered_iterator<Ct>& b)
-  { return a.node == b.node; }
-
-  //! Return true if 2 iterator are different
-  template<typename Ct>
-  bool operator!=(const ordered_iterator<Ct>& a,
-                  const ordered_iterator<Ct>& b)
-  { return !(a == b); }
-
-  //! Return true if 2 iterator are different
-  template<typename Ct>
-  bool operator!=(const ordered_iterator<const Ct>& a,
-                  const ordered_iterator<const Ct>& b)
-  { return !(a == b); }
-
-  //! Return true if 2 iterator are different
-  template<typename Ct>
-  bool operator!=(const ordered_iterator<Ct>& a,
-                  const ordered_iterator<const Ct>& b)
-  { return !(a == b); }
-
-  //! Return true if 2 iterator are different
-  template<typename Ct>
-  bool operator!=(const ordered_iterator<const Ct>& a,
-                  const ordered_iterator<Ct>& b)
-  { return !(a == b); }
 
   namespace details
   {

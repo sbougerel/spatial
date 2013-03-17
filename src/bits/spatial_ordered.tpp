@@ -58,10 +58,10 @@ namespace spatial
                       relaxed_invariant_tag)
     {
       typedef typename ordered_iterator<Container>::node_ptr node_ptr;
-      const typename container_traits<Container>::rank_type&
-        rank = iter.rank();
-      const typename container_traits<Container>::key_compare&
-        cmp = iter.key_comp();
+      const typename container_traits<Container>::rank_type
+        rank(iter.rank());
+      const typename container_traits<Container>::key_compare
+        cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(!header(iter.node));
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
@@ -191,10 +191,10 @@ namespace spatial
                       strict_invariant_tag)
     {
       typedef typename ordered_iterator<Container>::node_ptr node_ptr;
-      const typename container_traits<Container>::rank_type&
-        rank = iter.rank();
-      const typename container_traits<Container>::key_compare&
-        cmp = iter.key_comp();
+      const typename container_traits<Container>::rank_type
+        rank(iter.rank());
+      const typename container_traits<Container>::key_compare
+        cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(!header(iter.node));
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
@@ -336,10 +336,10 @@ namespace spatial
                       relaxed_invariant_tag)
     {
       typedef typename ordered_iterator<Container>::node_ptr node_ptr;
-      const typename container_traits<Container>::rank_type&
-        rank = iter.rank();
-      const typename container_traits<Container>::key_compare&
-        cmp = iter.key_comp();
+      const typename container_traits<Container>::rank_type
+        rank(iter.rank());
+      const typename container_traits<Container>::key_compare
+        cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       if (header(iter.node))
@@ -474,10 +474,10 @@ namespace spatial
                       strict_invariant_tag)
     {
       typedef typename ordered_iterator<Container>::node_ptr node_ptr;
-      const typename container_traits<Container>::rank_type&
-        rank = iter.rank();
-      const typename container_traits<Container>::key_compare&
-        cmp = iter.key_comp();
+      const typename container_traits<Container>::rank_type
+        rank(iter.rank());
+      const typename container_traits<Container>::key_compare
+        cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       if (header(iter.node))
@@ -621,10 +621,10 @@ namespace spatial
     minimum_ordered(ordered_iterator<Container>& iter)
     {
       typedef typename ordered_iterator<Container>::node_ptr node_ptr;
-      const typename container_traits<Container>::rank_type&
-        rank = iter.rank();
-      const typename container_traits<Container>::key_compare&
-        cmp = iter.key_comp();
+      const typename container_traits<Container>::rank_type
+        rank(iter.rank());
+      const typename container_traits<Container>::key_compare
+        cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
       SPATIAL_ASSERT_CHECK(iter.node != 0);
@@ -689,10 +689,10 @@ namespace spatial
                     relaxed_invariant_tag)
     {
       typedef typename ordered_iterator<Container>::node_ptr node_ptr;
-      const typename container_traits<Container>::rank_type&
-        rank = iter.rank();
-      const typename container_traits<Container>::key_compare&
-        cmp = iter.key_comp();
+      const typename container_traits<Container>::rank_type
+        rank(iter.rank());
+      const typename container_traits<Container>::key_compare
+        cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
@@ -757,10 +757,10 @@ namespace spatial
                     strict_invariant_tag)
     {
       typedef typename ordered_iterator<Container>::node_ptr node_ptr;
-      const typename container_traits<Container>::rank_type&
-        rank = iter.rank();
-      const typename container_traits<Container>::key_compare&
-        cmp = iter.key_comp();
+      const typename container_traits<Container>::rank_type
+        rank(iter.rank());
+      const typename container_traits<Container>::key_compare
+        cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
@@ -834,10 +834,10 @@ namespace spatial
      relaxed_invariant_tag)
     {
       typedef typename ordered_iterator<Container>::node_ptr node_ptr;
-      const typename container_traits<Container>::rank_type&
-        rank = iter.rank();
-      const typename container_traits<Container>::key_compare&
-        cmp = iter.key_comp();
+      const typename container_traits<Container>::rank_type
+        rank(iter.rank());
+      const typename container_traits<Container>::key_compare
+        cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
@@ -914,10 +914,10 @@ namespace spatial
      strict_invariant_tag)
     {
       typedef typename ordered_iterator<Container>::node_ptr node_ptr;
-      const typename container_traits<Container>::rank_type&
-        rank = iter.rank();
-      const typename container_traits<Container>::key_compare&
-        cmp = iter.key_comp();
+      const typename container_traits<Container>::rank_type
+        rank(iter.rank());
+      const typename container_traits<Container>::key_compare
+        cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
@@ -1007,10 +1007,10 @@ namespace spatial
      relaxed_invariant_tag)
     {
       typedef typename ordered_iterator<Container>::node_ptr node_ptr;
-      const typename container_traits<Container>::rank_type&
-        rank = iter.rank();
-      const typename container_traits<Container>::key_compare&
-        cmp = iter.key_comp();
+      const typename container_traits<Container>::rank_type
+        rank(iter.rank());
+      const typename container_traits<Container>::key_compare
+        cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
@@ -1088,10 +1088,10 @@ namespace spatial
      strict_invariant_tag)
     {
       typedef typename ordered_iterator<Container>::node_ptr node_ptr;
-      const typename container_traits<Container>::rank_type&
-        rank = iter.rank();
-      const typename container_traits<Container>::key_compare&
-        cmp = iter.key_comp();
+      const typename container_traits<Container>::rank_type
+        rank(iter.rank());
+      const typename container_traits<Container>::key_compare
+        cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));

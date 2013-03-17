@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Copyright Sylvain Bougerel 2009 - 2012.
+// Copyright Sylvain Bougerel 2009 - 2013.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -213,11 +213,11 @@ namespace spatial
     }
 
     //! Return the key_comparator used by the iterator
-    const key_compare&
+    key_compare
     key_comp() const { return static_cast<const key_compare&>(_data); }
 
     //! Return the metric used by the iterator
-    const metric_type&
+    metric_type
     metric() const { return _data._target.base(); }
 
     //! Read-only accessor to the last valid distance of the iterator
@@ -278,15 +278,15 @@ namespace spatial
    *  \tparam Metric An type that follow the \ref Metric concept.
    */
   template<typename Ct, typename Metric>
-  struct neighbor_iterator<const Ct, Metric>
-    : details::Const_bidirectional_iterator
-      <typename container_traits<Ct>::mode_type,
-       typename container_traits<Ct>::rank_type>
+  class neighbor_iterator<const Ct, Metric>
+    : public details::Const_bidirectional_iterator
+  <typename container_traits<Ct>::mode_type,
+   typename container_traits<Ct>::rank_type>
   {
-    private:
-      typedef typename details::Const_bidirectional_iterator
-        <typename container_traits<Ct>::mode_type,
-         typename container_traits<Ct>::rank_type> Base;
+  private:
+    typedef typename details::Const_bidirectional_iterator
+    <typename container_traits<Ct>::mode_type,
+     typename container_traits<Ct>::rank_type> Base;
 
   public:
     //! Key comparator type transferred from the container
@@ -383,15 +383,15 @@ namespace spatial
     }
 
     //! Return the key_comparator used by the iterator
-    const key_compare&
+    key_compare
     key_comp() const { return static_cast<const key_compare&>(_data); }
 
     //! Return the metric used by the iterator
-    const metric_type&
+    metric_type
     metric() const { return _data._target.base(); }
 
     //! Read-only accessor to the last valid distance of the iterator
-    const distance_type&
+    distance_type
     distance() const { return _data._distance; }
 
     //! Read/write accessor to the last valid distance of the iterator
@@ -412,14 +412,22 @@ namespace spatial
   };
 
   /**
-   *  A quick accessor for neighbor iterators that retrieve the last valid
+   *  Read/write accessor for neighbor iterators that retrieve the valid
    *  calculated distance from the target. The distance read is only relevant if
    *  the iterator does not point past-the-end.
    */
+  //@{
   template <typename Ct, typename Metric>
-  inline const typename Metric::distance_type&
+  inline typename Metric::distance_type
   distance(const neighbor_iterator<Ct, Metric>& iter)
   { return iter.distance(); }
+
+  template <typename Ct, typename Metric>
+  inline void
+  distance(neighbor_iterator<Ct, Metric>& iter,
+           const typename Metric::distance_type& dist)
+  { iter.distance() = dist; }
+  //@}
 
   /**
    *  A quick accessor for neighbor iterators that retrive the key that is the
@@ -673,6 +681,15 @@ namespace spatial
   }
   //@}
 
+  /**
+   *  Build a \ref neighbor_iterator<> pointing to the neighbor closest to
+   *  target but for which distance to target is greater or equal to the value
+   *  given in \c bound. Uses a user-defined \ref Metric.
+   *  \param container The container in which a neighbor must be found.
+   *  \param metric The metric to use in search of the neighbor.
+   *  \param target The target key used in the neighbor search.
+   */
+  //@{
   template <typename Ct, typename Metric>
   inline neighbor_iterator<Ct, Metric>
   neighbor_lower_bound(Ct& container, const Metric& metric,
@@ -705,7 +722,58 @@ namespace spatial
                         const typename container_traits<Ct>::key_type& target,
                         const typename Metric::distance_type& bound)
   { return neighbor_lower_bound(container, metric, target, bound); }
+  //@}
 
+  /**
+   *  Build a \ref neighbor_iterator<> pointing to the neighbor closest to
+   *  target but for which distance to target is greater or equal to the value
+   *  given in \c bound. It assumes an euclidian metric with distances expressed
+   *  in double. It also requires that the container used was defined with one
+   *  of the built-in key compare functor.
+   *  \param container The container in which a neighbor must be found.
+   *  \param target The target key used in the neighbor search.
+   */
+  //@{
+  template <typename Ct>
+  inline typename enable_if<details::is_compare_builtin<Ct>,
+                            neighbor_iterator<Ct> >::type
+  neighbor_lower_bound(Ct& container,
+                       const typename container_traits<Ct>::key_type& target,
+                       double bound)
+  {
+    return neighbor_lower_bound
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+         (details::with_builtin_difference<Ct, double>()(container)),
+       target, bound);
+  }
+
+  template <typename Ct>
+  inline typename enable_if<details::is_compare_builtin<Ct>,
+                            neighbor_iterator<const Ct> >::type
+  neighbor_lower_bound(const Ct& container,
+                       const typename container_traits<Ct>::key_type& target,
+                       double bound)
+  {
+    return neighbor_lower_bound
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+         (details::with_builtin_difference<Ct, double>()(container)),
+       target, bound);
+  }
+  //@}
+
+  /**
+   *  Build a \ref neighbor_iterator<> pointing to the neighbor closest to
+   *  target but for which distance to target is strictly greater than the value
+   *  given in \c bound. Uses a user-defined \ref Metric.
+   *  \param container The container in which a neighbor must be found.
+   *  \param metric The metric to use in search of the neighbor.
+   *  \param target The target key used in the neighbor search.
+   */
+  //@{
   template <typename Ct, typename Metric>
   inline neighbor_iterator<Ct, Metric>
   neighbor_upper_bound(Ct& container, const Metric& metric,
@@ -738,9 +806,52 @@ namespace spatial
                         const typename container_traits<Ct>::key_type& target,
                         const typename Metric::distance_type& bound)
   { return neighbor_upper_bound(container, metric, target); }
+  //@}
+
+  /**
+   *  Build a \ref neighbor_iterator<> pointing to the neighbor closest to
+   *  target but for which distance to target is greater than the value given in
+   *  \c bound. It assumes an euclidian metric with distances expressed in
+   *  double. It also requires that the container used was defined with one of
+   *  the built-in key compare functor.
+   *  \param container The container in which a neighbor must be found.
+   *  \param target The target key used in the neighbor search.
+   */
+  //@{
+  template <typename Ct>
+  inline typename enable_if<details::is_compare_builtin<Ct>,
+                            neighbor_iterator<Ct> >::type
+  neighbor_upper_bound(Ct& container,
+                       const typename container_traits<Ct>::key_type& target,
+                       double bound)
+  {
+    return neighbor_upper_bound
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+         (details::with_builtin_difference<Ct, double>()(container)),
+       target, bound);
+  }
+
+  template <typename Ct>
+  inline typename enable_if<details::is_compare_builtin<Ct>,
+                            neighbor_iterator<const Ct> >::type
+  neighbor_upper_bound(const Ct& container,
+                       const typename container_traits<Ct>::key_type& target,
+                       double bound)
+  {
+    return neighbor_upper_bound
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+         (details::with_builtin_difference<Ct, double>()(container)),
+       target, bound);
+  }
+  //@}
 
 } // namespace spatial
 
+#include "spatial_euclidian_neighbor.hpp"
 #include "spatial_neighbor.tpp"
 
 #endif // SPATIAL_NEIGHBOR_HPP

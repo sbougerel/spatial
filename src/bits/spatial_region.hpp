@@ -716,7 +716,7 @@ namespace spatial
     }
 
     //! Return the key_comparator used by the iterator
-    const Predicate& predicate() const { return _pred; }
+    Predicate predicate() const { return _pred; }
 
   private:
     //! The related data for the iterator.
@@ -826,7 +826,7 @@ namespace spatial
     }
 
     //! Return the key_comparator used by the iterator
-    const Predicate& predicate() const { return _pred; }
+    Predicate predicate() const { return _pred; }
 
   private:
     //! The related data for the iterator.

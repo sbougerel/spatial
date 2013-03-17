@@ -296,7 +296,7 @@ namespace spatial
       /**
        *  Returns the rank used to create the tree.
        */
-      const rank_type& rank() const
+      rank_type rank() const
       { return *static_cast<const Rank*>(&_impl); }
 
       /**
@@ -308,13 +308,13 @@ namespace spatial
       /**
        *  Returns the compare function used for the key.
        */
-      const key_compare& key_comp() const
+      key_compare key_comp() const
       { return _impl._count.base(); }
 
       /**
        *  Returns the compare function used for the value.
        */
-      const value_compare& value_comp() const
+      value_compare value_comp() const
       { return value_compare(_impl._count.base()); }
 
       /**

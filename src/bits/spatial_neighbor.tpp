@@ -31,11 +31,9 @@ namespace spatial
     increment_neighbor(neighbor_iterator<Container, Metric>& it)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
-      const Metric& met = it.metric();
-      const typename ::spatial::container_traits<Container>::key_compare&
-        cmp = it.key_comp();
-      const typename ::spatial::container_traits<Container>::rank_type&
-        rank = it.rank();
+      const typename container_traits<Container>::rank_type rank(it.rank());
+      const typename container_traits<Container>::key_compare cmp(it.key_comp());
+      const Metric met(it.metric());
       SPATIAL_ASSERT_CHECK(it.node_dim < rank());
       SPATIAL_ASSERT_CHECK(header(it.node));
       SPATIAL_ASSERT_CHECK(it.node != 0);
@@ -192,11 +190,9 @@ namespace spatial
     decrement_neighbor(neighbor_iterator<Container, Metric>& it)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
-      const Metric& met = it.metric();
-      const typename ::spatial::container_traits<Container>::key_compare&
-        cmp = it.key_comp();
-      const typename ::spatial::container_traits<Container>::rank_type&
-        rank = it.rank();
+      const typename container_traits<Container>::rank_type rank(it.rank());
+      const typename container_traits<Container>::key_compare cmp(it.key_comp());
+      const Metric met(it.metric());
       SPATIAL_ASSERT_CHECK(it.node_dim < rank());
       SPATIAL_ASSERT_CHECK(it.node != 0);
       // Must come back from an end position for reverse iteration...
@@ -349,11 +345,9 @@ namespace spatial
     minimum_neighbor(neighbor_iterator<Container, Metric>& it)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
-      const Metric& met = it.metric();
-      const typename ::spatial::container_traits<Container>::key_compare&
-        cmp = it.key_comp();
-      const typename ::spatial::container_traits<Container>::rank_type&
-        rank = it.rank();
+      const typename container_traits<Container>::rank_type rank(it.rank());
+      const typename container_traits<Container>::key_compare cmp(it.key_comp());
+      const Metric met(it.metric());
       SPATIAL_ASSERT_CHECK(it.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(it.node));
       SPATIAL_ASSERT_CHECK(it.node != 0);
@@ -467,9 +461,8 @@ namespace spatial
     maximum_neighbor(neighbor_iterator<Container, Metric>& it)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
-      const Metric& met = it.metric();
-      const typename ::spatial::container_traits<Container>::rank_type&
-        rank = it.rank();
+      const Metric met(it.metric());
+      const typename container_traits<Container>::rank_type rank(it.rank());
       SPATIAL_ASSERT_CHECK(it.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(it.node));
       SPATIAL_ASSERT_CHECK(it.node != 0);
@@ -537,11 +530,9 @@ namespace spatial
                          const typename Metric::distance_type bound)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
-      const Metric& met = it.metric();
-      const typename ::spatial::container_traits<Container>::key_compare&
-        cmp = it.key_comp();
-      const typename ::spatial::container_traits<Container>::rank_type&
-        rank = it.rank();
+      const typename container_traits<Container>::rank_type rank(it.rank());
+      const typename container_traits<Container>::key_compare cmp(it.key_comp());
+      const Metric met(it.metric());
       SPATIAL_ASSERT_CHECK(it.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(it.node));
       SPATIAL_ASSERT_CHECK(it.node != 0);
@@ -663,11 +654,9 @@ namespace spatial
                          const typename Metric::distance_type bound)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
-      const Metric& met = it.metric();
-      const typename ::spatial::container_traits<Container>::key_compare&
-        cmp = it.key_comp();
-      const typename ::spatial::container_traits<Container>::rank_type&
-        rank = it.rank();
+      const typename container_traits<Container>::rank_type rank(it.rank());
+      const typename container_traits<Container>::key_compare cmp(it.key_comp());
+      const Metric met(it.metric());
       SPATIAL_ASSERT_CHECK(it.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(it.node));
       SPATIAL_ASSERT_CHECK(it.node != 0);

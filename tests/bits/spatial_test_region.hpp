@@ -565,7 +565,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_maximum, Tp, double6_sets )
   }
 }
 
-
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_increment, Tp, double6_sets )
 {
   {

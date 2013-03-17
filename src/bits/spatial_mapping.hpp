@@ -107,10 +107,10 @@ namespace spatial
    *  \c mapped_type can be modified (the \c second element).
    */
   template<typename Ct>
-  struct mapping_iterator
-    : details::Bidirectional_iterator
-      <typename container_traits<Ct>::mode_type,
-       typename container_traits<Ct>::rank_type>
+  class mapping_iterator
+    : public details::Bidirectional_iterator
+  <typename container_traits<Ct>::mode_type,
+   typename container_traits<Ct>::rank_type>
   {
   private:
     typedef details::Bidirectional_iterator
@@ -203,7 +203,7 @@ namespace spatial
     }
 
     //! Return the key_comparator used by the iterator
-    const key_compare&
+    key_compare
     key_comp() const { return static_cast<const key_compare&>(_data); }
 
     /**
@@ -249,10 +249,10 @@ namespace spatial
    *  Object deferenced by this iterator are always constant.
    */
   template<typename Ct>
-  struct mapping_iterator<const Ct>
-    : details::Const_bidirectional_iterator
-      <typename container_traits<Ct>::mode_type,
-       typename container_traits<Ct>::rank_type>
+  class mapping_iterator<const Ct>
+    : public details::Const_bidirectional_iterator
+  <typename container_traits<Ct>::mode_type,
+   typename container_traits<Ct>::rank_type>
   {
   private:
     typedef details::Const_bidirectional_iterator
@@ -349,7 +349,7 @@ namespace spatial
     }
 
     //! Return the key_comparator used by the iterator
-    const key_compare&
+    key_compare
     key_comp() const { return static_cast<const key_compare&>(_data); }
 
     /**

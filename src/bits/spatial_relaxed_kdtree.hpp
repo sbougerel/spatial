@@ -419,16 +419,14 @@ namespace spatial
       /**
        *  Returns the balancing policy for the container.
        */
-      const balancing_policy&
-      balancing() const
+      balancing_policy balancing() const
       { return _impl._compare.base(); }
 
       /**
        *  Returns the rank type used internally to get the number of dimensions
        *  in the container.
        */
-      const rank_type&
-      rank() const
+      rank_type rank() const
       { return *static_cast<const rank_type*>(&_impl); }
 
       /**
@@ -441,15 +439,13 @@ namespace spatial
       /**
        *  Returns the compare function used for the key.
        */
-      const key_compare&
-      key_comp() const
+      key_compare key_comp() const
       { return _impl._compare(); }
 
       /**
        *  Returns the compare function used for the value.
        */
-      const value_compare&
-      value_comp() const
+      value_compare value_comp() const
       { return value_compare(_impl._compare()); }
 
       /**
