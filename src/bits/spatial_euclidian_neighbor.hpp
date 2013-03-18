@@ -360,6 +360,25 @@ namespace spatial
   };
   ///@}
 
+  /**
+   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing to
+   *  the nearest neighbor of \c target.
+   *
+   *  \param container The container to iterate.
+   *  \param diff A model of \ref DifferenceConcept.
+   *  \param target Search for element in container closest to target.
+   *
+   *  The search will occur in euclidian space, where distance are computed in
+   *  double, by default. However distances can be expressed in any floating
+   *  point type by simply assigning the result to an similar iterator using a
+   *  different distance type:
+   *
+   *  \code
+   *  euclidian_neighbor_iterator<Ct, float, Diff> my_float_nearest_iterator
+   *    = euclidian_neighbor_begin(container, diff(), target);
+   *  \endcode
+   */
+  ///@{
   template <typename Ct, typename Diff>
   inline euclidian_neighbor_iterator<Ct, double, Diff>
   euclidian_neighbor_begin
@@ -389,7 +408,26 @@ namespace spatial
     return neighbor_begin
       (container, euclidian<Ct, double, Diff>(diff), target);
   }
+  ///@}
 
+  /**
+   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing to
+   *  the nearest neighbor of \c target.
+   *
+   *  \param container The container to iterate.
+   *  \param target Search for element in container closest to target.
+   *
+   *  The search will occur in euclidian space, where distance are computed in
+   *  double, by default. However distances can be expressed in any floating
+   *  point type by simply assigning the result to an similar iterator using a
+   *  different distance type:
+   *
+   *  \code
+   *  euclidian_neighbor_iterator<Ct, float, Diff> my_float_nearest_iterator
+   *    = euclidian_neighbor_begin(container, diff(), target);
+   *  \endcode
+   */
+  ///@{
   template <typename Ct>
   inline typename
   enable_if<details::is_compare_builtin<Ct>,
@@ -437,6 +475,479 @@ namespace spatial
        (details::with_builtin_difference<Ct, double>()(container)),
        target);
   }
+  ///@}
+
+  /**
+   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
+   *  past-the-end.
+   *
+   *  \param container The container to iterate.
+   *  \param diff A model of \ref DifferenceConcept.
+   *  \param target Search for element in container closest to target.
+   *
+   *  The search will occur in euclidian space, where distance are computed in
+   *  double, by default. However distances can be expressed in any floating
+   *  point type by simply assigning the result to an similar iterator using a
+   *  different distance type:
+   *
+   *  \code
+   *  euclidian_neighbor_iterator<Ct, float, Diff> my_float_nearest_iterator
+   *    = euclidian_neighbor_end(container, diff(), target);
+   *  \endcode
+   */
+  ///@{
+  template <typename Ct, typename Diff>
+  inline euclidian_neighbor_iterator<Ct, double, Diff>
+  euclidian_neighbor_end
+  (Ct& container, const Diff& diff,
+   const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_end
+      (container, euclidian<Ct, double, Diff>(diff), target);
+  }
+
+  template <typename Ct, typename Diff>
+  inline euclidian_neighbor_iterator<Ct, double, Diff>
+  euclidian_neighbor_end
+  (const Ct& container, const Diff& diff,
+   const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_end
+      (container, euclidian<Ct, double, Diff>(diff), target);
+  }
+
+  template <typename Ct, typename Diff>
+  inline euclidian_neighbor_iterator<Ct, double, Diff>
+  euclidian_neighbor_cend
+  (const Ct& container, const Diff& diff,
+   const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_end
+      (container, euclidian<Ct, double, Diff>(diff), target);
+  }
+  ///@}
+
+  /**
+   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
+   *  past-the-end.
+   *
+   *  \param container The container to iterate.
+   *  \param target Search for element in container closest to target.
+   *
+   *  The search will occur in euclidian space, where distance are computed in
+   *  double, by default. However distances can be expressed in any floating
+   *  point type by simply assigning the result to an similar iterator using a
+   *  different distance type:
+   *
+   *  \code
+   *  euclidian_neighbor_iterator<Ct, float, Diff> my_float_nearest_iterator
+   *    = euclidian_neighbor_end(container, diff(), target);
+   *  \endcode
+   */
+  ///@{
+  template <typename Ct>
+  inline typename
+  enable_if<details::is_compare_builtin<Ct>,
+            euclidian_neighbor_iterator<Ct, double> >::type
+  euclidian_neighbor_end
+  (Ct& container,
+   const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_end
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+       (details::with_builtin_difference<Ct, double>()(container)),
+       target);
+  }
+
+  template <typename Ct>
+  inline typename
+  enable_if<details::is_compare_builtin<Ct>,
+            euclidian_neighbor_iterator<const Ct, double> >::type
+  euclidian_neighbor_end
+  (const Ct& container,
+   const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_end
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+       (details::with_builtin_difference<Ct, double>()(container)),
+       target);
+  }
+
+  template <typename Ct>
+  inline typename
+  enable_if<details::is_compare_builtin<Ct>,
+            euclidian_neighbor_iterator<const Ct, double> >::type
+  euclidian_neighbor_cend
+  (const Ct& container,
+   const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_end
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+       (details::with_builtin_difference<Ct, double>()(container)),
+       target);
+  }
+  ///@}
+
+  /**
+   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
+   *  to the closest element to \c target that is a least as far as \c bound.
+   *
+   *  \param container The container to iterate.
+   *  \param diff A model of \ref DifferenceConcept.
+   *  \param target Search for element in container closest to target.
+   *  \param bound The minimum distance at which a neighbor should be found.
+   */
+  ///@{
+  template <typename Ct, typename Diff, typename DistanceType>
+  inline typename
+  enable_if<std::tr1::is_floating_point<DistanceType>,
+            euclidian_neighbor_iterator<Ct, DistanceType, Diff> >::type
+  euclidian_neighbor_lower_bound
+  (Ct& container, const Diff& diff,
+   const typename container_traits<Ct>::key_type& target,
+   DistanceType bound)
+  {
+    return neighbor_lower_bound
+      (container, euclidian<Ct, DistanceType, Diff>(diff), target, bound);
+  }
+
+  template <typename Ct, typename Diff, typename DistanceType>
+  inline typename
+  enable_if<std::tr1::is_floating_point<DistanceType>,
+            euclidian_neighbor_iterator<const Ct, DistanceType, Diff> >::type
+  euclidian_neighbor_lower_bound
+  (const Ct& container, const Diff& diff,
+   const typename container_traits<Ct>::key_type& target,
+   DistanceType bound)
+  {
+    return neighbor_lower_bound
+      (container, euclidian<Ct, DistanceType, Diff>(diff), target, bound);
+  }
+
+  template <typename Ct, typename Diff, typename DistanceType>
+  inline typename
+  enable_if<std::tr1::is_floating_point<DistanceType>,
+            euclidian_neighbor_iterator<const Ct, DistanceType, Diff> >::type
+  euclidian_neighbor_clower_bound
+  (const Ct& container, const Diff& diff,
+   const typename container_traits<Ct>::key_type& target,
+   DistanceType bound)
+  {
+    return neighbor_lower_bound
+      (container, euclidian<Ct, DistanceType, Diff>(diff), target, bound);
+  }
+  ///@}
+
+  /**
+   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
+   *  to the closest element to \c target that is a least as far as \c bound.
+   *
+   *  \param container The container to iterate.
+   *  \param target Search for element in container closest to target.
+   *  \param bound The minimum distance at which an element should be found.
+   */
+  ///@{
+  template <typename Ct, typename DistanceType>
+  inline typename
+  enable_if<details::is_compare_builtin<Ct>, typename
+            enable_if<std::tr1::is_floating_point<DistanceType>,
+                      euclidian_neighbor_iterator<Ct, DistanceType> >::type
+            >::type
+  euclidian_neighbor_lower_bound
+  (Ct& container,
+   const typename container_traits<Ct>::key_type& target,
+   DistanceType bound)
+  {
+    return neighbor_lower_bound
+      (container,
+       euclidian<Ct, DistanceType, typename
+                 details::with_builtin_difference<Ct, DistanceType>::type>
+       (details::with_builtin_difference<Ct, DistanceType>()(container)),
+       target, bound);
+  }
+
+  template <typename Ct, typename DistanceType>
+  inline typename
+  enable_if<details::is_compare_builtin<Ct>, typename
+            enable_if<std::tr1::is_floating_point<DistanceType>,
+                      euclidian_neighbor_iterator<const Ct, DistanceType>
+                      >::type
+            >::type
+  euclidian_neighbor_lower_bound
+  (const Ct& container,
+   const typename container_traits<Ct>::key_type& target,
+   DistanceType bound)
+  {
+    return neighbor_lower_bound
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+       (details::with_builtin_difference<Ct, double>()(container)),
+       target, bound);
+  }
+
+  template <typename Ct, typename DistanceType>
+  inline typename
+  enable_if<details::is_compare_builtin<Ct>, typename
+            enable_if<std::tr1::is_floating_point<DistanceType>,
+                      euclidian_neighbor_iterator<const Ct, DistanceType>
+                      >::type
+            >::type
+  euclidian_neighbor_clower_bound
+  (const Ct& container,
+   const typename container_traits<Ct>::key_type& target,
+   DistanceType bound)
+  {
+    return neighbor_lower_bound
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+       (details::with_builtin_difference<Ct, double>()(container)),
+       target, bound);
+  }
+  ///@}
+
+  /**
+   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
+   *  to the closest element to \c target that further than \c bound.
+   *
+   *  \param container The container to iterate.
+   *  \param diff A model of \ref DifferenceConcept.
+   *  \param target Search for element in container closest to target.
+   *  \param bound The minimum distance at which a neighbor should be found.
+   */
+  ///@{
+  template <typename Ct, typename Diff, typename DistanceType>
+  inline typename
+  enable_if<std::tr1::is_floating_point<DistanceType>,
+            euclidian_neighbor_iterator<Ct, DistanceType, Diff> >::type
+  euclidian_neighbor_upper_bound
+  (Ct& container, const Diff& diff,
+   const typename container_traits<Ct>::key_type& target,
+   DistanceType bound)
+  {
+    return neighbor_upper_bound
+      (container, euclidian<Ct, DistanceType, Diff>(diff), target, bound);
+  }
+
+  template <typename Ct, typename Diff, typename DistanceType>
+  inline typename
+  enable_if<std::tr1::is_floating_point<DistanceType>,
+            euclidian_neighbor_iterator<const Ct, DistanceType, Diff> >::type
+  euclidian_neighbor_upper_bound
+  (const Ct& container, const Diff& diff,
+   const typename container_traits<Ct>::key_type& target,
+   DistanceType bound)
+  {
+    return neighbor_upper_bound
+      (container, euclidian<Ct, DistanceType, Diff>(diff), target, bound);
+  }
+
+  template <typename Ct, typename Diff, typename DistanceType>
+  inline typename
+  enable_if<std::tr1::is_floating_point<DistanceType>,
+            euclidian_neighbor_iterator<const Ct, DistanceType, Diff> >::type
+  euclidian_neighbor_cupper_bound
+  (const Ct& container, const Diff& diff,
+   const typename container_traits<Ct>::key_type& target,
+   DistanceType bound)
+  {
+    return neighbor_upper_bound
+      (container, euclidian<Ct, DistanceType, Diff>(diff), target, bound);
+  }
+  ///@}
+
+  /**
+   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
+   *  to the closest element to \c target that is further than \c bound.
+   *
+   *  \param container The container to iterate.
+   *  \param target Search for element in container closest to target.
+   *  \param bound The minimum distance at which an element should be found.
+   */
+  ///@{
+  template <typename Ct, typename DistanceType>
+  inline typename
+  enable_if<details::is_compare_builtin<Ct>, typename
+            enable_if<std::tr1::is_floating_point<DistanceType>,
+                      euclidian_neighbor_iterator<Ct, DistanceType> >::type
+            >::type
+  euclidian_neighbor_upper_bound
+  (Ct& container,
+   const typename container_traits<Ct>::key_type& target,
+   DistanceType bound)
+  {
+    return neighbor_upper_bound
+      (container,
+       euclidian<Ct, DistanceType, typename
+                 details::with_builtin_difference<Ct, DistanceType>::type>
+       (details::with_builtin_difference<Ct, DistanceType>()(container)),
+       target, bound);
+  }
+
+  template <typename Ct, typename DistanceType>
+  inline typename
+  enable_if<details::is_compare_builtin<Ct>, typename
+            enable_if<std::tr1::is_floating_point<DistanceType>,
+                      euclidian_neighbor_iterator<const Ct, DistanceType>
+                      >::type
+            >::type
+  euclidian_neighbor_upper_bound
+  (const Ct& container,
+   const typename container_traits<Ct>::key_type& target,
+   DistanceType bound)
+  {
+    return neighbor_upper_bound
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+       (details::with_builtin_difference<Ct, double>()(container)),
+       target, bound);
+  }
+
+  template <typename Ct, typename DistanceType>
+  inline typename
+  enable_if<details::is_compare_builtin<Ct>, typename
+            enable_if<std::tr1::is_floating_point<DistanceType>,
+                      euclidian_neighbor_iterator<const Ct, DistanceType>
+                      >::type
+            >::type
+  euclidian_neighbor_cupper_bound
+  (const Ct& container,
+   const typename container_traits<Ct>::key_type& target,
+   DistanceType bound)
+  {
+    return neighbor_upper_bound
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+       (details::with_builtin_difference<Ct, double>()(container)),
+       target, bound);
+  }
+  ///@}
+
+  /**
+   *  Make a pair of iterators spanning the range of iterable element in \c
+   *  container from the closest to the furthest to \c target
+   *
+   *  \param container The container to iterate.
+   *  \param diff A model of \ref DifferenceConcept.
+   *  \param target Search for element in container closest to target.
+   *
+   *  The search will occur in euclidian space, where distance are computed in
+   *  double, by default. However distances can be expressed in any floating
+   *  point type by simply assigning the result to an similar iterator using a
+   *  different distance type:
+   *
+   *  \code
+   *  euclidian_neighbor_iterator_pair<Ct, float, Diff> my_float_iterator_pair
+   *    = euclidian_neighbor_range(container, diff(), target);
+   *  \endcode
+   */
+  ///@{
+  template <typename Ct, typename Diff>
+  inline euclidian_neighbor_iterator_pair<Ct, double, Diff>
+  euclidian_neighbor_range
+  (Ct& container, const Diff& diff,
+   const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_range
+      (container, euclidian<Ct, double, Diff>(diff), target);
+  }
+
+  template <typename Ct, typename Diff>
+  inline euclidian_neighbor_iterator_pair<Ct, double, Diff>
+  euclidian_neighbor_range
+  (const Ct& container, const Diff& diff,
+   const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_range
+      (container, euclidian<Ct, double, Diff>(diff), target);
+  }
+
+  template <typename Ct, typename Diff>
+  inline euclidian_neighbor_iterator_pair<Ct, double, Diff>
+  euclidian_neighbor_crange
+  (const Ct& container, const Diff& diff,
+   const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_range
+      (container, euclidian<Ct, double, Diff>(diff), target);
+  }
+  ///@}
+
+  /**
+   *  Make a pair of iterators spanning the range of iterable elements in \c
+   *  container from the closest to the furthest to \c target.
+   *
+   *  \param container The container to iterate.
+   *  \param target Search for element in container closest to target.
+   *
+   *  The search will occur in euclidian space, where distance are computed in
+   *  double, by default. However distances can be expressed in any floating
+   *  point type by simply assigning the result to an similar iterator using a
+   *  different distance type:
+   *
+   *  \code
+   *  euclidian_neighbor_iterator_pair<Ct, float, Diff> my_float_iterator_pair
+   *    = euclidian_neighbor_range(container, diff(), target);
+   *  \rangecode
+   */
+  ///@{
+  template <typename Ct>
+  inline typename
+  enable_if<details::is_compare_builtin<Ct>,
+            euclidian_neighbor_iterator_pair<Ct, double> >::type
+  euclidian_neighbor_range
+  (Ct& container,
+   const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_range
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+       (details::with_builtin_difference<Ct, double>()(container)),
+       target);
+  }
+
+  template <typename Ct>
+  inline typename
+  enable_if<details::is_compare_builtin<Ct>,
+            euclidian_neighbor_iterator_pair<const Ct, double> >::type
+  euclidian_neighbor_range
+  (const Ct& container,
+   const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_range
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+       (details::with_builtin_difference<Ct, double>()(container)),
+       target);
+  }
+
+  template <typename Ct>
+  inline typename
+  enable_if<details::is_compare_builtin<Ct>,
+            euclidian_neighbor_iterator_pair<const Ct, double> >::type
+  euclidian_neighbor_crange
+  (const Ct& container,
+   const typename container_traits<Ct>::key_type& target)
+  {
+    return neighbor_range
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct, double>::type>
+       (details::with_builtin_difference<Ct, double>()(container)),
+       target);
+  }
+  ///@}
 
 } // namespace spatial
 

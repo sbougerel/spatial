@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
-( test_neighbor_begin, Tp, double6_sets )
+( test_neighbor_minimum, Tp, double6_sets )
 {
   // Prove that you can find the closest value with N nodes, down to 1 node
   {
@@ -226,108 +226,146 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
       }
   }
 }
-/*
-BOOST_AUTO_TEST_CASE( test_neighbor_maximum )
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_neighbor_maximum, Tp, double6_sets )
 {
+  // Prove that you can find the closest value with N nodes, down to 1 node
   {
-    typedef Empty_Kdtree_2D_fixture::kdtree_type kdtree_type;
-    typedef euclidian_double
-      <kdtree_type::key_type, kdtree_type::key_compare> geometry_type;
-    typedef details::Neighbor_iterator
-      <kdtree_type::rank_type, kdtree_type::key_type, kdtree_type::value_type,
-       kdtree_type::node_type, kdtree_type::key_compare,
-       geometry_type> iterator_type;
-    {
-      // If tree has one node, it should always return that node.
-      Empty_Kdtree_2D_fixture fix;
-      fix.kdtree.insert(zeros);
-      geometry_type geometry;
-      iterator_type iter =
-        iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.key_comp(),
-                               geometry, ones, 0,
-                               fix.kdtree.end().node->parent);
-      BOOST_CHECK(iter.impl_.node_ == fix.kdtree.begin().node);
-      BOOST_CHECK(iter.impl_.node_dim_ == 0);
-      BOOST_CHECK_CLOSE(iter.impl_.distance_(), std::sqrt(2.0), .000000000001);
-      BOOST_CHECK(iter.impl_.target_() == ones);
-    }
-    {
-      // Find the expected furthest on a left-unblanced tree
-      Empty_Kdtree_2D_fixture fix;
-      fix.kdtree.insert(threes);
-      fix.kdtree.insert(twos);
-      fix.kdtree.insert(ones);
-      fix.kdtree.insert(zeros);
-      geometry_type geometry;
-      iterator_type iter =
-        iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.key_comp(),
-                               geometry, ones, 0,
-                               fix.kdtree.end().node->parent);
-      BOOST_CHECK(*iter == threes);
-      BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(8.0), .000000000001);
-      BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
-    }
-    {
-      // Find the expected furthest on a right-unblanced tree
-      Empty_Kdtree_2D_fixture fix;
-      fix.kdtree.insert(zeros);
-      fix.kdtree.insert(ones);
-      fix.kdtree.insert(twos);
-      fix.kdtree.insert(threes);
-      geometry_type geometry;
-      iterator_type iter =
-        iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.key_comp(),
-                               geometry, fours, 0,
-                               fix.kdtree.end().node->parent);
-      BOOST_CHECK(*iter == zeros);
-      BOOST_CHECK_CLOSE(iter.distance(), std::sqrt(32.0), .000000000001);
-      BOOST_CHECK(iter.impl_.node_ != fix.kdtree.end().node);
-    }
-  }
-  {
-    // Find the furthest in a tree with a lot of positions, cross-check
-    typedef Hundred_Kdtree_5D_fixture::kdtree_type kdtree_type;
-    typedef euclidian_square_double
-      <kdtree_type::key_type, kdtree_type::key_compare> geometry_type;
-    typedef details::Neighbor_iterator
-      <kdtree_type::rank_type, kdtree_type::key_type, kdtree_type::value_type,
-       kdtree_type::node_type, kdtree_type::key_compare,
-       geometry_type> iterator_type;
-    Hundred_Kdtree_5D_fixture fix;
-    geometry_type geometry;
-    for(int i=0; i<20; ++i)
+    Tp fix(100, randomize(-20, 20));
+    neighbor_iterator<typename Tp::container_type> iter;
+    typename neighbor_iterator<typename Tp::container_type>::metric_type
+      metric(iter.metric());
+    double6 target;
+    typedef typename neighbor_iterator<typename Tp::container_type>
+      ::distance_type distance_type;
+    while (!fix.container.empty())
       {
-        point5d target; // A bit out of the tree interval of points
-        target[0] = static_cast<double>(rand() % 22 - 1);
-        target[1] = static_cast<double>(rand() % 22 - 1);
-        target[2] = static_cast<double>(rand() % 22 - 1);
-        target[3] = static_cast<double>(rand() % 22 - 1);
-        target[4] = static_cast<double>(rand() % 22 - 1);
-        iterator_type max =
-          iterator_type::maximum(fix.kdtree.rank(), fix.kdtree.key_comp(),
-                                 geometry, target, 0,
-                                 fix.kdtree.end().node->parent);
-        BOOST_REQUIRE(max.impl_.node_ != fix.kdtree.end().node);
-        // Need to collect the results independantly to cross-check
-        kdtree_type::const_iterator iter = fix.kdtree.begin();
-        kdtree_type::const_iterator end = fix.kdtree.end();
-        point5d best = *iter;
-        double best_distance = geometry.distance_to_key(5, target, *iter);
-        ++iter;
-        for (; iter != end; ++iter)
+        randomize(-20, 20)(target, 0, 0);
+        unsigned int count = 0;
+        distance_type max_dist = metric.distance_to_key
+          (fix.container.rank(), target, *fix.container.begin());
+        for(typename Tp::container_type::iterator
+              i = fix.container.begin(); i != fix.container.end(); ++i)
           {
-            double tmp_distance = geometry.distance_to_key(5, target, *iter);
-            if (tmp_distance > best_distance)
-              {
-                best = *iter;
-                best_distance = tmp_distance;
-              }
+            distance_type tmp = metric.distance_to_key(fix.container.rank(),
+                                                       target, *i);
+            if (tmp > max_dist) { max_dist = tmp; }
+            ++count;
           }
-        BOOST_CHECK_CLOSE(max.distance(), best_distance, .000000000001);
+        BOOST_CHECK_EQUAL(count, fix.container.size());
+        iter = neighbor_end(fix.container, target); --iter;
+        BOOST_CHECK(iter != neighbor_end(fix.container, target));
+        BOOST_CHECK_CLOSE(distance(iter), max_dist, 0.000000001);
+        neighbor_iterator<typename Tp::container_type> tmp = iter;
+        BOOST_CHECK(++tmp == neighbor_end(fix.container, target));
+        fix.container.erase(iter);
+      }
+  }
+  // Prove that you can find the min in N nodes, with target = nodes
+  {
+    Tp fix(100, same());
+    neighbor_iterator<typename Tp::container_type> iter;
+    typename neighbor_iterator<typename Tp::container_type>::metric_type
+      metric(iter.metric());
+    double6 target;
+    typedef typename neighbor_iterator<typename Tp::container_type>
+      ::distance_type distance_type;
+    while (!fix.container.empty())
+      {
+        same()(target, 0, 100);
+        iter = neighbor_end(fix.container, target); --iter;
+        BOOST_CHECK(iter != neighbor_end(fix.container, target));
+        BOOST_CHECK_CLOSE(distance(iter), 0.0, 0.000000001);
+        neighbor_iterator<typename Tp::container_type> tmp = iter;
+        BOOST_CHECK(++tmp == neighbor_end(fix.container, target));
+        fix.container.erase(iter);
+      }
+  }
+  // Prove that you can find the min if a tree has a single element
+  {
+    Tp fix(1, same());
+    neighbor_iterator<typename Tp::container_type> iter;
+    typename neighbor_iterator<typename Tp::container_type>::metric_type
+      metric(iter.metric());
+    double6 target = make_double6(2.);
+    typedef typename neighbor_iterator<typename Tp::container_type>
+      ::distance_type distance_type;
+    iter = neighbor_end(fix.container, target); --iter;
+    BOOST_CHECK(iter != neighbor_end(fix.container, target));
+    distance_type dist = metric.distance_to_key(fix.container.rank(),
+                                                target, *iter);
+    BOOST_CHECK_CLOSE(distance(iter), dist, 0.000000001);
+    BOOST_CHECK(*iter == *--fix.container.end());
+    neighbor_iterator<typename Tp::container_type> tmp = iter;
+    BOOST_CHECK(++tmp == neighbor_end(fix.container, target));
+  }
+  // Prove that you can find the min in a very unbalanced tree
+  {
+    Tp fix(40, increase());
+    neighbor_iterator<typename Tp::container_type> iter;
+    typename neighbor_iterator<typename Tp::container_type>::metric_type
+      metric(iter.metric());
+    double6 target;
+    typedef typename neighbor_iterator<typename Tp::container_type>
+      ::distance_type distance_type;
+    while (!fix.container.empty())
+      {
+        randomize(0, 40)(target, 0, 0);
+        unsigned int count = 0;
+        distance_type max_dist = metric.distance_to_key
+          (fix.container.rank(), target, *fix.container.begin());
+        for(typename Tp::container_type::iterator
+              i = fix.container.begin(); i != fix.container.end(); ++i)
+          {
+            distance_type tmp = metric.distance_to_key(fix.container.rank(),
+                                                       target, *i);
+            if (tmp > max_dist) { max_dist = tmp; }
+            ++count;
+          }
+        BOOST_CHECK_EQUAL(count, fix.container.size());
+        iter = neighbor_end(fix.container, target); --iter;
+        BOOST_CHECK(iter != neighbor_end(fix.container, target));
+        BOOST_CHECK_CLOSE(distance(iter), max_dist, 0.000000001);
+        neighbor_iterator<typename Tp::container_type> tmp = iter;
+        BOOST_CHECK(++tmp == neighbor_end(fix.container, target));
+        fix.container.erase(iter);
+      }
+  }
+  // Prove that you can find the min in an opposite unbalanced tree
+  {
+    Tp fix(40, decrease());
+    neighbor_iterator<typename Tp::container_type> iter;
+    typename neighbor_iterator<typename Tp::container_type>::metric_type
+      metric(iter.metric());
+    double6 target;
+    typedef typename neighbor_iterator<typename Tp::container_type>
+      ::distance_type distance_type;
+    while (!fix.container.empty())
+      {
+        randomize(0, 40)(target, 0, 0);
+        unsigned int count = 0;
+        distance_type max_dist = metric.distance_to_key
+          (fix.container.rank(), target, *fix.container.begin());
+        for(typename Tp::container_type::iterator
+              i = fix.container.begin(); i != fix.container.end(); ++i)
+          {
+            distance_type tmp = metric.distance_to_key(fix.container.rank(),
+                                                       target, *i);
+            if (tmp > max_dist) { max_dist = tmp; }
+            ++count;
+          }
+        BOOST_CHECK_EQUAL(count, fix.container.size());
+        iter = neighbor_end(fix.container, target); --iter;
+        BOOST_CHECK(iter != neighbor_end(fix.container, target));
+        BOOST_CHECK_CLOSE(distance(iter), max_dist, 0.000000001);
+        neighbor_iterator<typename Tp::container_type> tmp = iter;
+        BOOST_CHECK(++tmp == neighbor_end(fix.container, target));
+        fix.container.erase(iter);
       }
   }
 }
-
+/*
 BOOST_AUTO_TEST_CASE( test_neighbor_increment )
 {
   {
