@@ -35,8 +35,8 @@ namespace spatial
       const typename container_traits<Container>::key_compare cmp(it.key_comp());
       const Metric met(it.metric());
       SPATIAL_ASSERT_CHECK(it.node_dim < rank());
-      SPATIAL_ASSERT_CHECK(header(it.node));
       SPATIAL_ASSERT_CHECK(it.node != 0);
+      SPATIAL_ASSERT_CHECK(!header(it.node));
       // In this algorithm, we seek to find the next nearest point to
       // origin. Thus assuming that this point exists, its distance to origin is
       // equal or greater than that of the previous nearest point to origin.
