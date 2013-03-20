@@ -391,7 +391,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
             BOOST_CHECK_GE(tmp, min_dist);
             min_dist = tmp;
           }
-        BOOST_CHECK_EQUAL(countdown, 0);
+        BOOST_CHECK_EQUAL(countdown, 0u);
         BOOST_CHECK(iter == neighbor_end(fix.container, target));
         fix.container.erase(fix.container.begin());
       }
@@ -418,7 +418,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
             BOOST_CHECK_GE(tmp, min_dist);
             min_dist = tmp;
           }
-        BOOST_CHECK_EQUAL(countdown, 0);
+        BOOST_CHECK_EQUAL(countdown, 0u);
         BOOST_CHECK(iter == neighbor_end(fix.container, target));
         fix.container.erase(fix.container.begin());
       }
@@ -445,7 +445,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
             BOOST_CHECK_GE(tmp, min_dist);
             min_dist = tmp;
           }
-        BOOST_CHECK_EQUAL(countdown, 0);
+        BOOST_CHECK_EQUAL(countdown, 0u);
         BOOST_CHECK(iter == neighbor_end(fix.container, target));
         fix.container.erase(fix.container.begin());
       }
@@ -479,7 +479,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
             BOOST_CHECK_LE(tmp, max_dist);
             max_dist = tmp;
           }
-        BOOST_CHECK_EQUAL(countdown, 0);
+        BOOST_CHECK_EQUAL(countdown, 0u);
         BOOST_CHECK(iter == end);
         fix.container.erase(fix.container.begin());
       }
@@ -506,7 +506,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
             BOOST_CHECK_LE(tmp, max_dist);
             max_dist = tmp;
           }
-        BOOST_CHECK_EQUAL(countdown, 0);
+        BOOST_CHECK_EQUAL(countdown, 0u);
         BOOST_CHECK(iter == end);
         fix.container.erase(fix.container.begin());
       }
@@ -533,7 +533,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
             BOOST_CHECK_LE(tmp, max_dist);
             max_dist = tmp;
           }
-        BOOST_CHECK_EQUAL(countdown, 0);
+        BOOST_CHECK_EQUAL(countdown, 0u);
         BOOST_CHECK(iter == end);
         fix.container.erase(fix.container.begin());
       }
