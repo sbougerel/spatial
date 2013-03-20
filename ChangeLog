@@ -1,3 +1,8 @@
+2013-03-20  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * task_3432355 Made access to functors inside iterators and containers
+        more STL-like.
+
 2013-03-16  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * task_3432355 Used a new, more common standard to name private or

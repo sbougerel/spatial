@@ -43,14 +43,14 @@ VERSION 2.0.0
            iterator always walks through the nodes of the tree in the
            same order. This iterator is absolutely necessary to
            properly implement some elementary functions such as "=="
-           between containers. In progress...
+           between containers. DONE!
 
 * Dec 12 Complete General doxygen documention with details on
            container and views, elaboration of how to write geometry,
            etc. This documentation should serve as a complete user
            manual, it should be accompanied by a bit of library
            polishing. Should take about 2 months. It would mark the
-           milestone 1.0 release, and the end of the beta period, if
+           milestone 2.0 release, and the end of the beta period, if
            enough people have used it. In progress...
 
 
@@ -105,19 +105,12 @@ VERSION 2.2.0
            Therefore this allocator is fast and needs no extra info on
            top of the information in the tree itself. This allocator
            is therefore optimal for the library, and should speed up
-           tree walking a lot... if we never rebalanced containers.
-           However we do rebalance containers in this library. Due to
-           the process of rebalancing, bucket within the block may be
-           occupied. In this case, the subtree is simply iterated
-           until a block with a free bucket is found. Therefore the
-           rebalancing would probably cancel the positive effect of
-           the allocator, but it is expected that it would only
-           degrade it considerably in the case where only insertion
-           occur. If both insertion and removal happen regularly
-           within the same subtree, rebalancing should be more rare,
-           and if it occurs, free bukets of erased nodes will help
-           maintain near cache-obliviousness.
-
+           tree walking a lot... if we never re-balanced containers.
+           However we do re-balance containers in this library, hence
+	   this allocator will be specific to idle_* containers which
+	   do not reblance. Another allocator, probably not cache 
+	   oblivious, but at least cache-aware (with a user-defined
+	   bucket size will need to be written)
 
 VERSION 2.3.0
 
@@ -138,4 +131,5 @@ VERSION 3.0.0
 
 * ??? ?? Version 3.0.0 marks the new major release, breaking backward
            compatibility. What would the future hold for the spatial
-           library?
+           library? Vantage-Point tree support for faster nearest and
+	   furthest neighbor search?
