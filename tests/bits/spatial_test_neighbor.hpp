@@ -450,8 +450,22 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         fix.container.erase(fix.container.begin());
       }
   }
-  // Prove that you can iterate if a tree has a single element
   // Prove that you can iterate equivalent nodes
+  {
+    double6 target;
+    same()(target, 0, 100);
+    Tp fix(100, same());
+    neighbor_iterator<typename Tp::container_type>
+      iter = neighbor_begin(fix.container, target),
+      end = neighbor_end(fix.container, target);
+    size_t count = 0;
+    for(; iter != end && count < fix.container.size(); ++iter, ++count)
+      {
+        BOOST_CHECK_CLOSE(distance(iter), 0.0, 0.000000001);
+      }
+    BOOST_CHECK(iter == end);
+    BOOST_CHECK_EQUAL(count, fix.container.size());
+  }
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
@@ -538,8 +552,23 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         fix.container.erase(fix.container.begin());
       }
   }
-  // Prove that you can iterate if a tree has a single element
   // Prove that you can iterate equivalent nodes
+  {
+    int2 target;
+    same()(target, 0, 100);
+    Tp fix(100, same());
+    std::reverse_iterator<neighbor_iterator<typename Tp::container_type> >
+      iter(neighbor_end(fix.container, target)),
+      end(neighbor_begin(fix.container, target));
+    size_t count = 1;
+    ++iter;
+    for(; iter != end && count < fix.container.size(); ++iter, ++count)
+      {
+        BOOST_CHECK_CLOSE(distance(iter.base()), 0.0, 0.000000001);
+      }
+    BOOST_CHECK(iter == end);
+    BOOST_CHECK_EQUAL(count, fix.container.size());
+  }
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
