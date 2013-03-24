@@ -68,7 +68,7 @@ namespace spatial
               && (!cmp(rn_dim, target_key(it), const_key(rn))
                   || near_node == 0
                   || near_distance >= met.distance_to_plane
-                  (rank, rn_dim, target_key(it), const_key(rn))))
+                  (rank(), rn_dim, target_key(it), const_key(rn))))
             {
               rn = rn->right;
               rn_dim = incr_dim(rank, rn_dim);
@@ -76,7 +76,7 @@ namespace spatial
                     && (!cmp(rn_dim, const_key(rn), target_key(it))
                         || near_node == 0
                         || near_distance >= met.distance_to_plane
-                        (rank, rn_dim, target_key(it), const_key(rn))))
+                        (rank(), rn_dim, target_key(it), const_key(rn))))
                 {
                   rn = rn->left;
                   rn_dim = incr_dim(rank, rn_dim);
@@ -96,7 +96,7 @@ namespace spatial
             }
           if (header(rn))
             { if (ln_break) break; rn_break = true; goto left_side; }
-          tmp = met.distance_to_key(rank, target_key(it), const_key(rn));
+          tmp = met.distance_to_key(rank(), target_key(it), const_key(rn));
           if (tmp < distance(it) || (tmp == distance(it) && rn < curr))
             { goto left_side; }
           if (near_node == 0 || tmp < near_distance)
@@ -117,7 +117,7 @@ namespace spatial
               && (!cmp(ln_dim, const_key(ln), target_key(it))
                   || near_node == 0
                   || near_distance >= met.distance_to_plane
-                  (rank, ln_dim, target_key(it), const_key(ln))))
+                  (rank(), ln_dim, target_key(it), const_key(ln))))
             {
               ln = ln->left;
               ln_dim = incr_dim(rank, ln_dim);
@@ -125,7 +125,7 @@ namespace spatial
                     && (!cmp(ln_dim, target_key(it), const_key(ln))
                         || near_node == 0
                         || near_distance >= met.distance_to_plane
-                        (rank, ln_dim, target_key(it), const_key(ln))))
+                        (rank(), ln_dim, target_key(it), const_key(ln))))
                 {
                   ln = ln->right;
                   ln_dim = incr_dim(rank, ln_dim);
@@ -145,7 +145,7 @@ namespace spatial
             }
           if (header(ln))
             { if (rn_break) break; ln_break = true; continue; }
-          tmp = met.distance_to_key(rank, target_key(it), const_key(ln));
+          tmp = met.distance_to_key(rank(), target_key(it), const_key(ln));
           if (tmp < distance(it) || (tmp == distance(it) && ln < curr))
             { continue; }
           if (near_node == 0 || tmp < near_distance)
@@ -226,14 +226,14 @@ namespace spatial
           if (ln->left != 0
               && (!cmp(ln_dim, const_key(ln), target_key(it))
                   || distance(it) >= met.distance_to_plane
-                  (rank, ln_dim, target_key(it), const_key(ln))))
+                  (rank(), ln_dim, target_key(it), const_key(ln))))
             {
               ln = ln->left;
               ln_dim = incr_dim(rank, ln_dim);
               while(ln->right != 0
                     && (!cmp(ln_dim, target_key(it), const_key(ln))
                         || distance(it) >= met.distance_to_plane
-                        (rank, ln_dim, target_key(it), const_key(ln))))
+                        (rank(), ln_dim, target_key(it), const_key(ln))))
                 {
                   ln = ln->right;
                   ln_dim = incr_dim(rank, ln_dim);
@@ -253,7 +253,7 @@ namespace spatial
             }
           if (header(ln))
             { if (rn_break) break; ln_break = true; goto right_side; }
-          tmp = met.distance_to_key(rank, target_key(it), const_key(ln));
+          tmp = met.distance_to_key(rank(), target_key(it), const_key(ln));
           if (tmp > distance(it) || (tmp == distance(it) && ln > curr))
             { goto right_side; }
           if (near_node == 0 || tmp > near_distance)
@@ -273,14 +273,14 @@ namespace spatial
           if (rn->right != 0
               && (!cmp(rn_dim, target_key(it), const_key(rn))
                   || distance(it) >= met.distance_to_plane
-                  (rank, rn_dim, target_key(it), const_key(rn))))
+                  (rank(), rn_dim, target_key(it), const_key(rn))))
             {
               rn = rn->right;
               rn_dim = incr_dim(rank, rn_dim);
               while(rn->left != 0
                     && (!cmp(rn_dim, const_key(rn), target_key(it))
                         || distance(it) >= met.distance_to_plane
-                        (rank, rn_dim, target_key(it), const_key(rn))))
+                        (rank(), rn_dim, target_key(it), const_key(rn))))
                 {
                   rn = rn->left;
                   rn_dim = incr_dim(rank, rn_dim);
@@ -300,7 +300,7 @@ namespace spatial
             }
           if (header(rn))
             { if(ln_break) break; rn_break = true; continue; }
-          tmp = met.distance_to_key(rank, target_key(it), const_key(rn));
+          tmp = met.distance_to_key(rank(), target_key(it), const_key(rn));
           if (tmp > distance(it) || (tmp == distance(it) && rn > curr))
             { continue; }
           if (near_node == 0 || tmp > near_distance)
@@ -357,18 +357,18 @@ namespace spatial
       node_ptr end = node->parent;
       dimension_type near_dim = node_dim;
       typename Metric::distance_type near_distance
-        = met.distance_to_key(rank, target_key(it), const_key(node));
+        = met.distance_to_key(rank(), target_key(it), const_key(node));
       typename Metric::distance_type tmp;
       // Depth traversal starts with left first
       while(node->left != 0
             && (!cmp(node_dim, const_key(node), target_key(it))
                 || near_distance
-                >= met.distance_to_plane(rank, node_dim, target_key(it),
+                >= met.distance_to_plane(rank(), node_dim, target_key(it),
                                          const_key(node))))
         {
           node = node->left;
           node_dim = incr_dim(rank, node_dim);
-          tmp = met.distance_to_key(rank, target_key(it), const_key(node));
+          tmp = met.distance_to_key(rank(), target_key(it), const_key(node));
           if (tmp < near_distance)
             {
               near_node = node;
@@ -390,12 +390,12 @@ namespace spatial
           if (node->right != 0
               && (!cmp(node_dim, target_key(it), const_key(node))
                   || near_distance
-                  >= met.distance_to_plane(rank, node_dim, target_key(it),
+                  >= met.distance_to_plane(rank(), node_dim, target_key(it),
                                            const_key(node))))
             {
               node = node->right;
               node_dim = incr_dim(rank, node_dim);
-              tmp = met.distance_to_key(rank, target_key(it), const_key(node));
+              tmp = met.distance_to_key(rank(), target_key(it), const_key(node));
               if (tmp < near_distance)
                 {
                   near_node = node;
@@ -410,12 +410,12 @@ namespace spatial
               while(node->left != 0
                     && (!cmp(node_dim, const_key(node), target_key(it))
                         || near_distance
-                        >= met.distance_to_plane(rank, node_dim, target_key(it),
+                        >= met.distance_to_plane(rank(), node_dim, target_key(it),
                                                  const_key(node))))
                 {
                   node = node->left;
                   node_dim = incr_dim(rank, node_dim);
-                  tmp = met.distance_to_key(rank, target_key(it),
+                  tmp = met.distance_to_key(rank(), target_key(it),
                                             const_key(node));
                   if (tmp < near_distance)
                     {
@@ -485,7 +485,7 @@ namespace spatial
       node_ptr far_node = node;
       dimension_type far_dim = node_dim;
       typename Metric::distance_type far_distance
-        = met.distance_to_key(rank, target_key(it), const_key(node));
+        = met.distance_to_key(rank(), target_key(it), const_key(node));
       do {
         if (node->right != 0)
           {
@@ -505,7 +505,7 @@ namespace spatial
             node_dim = decr_dim(rank, node_dim);
           }
         if (node == end) { break; }
-        tmp = met.distance_to_key(rank, target_key(it), const_key(node));
+        tmp = met.distance_to_key(rank(), target_key(it), const_key(node));
         if (tmp > far_distance
             || (tmp == far_distance && node > far_node))
           {
@@ -543,18 +543,18 @@ namespace spatial
       dimension_type near_dim = node_dim;
       typename Metric::distance_type tmp;
       typename Metric::distance_type near_distance
-        = met.distance_to_key(rank, target_key(it), const_key(node));
+        = met.distance_to_key(rank(), target_key(it), const_key(node));
       if (near_distance >= bound) { near_node = node; }
       // Depth traversal starts with left first
       while(node->left != 0
             && (!cmp(node_dim, const_key(node), target_key(it))
                 || near_node == 0 || near_distance
-                >= met.distance_to_plane(rank, node_dim, target_key(it),
+                >= met.distance_to_plane(rank(), node_dim, target_key(it),
                                          const_key(node))))
         {
           node = node->left;
           node_dim = incr_dim(rank, node_dim);
-          tmp = met.distance_to_key(rank, target_key(it), const_key(node));
+          tmp = met.distance_to_key(rank(), target_key(it), const_key(node));
           if (tmp < bound) { continue; }
           if (near_node == 0 || tmp < near_distance)
             {
@@ -577,12 +577,12 @@ namespace spatial
           if (node->right != 0
               && (!cmp(node_dim, target_key(it), const_key(node))
                   || near_node == 0 || near_distance
-                  >= met.distance_to_plane(rank, node_dim, target_key(it),
+                  >= met.distance_to_plane(rank(), node_dim, target_key(it),
                                            const_key(node))))
             {
               node = node->right;
               node_dim = incr_dim(rank, node_dim);
-              tmp = met.distance_to_key(rank, target_key(it), const_key(node));
+              tmp = met.distance_to_key(rank(), target_key(it), const_key(node));
               if (tmp >= bound)
                 {
                   if (near_node == 0 || tmp < near_distance)
@@ -601,12 +601,12 @@ namespace spatial
                     && (!cmp(node_dim, const_key(node), target_key(it))
                         || near_node == 0
                         || near_distance
-                        >= met.distance_to_plane(rank, node_dim, target_key(it),
+                        >= met.distance_to_plane(rank(), node_dim, target_key(it),
                                                  const_key(node))))
                 {
                   node = node->left;
                   node_dim = incr_dim(rank, node_dim);
-                  tmp = met.distance_to_key(rank, target_key(it),
+                  tmp = met.distance_to_key(rank(), target_key(it),
                                             const_key(node));
                   if (tmp >= bound)
                     {
@@ -667,19 +667,19 @@ namespace spatial
       dimension_type near_dim = node_dim;
       typename Metric::distance_type tmp;
       typename Metric::distance_type near_distance
-        = met.distance_to_key(rank, target_key(it), const_key(node));
+        = met.distance_to_key(rank(), target_key(it), const_key(node));
       if (near_distance > bound) { near_node = node; }
       // Depth traversal starts with left first
       while(node->left != 0
             && (!cmp(node_dim, const_key(node), target_key(it))
                 || near_node == 0
                 || near_distance
-                >= met.distance_to_plane(rank, node_dim, target_key(it),
+                >= met.distance_to_plane(rank(), node_dim, target_key(it),
                                          const_key(node))))
         {
           node = node->left;
           node_dim = incr_dim(rank, node_dim);
-          tmp = met.distance_to_key(rank, target_key(it), const_key(node));
+          tmp = met.distance_to_key(rank(), target_key(it), const_key(node));
           if (tmp <= bound) { continue; }
           if (near_node == 0 || tmp < near_distance)
             {
@@ -702,12 +702,12 @@ namespace spatial
           if (node->right != 0
               && (!cmp(node_dim, target_key(it), const_key(node))
                   || near_node == 0 || near_distance
-                  >= met.distance_to_plane(rank, node_dim, target_key(it),
+                  >= met.distance_to_plane(rank(), node_dim, target_key(it),
                                            const_key(node))))
             {
               node = node->right;
               node_dim = incr_dim(rank, node_dim);
-              tmp = met.distance_to_key(rank, target_key(it), const_key(node));
+              tmp = met.distance_to_key(rank(), target_key(it), const_key(node));
               if (tmp > bound)
                 {
                   if (near_node == 0 || tmp < near_distance)
@@ -726,12 +726,12 @@ namespace spatial
                     && (!cmp(node_dim, const_key(node), target_key(it))
                         || near_node == 0
                         || near_distance
-                        >= met.distance_to_plane(rank, node_dim, target_key(it),
+                        >= met.distance_to_plane(rank(), node_dim, target_key(it),
                                                  const_key(node))))
                 {
                   node = node->left;
                   node_dim = incr_dim(rank, node_dim);
-                  tmp = met.distance_to_key(rank, target_key(it),
+                  tmp = met.distance_to_key(rank(), target_key(it),
                                             const_key(node));
                   if (tmp > bound)
                     {

@@ -509,7 +509,7 @@ namespace spatial
    *
    *  \tparam Ct The container to which these iterator relate to.
    *  \tparam Metric The metric used by the iterator.
-   *  \see mapping_iterator
+   *  \see neighbor_iterator
    */
   template <typename Ct, typename Metric
             = euclidian<typename details::mutate<Ct>::type,
@@ -710,7 +710,7 @@ namespace spatial
   neighbor_begin(const Ct& container, const Metric& metric,
                  const typename container_traits<Ct>::key_type& target)
   {
-    if (container.empty()) return mapping_end(container, metric, target);
+    if (container.empty()) return neighbor_end(container, metric, target);
     neighbor_iterator<const Ct, Metric>
       it(container, metric, target, 0, container.end().node->parent);
     return details::minimum_neighbor(it);
@@ -790,10 +790,10 @@ namespace spatial
                        const typename container_traits<Ct>::key_type& target,
                        const typename Metric::distance_type& bound)
   {
-    if (container.empty()) return mapping_end(container, metric, target);
+    if (container.empty()) return neighbor_end(container, metric, target);
     except::check_positive_distance(bound);
     neighbor_iterator<Ct, Metric>
-      it(container, metric, target, 0, container.top()); // At root dim = 0
+      it(container, metric, target, 0, container.end().node->parent);
     return details::lower_bound_neighbor(it, bound);
   }
 
@@ -803,10 +803,10 @@ namespace spatial
                        const typename container_traits<Ct>::key_type& target,
                        const typename Metric::distance_type& bound)
   {
-    if (container.empty()) return mapping_end(container, metric, target);
+    if (container.empty()) return neighbor_end(container, metric, target);
     except::check_positive_distance(bound);
     neighbor_iterator<const Ct, Metric>
-      it(container, metric, target, 0, container.top()); // At root dim = 0
+      it(container, metric, target, 0, container.end().node->parent);
     return details::lower_bound_neighbor(it, bound);
   }
 
@@ -889,10 +889,10 @@ namespace spatial
                        const typename container_traits<Ct>::key_type& target,
                        const typename Metric::distance_type& bound)
   {
-    if (container.empty()) return mapping_end(container, metric, target);
+    if (container.empty()) return neighbor_end(container, metric, target);
     except::check_positive_distance(bound);
     neighbor_iterator<Ct, Metric>
-      it(container, metric, target, 0, container.top()); // At root dim = 0
+      it(container, metric, target, 0, container.end().node->parent);
     return details::upper_bound_neighbor(it, bound);
   }
 
@@ -902,10 +902,10 @@ namespace spatial
                        const typename container_traits<Ct>::key_type& target,
                        const typename Metric::distance_type& bound)
   {
-    if (container.empty()) return mapping_end(container, metric, target);
+    if (container.empty()) return neighbor_end(container, metric, target);
     except::check_positive_distance(bound);
     neighbor_iterator<const Ct, Metric>
-      it(container, metric, target, 0, container.top()); // At root dim = 0
+      it(container, metric, target, 0, container.end().node->parent);
     return details::upper_bound_neighbor(it, bound);
   }
 

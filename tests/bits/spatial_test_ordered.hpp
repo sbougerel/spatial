@@ -70,8 +70,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         ordered_iterator<typename Tp::container_type> iter;
         iter = ordered_begin(fix.container);
         BOOST_CHECK(*iter == min_value);
-        ordered_iterator<typename Tp::container_type> tmp(iter);
-        BOOST_CHECK(--tmp == ordered_end(fix.container));
         fix.container.erase(iter);
       }
   }
@@ -83,8 +81,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         ordered_iterator<typename Tp::container_type>
           iter(ordered_begin(fix.container));
         BOOST_CHECK(*iter == int2(100, 100));
-        ordered_iterator<typename Tp::container_type> tmp(iter);
-        BOOST_CHECK(--tmp == ordered_end(fix.container));
         fix.container.erase(iter);
       }
   }
@@ -93,21 +89,18 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     ordered_iterator<const typename Tp::container_type> iter;
     iter = ordered_cbegin(fix.container);
     BOOST_CHECK(*iter == int2(1, 1));
-    BOOST_CHECK(--iter == ordered_end(fix.container));
   }
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
     Tp fix(100, decrease());
     ordered_iterator<const typename Tp::container_type>
       iter(ordered_cbegin(fix.container));
     BOOST_CHECK(*iter == int2(1, 1));
-    BOOST_CHECK(--iter == ordered_end(fix.container));
   }
   { // test at the limit: an unbalanced tree (i.e insertions in order)!
     Tp fix(100, increase());
     ordered_iterator<const typename Tp::container_type>
       iter(ordered_cbegin(fix.container));
     BOOST_CHECK(*iter == int2(0, 0));
-    BOOST_CHECK(--iter == ordered_end(fix.container));
   }
 }
 

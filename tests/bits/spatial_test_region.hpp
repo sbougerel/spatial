@@ -404,8 +404,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
         // Make sure it is one within [-0.8, 0.8)
         BOOST_CHECK(details::match_all(fix.container.rank(), *it,
                                        make_bounds(fix.container, l, h)));
-        region_iterator<typename Tp::container_type> tmp = it;
-        BOOST_CHECK(--tmp == region_end(fix.container, l, h));
         fix.container.erase(it);
       }
   }
@@ -417,9 +415,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
         equal_iterator<typename Tp::container_type>
           it = equal_begin(fix.container, k);
         BOOST_CHECK(it != equal_end(fix.container, k));
-        equal_iterator<typename Tp::container_type> tmp = it;
-        --tmp;
-        BOOST_CHECK(tmp == equal_end(fix.container, k));
         fix.container.erase(it);
       }
   }
@@ -450,9 +445,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
         // Make sure it is one within (10, 90)
         BOOST_CHECK(details::match_all(fix.container.rank(), *it,
                                        make_open_bounds(fix.container, l, h)));
-        open_region_iterator<typename Tp::container_type> tmp = it;
-        --tmp;
-        BOOST_CHECK(tmp == open_region_end(fix.container, l, h));
         fix.container.erase(it);
       }
   }
@@ -469,9 +461,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
         // Make sure it is one within (10, 90)
         BOOST_CHECK(details::match_all(fix.container.rank(), *it,
                                        make_closed_bounds(fix.container, l, h)));
-        closed_region_iterator<typename Tp::container_type> tmp = it;
-        --tmp;
-        BOOST_CHECK(tmp == closed_region_end(fix.container, l, h));
         fix.container.erase(it);
       }
   }

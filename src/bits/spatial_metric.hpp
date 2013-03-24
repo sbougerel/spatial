@@ -135,11 +135,6 @@ namespace spatial
    typename enable_if<std::tr1::is_floating_point<DistanceType> >::type>
   {
     /**
-     *  The rank_type of the container being used for calculations.
-     */
-    typedef typename container_traits<Ct>::rank_type rank_type;
-
-    /**
      *  The key_type of the container being used for calculations.
      */
     typedef typename container_traits<Ct>::key_type key_type;
@@ -147,7 +142,7 @@ namespace spatial
     /**
      *  Placeholder for the 'difference' functor.
      */
-    Diff diff_;
+    Diff _diff;
 
   public:
     /**
@@ -156,18 +151,18 @@ namespace spatial
     typedef DistanceType distance_type;
 
     //! The constructors allows you to specify a custom difference type.
-    euclidian(const Diff& diff = Diff()) : diff_(diff) { }
+    euclidian(const Diff& diff = Diff()) : _diff(diff) { }
 
     /**
      *  Compute the distance between the point of @c origin and the @c key.
      *  @return The resulting distance.
      */
     distance_type
-    distance_to_key(const rank_type& rank,
+    distance_to_key(dimension_type rank,
                     const key_type& origin, const key_type& key) const
     {
       return math::euclid_distance_to_key
-        <rank_type, key_type, Diff, DistanceType>(rank, origin, key, diff_);
+        <key_type, Diff, DistanceType>(rank, origin, key, _diff);
     }
 
     /**
@@ -181,11 +176,11 @@ namespace spatial
      *  \return The resulting distance.
      */
     distance_type
-    distance_to_plane(const rank_type&, dimension_type dim,
+    distance_to_plane(dimension_type, dimension_type dim,
                       const key_type& origin, const key_type& key) const
     {
       return math::euclid_distance_to_plane
-        <key_type, Diff, DistanceType>(dim, origin, key, diff_);
+        <key_type, Diff, DistanceType>(dim, origin, key, _diff);
     }
   };
   //@}
@@ -223,11 +218,6 @@ namespace spatial
    typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type>
   {
     /**
-     *  The rank_type of the container being used for calculations.
-     */
-    typedef typename container_traits<Ct>::rank_type rank_type;
-
-    /**
      *  The key_type of the container being used for calculations.
      */
     typedef typename container_traits<Ct>::key_type key_type;
@@ -235,24 +225,24 @@ namespace spatial
     /**
      *  Placeholder for the 'difference' functor.
      */
-    Diff diff_;
+    Diff _diff;
 
   public:
     typedef DistanceType distance_type;
 
     //! The constructor allows you to specify a custom difference type.
-    quadrance(const Diff& diff = Diff()) : diff_(diff) { }
+    quadrance(const Diff& diff = Diff()) : _diff(diff) { }
 
     /**
      *  Compute the distance between the point of @c origin and the @c key.
      *  @return The resulting square distance.
      */
     distance_type
-    distance_to_key(const rank_type& rank,
+    distance_to_key(dimension_type rank,
                     const key_type& origin, const key_type& key) const
     {
       return math::square_euclid_distance_to_key
-        <key_type, Diff, DistanceType>(rank, origin, key, diff_);
+        <key_type, Diff, DistanceType>(rank, origin, key, _diff);
     }
 
     /**
@@ -262,11 +252,11 @@ namespace spatial
      *  \return The resulting square distance.
      */
     distance_type
-    distance_to_plane(const rank_type&, dimension_type dim,
+    distance_to_plane(dimension_type, dimension_type dim,
                       const key_type& origin, const key_type& key) const
     {
       return math::square_euclid_distance_to_plane
-        <key_type, Diff, DistanceType>(dim, origin, key, diff_);
+        <key_type, Diff, DistanceType>(dim, origin, key, _diff);
     }
   };
   //@}
@@ -308,11 +298,6 @@ namespace spatial
    typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type>
   {
     /**
-     *  The rank_type of the container being used for calculations.
-     */
-    typedef typename container_traits<Ct>::rank_type rank_type;
-
-    /**
      *  The key_type of the container being used for calculations.
      */
     typedef typename container_traits<Ct>::key_type key_type;
@@ -320,24 +305,24 @@ namespace spatial
     /**
      *  Placeholder for the 'difference' functor.
      */
-    Diff diff_;
+    Diff _diff;
 
   public:
     typedef DistanceType distance_type;
 
     //! A constructor that allows you to specify the Difference type.
-    manhattan(const Diff& diff = Diff()) : diff_(diff) { }
+    manhattan(const Diff& diff = Diff()) : _diff(diff) { }
 
     /**
      *  Compute the distance between the point of \c origin and the \c key.
      *  \return The resulting manahattan distance.
      */
     distance_type
-    distance_to_key(const rank_type& rank,
+    distance_to_key(dimension_type rank,
                     const key_type& origin, const key_type& key) const
     {
       return math::manhattan_distance_to_key
-        <key_type, Diff, DistanceType>(rank, origin, key, diff_);
+        <key_type, Diff, DistanceType>(rank, origin, key, _diff);
     }
 
     /**
@@ -348,11 +333,11 @@ namespace spatial
      *  \return The resulting manhattan distance.
      */
     distance_type
-    distance_to_plane(const rank_type&, dimension_type dim,
+    distance_to_plane(dimension_type, dimension_type dim,
                       const key_type& origin, const key_type& key) const
     {
       return math::manhattan_distance_to_plane
-        <key_type, Diff, DistanceType>(dim, origin, key, diff_);
+        <key_type, Diff, DistanceType>(dim, origin, key, _diff);
     }
   };
   ///@}

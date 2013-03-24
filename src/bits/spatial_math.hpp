@@ -216,17 +216,17 @@ namespace spatial
      *  Providing x statisfies x>y, x>z, etc, the second form is less likely to
      *  overflow than the first form.
      */
-    template <typename Rank, typename Key, typename Difference, typename Unit>
+    template <typename Key, typename Difference, typename Unit>
     inline typename enable_if<std::tr1::is_floating_point<Unit>, Unit>::type
     euclid_distance_to_key
-    (const Rank& rank, Key origin, Key key, Difference diff)
+    (dimension_type rank, Key origin, Key key, Difference diff)
     {
       using namespace std;
       // Find a non zero maximum or return 0
       Unit max = euclid_distance_to_plane<Key, Difference, Unit>
         (0, origin, key, diff);
       dimension_type max_dim = 0;
-      for (dimension_type i = 1; i < rank(); ++i)
+      for (dimension_type i = 1; i < rank; ++i)
         {
           Unit d = euclid_distance_to_plane<Key, Difference, Unit>
             (i, origin, key, diff);
@@ -236,7 +236,7 @@ namespace spatial
       if (max == zero) return zero; // they're all zero!
       // Compute the distance
       Unit sum = zero;
-      for (dimension_type i = 0; i < rank(); ++i)
+      for (dimension_type i = 0; i < rank; ++i)
         {
           if (i == max_dim) continue;
           Unit div = diff(i, origin, key) / max;
@@ -272,14 +272,15 @@ namespace spatial
      *  @brief  Compute the square value of the distance between @p origin and
      *  @p key.
      */
-    template <typename Rank, typename Key, typename Difference, typename Unit>
+    template <typename Key, typename Difference, typename Unit>
     inline typename enable_if<std::tr1::is_arithmetic<Unit>, Unit>::type
     square_euclid_distance_to_key
-    (const Rank& rank, Key origin, Key key, Difference diff)
+    (dimension_type rank, const Key& origin, const Key& key,
+     const Difference& diff)
     {
       Unit sum = square_euclid_distance_to_plane<Key, Difference, Unit>
         (0, origin, key, diff);
-      for (dimension_type i = 1; i < rank(); ++i)
+      for (dimension_type i = 1; i < rank; ++i)
         {
 #ifdef SPATIAL_SAFER_ARITHMETICS
           sum = except::check_positive_add
@@ -314,14 +315,14 @@ namespace spatial
     /**
      *  @brief  Compute the manhattan distance between @p origin and @p key.
      */
-    template <typename Rank, typename Key, typename Difference, typename Unit>
+    template <typename Key, typename Difference, typename Unit>
     inline typename enable_if<std::tr1::is_arithmetic<Unit>, Unit>::type
     manhattan_distance_to_key
-    (const Rank& rank, Key origin, Key key, Difference diff)
+    (dimension_type rank, Key origin, Key key, Difference diff)
     {
       Unit sum = manhattan_distance_to_plane<Key, Difference, Unit>
         (0, origin, key, diff);
-      for (dimension_type i = 1; i < rank(); ++i)
+      for (dimension_type i = 1; i < rank; ++i)
         {
 #ifdef SPATIAL_SAFER_ARITHMETICS
           sum = ::spatial::except::check_positive_add

@@ -100,18 +100,18 @@ BOOST_AUTO_TEST_CASE(test_euclid_distance_to_key)
     // distance between 2 points at the same position should be null.
     double6 x; x.assign(.0);
     double r = math::euclid_distance_to_key
-      <details::Static_rank<6>, double6, bracket_minus<double6, double>, double>
-      (details::Static_rank<6>(), x, x, bracket_minus<double6, double>());
+      <double6, bracket_minus<double6, double>, double>
+      (6, x, x, bracket_minus<double6, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
     x.assign(-1.);
     r = math::euclid_distance_to_key
-      <details::Static_rank<6>, double6, bracket_minus<double6, double>, double>
-      (details::Static_rank<6>(), x, x, bracket_minus<double6, double>());
+      <double6, bracket_minus<double6, double>, double>
+      (6, x, x, bracket_minus<double6, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
     x.assign(1.);
     r = math::euclid_distance_to_key
-      <details::Static_rank<6>, double6, bracket_minus<double6, double>, double>
-      (details::Static_rank<6>(), x, x, bracket_minus<double6, double>());
+      <double6, bracket_minus<double6, double>, double>
+      (6, x, x, bracket_minus<double6, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
   }
   {
@@ -123,8 +123,8 @@ BOOST_AUTO_TEST_CASE(test_euclid_distance_to_key)
         double6 q = make_double6(drand(), drand(), drand(),
                                  drand(), drand(), drand());
         double dist = math::euclid_distance_to_key
-          <details::Static_rank<6>, double6, bracket_minus<double6, double>, double>
-          (details::Static_rank<6>(), p, q, bracket_minus<double6, double>());
+          <double6, bracket_minus<double6, double>, double>
+          (6, p, q, bracket_minus<double6, double>());
         using namespace ::std;
         double other_dist = sqrt((p[0] - q[0]) * (p[0] - q[0])
                                  + (p[1] - q[1]) * (p[1] - q[1])
@@ -143,18 +143,18 @@ BOOST_AUTO_TEST_CASE( test_euclidian_square_distance_to_key )
     // distance between 2 points at the same position should be null.
     quad x(0, 0, 0, 0);
     int r = math::square_euclid_distance_to_key
-      <details::Static_rank<4>, quad, accessor_minus<quad_access, quad, int>, int>
-      (details::Static_rank<4>(), x, x, accessor_minus<quad_access, quad, int>());
+      <quad, accessor_minus<quad_access, quad, int>, int>
+      (4, x, x, accessor_minus<quad_access, quad, int>());
     BOOST_CHECK_EQUAL(r, 0);
     x = quad(1, 1, 1, 1);
     r = math::square_euclid_distance_to_key
-      <details::Static_rank<4>, quad, accessor_minus<quad_access, quad, int>, int>
-      (details::Static_rank<4>(), x, x, accessor_minus<quad_access, quad, int>());
+      <quad, accessor_minus<quad_access, quad, int>, int>
+      (4, x, x, accessor_minus<quad_access, quad, int>());
     BOOST_CHECK_EQUAL(r, 0);
     x = quad(-1, -1, -1, -1);
     r = math::square_euclid_distance_to_key
-      <details::Static_rank<4>, quad, accessor_minus<quad_access, quad, int>, int>
-      (details::Static_rank<4>(), x, x, accessor_minus<quad_access, quad, int>());
+      <quad, accessor_minus<quad_access, quad, int>, int>
+      (4, x, x, accessor_minus<quad_access, quad, int>());
     BOOST_CHECK_EQUAL(r, 0);
   }
   {
@@ -171,8 +171,8 @@ BOOST_AUTO_TEST_CASE( test_euclidian_square_distance_to_key )
         q.z = rand() % 80 - 40;
         q.w = rand() % 80 - 40;
         int dist = math::square_euclid_distance_to_key
-          <details::Static_rank<4>, quad, accessor_minus<quad_access, quad, int>, int>
-          (details::Static_rank<4>(), p, q, accessor_minus<quad_access, quad, int>());
+          <quad, accessor_minus<quad_access, quad, int>, int>
+          (4, p, q, accessor_minus<quad_access, quad, int>());
         int other_dist = (p.x-q.x)*(p.x-q.x) + (p.y-q.y)*(p.y-q.y)
           + (p.z-q.z)*(p.z-q.z) + (p.w-q.w)*(p.w-q.w);
         BOOST_CHECK_EQUAL(dist, other_dist);
@@ -186,18 +186,18 @@ BOOST_AUTO_TEST_CASE( test_manhattan_distance_to_key )
     // distance between 2 points at the same position should be null.
     quad x(0, 0, 0, 0);
     int r = math::manhattan_distance_to_key
-      <details::Static_rank<4>, quad, accessor_minus<quad_access, quad, int>, int>
-      (details::Static_rank<4>(), x, x, accessor_minus<quad_access, quad, int>());
+      <quad, accessor_minus<quad_access, quad, int>, int>
+      (4, x, x, accessor_minus<quad_access, quad, int>());
     BOOST_CHECK_EQUAL(r, 0);
     x = quad(1, 1, 1, 1);
     r = math::manhattan_distance_to_key
-      <details::Static_rank<4>, quad, accessor_minus<quad_access, quad, int>, int>
-      (details::Static_rank<4>(), x, x, accessor_minus<quad_access, quad, int>());
+      <quad, accessor_minus<quad_access, quad, int>, int>
+      (4, x, x, accessor_minus<quad_access, quad, int>());
     BOOST_CHECK_EQUAL(r, 0);
     x = quad(-1, -1, -1, -1);
     r = math::manhattan_distance_to_key
-      <details::Static_rank<4>, quad, accessor_minus<quad_access, quad, int>, int>
-      (details::Static_rank<4>(), x, x, accessor_minus<quad_access, quad, int>());
+      <quad, accessor_minus<quad_access, quad, int>, int>
+      (4, x, x, accessor_minus<quad_access, quad, int>());
     BOOST_CHECK_EQUAL(r, 0);
   }
   {
@@ -214,8 +214,8 @@ BOOST_AUTO_TEST_CASE( test_manhattan_distance_to_key )
         q.z = rand() % 80 - 40;
         q.w = rand() % 80 - 40;
         int dist = math::manhattan_distance_to_key
-          <details::Static_rank<4>, quad, accessor_minus<quad_access, quad, int>, int>
-          (details::Static_rank<4>(), p, q, accessor_minus<quad_access, quad, int>());
+          <quad, accessor_minus<quad_access, quad, int>, int>
+          (4, p, q, accessor_minus<quad_access, quad, int>());
         using namespace ::std;
         int other_dist = abs(p.x-q.x) + abs(p.y-q.y)
           + abs(p.z-q.z) + abs(p.w-q.w);

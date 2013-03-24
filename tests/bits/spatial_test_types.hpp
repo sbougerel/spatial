@@ -226,6 +226,23 @@ struct quad_ordered_less
 };
 
 //! An accessor for the type quad
+struct quad_diff
+{
+  int
+  operator()(dimension_type dim, const quad& x, const quad& y) const
+  {
+    switch(dim)
+      {
+      case 0: return x.x - y.x;
+      case 1: return x.y - y.y;
+      case 2: return x.z - y.z;
+      case 3: return x.w - y.w;
+      default: throw std::out_of_range("argument 'dim' is greater than 3");
+      }
+  }
+};
+
+//! An accessor for the type quad
 struct quad_access
 {
   int
