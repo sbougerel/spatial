@@ -592,13 +592,12 @@ namespace spatial
     template <typename Container, typename Metric>
     neighbor_iterator<Container, Metric>&
     lower_bound_neighbor(neighbor_iterator<Container, Metric>& iter,
-                         const typename Metric::distance_type bound);
+                         typename Metric::distance_type bound);
 
     template <typename Container, typename Metric>
     neighbor_iterator<Container, Metric>&
     upper_bound_neighbor(neighbor_iterator<Container, Metric>& iter,
-                         const typename Metric::distance_type& bound);
-
+                         typename Metric::distance_type& bound);
   } // namespace details
 
   /**
@@ -788,7 +787,7 @@ namespace spatial
   inline neighbor_iterator<Ct, Metric>
   neighbor_lower_bound(Ct& container, const Metric& metric,
                        const typename container_traits<Ct>::key_type& target,
-                       const typename Metric::distance_type& bound)
+                       typename Metric::distance_type bound)
   {
     if (container.empty()) return neighbor_end(container, metric, target);
     except::check_positive_distance(bound);
@@ -801,7 +800,7 @@ namespace spatial
   inline neighbor_iterator<const Ct, Metric>
   neighbor_lower_bound(const Ct& container, const Metric& metric,
                        const typename container_traits<Ct>::key_type& target,
-                       const typename Metric::distance_type& bound)
+                       typename Metric::distance_type bound)
   {
     if (container.empty()) return neighbor_end(container, metric, target);
     except::check_positive_distance(bound);
@@ -814,7 +813,7 @@ namespace spatial
   inline neighbor_iterator<const Ct, Metric>
   neighbor_clower_bound(const Ct& container, const Metric& metric,
                         const typename container_traits<Ct>::key_type& target,
-                        const typename Metric::distance_type& bound)
+                        typename Metric::distance_type bound)
   { return neighbor_lower_bound(container, metric, target, bound); }
   //@}
 
@@ -887,7 +886,7 @@ namespace spatial
   inline neighbor_iterator<Ct, Metric>
   neighbor_upper_bound(Ct& container, const Metric& metric,
                        const typename container_traits<Ct>::key_type& target,
-                       const typename Metric::distance_type& bound)
+                       typename Metric::distance_type bound)
   {
     if (container.empty()) return neighbor_end(container, metric, target);
     except::check_positive_distance(bound);
@@ -900,7 +899,7 @@ namespace spatial
   inline neighbor_iterator<const Ct, Metric>
   neighbor_upper_bound(const Ct& container, const Metric& metric,
                        const typename container_traits<Ct>::key_type& target,
-                       const typename Metric::distance_type& bound)
+                       typename Metric::distance_type bound)
   {
     if (container.empty()) return neighbor_end(container, metric, target);
     except::check_positive_distance(bound);
@@ -913,7 +912,7 @@ namespace spatial
   inline neighbor_iterator<const Ct, Metric>
   neighbor_cupper_bound(const Ct& container, const Metric& metric,
                         const typename container_traits<Ct>::key_type& target,
-                        const typename Metric::distance_type& bound)
+                        typename Metric::distance_type bound)
   { return neighbor_upper_bound(container, metric, target); }
   //@}
 

@@ -527,7 +527,7 @@ namespace spatial
     template <typename Container, typename Metric>
     inline neighbor_iterator<Container, Metric>&
     lower_bound_neighbor(neighbor_iterator<Container, Metric>& it,
-                         const typename Metric::distance_type bound)
+                         typename Metric::distance_type bound)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
       const typename container_traits<Container>::rank_type rank(it.rank());
@@ -651,7 +651,7 @@ namespace spatial
     template <typename Container, typename Metric>
     inline neighbor_iterator<Container, Metric>&
     upper_bound_neighbor(neighbor_iterator<Container, Metric>& it,
-                         const typename Metric::distance_type bound)
+                         typename Metric::distance_type bound)
     {
       typedef Node<typename Container::mode_type>* node_ptr;
       const typename container_traits<Container>::rank_type rank(it.rank());

@@ -599,14 +599,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         i = neighbor_lower_bound(fix.container, metric, target, max_dist);
         BOOST_CHECK(i != neighbor_end(fix.container, metric, target));
         BOOST_CHECK_EQUAL(max_dist, distance(i));
-        BOOST_CHECK(--i == neighbor_end(fix.container, metric, target)
-                    || distance(i) < max_dist);
+        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target)
+                    || distance(--i) < max_dist);
         i = neighbor_lower_bound(fix.container, metric, target, avg_dist);
         BOOST_CHECK(i != neighbor_end(fix.container, metric, target));
         BOOST_CHECK_GE(distance(i), avg_dist);
         neighbor_iterator_type tmp = i;
-        BOOST_CHECK(--tmp == neighbor_end(fix.container, metric, target)
-                    || distance(tmp) < max_dist);
+        BOOST_CHECK(tmp == neighbor_begin(fix.container, metric, target)
+                    || distance(--tmp) < avg_dist);
         fix.container.erase(i);
       }
   }
@@ -617,19 +617,248 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     quad target;
     same()(target, 0, 100);
     // All points and targets are the same.
-    neighbor_iterator_type i
-      = neighbor_lower_bound(fix.container, metric, target, 0);
-    BOOST_CHECK(i == neighbor_begin(fix.container, metric, target));
-    BOOST_CHECK_EQUAL(0, distance(i));
-    i = neighbor_lower_bound(fix.container, metric, target, 1);
-    BOOST_CHECK(i == neighbor_end(fix.container, metric, target));
+    while (!fix.container.empty())
+      {
+        neighbor_iterator_type i
+          = neighbor_lower_bound(fix.container, metric, target, 1);
+        BOOST_CHECK(i == neighbor_end(fix.container, metric, target));
+        i = neighbor_lower_bound(fix.container, metric, target, 0);
+        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target));
+        BOOST_CHECK_EQUAL(0, distance(i));
+        fix.container.erase(i);
+      }
   }
-
+  // Prove that you can find the lower bound in an unbalanced tree
+  {
+    Tp fix(100, increase());
+    metric_type metric;
+    quad target;
+    while (!fix.container.empty())
+      {
+        randomize(0, 100)(target, 0, 0);
+        // Find min and max dist first
+        distance_type min_dist;
+        distance_type max_dist;
+        typename Tp::container_type::iterator it = fix.container.begin();
+        min_dist = max_dist
+          = metric.distance_to_key(fix.container.rank()(), *it, target);
+        ++it;
+        for (; it != fix.container.end(); ++it)
+          {
+            distance_type tmp
+              = metric.distance_to_key(fix.container.rank()(), *it, target);
+            if (tmp < min_dist) min_dist = tmp;
+            if (tmp > max_dist) max_dist = tmp;
+          }
+        distance_type avg_dist = (min_dist + max_dist) / 2;
+        // Use this knowledge to test the lower bound
+        neighbor_iterator_type i
+          = neighbor_lower_bound(fix.container, metric, target, min_dist - 1);
+        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target));
+        BOOST_CHECK_EQUAL(min_dist, distance(i));
+        i = neighbor_lower_bound(fix.container, metric, target, max_dist);
+        BOOST_CHECK(i != neighbor_end(fix.container, metric, target));
+        BOOST_CHECK_EQUAL(max_dist, distance(i));
+        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target)
+                    || distance(--i) < max_dist);
+        i = neighbor_lower_bound(fix.container, metric, target, avg_dist);
+        BOOST_CHECK(i != neighbor_end(fix.container, metric, target));
+        BOOST_CHECK_GE(distance(i), avg_dist);
+        neighbor_iterator_type tmp = i;
+        BOOST_CHECK(tmp == neighbor_begin(fix.container, metric, target)
+                    || distance(--tmp) < avg_dist);
+        fix.container.erase(i);
+      }
+  }
+  // Prove that you can find the lower bound in an unbalanced tree
+  {
+    Tp fix(100, decrease());
+    metric_type metric;
+    quad target;
+    while (!fix.container.empty())
+      {
+        randomize(0, 100)(target, 0, 0);
+        // Find min and max dist first
+        distance_type min_dist;
+        distance_type max_dist;
+        typename Tp::container_type::iterator it = fix.container.begin();
+        min_dist = max_dist
+          = metric.distance_to_key(fix.container.rank()(), *it, target);
+        ++it;
+        for (; it != fix.container.end(); ++it)
+          {
+            distance_type tmp
+              = metric.distance_to_key(fix.container.rank()(), *it, target);
+            if (tmp < min_dist) min_dist = tmp;
+            if (tmp > max_dist) max_dist = tmp;
+          }
+        distance_type avg_dist = (min_dist + max_dist) / 2;
+        // Use this knowledge to test the lower bound
+        neighbor_iterator_type i
+          = neighbor_lower_bound(fix.container, metric, target, min_dist - 1);
+        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target));
+        BOOST_CHECK_EQUAL(min_dist, distance(i));
+        i = neighbor_lower_bound(fix.container, metric, target, max_dist);
+        BOOST_CHECK(i != neighbor_end(fix.container, metric, target));
+        BOOST_CHECK_EQUAL(max_dist, distance(i));
+        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target)
+                    || distance(--i) < max_dist);
+        i = neighbor_lower_bound(fix.container, metric, target, avg_dist);
+        BOOST_CHECK(i != neighbor_end(fix.container, metric, target));
+        BOOST_CHECK_GE(distance(i), avg_dist);
+        neighbor_iterator_type tmp = i;
+        BOOST_CHECK(tmp == neighbor_begin(fix.container, metric, target)
+                    || distance(--tmp) < avg_dist);
+        fix.container.erase(i);
+      }
+  }
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_neighbor_upper_bound, Tp, quad_sets )
 {
+  typedef quadrance<typename Tp::container_type, int, quad_diff> metric_type;
+  typedef typename metric_type::distance_type distance_type;
+  typedef neighbor_iterator<typename Tp::container_type, metric_type>
+    neighbor_iterator_type;
+  // Prove that you can find lower bound with N nodes, down to 1 node
+  {
+    Tp fix(100, randomize(-20, 20));
+    metric_type metric;
+    quad target;
+    while (!fix.container.empty())
+      {
+        randomize(-22, 22)(target, 0, 0);
+        // Find min and max dist first
+        distance_type min_dist;
+        distance_type max_dist;
+        typename Tp::container_type::iterator it = fix.container.begin();
+        min_dist = max_dist
+          = metric.distance_to_key(fix.container.rank()(), *it, target);
+        ++it;
+        for (; it != fix.container.end(); ++it)
+          {
+            distance_type tmp
+              = metric.distance_to_key(fix.container.rank()(), *it, target);
+            if (tmp < min_dist) min_dist = tmp;
+            if (tmp > max_dist) max_dist = tmp;
+          }
+        distance_type avg_dist = (min_dist + max_dist) / 2;
+        // use this knowledge to test the upper bound
+        neighbor_iterator_type i
+          = neighbor_upper_bound(fix.container, metric, target, min_dist - 1);
+        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target));
+        BOOST_CHECK_EQUAL(min_dist, distance(i));
+        i = neighbor_upper_bound(fix.container, metric, target, max_dist);
+        BOOST_CHECK(i == neighbor_end(fix.container, metric, target));
+        i = neighbor_upper_bound(fix.container, metric, target, avg_dist);
+        if (i != neighbor_end(fix.container, metric, target))
+          {
+            BOOST_CHECK_GT(distance(i), avg_dist);
+          }
+        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target)
+                    || distance(--i) <= avg_dist);
+        fix.container.erase(i);
+      }
+  }
+  // Prove that you can find the upper bound when node and target are same
+  {
+    Tp fix(100, same());
+    metric_type metric;
+    quad target;
+    same()(target, 0, 100);
+    // All points and targets are the same.
+    while (!fix.container.empty())
+      {
+        neighbor_iterator_type i
+          = neighbor_upper_bound(fix.container, metric, target, 1);
+        BOOST_CHECK(i == neighbor_end(fix.container, metric, target));
+        i = neighbor_upper_bound(fix.container, metric, target, 0);
+        BOOST_CHECK(i == neighbor_end(fix.container, metric, target));
+        fix.container.erase(--i);
+      }
+  }
+  // Prove that you can find the upper bound in an unbalanced tree
+  {
+    Tp fix(100, increase());
+    metric_type metric;
+    quad target;
+    while (!fix.container.empty())
+      {
+        randomize(0, 100)(target, 0, 0);
+        // Find min and max dist first
+        distance_type min_dist;
+        distance_type max_dist;
+        typename Tp::container_type::iterator it = fix.container.begin();
+        min_dist = max_dist
+          = metric.distance_to_key(fix.container.rank()(), *it, target);
+        ++it;
+        for (; it != fix.container.end(); ++it)
+          {
+            distance_type tmp
+              = metric.distance_to_key(fix.container.rank()(), *it, target);
+            if (tmp < min_dist) min_dist = tmp;
+            if (tmp > max_dist) max_dist = tmp;
+          }
+        distance_type avg_dist = (min_dist + max_dist) / 2;
+        // Use this knowledge to test the upper bound
+        neighbor_iterator_type i
+          = neighbor_upper_bound(fix.container, metric, target, min_dist - 1);
+        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target));
+        BOOST_CHECK_EQUAL(min_dist, distance(i));
+        i = neighbor_upper_bound(fix.container, metric, target, max_dist);
+        BOOST_CHECK(i == neighbor_end(fix.container, metric, target));
+        i = neighbor_upper_bound(fix.container, metric, target, avg_dist);
+        if (i != neighbor_end(fix.container, metric, target))
+          {
+            BOOST_CHECK_GT(distance(i), avg_dist);
+          }
+        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target)
+                    || distance(--i) <= avg_dist);
+        fix.container.erase(i);
+      }
+  }
+  // Prove that you can find the upper bound in an unbalanced tree
+  {
+    Tp fix(100, decrease());
+    metric_type metric;
+    quad target;
+    while (!fix.container.empty())
+      {
+        randomize(0, 100)(target, 0, 0);
+        // Find min and max dist first
+        distance_type min_dist;
+        distance_type max_dist;
+        typename Tp::container_type::iterator it = fix.container.begin();
+        min_dist = max_dist
+          = metric.distance_to_key(fix.container.rank()(), *it, target);
+        ++it;
+        for (; it != fix.container.end(); ++it)
+          {
+            distance_type tmp
+              = metric.distance_to_key(fix.container.rank()(), *it, target);
+            if (tmp < min_dist) min_dist = tmp;
+            if (tmp > max_dist) max_dist = tmp;
+          }
+        distance_type avg_dist = (min_dist + max_dist) / 2;
+        // Use this knowledge to test the upper bound
+        neighbor_iterator_type i
+          = neighbor_upper_bound(fix.container, metric, target, min_dist - 1);
+        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target));
+        BOOST_CHECK_EQUAL(min_dist, distance(i));
+        i = neighbor_upper_bound(fix.container, metric, target, max_dist);
+        BOOST_CHECK(i != neighbor_end(fix.container, metric, target));
+        BOOST_CHECK_EQUAL(max_dist, distance(i));
+        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target)
+                    || distance(--i) < max_dist);
+        i = neighbor_upper_bound(fix.container, metric, target, avg_dist);
+        BOOST_CHECK(i != neighbor_end(fix.container, metric, target));
+        BOOST_CHECK_GE(distance(i), avg_dist);
+        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target)
+                    || distance(--i) < avg_dist);
+        fix.container.erase(i);
+      }
+  }
 }
 
 #endif // SPATIAL_TEST_NEIGHBOR_HPP
