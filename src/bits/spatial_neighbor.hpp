@@ -597,7 +597,7 @@ namespace spatial
     template <typename Container, typename Metric>
     neighbor_iterator<Container, Metric>&
     upper_bound_neighbor(neighbor_iterator<Container, Metric>& iter,
-                         typename Metric::distance_type& bound);
+                         typename Metric::distance_type bound);
   } // namespace details
 
   /**
