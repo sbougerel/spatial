@@ -15,6 +15,7 @@
 #ifndef SPATIAL_TEST_MAPPING_HPP
 #define SPATIAL_TEST_MAPPING_HPP
 
+#include "../../src/mapping_iterator.hpp"
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_mapping_basics, Tp, every_quad )

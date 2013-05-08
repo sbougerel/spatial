@@ -22,10 +22,10 @@
 BOOST_AUTO_TEST_CASE(test_mode_traits)
 {
   check_is_same
-    <mode_traits<pointset<2, int2>::mode_type>::invariant_category,
+    <mode_traits<point_multiset<2, int2>::mode_type>::invariant_category,
     details::relaxed_invariant_tag>();
   check_is_same
-    <mode_traits<idle_pointset<2, int2>::mode_type>::invariant_category,
+    <mode_traits<idle_point_multiset<2, int2>::mode_type>::invariant_category,
     details::strict_invariant_tag>();
 }
 
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(test_mode_traits)
  */
 BOOST_AUTO_TEST_CASE(test_container_traits)
 {
-  typedef pointset<2, int2> container_type;
+  typedef point_multiset<2, int2> container_type;
 # define SPATIAL_TRAIT_CHECK(Type)         \
   check_is_same                            \
   <container_traits<container_type>::Type, \

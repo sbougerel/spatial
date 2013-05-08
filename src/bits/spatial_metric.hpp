@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Copyright Sylvain Bougerel 2009 - 2012.
+// Copyright Sylvain Bougerel 2009 - 2013.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -21,6 +21,7 @@
 #endif
 
 #include "spatial_math.hpp"
+#include "spatial_compare_builtin.hpp"
 
 namespace spatial
 {

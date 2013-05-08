@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Copyright Sylvain Bougerel 2009 - 2012.
+// Copyright Sylvain Bougerel 2009 - 2013.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -17,19 +17,8 @@
 #ifndef SPATIAL_CHECK_CONCEPT_HPP
 #define SPATIAL_CHECK_CONCEPT_HPP
 
-#ifndef SPATIAL_HPP
-#  error "Do not include this file directly in your project."
-#endif
-
 // is_integer, is_floating_point, is_arithmetic, etc...
-#ifdef __GLIBCXX__
-#  include <tr1/type_traits>
-#else
-#  ifdef __IBMCPP__
-#    define __IBMCPP_TR1__
-#  endif
-#  include <type_traits>
-#endif
+#include "spatial_pull_tr1.hpp"
 
 namespace spatial
 {

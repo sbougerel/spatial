@@ -21,6 +21,8 @@
 #  error "Do not include this file directly in your project."
 #endif
 
+#include "spatial_neighbor.hpp"
+
 namespace spatial
 {
   /**
@@ -33,7 +35,7 @@ namespace spatial
    *
    *  \tparam Ct The container to iterate.
    *  \tparam DistanceType The type used to represent the distance, it must be a
-   *  primitive arithmetic type.
+   *  primitive floating point type.
    *  \tparam Diff The difference functor that will compute the difference
    *  between 2 key element in the container, along a specific dimension. See
    *  \ref DifferenceConcept for further explanation.
@@ -41,13 +43,13 @@ namespace spatial
   ///@{
   template<typename Ct, typename DistanceType,
            typename Diff = void,   // Sink for non-built-in compare types
-           typename Enable = void> // Sink for non-arithmetic types
+           typename Enable = void> // Sink for non-floating point types
   class euclidian_neighbor_iterator { };
 
   template <typename Ct, typename DistanceType, typename Diff>
   class euclidian_neighbor_iterator
   <Ct, euclidian<Ct, DistanceType, Diff>,
-   typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type>
+   typename enable_if<std::tr1::is_floating_point<DistanceType> >::type>
     : public neighbor_iterator<Ct, euclidian<Ct, DistanceType, Diff> >
   {
   public:
@@ -68,7 +70,7 @@ namespace spatial
   template <typename Ct, typename DistanceType, typename Diff>
   class euclidian_neighbor_iterator
   <const Ct, euclidian<Ct, DistanceType, Diff>,
-   typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type>
+   typename enable_if<std::tr1::is_floating_point<DistanceType> >::type>
     : public neighbor_iterator<const Ct, euclidian<Ct, DistanceType, Diff> >
   {
   public:
@@ -105,8 +107,8 @@ namespace spatial
   <Ct, euclidian<Ct, DistanceType,
                  typename details::with_builtin_difference
                  <Ct, DistanceType>::type>,
-   typename enable_if<details::is_compare_builtin<Ct>,
-                      typename enable_if<std::tr1::is_arithmetic<DistanceType> >
+   typename enable_if<std::tr1::is_floating_point<DistanceType>,
+                      typename enable_if<details::is_compare_builtin<Ct> >
                       ::type>
    ::type>
     : public neighbor_iterator
@@ -141,7 +143,7 @@ namespace spatial
   <const Ct, euclidian<Ct, DistanceType,
                        typename details::with_builtin_difference
                        <Ct, DistanceType>::type>,
-   typename enable_if<std::tr1::is_arithmetic<DistanceType>,
+   typename enable_if<std::tr1::is_floating_point<DistanceType>,
                       typename enable_if<details::is_compare_builtin<Ct> >
                       ::type>
    ::type>
@@ -193,7 +195,7 @@ namespace spatial
    *
    *  \tparam Ct The container to iterator.
    *  \tparam DistanceType The type used to represent the distance, it must be a
-   *  primitive arithmetic type.
+   *  primitive floating point type.
    *  \tparam Diff The difference functor that will compute the difference
    *  between 2 key element in the container, along a specific dimension. See
    *  \ref DifferenceConcept for further explanation.
@@ -205,13 +207,13 @@ namespace spatial
   ///@{
   template<typename Ct, typename DistanceType,
            typename Diff = void,   // Sink for non-built-in compare types
-           typename Enable = void> // Sink for non-arithmetic types
+           typename Enable = void> // Sink for non-floating-point types
   class euclidian_neighbor_iterator_pair { };
 
   template <typename Ct, typename DistanceType, typename Diff>
   class euclidian_neighbor_iterator_pair
   <Ct, euclidian<Ct, DistanceType, Diff>,
-   typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type>
+   typename enable_if<std::tr1::is_floating_point<DistanceType> >::type>
     : public neighbor_iterator_pair<Ct, euclidian<Ct, DistanceType, Diff> >
   {
   public:
@@ -234,7 +236,7 @@ namespace spatial
   template <typename Ct, typename DistanceType, typename Diff>
   class euclidian_neighbor_iterator_pair
   <const Ct, euclidian<Ct, DistanceType, Diff>,
-   typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type>
+   typename enable_if<std::tr1::is_floating_point<DistanceType> >::type>
     : public neighbor_iterator_pair
   <const Ct, euclidian<Ct, DistanceType, Diff> >
   {
@@ -273,7 +275,7 @@ namespace spatial
   <Ct, euclidian<Ct, DistanceType,
                  typename details::with_builtin_difference
                  <Ct, DistanceType>::type>,
-   typename enable_if<std::tr1::is_arithmetic<DistanceType>,
+   typename enable_if<std::tr1::is_floating_point<DistanceType>,
                       typename enable_if<details::is_compare_builtin<Ct> >
                       ::type>
    ::type>
@@ -308,7 +310,7 @@ namespace spatial
   <const Ct, euclidian<Ct, DistanceType,
                        typename details::with_builtin_difference
                        <Ct, DistanceType>::type>,
-   typename enable_if<std::tr1::is_arithmetic<DistanceType>,
+   typename enable_if<std::tr1::is_floating_point<DistanceType>,
                       typename enable_if<details::is_compare_builtin<Ct> >
                       ::type>
    ::type>

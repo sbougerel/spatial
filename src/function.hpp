@@ -1,26 +1,20 @@
 // -*- C++ -*-
+//
+// Copyright Sylvain Bougerel 2009 - 2013.
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file COPYING or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
 /**
  *  @file   spatial_function.hpp
  *  @brief  Main functors that are used in the library.
- *
- *  Change Log:
- *
- *  - 2009-02-27 Sylvain Bougerel <sylvain.bougerel.devel@gmail.com>
- *    Creation of the file.
- *
- *  - (next change goes here)
  */
 
 #ifndef SPATIAL_FUNCTION_HPP
 #define SPATIAL_FUNCTION_HPP
 
-#ifndef SPATIAL_HPP
-#  error "Do not include this file directly in your project."
-#endif
-
-#include <stdexcept>
-#include <iterator>
+#include <iterator> // std::advance
+#include "bits/spatial.hpp"
 
 namespace spatial
 {

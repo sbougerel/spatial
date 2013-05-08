@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Copyright Sylvain Bougerel 2009 - 2012.
+// Copyright Sylvain Bougerel 2009 - 2013.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -16,14 +16,11 @@
  *  developers uses it. It is used during unit testing and debugging.
  */
 
-#ifndef SPATIAL_HPP
-#  error "Do not include this file directly in your project."
-#endif
-
-#ifndef SPATIAL_ASSERT_HPP_DISPLAY
-#  define SPATIAL_ASSERT_HPP_DISPLAY
-#  include<cstdlib>
-#  include<iostream>
+#ifdef SPATIAL_ENABLE_ASSERT
+#  ifndef SPATIAL_ASSERT_HPP_ONCE
+#    define SPATIAL_ASSERT_HPP_ONCE
+#    include<cstdlib>
+#    include<iostream>
 namespace spatial
 {
   /**
@@ -54,22 +51,24 @@ namespace spatial
     (const char* msg, const char* filename, unsigned int line) throw()
     {
       try
-	{
-	  std::cerr << std::endl
-		    << "Assertion failed (" << filename << ":" << line
-		    << "): '" << msg << "'" << std::endl;
-	}
+        {
+          std::cerr << std::endl
+                    << "Assertion failed (" << filename << ":" << line
+                    << "): '" << msg << "'" << std::endl;
+        }
       catch (...) { }
       abort();
     }
   }
 }
+#  endif
 #endif
 
-#ifdef SPATIAL_ASSERT_HPP
-# undef SPATIAL_ASSERT_HPP
+#ifdef SPATIAL_ASSERT_CHECK
+#  undef SPATIAL_ASSERT_CHECK
 #endif
 
+#ifndef SPATIAL_ENABLE_ASSERT
 /**
  *  \def SPATIAL_ASSERT_CHECK(expr)
  *  Check that expression is true. If expression is false, the program will be
@@ -90,8 +89,6 @@ namespace spatial
  *
  *  \param expr A test expression.
  */
-#define SPATIAL_ASSERT_HPP
-#ifndef SPATIAL_ENABLE_ASSERT
 #  define SPATIAL_ASSERT_CHECK(expr)     static_cast<void>(0)
 #else
 #  define SPATIAL_ASSERT_CHECK(expr)                                    \

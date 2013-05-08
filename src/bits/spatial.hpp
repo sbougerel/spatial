@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Copyright Sylvain Bougerel 2009 - 2012.
+// Copyright Sylvain Bougerel 2009 - 2013.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -145,6 +145,21 @@ namespace spatial
    */
   struct hlhl_layout_tag { };
 
+  /**
+   *  This constant is used to declare a type layout tag, which is required by
+   *  the overlap and enclosed region iterators. Creation of these iterators is
+   *  facilitated by these objects.
+   *
+   *  \warning This constant is unique for each translation unit, and therefore
+   *  its address will differ for each translation unit.
+   *
+   */
+  //@{
+  const llhh_layout_tag llhh_layout = llhh_layout_tag();
+  const lhlh_layout_tag lhlh_layout = lhlh_layout_tag();
+  const hhll_layout_tag hhll_layout = hhll_layout_tag();
+  const hlhl_layout_tag hlhl_layout = hlhl_layout_tag();
+  //@}
 }
 
 #endif // SPATIAL_HPP

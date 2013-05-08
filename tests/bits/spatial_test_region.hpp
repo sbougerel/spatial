@@ -15,6 +15,8 @@
 #ifndef SPATIAL_TEST_REGION_HPP
 #define SPATIAL_TEST_REGION_HPP
 
+#include "../../src/region_iterator.hpp"
+
 BOOST_AUTO_TEST_CASE( test_equal_bounds )
 {
   int2 t(1, 1);

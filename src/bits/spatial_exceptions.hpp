@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Copyright Sylvain Bougerel 2009 - 2012.
+// Copyright Sylvain Bougerel 2009 - 2013.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -13,11 +13,9 @@
 #ifndef SPATIAL_EXCEPTIONS_HPP
 #define SPATIAL_EXCEPTIONS_HPP
 
-#ifndef SPATIAL_HPP
-#  error "Do not include this file directly in your project."
-#endif
-
 #include <stdexcept>
+#include "spatial.hpp"
+#include "spatial_traits.hpp"
 
 namespace spatial
 {

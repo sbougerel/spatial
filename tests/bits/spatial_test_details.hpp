@@ -15,6 +15,8 @@
 #ifndef SPATIAL_TEST_DETAILS_HPP
 #define SPATIAL_TEST_DETAILS_HPP
 
+#include "../../src/bits/spatial_condition.hpp"
+
 /**
  *  Test the \c condition meta type to make sure it works.
  *

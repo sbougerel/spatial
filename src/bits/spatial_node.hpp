@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Copyright Sylvain Bougerel 2009 - 2012.
+// Copyright Sylvain Bougerel 2009 - 2013.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -13,9 +13,11 @@
 #ifndef SPATIAL_NODE_HPP
 #define SPATIAL_NODE_HPP
 
-#ifndef SPATIAL_HPP
-#  error "Do not include this file directly in your project."
-#endif
+#include <iterator> // std::bidirectional_iterator_tag and
+                    // std::forward_iterator_tag
+#include "spatial.hpp"
+#include "spatial_assert.hpp"
+#include "spatial_mutate.hpp"
 
 namespace spatial
 {
@@ -827,228 +829,156 @@ namespace spatial
       node_ptr node;
     };
 
-    /**
-     *  A common template for bidirectional iterators that work on identical
-     *  \ref LinkMode "modes of linking".
-     *
-     *  This template defines all the basic features of a bidirectional
-     *  iterator for this library.
-     *
-     *  \tparam Mode      The mode used to \ref LinkMode "link nodes to
-     *                    their values".
-     *  \tparam Rank      The rank of the iterator.
-     */
-    template <typename Mode, typename Rank>
-    class Bidirectional_iterator : private Rank
+    template <typename Mode> inline Node<Mode>* increment(Node<Mode>* x)
     {
-    public:
-      //! The \c value_type can receive a copy of the reference pointed to be
-      //! the iterator.
-      typedef typename mutate<typename Mode::value_type>::type value_type;
-      //! The reference type of the object pointed to by the iterator.
-      typedef typename Mode::value_type&           reference;
-      //! The pointer type of the object pointed to by the iterator.
-      typedef typename Mode::value_type*           pointer;
-      //! The difference_type returned by the distance between 2 iterators.
-      typedef std::ptrdiff_t                       difference_type;
-      //! The iterator category that is always \c Bidirectional_iterator_tag.
-      typedef std::bidirectional_iterator_tag      iterator_category;
-      //! The type for the node pointed to by the iterator.
-      typedef typename Mode::node_ptr              node_ptr;
-      //! The type of rank used by the iterator.
-      typedef Rank                                 rank_type;
+      SPATIAL_ASSERT_CHECK(!header(x));
+      if (x->right != 0)
+        {
+          x = x->right;
+          while (x->left != 0) { x = x->left; }
+        }
+      else
+        {
+          Node<Mode>* p = x->parent;
+          while (!header(p) && x == p->right)
+            { x = p; p = x->parent; }
+          x = p;
+        }
+      return x;
+    }
 
-      //! Build an uninitialized iterator
-      Bidirectional_iterator() { }
-
-      //! Initialize the node at construction time
-      Bidirectional_iterator(const Rank& rank_, node_ptr node_,
-                             dimension_type node_dim_)
-        : Rank(rank_), node(node_), node_dim(node_dim_) { }
-
-      //! Returns the reference to the value pointed to by the iterator.
-      reference operator*()
-      { return value(node); }
-
-      //! Returns a pointer to the value pointed to by the iterator.
-      pointer operator->()
-      { return &value(node); }
-
-      /**
-       *  A bidirectional iterator can be compared with a node iterator if they
-       *  work on identical \ref LinkMode "linking modes".
-       *
-       *  \param x The iterator on the right.
-       */
-      bool operator==(const Const_node_iterator<Mode>& x) const
-      { return node == x.node; }
-
-      /**
-       *  A bidirectional iterator can be compared for inequality with a node
-       *  iterator if they work on identical \ref LinkMode "linking modes".
-       *
-       *  \param x The iterator on the right.
-       */
-      bool operator!=(const Const_node_iterator<Mode>& x) const
-      { return node != x.node; }
-
-      //@{
-      /**
-       *  This iterator can be casted silently into a container iterator. You can
-       *  therefore use this iterator as an argument to the erase function of
-       *  the container, for example.
-       *
-       *  \warning When using this iterator as an argument to the erase function
-       *  of the container, this iterator will get invalidated after erase.
-       */
-      operator Node_iterator<Mode>() const
-      { return Node_iterator<Mode>(node); }
-
-      operator Const_node_iterator<Mode>() const
-      { return Const_node_iterator<Mode>(node); }
-      //@}
-
-      /**
-       *  Return the current Rank type used by the iterator.
-       */
-      const rank_type& rank() const { return static_cast<const Rank&>(*this); }
-
-      /**
-       *  Return the number of dimensions stored by the Rank of the iterator.
-       */
-      dimension_type dimension() const
-      { return static_cast<const Rank&>(*this)(); }
-
-      /**
-       *  The pointer to the current node.
-       *
-       *  Modifying this attribute can potentially invalidate the iterator. Do
-       *  not modify this attribute unless you know what you're doing. This
-       *  iterator must always point to a valid node in the tree or to the end.
-       */
-      node_ptr node;
-
-      /**
-       *  The dimension of the current node.
-       *
-       *  Modifying this attribute can potentially invalidate the iterator. Do
-       *  not modify this attribute unless you know what you're doing. This
-       *  iterator must always point to a valid node in the tree or to the end.
-       */
-      dimension_type node_dim;
-    };
-
-    /**
-     *  A common template for constant bidirectional iterators that work on
-     *  identical \ref LinkMode "modes of linking".
-     *
-     *  This template defines all the basic features of a bidirectional
-     *  iterator for this library.
-     *
-     *  \tparam Mode      The mode used to \ref LinkMode "link nodes to
-     *                    their values".
-     *  \tparam Rank      The rank of the iterator.
-     */
-    template <typename Mode, typename Rank>
-    class Const_bidirectional_iterator : private Rank
+    template <typename Mode> inline Node<Mode>* decrement(Node<Mode>* x)
     {
-    public:
-      //! The \c value_type can receive a copy of the reference pointed to be
-      //! the iterator.
-      typedef typename mutate<typename Mode::value_type>::type value_type;
-      //! The reference type of the object pointed to by the iterator.
-      typedef const typename Mode::value_type&     reference;
-      //! The pointer type of the object pointed to by the iterator.
-      typedef const typename Mode::value_type*     pointer;
-      //! The difference_type returned by the distance between 2 iterators.
-      typedef std::ptrdiff_t                       difference_type;
-      //! The iterator category that is always \c Bidirectional_iterator_tag.
-      typedef std::bidirectional_iterator_tag      iterator_category;
-      //! The type for the node pointed to by the iterator.
-      typedef typename Mode::const_node_ptr        node_ptr;
-      //! The type of rank used by the iterator.
-      typedef Rank                                 rank_type;
+      SPATIAL_ASSERT_CHECK((!header(x) || x->parent != 0));
+      if (header(x))
+        { x = x->right; } // At header, 'right' points to the right-most node
+      else if (x->left != 0)
+        {
+          Node<Mode>* y = x->left;
+          while (y->right != 0) { y = y->right; }
+          x = y;
+        }
+      else
+        {
+          Node<Mode>* p = x->parent;
+          while (!header(p) && x == p->left)
+            { x = p; p = x->parent; }
+          x = p;
+        }
+      return x;
+    }
 
-      //! Build an uninitialized iterator
-      Const_bidirectional_iterator() { }
+    template <typename Mode>
+    inline void swap_node_aux
+    (Node<Mode>* a, Node<Mode>* b)
+    {
+      typedef Node<Mode>* node_ptr;
+      if (a == b) return;
+      SPATIAL_ASSERT_CHECK(!header(a));
+      SPATIAL_ASSERT_CHECK(!header(b));
+      if (a->parent == b)
+        {
+          if (header(b->parent))
+            { b->parent->parent = a; }
+          else
+            {
+              if (b->parent->left == b) { b->parent->left = a; }
+              else { b->parent->right = a; }
+            }
+          if (a->left != 0) { a->left->parent = b; }
+          if (a->right != 0) { a->right->parent = b; }
+          a->parent = b->parent;
+          b->parent = a;
+          node_ptr a_left = a->left;
+          node_ptr a_right = a->right;
+          if (b->left == a)
+            {
+              if (b->right != 0) { b->right->parent = a; }
+              a->left = b;
+              a->right = b->right;
+            }
+          else
+            {
+              if (b->left != 0) { b->left->parent = a; }
+              a->left = b->left;
+              a->right = b;
+            }
+          b->left = a_left;
+          b->right = a_right;
+        }
+      else if (b->parent == a)
+        {
+          if (header(a->parent))
+            { a->parent->parent = b; }
+          else
+            {
+              if (a->parent->left == a) { a->parent->left = b; }
+              else { a->parent->right = b; }
+            }
+          if (b->left != 0) { b->left->parent = a; }
+          if (b->right != 0) { b->right->parent = a; }
+          b->parent = a->parent;
+          a->parent = b;
+          node_ptr b_left = b->left;
+          node_ptr b_right = b->right;
+          if (a->left == b)
+            {
+              if (a->right != 0) { a->right->parent = b; }
+              b->left = a;
+              b->right = a->right;
+            }
+          else
+            {
+              if (a->left != 0) { a->left->parent = b; }
+              b->left = a->left;
+              b->right = a;
+            }
+          a->left = b_left;
+          a->right = b_right;
+        }
+      else
+        {
+          if (header(a->parent))
+            { a->parent->parent = b; }
+          else
+            {
+              if (a->parent->left == a) { a->parent->left = b; }
+              else { a->parent->right = b; }
+            }
+          if (header(b->parent))
+            { b->parent->parent = a; }
+          else
+            {
+              if (b->parent->left == b) { b->parent->left = a; }
+              else { b->parent->right = a; }
+            }
+          if (a->left != 0) { a->left->parent = b; }
+          if (b->left != 0) { b->left->parent = a; }
+          if (a->right != 0) { a->right->parent = b; }
+          if (b->right != 0) { b->right->parent = a; }
+          std::swap(a->parent, b->parent);
+          std::swap(a->left, b->left);
+          std::swap(a->right, b->right);
+        }
+    }
 
-      //! Initialize the node at construction time
-      Const_bidirectional_iterator(const Rank& rank_, node_ptr node_,
-                                   dimension_type node_dim_)
-        : Rank(rank_), node(node_), node_dim(node_dim_) { }
-
-      //! Returns the reference to the value pointed to by the iterator.
-      reference operator*()
-      { return value(node); }
-
-      //! Returns a pointer to the value pointed to by the iterator.
-      pointer operator->()
-      { return &value(node); }
-
-      /**
-       *  A bidirectional iterator can be compared with a node iterator if they
-       *  work on identical \ref LinkMode "linking modes".
-       *
-       *  \param x The iterator on the right.
-       */
-      bool operator==(const Const_node_iterator<Mode>& x) const
-      { return node == x.node; }
-
-      /**
-       *  A bidirectional iterator can be compared for inequality with a node
-       *  iterator if they work on identical \ref LinkMode "linking modes".
-       *
-       *  \param x The iterator on the right.
-       */
-      bool operator!=(const Const_node_iterator<Mode>& x) const
-      { return node != x.node; }
-
-      /**
-       *  Children of this iterator can be casted silently into a container
-       *  iterator. You can therefore use this iterator as an argument to the
-       *  erase function of the container, for example.
-       *
-       *  \warning When using this iterator as an argument to the erase function
-       *  of the container, this iterator will get invalidated after erase.
-       */
-      operator Const_node_iterator<Mode>() const
-      { return Const_node_iterator<Mode>(node); }
-
-      /**
-       *  Return the current Rank type used by the iterator.
-       */
-      const rank_type& rank() const { return static_cast<const Rank&>(*this); }
-
-      /**
-       *  Return the current number of dimensions given by the Rank of the
-       *  iterator.
-       */
-      dimension_type dimension() const
-      { return static_cast<const Rank&>(*this)(); }
-
-      /**
-       *  The pointer to the current node.
-       *
-       *  Modifying this attribute can potentially invalidate the iterator. Do
-       *  not modify this attribute unless you know what you're doing. This
-       *  iterator must always point to a valid node in the tree or to the end.
-       */
-      node_ptr node;
-
-      /**
-       *  The dimension of the current node.
-       *
-       *  Modifying this attribute can potentially invalidate the iterator. Do
-       *  not modify this attribute unless you know what you're doing. This
-       *  iterator must always point to a valid node in the tree or to the end.
-       */
-      dimension_type node_dim;
-    };
+    template <typename Mode> inline const Node<Mode>*
+    preorder_increment(const Node<Mode>* x)
+    {
+      if (x->left != 0) { x = x->left; }
+      else if (x->right != 0) { x = x->right; }
+      else
+        {
+          const Node<Mode>* p = x->parent;
+          while (!header(p) && (x == p->right || p->right == 0))
+            { x = p; p = x->parent; }
+          x = p;
+          if (!header(p)) { x = x->right; }
+        }
+      return x;
+    }
 
   } // namespace details
-
 } // namespace spatial
-
-#include "spatial_node.tpp"
 
 #endif // SPATIAL_NODE_HPP

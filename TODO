@@ -45,7 +45,7 @@ VERSION 2.0.0
            properly implement some elementary functions such as "=="
            between containers. DONE!
 
-* Dec 12 Complete General doxygen documention with details on
+* May 13 Complete General doxygen documention with details on
            container and views, elaboration of how to write geometry,
            etc. This documentation should serve as a complete user
            manual, it should be accompanied by a bit of library
@@ -56,28 +56,31 @@ VERSION 2.0.0
 
 VERSION 2.1.0
 
-* Jan 13 Final optimization: work on adding performance-based tests
+* Jun 13 Equal_iterator should stand on its own with its own
+           optimizations for the static invarient in the kdree.
+
+* Jul 13 Final optimization: work on adding performance-based tests
            and comparison with other libraries in the market. Wouldn't
            it be nice to see how it fares against ANN or libkdtree++?
 
-* Feb 13 Implementing containers that hold only unique keys, with
+* Oct 13 Implementing containers that hold only unique keys, with
            bracket operators just like std::map and std::set. They
            would be simply pointset, boxset, pointmap and boxmap.
 
-* Apr 13 Add a range erase function that operates on 2 basic tree
+* Nov 13 Add a range erase function that operates on 2 basic tree
            iterators. This is complicated to write because of the
            invarient.
 
 
 VERSION 2.2.0
 
-* Jun 13 Addition of intrusive containers for every existing ones. The
+* Jan 14 Addition of intrusive containers for every existing ones. The
            intrusive containers should have a rather limited inpact on
            the existing code if possible, but should make a great
            difference in terms of performance for those who need
            them. Should take about 2 months. In progress...
 
-* Sep 13 Implementation of a new near cache oblivious allocator solely
+* Mar 14 Implementation of a new near cache oblivious allocator solely
            dedicated to be used with the spatial library. This cache
            oblivious allocator is used to speed up the frequent
            walking operation within the tree. How does it work? First,
@@ -107,21 +110,21 @@ VERSION 2.2.0
            is therefore optimal for the library, and should speed up
            tree walking a lot... if we never re-balanced containers.
            However we do re-balance containers in this library, hence
-	   this allocator will be specific to idle_* containers which
-	   do not reblance. Another allocator, probably not cache 
-	   oblivious, but at least cache-aware (with a user-defined
-	   bucket size will need to be written)
+           this allocator will be specific to idle_* containers which
+           do not reblance. Another allocator, probably not cache
+           oblivious, but at least cache-aware (with a user-defined
+           bucket size will need to be written)
 
 VERSION 2.3.0
 
-* Nov 13 Add new iterators such at ray_iterator, which travels along a
+* Jun 14 Add new iterators such at ray_iterator, which travels along a
            vector, in a given geometry. This iterator works only on
            boxset family of iterators. Some new functions for geometry
            should appear and therefore, it would make defining a
            geometry quite a complex business, needing more
            documentation. Should take about 2 months.
 
-* Dec 13 Porting Spatial to scripting/duck-typing languages or
+* Aug 14 Porting Spatial to scripting/duck-typing languages or
            frameworks? Python, Java, Lua, Ruby, .Net, others? Create a
            new project based on spatial in this case, using the
            version number in the spatial.hpp header.
@@ -132,4 +135,4 @@ VERSION 3.0.0
 * ??? ?? Version 3.0.0 marks the new major release, breaking backward
            compatibility. What would the future hold for the spatial
            library? Vantage-Point tree support for faster nearest and
-	   furthest neighbor search?
+           furthest neighbor search?

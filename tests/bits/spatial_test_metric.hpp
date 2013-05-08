@@ -15,21 +15,23 @@
 #ifndef SPATIAL_TEST_METRIC_HPP
 #define SPATIAL_TEST_METRIC_HPP
 
+#include "../../src/neighbor_iterator.hpp"
+
 BOOST_AUTO_TEST_CASE(test_metric_trait)
 {
   using namespace spatial::details;
   check_is_same
     <metric_traits<quadrance
-                     <pointset<2, int2>, int,
+                     <point_multiset<2, int2>, int,
                       paren_minus<int2, int> > >::distance_type,
-     quadrance<pointset<2, int2>, int,
-                            paren_minus<int2, int> >::distance_type>();
+     quadrance<point_multiset<2, int2>, int,
+               paren_minus<int2, int> >::distance_type>();
   check_is_same
     <metric_traits<euclidian
-                     <boxset<3, double6>, double,
-                      bracket_minus<double6, double> > >::distance_type,
-     euclidian<boxset<3, double6>, double,
-                     bracket_minus<double6, double> >::distance_type>();
+                   <box_multiset<3, double6>, double,
+                    bracket_minus<double6, double> > >::distance_type,
+     euclidian<box_multiset<3, double6>, double,
+               bracket_minus<double6, double> >::distance_type>();
   // The following will not compile, but I comment it out to test enable_if
   //check_is_same
   //  <metric_traits<euclidian
@@ -41,17 +43,17 @@ BOOST_AUTO_TEST_CASE(test_metric_trait)
   //                   ::distance_type>();
   check_is_same
     <metric_traits<manhattan
-                     <idle_pointset<2, int2>, int,
-                      paren_minus<int2, int> > >::distance_type,
-     manhattan<idle_pointset<2, int2>, int,
-                        paren_minus<int2, int> >::distance_type>();
+                   <idle_point_multiset<2, int2>, int,
+                    paren_minus<int2, int> > >::distance_type,
+     manhattan<idle_point_multiset<2, int2>, int,
+               paren_minus<int2, int> >::distance_type>();
 }
 
 BOOST_AUTO_TEST_CASE(test_difference_bracket)
 {
-  details::with_builtin_difference<pointset<2, int2>, int>::type
-    diff = details::with_builtin_difference<pointset<2, int2>, int>()
-    (pointset<2, int2>());
+  details::with_builtin_difference<point_multiset<2, int2>, int>::type
+    diff = details::with_builtin_difference<point_multiset<2, int2>, int>()
+    (point_multiset<2, int2>());
   int2 p(0, 1);
   int2 q(2, 0);
   BOOST_CHECK_EQUAL(diff(0, p, q), -2);
@@ -60,7 +62,7 @@ BOOST_AUTO_TEST_CASE(test_difference_bracket)
 
 BOOST_AUTO_TEST_CASE(test_difference_paren)
 {
-  typedef pointset<2, int2, paren_less<int2> > pointset_type;
+  typedef point_multiset<2, int2, paren_less<int2> > pointset_type;
   details::with_builtin_difference<pointset_type, int>::type
     diff = details::with_builtin_difference<pointset_type, int>()
     (pointset_type());
@@ -72,7 +74,7 @@ BOOST_AUTO_TEST_CASE(test_difference_paren)
 
 BOOST_AUTO_TEST_CASE(test_difference_iterator)
 {
-  typedef pointset<2, int2, iterator_less<int2> > pointset_type;
+  typedef point_multiset<2, int2, iterator_less<int2> > pointset_type;
   details::with_builtin_difference<pointset_type, int>::type
     diff = details::with_builtin_difference<pointset_type, int>()
     (pointset_type());
@@ -84,7 +86,7 @@ BOOST_AUTO_TEST_CASE(test_difference_iterator)
 
 BOOST_AUTO_TEST_CASE(test_difference_accessor)
 {
-  typedef pointset<4, quad, accessor_less<quad_access, quad> > pointset_type;
+  typedef point_multiset<4, quad, accessor_less<quad_access, quad> > pointset_type;
   details::with_builtin_difference<pointset_type, int>::type
     diff = details::with_builtin_difference<pointset_type, int>()
     (pointset_type());

@@ -128,8 +128,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     typename neighbor_iterator<typename Tp::container_type>::metric_type
       metric(iter.metric());
     double6 target;
-    typedef typename neighbor_iterator<typename Tp::container_type>
-      ::distance_type distance_type;
     while (!fix.container.empty())
       {
         same()(target, 0, 100);
@@ -259,8 +257,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     typename neighbor_iterator<typename Tp::container_type>::metric_type
       metric(iter.metric());
     double6 target;
-    typedef typename neighbor_iterator<typename Tp::container_type>
-      ::distance_type distance_type;
     while (!fix.container.empty())
       {
         same()(target, 0, 100);
@@ -843,22 +839,33 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         distance_type avg_dist = (min_dist + max_dist) / 2;
         // Use this knowledge to test the upper bound
         neighbor_iterator_type i
-          = neighbor_upper_bound(fix.container, metric, target, min_dist - 1);
+          = neighbor_upper_bound(fix.container, metric, target, 0);
         BOOST_CHECK(i == neighbor_begin(fix.container, metric, target));
         BOOST_CHECK_EQUAL(min_dist, distance(i));
         i = neighbor_upper_bound(fix.container, metric, target, max_dist);
-        BOOST_CHECK(i != neighbor_end(fix.container, metric, target));
-        BOOST_CHECK_EQUAL(max_dist, distance(i));
-        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target)
-                    || distance(--i) < max_dist);
+        BOOST_CHECK(i == neighbor_end(fix.container, metric, target));
         i = neighbor_upper_bound(fix.container, metric, target, avg_dist);
-        BOOST_CHECK(i != neighbor_end(fix.container, metric, target));
-        BOOST_CHECK_GE(distance(i), avg_dist);
-        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target)
-                    || distance(--i) < avg_dist);
+        if (i != neighbor_end(fix.container, metric, target))
+          {
+            BOOST_CHECK_GT(distance(i), avg_dist);
+          }
+        if (i != neighbor_begin(fix.container, metric, target))
+          {
+            BOOST_CHECK_GE(avg_dist, distance(--i));
+          }
         fix.container.erase(i);
       }
   }
+}
+
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+(test_euclidian_neighbor, Tp, every_quad)
+{
+  // With default diff
+  // With custom diff
+  // Need to test the pair
+  // Need to test begin, end, region, lower, upper
 }
 
 #endif // SPATIAL_TEST_NEIGHBOR_HPP

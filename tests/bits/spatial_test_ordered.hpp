@@ -15,6 +15,8 @@
 #ifndef SPATIAL_TEST_ORDERED_HPP
 #define SPATIAL_TEST_ORDERED_HPP
 
+#include "../../src/ordered_iterator.hpp"
+
 BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_ordered_basics, Tp, every_quad )
 {
