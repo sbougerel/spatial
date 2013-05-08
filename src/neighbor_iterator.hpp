@@ -968,11 +968,8 @@ namespace spatial
   }
   //@}
 
-
-
   namespace details
   {
-
     template <typename Container, typename Metric>
     inline neighbor_iterator<Container, Metric>&
     increment_neighbor(neighbor_iterator<Container, Metric>& it)
@@ -1719,8 +1716,9 @@ namespace spatial
       it.distance() = near_distance;
       return it;
     }
-
   } // namespace details
 } // namespace spatial
+
+#include "bits/spatial_euclidian_neighbor.hpp"
 
 #endif // SPATIAL_NEIGHBOR_ITERATOR_HPP

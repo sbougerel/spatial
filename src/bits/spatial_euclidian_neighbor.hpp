@@ -11,17 +11,11 @@
  *  walk through all items in the container in order from the closest to the
  *  furthest away from a given key, using an euclidian metric.
  *
- *  \see neighbor
+ *  \see neighbor_iterator
  */
 
 #ifndef SPATIAL_EUCLIDIAN_NEIGHBOR_HPP
 #define SPATIAL_EUCLIDIAN_NEIGHBOR_HPP
-
-#ifndef SPATIAL_HPP
-#  error "Do not include this file directly in your project."
-#endif
-
-#include "spatial_neighbor.hpp"
 
 namespace spatial
 {
@@ -42,7 +36,8 @@ namespace spatial
    */
   ///@{
   template<typename Ct, typename DistanceType,
-           typename Diff = void,   // Sink for non-built-in compare types
+           typename Diff
+           = typename details::with_builtin_difference<Ct, DistanceType>::type,
            typename Enable = void> // Sink for non-floating point types
   class euclidian_neighbor_iterator { };
 

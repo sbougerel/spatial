@@ -860,12 +860,59 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
-(test_euclidian_neighbor, Tp, every_quad)
+(test_euclidian_neighbor, Tp, double6_maps)
 {
-  // With default diff
-  // With custom diff
+  Tp fix(3, randomize(-2, 2));
+  double6 target; same()(target, 0, 2);
+  {
+    // With default diff with float
+    euclidian_neighbor_iterator<typename Tp::container_type, float>
+      i,
+      j = euclidian_neighbor_begin(fix.container, target),
+      k = euclidian_neighbor_end(fix.container, target),
+      l = euclidian_neighbor_lower_bound(fix.container, target, 0.0),
+      m = euclidian_neighbor_upper_bound(fix.container, target, 0.0);
+    i = j;
+    BOOST_CHECK(i == j);
+    BOOST_CHECK(j != k);
+    BOOST_CHECK(i == l);
+    BOOST_CHECK(m == l);
+  }
+  {
+    // With custom diff and const
+    euclidian_neighbor_iterator<const typename Tp::container_type,
+                                float, double6_diff>
+      i,
+      j = euclidian_neighbor_cbegin(fix.container, double6_diff(), target),
+      k = euclidian_neighbor_cend(fix.container, double6_diff(), target),
+      l = euclidian_neighbor_clower_bound(fix.container, double6_diff(),
+                                          target, 0.0),
+      m = euclidian_neighbor_cupper_bound(fix.container, double6_diff(),
+                                          target, 0.0);
+    i = j;
+    BOOST_CHECK(i == j);
+    BOOST_CHECK(j != k);
+    BOOST_CHECK(i == l);
+    BOOST_CHECK(m == l);
+  }
+  {
+    // With default diff with float and a pair
+    euclidian_neighbor_iterator_pair<typename Tp::container_type, float>
+      i,
+      j = euclidian_neighbor_range(fix.container, target);
+    i = j;
+    BOOST_CHECK(i == j);
+  }
+  {
+    // With custom diff and const
+    euclidian_neighbor_iterator_pair<const typename Tp::container_type,
+                                     float, double6_diff>
+      i,
+      j = euclidian_neighbor_crange(fix.container, double6_diff(), target);
+    i = j;
+    BOOST_CHECK(i == j);
+  }
   // Need to test the pair
-  // Need to test begin, end, region, lower, upper
 }
 
 #endif // SPATIAL_TEST_NEIGHBOR_HPP
