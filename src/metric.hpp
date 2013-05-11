@@ -6,7 +6,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_metric.hpp
+ *  @file   metric.hpp
  *  @brief  Contains the definition of the default metrics available to use
  *  with the neighbor iterators.
  *
@@ -20,97 +20,11 @@
 #  error "Do not include this file directly in your project."
 #endif
 
-#include "spatial_math.hpp"
-#include "spatial_compare_builtin.hpp"
+#include "bits/spatial_math.hpp"
+#include "bits/spatial_builtin.hpp"
 
 namespace spatial
 {
-  namespace details
-  {
-    /**
-     *  Retrieve the builtin difference functor on the condition that the
-     *  compare functor used in Container is a builtin comparator.
-     *
-     *  If you are not using one of the builtin compare functor for your
-     *  Container, then you should also provide your user-defined difference
-     *  function when using euclidian_neighbor_iterator<> or other similar
-     *  iterators.
-     *
-     *  \tparam Container The container used in the iterator.
-     *  \tparam DistanceType The type used to express distances.
-     */
-    //@{
-    template<typename Container, typename DistanceType, typename Enable = void>
-    struct with_builtin_difference { }; // sink for not using built-in compare
-
-    template<typename Container, typename DistanceType>
-    struct with_builtin_difference
-    <Container, DistanceType,
-     typename enable_if<is_compare_builtin<Container> >::type>
-    {
-      /**
-       *  This internal type casting is used to resolve a built-in compare
-       *  functor (provided by the library) into a built-in difference functor.
-       *  It will not work for user defined comparators; it means that if you
-       *  are using a user-defined comparator in your container, you should also
-       *  use a user-defined metric.
-       *
-       *  \tparam Compare The comparator used in the container.
-       *  \tparam DistanceType The type used to express distances.
-       */
-      //@{
-      template<typename, typename>
-      struct builtin_difference { }; // sink type, never used normally
-
-      template<typename Key, typename Tp>
-      struct builtin_difference<bracket_less<Key>, Tp>
-      {
-        typedef bracket_minus<Key, Tp> type;
-        type operator() (const bracket_less<Key>&) const
-        { return type(); }
-      };
-
-      template<typename Key, typename Tp>
-      struct builtin_difference<paren_less<Key>, Tp>
-      {
-        typedef paren_minus<Key, Tp> type;
-        type operator() (const paren_less<Key>&) const
-        { return type(); }
-      };
-
-      template<typename Key, typename Tp>
-      struct builtin_difference<iterator_less<Key>, Tp>
-      {
-        typedef iterator_minus<Key, Tp> type;
-        type operator() (const iterator_less<Key>&) const
-        { return type(); }
-      };
-
-      template<typename Key, typename Tp, typename Accessor>
-      struct builtin_difference<accessor_less<Accessor, Key>, Tp>
-      {
-        typedef accessor_minus<Accessor, Key, Tp> type;
-        type operator() (const accessor_less<Accessor, Key>& cmp) const
-        { return type(cmp.accessor()); }
-      };
-      //@}
-
-      typedef typename builtin_difference
-      <typename container_traits<Container>::key_compare,
-       DistanceType>::type type;
-
-      //! Constructs the difference type from the built-in container's key
-      //! compare operator.
-      type operator()(const Container& container) const
-      {
-        return builtin_difference
-          <typename container_traits<Container>::key_compare, DistanceType>()
-          (container.key_comp());
-      }
-    };
-    //@}
-  } // namespace details
-
   /**
    *  Defines a metric working on the Euclidian space where distances are
    *  expressed in one of C++'s floating point types.
@@ -135,6 +49,15 @@ namespace spatial
   <Ct, DistanceType, Diff,
    typename enable_if<std::tr1::is_floating_point<DistanceType> >::type>
   {
+  public:
+    /**
+     *  The type used to compute the difference between 2 keys along the same
+     *  dimension.
+     */
+    typedef typename details::rebind_builtin_difference
+    <Diff, DistanceType>::type difference_type;
+
+  private:
     /**
      *  The key_type of the container being used for calculations.
      */
@@ -143,7 +66,7 @@ namespace spatial
     /**
      *  Placeholder for the 'difference' functor.
      */
-    Diff _diff;
+    difference_type _diff;
 
   public:
     /**
@@ -163,7 +86,7 @@ namespace spatial
                     const key_type& origin, const key_type& key) const
     {
       return math::euclid_distance_to_key
-        <key_type, Diff, DistanceType>(rank, origin, key, _diff);
+        <key_type, difference_type, DistanceType>(rank, origin, key, _diff);
     }
 
     /**
@@ -181,7 +104,7 @@ namespace spatial
                       const key_type& origin, const key_type& key) const
     {
       return math::euclid_distance_to_plane
-        <key_type, Diff, DistanceType>(dim, origin, key, _diff);
+        <key_type, difference_type, DistanceType>(dim, origin, key, _diff);
     }
   };
   //@}
@@ -218,6 +141,15 @@ namespace spatial
   <Ct, DistanceType, Diff,
    typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type>
   {
+  public:
+    /**
+     *  The type used to compute the difference between 2 keys along the same
+     *  dimension.
+     */
+    typedef typename details::rebind_builtin_difference
+    <Diff, DistanceType>::type difference_type;
+
+  private:
     /**
      *  The key_type of the container being used for calculations.
      */
@@ -226,7 +158,7 @@ namespace spatial
     /**
      *  Placeholder for the 'difference' functor.
      */
-    Diff _diff;
+    difference_type _diff;
 
   public:
     typedef DistanceType distance_type;
@@ -243,7 +175,7 @@ namespace spatial
                     const key_type& origin, const key_type& key) const
     {
       return math::square_euclid_distance_to_key
-        <key_type, Diff, DistanceType>(rank, origin, key, _diff);
+        <key_type, difference_type, DistanceType>(rank, origin, key, _diff);
     }
 
     /**
@@ -257,7 +189,7 @@ namespace spatial
                       const key_type& origin, const key_type& key) const
     {
       return math::square_euclid_distance_to_plane
-        <key_type, Diff, DistanceType>(dim, origin, key, _diff);
+        <key_type, difference_type, DistanceType>(dim, origin, key, _diff);
     }
   };
   //@}
@@ -298,6 +230,15 @@ namespace spatial
   <Ct, DistanceType, Diff,
    typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type>
   {
+  public:
+    /**
+     *  The type used to compute the difference between 2 keys along the same
+     *  dimension.
+     */
+    typedef typename details::rebind_builtin_difference
+    <Diff, DistanceType>::type difference_type;
+
+  private:
     /**
      *  The key_type of the container being used for calculations.
      */
@@ -306,7 +247,7 @@ namespace spatial
     /**
      *  Placeholder for the 'difference' functor.
      */
-    Diff _diff;
+    difference_type _diff;
 
   public:
     typedef DistanceType distance_type;
@@ -323,7 +264,7 @@ namespace spatial
                     const key_type& origin, const key_type& key) const
     {
       return math::manhattan_distance_to_key
-        <key_type, Diff, DistanceType>(rank, origin, key, _diff);
+        <key_type, difference_type, DistanceType>(rank, origin, key, _diff);
     }
 
     /**
@@ -338,7 +279,7 @@ namespace spatial
                       const key_type& origin, const key_type& key) const
     {
       return math::manhattan_distance_to_plane
-        <key_type, Diff, DistanceType>(dim, origin, key, _diff);
+        <key_type, difference_type, DistanceType>(dim, origin, key, _diff);
     }
   };
   ///@}

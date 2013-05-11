@@ -51,8 +51,8 @@ BOOST_AUTO_TEST_CASE(test_metric_trait)
 
 BOOST_AUTO_TEST_CASE(test_difference_bracket)
 {
-  details::with_builtin_difference<point_multiset<2, int2>, int>::type
-    diff = details::with_builtin_difference<point_multiset<2, int2>, int>()
+  bracket_minus<int2, int>
+    diff = details::with_builtin_difference<point_multiset<2, int2> >()
     (point_multiset<2, int2>());
   int2 p(0, 1);
   int2 q(2, 0);
@@ -63,8 +63,8 @@ BOOST_AUTO_TEST_CASE(test_difference_bracket)
 BOOST_AUTO_TEST_CASE(test_difference_paren)
 {
   typedef point_multiset<2, int2, paren_less<int2> > pointset_type;
-  details::with_builtin_difference<pointset_type, int>::type
-    diff = details::with_builtin_difference<pointset_type, int>()
+  paren_minus<int2, int>
+    diff = details::with_builtin_difference<pointset_type>()
     (pointset_type());
   int2 p(0, 1);
   int2 q(2, 0);
@@ -75,8 +75,8 @@ BOOST_AUTO_TEST_CASE(test_difference_paren)
 BOOST_AUTO_TEST_CASE(test_difference_iterator)
 {
   typedef point_multiset<2, int2, iterator_less<int2> > pointset_type;
-  details::with_builtin_difference<pointset_type, int>::type
-    diff = details::with_builtin_difference<pointset_type, int>()
+  iterator_minus<int2, int>
+    diff = details::with_builtin_difference<pointset_type>()
     (pointset_type());
   int2 p(0, 1);
   int2 q(2, 0);
@@ -87,8 +87,8 @@ BOOST_AUTO_TEST_CASE(test_difference_iterator)
 BOOST_AUTO_TEST_CASE(test_difference_accessor)
 {
   typedef point_multiset<4, quad, accessor_less<quad_access, quad> > pointset_type;
-  details::with_builtin_difference<pointset_type, int>::type
-    diff = details::with_builtin_difference<pointset_type, int>()
+  accessor_minus<quad, quad_access, int>
+    diff = details::with_builtin_difference<pointset_type>()
     (pointset_type());
   quad p(0, 1, 0, 0);
   quad q(2, 0, 0, 0);

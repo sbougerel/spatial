@@ -14,7 +14,7 @@
 #define SPATIAL_NEIGHBOR_ITERATOR_HPP
 
 #include <utility> // provides ::std::pair<>
-#include "bits/spatial_metric.hpp"
+#include "metric.hpp"
 #include "bits/spatial_bidirectional.hpp"
 #include "bits/spatial_traits.hpp"
 #include "bits/spatial_exceptions.hpp"
@@ -106,8 +106,7 @@ namespace spatial
   template <typename Ct, typename Metric =
             euclidian<typename details::mutate<Ct>::type,
                       double,
-                      typename details::with_builtin_difference
-                      <Ct, double>::type> >
+                      typename details::with_builtin_difference<Ct>::type> >
   class neighbor_iterator
     : public details::Bidirectional_iterator
   <typename container_traits<Ct>::mode_type,
@@ -509,8 +508,8 @@ namespace spatial
    */
   template <typename Ct, typename Metric
             = euclidian<typename details::mutate<Ct>::type,
-                        double, typename details::with_builtin_difference
-                        <Ct, double>::type> >
+                        double, typename details::with_builtin_difference<Ct>
+                        ::type> >
   struct neighbor_iterator_pair
     : std::pair<neighbor_iterator<Ct, Metric>,
                 neighbor_iterator<Ct, Metric> >
@@ -647,8 +646,8 @@ namespace spatial
     return neighbor_end
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-         (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+         (details::with_builtin_difference<Ct>()(container)),
        target);
   }
 
@@ -661,8 +660,8 @@ namespace spatial
     return neighbor_end
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-         (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+         (details::with_builtin_difference<Ct>()(container)),
        target);
   }
 
@@ -675,8 +674,8 @@ namespace spatial
     return neighbor_end
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-         (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+         (details::with_builtin_difference<Ct>()(container)),
        target);
   }
   //@}
@@ -736,8 +735,8 @@ namespace spatial
     return neighbor_begin
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-         (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+         (details::with_builtin_difference<Ct>()(container)),
        target);
   }
 
@@ -750,8 +749,8 @@ namespace spatial
     return neighbor_begin
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-         (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+         (details::with_builtin_difference<Ct>()(container)),
        target);
   }
 
@@ -764,8 +763,8 @@ namespace spatial
     return neighbor_begin
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-         (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+         (details::with_builtin_difference<Ct>()(container)),
        target);
   }
   //@}
@@ -833,8 +832,8 @@ namespace spatial
     return neighbor_lower_bound
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-         (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+         (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
 
@@ -848,8 +847,8 @@ namespace spatial
     return neighbor_lower_bound
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-         (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+         (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
 
@@ -863,8 +862,8 @@ namespace spatial
     return neighbor_lower_bound
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-         (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+         (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
   //@}
@@ -932,8 +931,8 @@ namespace spatial
     return neighbor_upper_bound
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-         (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+         (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
 
@@ -947,8 +946,8 @@ namespace spatial
     return neighbor_upper_bound
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-         (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+         (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
 
@@ -962,8 +961,8 @@ namespace spatial
     return neighbor_upper_bound
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-         (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+         (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
   //@}

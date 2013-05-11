@@ -31,13 +31,20 @@ namespace spatial
   {
     typedef Unit difference_type;
 
-    accessor_minus(const Accessor& accessor = Accessor())
-      : Accessor(accessor)
+    accessor_minus(const Accessor& accessor_ = Accessor())
+      : Accessor(accessor_)
+    { }
+
+    template <typename OtherUnit>
+    accessor_minus(const accessor_minus<Accessor, Tp, OtherUnit>& other)
+      : Accessor(other.accessor())
     { }
 
     difference_type
     operator() (dimension_type n, const Tp& x, const Tp& y) const
     { return Accessor::operator()(n, x) - Accessor::operator()(n, y); }
+
+    Accessor accessor() { return static_cast<Accessor>(*this); }
   };
 
   /**
@@ -51,6 +58,11 @@ namespace spatial
   struct bracket_minus
   {
     typedef Unit difference_type;
+
+    bracket_minus() { }
+
+    template <typename OtherUnit>
+    bracket_minus(const bracket_minus<Tp, OtherUnit>&) { }
 
     difference_type
     operator() (dimension_type n, const Tp& x, const Tp& y) const
@@ -69,6 +81,11 @@ namespace spatial
   {
     typedef Unit difference_type;
 
+    paren_minus() { }
+
+    template <typename OtherUnit>
+    paren_minus(const paren_minus<Tp, OtherUnit>&) { }
+
     difference_type
     operator() (dimension_type n, const Tp& x, const Tp& y) const
     { return x(n) - y(n); }
@@ -85,6 +102,11 @@ namespace spatial
   struct iterator_minus
   {
     typedef Unit difference_type;
+
+    iterator_minus() { }
+
+    template <typename OtherUnit>
+    iterator_minus(const iterator_minus<Tp, OtherUnit>&) { }
 
     difference_type
     operator() (dimension_type n, const Tp& x, const Tp& y) const

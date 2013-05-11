@@ -143,6 +143,15 @@ struct double6_ordered_less
   }
 };
 
+//! An accessor for the type quad
+struct double6_diff
+{
+  double
+  operator()(dimension_type dim, const double6& x, const double6& y) const
+  {
+    return x[dim] - y[dim];
+  }
+};
 // Definition of quad below, a structure of simple type
 
 /**

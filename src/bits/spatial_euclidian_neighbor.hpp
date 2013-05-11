@@ -37,7 +37,7 @@ namespace spatial
   ///@{
   template<typename Ct, typename DistanceType,
            typename Diff
-           = typename details::with_builtin_difference<Ct, DistanceType>::type,
+           = typename details::with_builtin_difference<Ct>::type,
            typename Enable = void> // Sink for non-floating point types
   class euclidian_neighbor_iterator { };
 
@@ -54,9 +54,10 @@ namespace spatial
     (const neighbor_iterator<Ct, euclidian<Ct, DistanceType, Diff> >& other)
       : neighbor_iterator<Ct, euclidian<Ct, DistanceType, Diff> >(other) { }
 
-    template <typename OtherType>
+    template <typename OtherDistanceType>
     euclidian_neighbor_iterator
-    (const neighbor_iterator<Ct, euclidian<Ct, OtherType, Diff> >& other)
+    (const neighbor_iterator
+     <Ct, euclidian<Ct, OtherDistanceType, Diff> >& other)
       : neighbor_iterator<Ct, euclidian<Ct, DistanceType, Diff> >
         (other.rank(), other.key_comp(), other.metric(),
          other.key_target(), other.node_dim, other.node) { }
@@ -78,20 +79,23 @@ namespace spatial
         (other) { }
 
     euclidian_neighbor_iterator
-    (const neighbor_iterator<Ct, euclidian<Ct, DistanceType, Diff> >& other)
+    (const neighbor_iterator
+     <Ct, euclidian<Ct, DistanceType, Diff> >& other)
       : neighbor_iterator<const Ct, euclidian<Ct, DistanceType, Diff> >
         (other) { }
 
-    template <typename OtherType>
+    template <typename OtherDistanceType>
     euclidian_neighbor_iterator
-    (const neighbor_iterator<const Ct, euclidian<Ct, OtherType, Diff> >& other)
+    (const neighbor_iterator
+     <const Ct, euclidian<Ct, OtherDistanceType, Diff> >& other)
       : neighbor_iterator<const Ct, euclidian<Ct, DistanceType, Diff> >
         (other.rank(), other.key_comp(), other.metric(),
          other.key_target(), other.node_dim, other.node) { }
 
-    template <typename OtherType>
+    template <typename OtherDistanceType>
     euclidian_neighbor_iterator
-    (const neighbor_iterator<Ct, euclidian<Ct, OtherType, Diff> >& other)
+    (const neighbor_iterator
+     <Ct, euclidian<Ct, OtherDistanceType, Diff> >& other)
       : neighbor_iterator<const Ct, euclidian<Ct, DistanceType, Diff> >
         (other.rank(), other.key_comp(), other.metric(),
          other.key_target(), other.node_dim, other.node) { }
@@ -100,20 +104,17 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   class euclidian_neighbor_iterator
   <Ct, euclidian<Ct, DistanceType,
-                 typename details::with_builtin_difference
-                 <Ct, DistanceType>::type>,
+                 typename details::with_builtin_difference<Ct>::type>,
    typename enable_if<std::tr1::is_floating_point<DistanceType>,
                       typename enable_if<details::is_compare_builtin<Ct> >
                       ::type>
    ::type>
     : public neighbor_iterator
   <Ct, euclidian<Ct, DistanceType,
-                 typename details::with_builtin_difference
-                 <Ct, DistanceType>::type> >
+                 typename details::with_builtin_difference<Ct>::type> >
   {
   private:
-    typedef typename details::with_builtin_difference
-      <Ct, DistanceType>::type diff_type;
+    typedef typename details::with_builtin_difference<Ct>::type diff_type;
 
   public:
     euclidian_neighbor_iterator() { }
@@ -124,10 +125,10 @@ namespace spatial
       : neighbor_iterator<Ct, euclidian<Ct, DistanceType,
                                         diff_type> >(other) { }
 
-    template <typename OtherType>
+    template <typename OtherDistanceType>
     euclidian_neighbor_iterator
     (const neighbor_iterator
-     <Ct, euclidian<Ct, OtherType, diff_type> >& other)
+     <Ct, euclidian<Ct, OtherDistanceType, diff_type> >& other)
       : neighbor_iterator<Ct, euclidian<Ct, DistanceType, diff_type> >
         (other.rank(), other.key_comp(), other.metric(),
          other.key_target(), other.node_dim, other.node) { }
@@ -136,20 +137,17 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   class euclidian_neighbor_iterator
   <const Ct, euclidian<Ct, DistanceType,
-                       typename details::with_builtin_difference
-                       <Ct, DistanceType>::type>,
+                       typename details::with_builtin_difference<Ct>::type>,
    typename enable_if<std::tr1::is_floating_point<DistanceType>,
                       typename enable_if<details::is_compare_builtin<Ct> >
                       ::type>
    ::type>
     : public neighbor_iterator
   <const Ct, euclidian<Ct, DistanceType,
-                       typename details::with_builtin_difference
-                       <Ct, DistanceType>::type> >
+                       typename details::with_builtin_difference<Ct>::type> >
   {
   private:
-    typedef typename details::with_builtin_difference
-      <Ct, DistanceType>::type diff_type;
+    typedef typename details::with_builtin_difference<Ct>::type diff_type;
 
   public:
     euclidian_neighbor_iterator() { }
@@ -166,18 +164,18 @@ namespace spatial
       : neighbor_iterator<const Ct, euclidian<Ct, DistanceType, diff_type> >
         (other) { }
 
-    template <typename OtherType>
+    template <typename OtherDistanceType>
     euclidian_neighbor_iterator
     (const neighbor_iterator
-     <const Ct, euclidian<Ct, OtherType, diff_type> >& other)
+     <const Ct, euclidian<Ct, OtherDistanceType, diff_type> >& other)
       : neighbor_iterator<const Ct, euclidian<Ct, DistanceType, diff_type> >
         (other.rank(), other.key_comp(), other.metric(),
          other.key_target(), other.node_dim, other.node) { }
 
-    template <typename OtherType>
+    template <typename OtherDistanceType>
     euclidian_neighbor_iterator
     (const neighbor_iterator
-     <Ct, euclidian<Ct, OtherType, diff_type> >& other)
+     <Ct, euclidian<Ct, OtherDistanceType, diff_type> >& other)
       : neighbor_iterator<const Ct, euclidian<Ct, DistanceType, diff_type> >
         (other.rank(), other.key_comp(), other.metric(),
          other.key_target(), other.node_dim, other.node) { }
@@ -220,10 +218,10 @@ namespace spatial
       : neighbor_iterator_pair<Ct, euclidian<Ct, DistanceType, Diff> >
         (a, b) { }
 
-    template <typename OtherType>
+    template <typename OtherDistanceType>
     euclidian_neighbor_iterator_pair
-    (const neighbor_iterator<Ct, euclidian<Ct, OtherType, Diff> >& a,
-     const neighbor_iterator<Ct, euclidian<Ct, OtherType, Diff> >& b)
+    (const neighbor_iterator<Ct, euclidian<Ct, OtherDistanceType, Diff> >& a,
+     const neighbor_iterator<Ct, euclidian<Ct, OtherDistanceType, Diff> >& b)
       : neighbor_iterator_pair<Ct, euclidian<Ct, DistanceType, Diff> >
         (a, b) { }
   };
@@ -250,17 +248,19 @@ namespace spatial
       : neighbor_iterator_pair<const Ct, euclidian<Ct, DistanceType, Diff> >
         (a, b) { }
 
-    template <typename OtherType>
+    template <typename OtherDistanceType>
     euclidian_neighbor_iterator_pair
-    (const neighbor_iterator<const Ct, euclidian<Ct, OtherType, Diff> >& a,
-     const neighbor_iterator<const Ct, euclidian<Ct, OtherType, Diff> >& b)
+    (const neighbor_iterator
+     <const Ct, euclidian<Ct, OtherDistanceType, Diff> >& a,
+     const neighbor_iterator
+     <const Ct, euclidian<Ct, OtherDistanceType, Diff> >& b)
       : neighbor_iterator_pair<const Ct, euclidian<Ct, DistanceType, Diff> >
         (a, b) { }
 
-    template <typename OtherType>
+    template <typename OtherDistanceType>
     euclidian_neighbor_iterator_pair
-    (const neighbor_iterator<Ct, euclidian<Ct, OtherType, Diff> >& a,
-     const neighbor_iterator<Ct, euclidian<Ct, OtherType, Diff> >& b)
+    (const neighbor_iterator<Ct, euclidian<Ct, OtherDistanceType, Diff> >& a,
+     const neighbor_iterator<Ct, euclidian<Ct, OtherDistanceType, Diff> >& b)
       : neighbor_iterator_pair<const Ct, euclidian<Ct, DistanceType, Diff> >
         (a, b) { }
   };
@@ -268,20 +268,17 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   class euclidian_neighbor_iterator_pair
   <Ct, euclidian<Ct, DistanceType,
-                 typename details::with_builtin_difference
-                 <Ct, DistanceType>::type>,
+                 typename details::with_builtin_difference<Ct>::type>,
    typename enable_if<std::tr1::is_floating_point<DistanceType>,
                       typename enable_if<details::is_compare_builtin<Ct> >
                       ::type>
    ::type>
     : public neighbor_iterator_pair
   <Ct, euclidian<Ct, DistanceType,
-                 typename details::with_builtin_difference
-                 <Ct, DistanceType>::type> >
+                 typename details::with_builtin_difference<Ct>::type> >
   {
   private:
-    typedef typename details::with_builtin_difference
-      <Ct, DistanceType>::type diff_type;
+    typedef typename details::with_builtin_difference<Ct>::type diff_type;
 
   public:
     euclidian_neighbor_iterator_pair() { }
@@ -292,10 +289,12 @@ namespace spatial
       : neighbor_iterator_pair<Ct, euclidian<Ct, DistanceType, diff_type> >
         (a, b) { }
 
-    template <typename OtherType>
+    template <typename OtherDistanceType>
     euclidian_neighbor_iterator_pair
-    (const neighbor_iterator<Ct, euclidian<Ct, OtherType, diff_type> >& a,
-     const neighbor_iterator<Ct, euclidian<Ct, OtherType, diff_type> >& b)
+    (const neighbor_iterator
+     <Ct, euclidian<Ct, OtherDistanceType, diff_type> >& a,
+     const neighbor_iterator
+     <Ct, euclidian<Ct, OtherDistanceType, diff_type> >& b)
       : neighbor_iterator_pair<Ct, euclidian<Ct, DistanceType, diff_type> >
         (a, b) { }
   };
@@ -303,20 +302,17 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   class euclidian_neighbor_iterator_pair
   <const Ct, euclidian<Ct, DistanceType,
-                       typename details::with_builtin_difference
-                       <Ct, DistanceType>::type>,
+                       typename details::with_builtin_difference<Ct>::type>,
    typename enable_if<std::tr1::is_floating_point<DistanceType>,
                       typename enable_if<details::is_compare_builtin<Ct> >
                       ::type>
    ::type>
     : public neighbor_iterator_pair
   <const Ct, euclidian<Ct, DistanceType,
-                       typename details::with_builtin_difference
-                       <Ct, DistanceType>::type> >
+                       typename details::with_builtin_difference<Ct>::type> >
   {
   private:
-    typedef typename details::with_builtin_difference
-      <Ct, DistanceType>::type diff_type;
+    typedef typename details::with_builtin_difference<Ct>::type diff_type;
 
   public:
     euclidian_neighbor_iterator_pair() { }
@@ -337,21 +333,21 @@ namespace spatial
       : neighbor_iterator_pair
         <const Ct, euclidian<Ct, DistanceType, diff_type> > (a, b) { }
 
-    template <typename OtherType>
+    template <typename OtherDistanceType>
     euclidian_neighbor_iterator_pair
     (const neighbor_iterator
-     <const Ct, euclidian<Ct, OtherType, diff_type> >& a,
+     <const Ct, euclidian<Ct, OtherDistanceType, diff_type> >& a,
      const neighbor_iterator
-     <const Ct, euclidian<Ct, OtherType, diff_type> >& b)
+     <const Ct, euclidian<Ct, OtherDistanceType, diff_type> >& b)
       : neighbor_iterator_pair
         <const Ct, euclidian<Ct, DistanceType, diff_type> > (a, b) { }
 
-    template <typename OtherType>
+    template <typename OtherDistanceType>
     euclidian_neighbor_iterator_pair
     (const neighbor_iterator
-     <Ct, euclidian<Ct, OtherType, diff_type> >& a,
+     <Ct, euclidian<Ct, OtherDistanceType, diff_type> >& a,
      const neighbor_iterator
-     <Ct, euclidian<Ct, OtherType, diff_type> >& b)
+     <Ct, euclidian<Ct, OtherDistanceType, diff_type> >& b)
       : neighbor_iterator_pair
         <const Ct, euclidian<Ct, DistanceType, diff_type> > (a, b) { }
   };
@@ -436,8 +432,8 @@ namespace spatial
     return neighbor_begin
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-       (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target);
   }
 
@@ -452,8 +448,8 @@ namespace spatial
     return neighbor_begin
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-       (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target);
   }
 
@@ -468,8 +464,8 @@ namespace spatial
     return neighbor_begin
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-       (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target);
   }
   ///@}
@@ -553,8 +549,8 @@ namespace spatial
     return neighbor_end
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-       (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target);
   }
 
@@ -569,8 +565,8 @@ namespace spatial
     return neighbor_end
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-       (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target);
   }
 
@@ -585,8 +581,8 @@ namespace spatial
     return neighbor_end
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-       (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target);
   }
   ///@}
@@ -664,8 +660,8 @@ namespace spatial
     return neighbor_lower_bound
       (container,
        euclidian<Ct, DistanceType, typename
-                 details::with_builtin_difference<Ct, DistanceType>::type>
-       (details::with_builtin_difference<Ct, DistanceType>()(container)),
+                 details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
 
@@ -684,8 +680,8 @@ namespace spatial
     return neighbor_lower_bound
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-       (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
 
@@ -704,8 +700,8 @@ namespace spatial
     return neighbor_lower_bound
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-       (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
   ///@}
@@ -783,8 +779,8 @@ namespace spatial
     return neighbor_upper_bound
       (container,
        euclidian<Ct, DistanceType, typename
-                 details::with_builtin_difference<Ct, DistanceType>::type>
-       (details::with_builtin_difference<Ct, DistanceType>()(container)),
+                 details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
 
@@ -803,8 +799,8 @@ namespace spatial
     return neighbor_upper_bound
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-       (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
 
@@ -823,8 +819,8 @@ namespace spatial
     return neighbor_upper_bound
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-       (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
   ///@}
@@ -908,8 +904,8 @@ namespace spatial
     return neighbor_range
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-       (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target);
   }
 
@@ -924,8 +920,8 @@ namespace spatial
     return neighbor_range
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-       (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target);
   }
 
@@ -940,8 +936,8 @@ namespace spatial
     return neighbor_range
       (container,
        euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct, double>::type>
-       (details::with_builtin_difference<Ct, double>()(container)),
+                 typename details::with_builtin_difference<Ct>::type>
+       (details::with_builtin_difference<Ct>()(container)),
        target);
   }
   ///@}
