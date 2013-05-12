@@ -858,7 +858,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
 }
 
-
 BOOST_AUTO_TEST_CASE_TEMPLATE
 (test_euclidian_neighbor, Tp, double6_maps)
 {
@@ -909,6 +908,118 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
                                      float, double6_diff>
       i,
       j = euclidian_neighbor_crange(fix.container, double6_diff(), target);
+    i = j;
+    BOOST_CHECK(i == j);
+  }
+  // Need to test the pair
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+(test_quadrance_neighbor, Tp, double6_maps)
+{
+  Tp fix(3, randomize(-2, 2));
+  double6 target; same()(target, 0, 2);
+  {
+    // With default diff with float
+    quadrance_neighbor_iterator<typename Tp::container_type, float>
+      i,
+      j = quadrance_neighbor_begin(fix.container, target),
+      k = quadrance_neighbor_end(fix.container, target),
+      l = quadrance_neighbor_lower_bound(fix.container, target, 0.0),
+      m = quadrance_neighbor_upper_bound(fix.container, target, 0.0);
+    i = j;
+    BOOST_CHECK(i == j);
+    BOOST_CHECK(j != k);
+    BOOST_CHECK(i == l);
+    BOOST_CHECK(m == l);
+  }
+  {
+    // With custom diff and const
+    quadrance_neighbor_iterator<const typename Tp::container_type,
+                                float, double6_diff>
+      i,
+      j = quadrance_neighbor_cbegin(fix.container, double6_diff(), target),
+      k = quadrance_neighbor_cend(fix.container, double6_diff(), target),
+      l = quadrance_neighbor_clower_bound(fix.container, double6_diff(),
+                                          target, 0.0),
+      m = quadrance_neighbor_cupper_bound(fix.container, double6_diff(),
+                                          target, 0.0);
+    i = j;
+    BOOST_CHECK(i == j);
+    BOOST_CHECK(j != k);
+    BOOST_CHECK(i == l);
+    BOOST_CHECK(m == l);
+  }
+  {
+    // With default diff with float and a pair
+    quadrance_neighbor_iterator_pair<typename Tp::container_type, long>
+      i,
+      j = quadrance_neighbor_range(fix.container, target);
+    i = j;
+    BOOST_CHECK(i == j);
+  }
+  {
+    // With custom diff and const
+    quadrance_neighbor_iterator_pair<const typename Tp::container_type,
+                                     long, double6_diff>
+      i,
+      j = quadrance_neighbor_crange(fix.container, double6_diff(), target);
+    i = j;
+    BOOST_CHECK(i == j);
+  }
+  // Need to test the pair
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+(test_manhattan_neighbor, Tp, double6_maps)
+{
+  Tp fix(3, randomize(-2, 2));
+  double6 target; same()(target, 0, 2);
+  {
+    // With default diff with float
+    manhattan_neighbor_iterator<typename Tp::container_type, float>
+      i,
+      j = manhattan_neighbor_begin(fix.container, target),
+      k = manhattan_neighbor_end(fix.container, target),
+      l = manhattan_neighbor_lower_bound(fix.container, target, 0.0),
+      m = manhattan_neighbor_upper_bound(fix.container, target, 0.0);
+    i = j;
+    BOOST_CHECK(i == j);
+    BOOST_CHECK(j != k);
+    BOOST_CHECK(i == l);
+    BOOST_CHECK(m == l);
+  }
+  {
+    // With custom diff and const
+    manhattan_neighbor_iterator<const typename Tp::container_type,
+                                float, double6_diff>
+      i,
+      j = manhattan_neighbor_cbegin(fix.container, double6_diff(), target),
+      k = manhattan_neighbor_cend(fix.container, double6_diff(), target),
+      l = manhattan_neighbor_clower_bound(fix.container, double6_diff(),
+                                          target, 0.0),
+      m = manhattan_neighbor_cupper_bound(fix.container, double6_diff(),
+                                          target, 0.0);
+    i = j;
+    BOOST_CHECK(i == j);
+    BOOST_CHECK(j != k);
+    BOOST_CHECK(i == l);
+    BOOST_CHECK(m == l);
+  }
+  {
+    // With default diff with float and a pair
+    manhattan_neighbor_iterator_pair<typename Tp::container_type, long>
+      i,
+      j = manhattan_neighbor_range(fix.container, target);
+    i = j;
+    BOOST_CHECK(i == j);
+  }
+  {
+    // With custom diff and const
+    manhattan_neighbor_iterator_pair<const typename Tp::container_type,
+                                     long, double6_diff>
+      i,
+      j = manhattan_neighbor_crange(fix.container, double6_diff(), target);
     i = j;
     BOOST_CHECK(i == j);
   }

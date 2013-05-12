@@ -65,7 +65,7 @@ VERSION 2.1.0
 
 * Oct 13 Implementing containers that hold only unique keys, with
            bracket operators just like std::map and std::set. They
-           would be simply pointset, boxset, pointmap and boxmap.
+           would be simply point_set, box_set, point_map and box_map.
 
 * Nov 13 Add a range erase function that operates on 2 basic tree
            iterators. This is complicated to write because of the
@@ -118,11 +118,11 @@ VERSION 2.2.0
 VERSION 2.3.0
 
 * Jun 14 Add new iterators such at ray_iterator, which travels along a
-           vector, in a given geometry. This iterator works only on
-           boxset family of iterators. Some new functions for geometry
+           vector, in a given space. This iterator works only on
+           boxset family of iterators? Some new functions for metric
            should appear and therefore, it would make defining a
            geometry quite a complex business, needing more
-           documentation. Should take about 2 months.
+           documentation.
 
 * Aug 14 Porting Spatial to scripting/duck-typing languages or
            frameworks? Python, Java, Lua, Ruby, .Net, others? Create a
