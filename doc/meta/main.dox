@@ -7,8 +7,6 @@
 - \subpage structure
 - \subpage tutorial
 
-\prev \ref intro \next \ref changelog \endprevnext
-
 \quote
 Man's mind, once stretched by a new idea, never regains its original
 dimensions. <br> -- Oliver Wendell Holmes, Jr.
@@ -27,31 +25,32 @@ it's interface; therefore \Spatial's containers, iterators and
 functionals integrate well with the \STL. Good overall performance is
 a major objective of this general-purpose library. To satisfy this
 requirement, \Spatial implements self-balancing \kdtree-based
-containers, capable of object removal in fracitional amortized time.
+containers, capable of object removal in fractional amortized time.
 
-\Spatial shines in tracking analysis or real-time positioning, but its
-focus on good overall performance and large number algorithms could
-make it your go to library should you needed any kind of spatial
+\Spatial was created with tracking analysis and real-time positioning
+in mind, but its focus on good overall performance and its set of
+algorithms could make it your goto library for any kind of spatial
 analysis in your application.
 
-\section feature Library Features
+\section feature Features Overview
 
 A brief overview of spatial features is provided below:
 
-- \ref pointset<>,
-- dimensions may be of different types,
-- static or dynamic time determination of the number of dimensions,
-- <i>O(log(n))</i> class of complexity on insertion and removal,
-- use custom predicate to define a range of elements,
-- \STL-compatible iterators that go over that range of elements,
-- flexible definition of a metric space for elements in the container,
-- \STL-compatible iterators going from the nearest to the furthest neighbor
-  of a point according to the metric space applied.
+- Based on \kdtrees which provide good overall performance for only 4
+  pointers of overhead per node
+- Sort objects along several dimensions, which may be of different types
+- static (compile-time) or dynamic (run-time) determination of the number of dimensions
+- Policy-based rebalancing of the \kdtree, limiting worst-case
+  performance, upon insertion and removal
+- Insertions in logarithmic amortized time, removals in fractional amortized time
+- Closely resemble the \STL in design, with compatible containers and iterators
+- Iteration over orthogonal range with custom predicates and support for points or boxes
+- Iteration over neighbors, from nearest to furthest with custom metrics
+- Iteration over a single dimension, independantly from others
+- and more...
 
-\section history History of the Library
-
-\Spatial was inspired from \libkdtree, and aims at providing a library that
-retains all the great benefits of \libkdtree while broadening its horizons.
+\Spatial provides what is generally needed to get you started on
+spatial analysis.
 
 \section source Getting the Source and Sending Feedbacks
 
@@ -79,15 +78,42 @@ can use the following command to clone the repository:
 git clone ssh://your_username@git.code.sf.net/p/spatial/code spatial
 \endcode
 
-\prev \ref intro \next \ref changelog \endprevnext
+\section history History of the Library
+
+\Spatial was inspired from \libkdtree, and aims at providing a library that
+retains all the great benefits of \libkdtree while broadening its horizons.
 */
 
 /**
 \page changelog Change Log
+\tableofcontents
 
-- \ref ver1
+\section ver2 Version 2.0.0
 
-\prev \ref intro \next \ref install \endprevnext
+- This is version 2 of the library and since it's a major number
+  update, it means it breaks compatibility with version 1.0.0. If you
+  are using version 1.0.0, you should know that:
+  - pointset is now called point_multiset to reflect truly it's
+  equivalence to multiset, and not set. Similar changes for
+  box_multiset.
+  - frozen_* are now renamed to idle_*, the function are the same, but
+  idle_* just take less characters to write, and provides a more
+  accurate picture to python programmers (which use 'frozen' to
+  describe unmutable objects)
+  - iterators have been vastly changed: their interface is now
+  consistent, and the neighbor iterator works now on MSVC9+. The
+  design used for iterators resemble the design of Boost.Range, e.g:
+  mapping_iterator<const container, dimension>,
+  region_iterator<container, predicate>, etc...
+  - range iterators have been renamed to region_iterator, because you
+  can now request for a region_range(container, predicate) which
+  returns a pair of iterators region_iterator_pair<container,
+  predicate>
+  - a new set of iterator called ordered_iterator<container> have been
+  created, and they iterate all nodes in the tree in deterministic
+  fashion, so that 2 trees build differently but containing the same
+  values will be iterated in the same sequence
+
 
 \section ver1 Version 1.0.0
 
@@ -105,17 +131,11 @@ git clone ssh://your_username@git.code.sf.net/p/spatial/code spatial
 - Documentation
 - Examples
 
-\prev \ref intro \next \ref install \endprevnext
 */
 
 /**
 \page install Installing the library
-
-- \ref windows
-- \ref linux
-- \ref other_platforms
-
-\prev \ref changelog \next \ref structure \endprevnext
+\tableofcontents
 
 \Spatial is a header only library, and all you have to do is to copy these
 headers in the appropriate header directory for your project. Generally, you
@@ -164,11 +184,10 @@ spatial. Then you must configure your \c "configure.ac" or \c "CMakeList.txt" fi
 to add \c "-I$HOME/include/" to the \c CPPFLAGS variable of autoconf or modify the
 \c "include_directories()" directive of cmake.
 
-You can now use the
-library for your project by including in the source file:
+You can now use the library for your project by including in the source file:
 
 \code
-#include <spatial/poinset.hpp>
+#include <spatial/point_multiset.hpp>
 \endcode
 
 \section other_platforms Other platforms
@@ -178,117 +197,23 @@ your compilation environement. You can now use the library for your project by
 including in the source file:
 
 \code
-#include <spatial/pointset.hpp>
+#include <spatial/point_multiset.hpp>
 \endcode
 
 Or copy the directory 'spatial' and its content to your own project and use the
 library by including in the source file:
 
 \code
-#include "spatial/pointset.hpp"
+#include "spatial/point_multiset.hpp"
 \endcode
 
-\prev \ref changelog \next \ref structure \endprevnext
 */
 
 /**
-\page structure Structure of the Library
+\page tutorial Quick Start Guide
+\tableofcontents
 
-- \ref nsspatial
-- \ref nsview
-
-\prev \ref install \next \ref tutorial \endprevnext
-
-A few basic definitions will help you to gets through the examples of the \ref
-tutorial "next section".
-
-\section nsspatial Namespace ::spatial
-
-- \c pointset: a container that stores points along a number of dimensions fixed
-  at compile time.
-- \c dynamic_pointset: a container that store points along a number of
-  dimensions determined at run-time, upon user input for example. Additionally,
-  declaring a variable of type \c pointset with a dimension of 0 is equivalent
-  to using a \c dynamic_pointset.
-
-These 2 containers provide you with only the very basic set of iterators. They
-are fast, but they only iterate through each of the elements in the containers,
-and are not following any order. To perform nearest neighbor search or
-orthogonal range search, you must use views.
-
-\section nsview Namespace ::spatial::view
-
-View are providing the user with a wide range of additional operations that you
-would normally expect on spatial containers, such as nearest neighbor search or
-orthogonal range search, or even mapping all elements in the container to a
-particular dimension.
-
-There are several views provided in the library and only the most important are
-presented here, for more information refer to the section on \ref view "views".
-
-- \c view::mapping offers iterators that iterate through all the element of the
-  containers ordered along one particular dimension. Did you ever felt that
-  \Boost::bimap was not enough for you? That you needed a trimap or a quadmap?
-  With this view, you basically transform your container in a \e n-map. You can
-  store element over multiple dimensions in one container, but treat it has if
-  you had a separate \c ::std::multiset container for each dimension, for example.
-- \c view::range offers iterators that arbitrarily iterate through all the
-  points contained within a <i>k</i>-dimensional region of space, defined by a
-  \e low and a \e high component. \c view::range has a number of siblings such
-  as \c view::close_range, or One of them, \c view::range_predicate is notable
-  for allowing you to set your own predicate. These views provide orthogonal
-  range search functionality over the containers.
-- \c view::neighbor_euclidian offers iterators that iterate in order through all
-  points that are nearest to a point of origin, from nearest to furthest and
-  vice-versa. This view provide nearest neighbor search functionality over the
-  containers, including finding the <i>n</i>-nearest element from the point of
-  origin.
-
-With this basic knowledge of the view and the iterators, you know enough to
-get started.
-
-\prev \ref install \next \ref tutorial \endprevnext
-*/
-
-/**
-\page tutorial Getting Started
-
-- \ref tutorial_include
-- \ref tutorial_step1
-- \ref tutorial_step2
-- \ref tutorial_step3
-- \ref tutorial_end
-
-\prev \ref structure \next \ref tutorial_end \endprevnext
-
-If you haven't already done so, I recommend you go through the section \ref
-structure. This section will walk you through several basic usage scenarios
-assuming you already have a minimum knowledge of what kind of \ref container
-"containers" and \ref view "views" are provided by the library.
-
-\section tutorial_include Include Spatial Header
-
-After you have \ref install "installed" the library, you can begin using it by
-including its header in your code.
-
-\code
-#include <spatial/poinset.hpp>
-// ...
-
-using namespace spatial;
-\endcode
-
-There is only one header to include in order to get access to \c pointset and \c
-dynamic_pointset and the views that they support. In the future there should be
-more header, but at the moment, it is the only one necessary.
-
-If you are going to declare several \Spatial objects in your file, it's also
-good to include the <tt>using namespace spatial;</tt> directive so you don't
-have to prefix your each object with the namespace all the time. Nevertheless,
-the rest of this guide will prefix each declaration with this namespace, as if
-you did not use the \c using directive.
-
-\section tutorial_step1 Step 1: Declaring the right container for your objects
+\section tutorial_step1 Inserting Elements
 
 Object that can be expressed through multi-dimension needs to define an accessor
 to these dimensions. By default, if an object has overloaded the bracket operator
@@ -296,25 +221,30 @@ to access each of its dimension, then it can be inserted in the \c poinset,
 right out of the box.
 
 \code
-#include <tr1/array>
+#include <array>
 #include <iostream>
+#include <spatial/point_multiset.hpp>
 
-typedef std::tr1::array<int, 3> point3d;
+int main()
+{
+  typedef std::tr1::array<int, 3> point3d;
 
-// Creation of a 3-dimensional container of point3d:
-spatial::pointset<3, point3d> container;
+  // Creation of a 3-dimensional container of point3d:
+  spatial::point_multiset<3, point3d> container;
 
-// Creation of a few points:
-point3d origin = { { 0, 0, 0 } };
-point3d p1 = { { 432, 65, -32 } };
-point3d p2 = { { 84, -2, -35 } };
+  // Creation of a few points:
+  point3d origin = { { 0, 0, 0 } };
+  point3d p1 = { { 432, 65, -32 } };
+  point3d p2 = { { 84, -2, -35 } };
 
-// insertion of these points in the container
-container.insert(origin);
-container.insert(p1);
-container.insert(p2);
+  // insertion of these points in the container
+  container.insert(origin);
+  container.insert(p1);
+  container.insert(p2);
 
-std::cout << "There are " << container.size() << "elements in space." << std::end;
+  std::cout << "There are " << container.size()
+            << "elements in space." << std::end;
+  return 0;
 \endcode
 
 \Spatial supports by default objects with overloaded bracket operator, because
@@ -752,7 +682,5 @@ even take this opportunity to write an additional example, so that other may
 benefit of your question.
 
 There is a documentation for each example too, in the related pages.
-
-\prev \ref structure \next \ref tutorial_end \endprevnext
 
 */
