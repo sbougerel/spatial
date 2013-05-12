@@ -29,22 +29,20 @@ namespace spatial
   struct accessor_minus
     : private Accessor // empty member optimization
   {
-    typedef Unit difference_type;
-
     accessor_minus(const Accessor& accessor_ = Accessor())
       : Accessor(accessor_)
     { }
 
-    template <typename OtherUnit>
-    accessor_minus(const accessor_minus<Accessor, Tp, OtherUnit>& other)
+    template <typename AnyUnit>
+    accessor_minus(const accessor_minus<Accessor, Tp, AnyUnit>& other)
       : Accessor(other.accessor())
     { }
 
-    difference_type
+    Unit
     operator() (dimension_type n, const Tp& x, const Tp& y) const
     { return Accessor::operator()(n, x) - Accessor::operator()(n, y); }
 
-    Accessor accessor() { return static_cast<Accessor>(*this); }
+    Accessor accessor() const { return static_cast<Accessor>(*this); }
   };
 
   /**
@@ -57,14 +55,12 @@ namespace spatial
   template <typename Tp, typename Unit>
   struct bracket_minus
   {
-    typedef Unit difference_type;
-
     bracket_minus() { }
 
-    template <typename OtherUnit>
-    bracket_minus(const bracket_minus<Tp, OtherUnit>&) { }
+    template <typename AnyUnit>
+    bracket_minus(const bracket_minus<Tp, AnyUnit>&) { }
 
-    difference_type
+    Unit
     operator() (dimension_type n, const Tp& x, const Tp& y) const
     { return x[n] - y[n]; }
   };
@@ -79,14 +75,12 @@ namespace spatial
   template <typename Tp, typename Unit>
   struct paren_minus
   {
-    typedef Unit difference_type;
-
     paren_minus() { }
 
-    template <typename OtherUnit>
-    paren_minus(const paren_minus<Tp, OtherUnit>&) { }
+    template <typename AnyUnit>
+    paren_minus(const paren_minus<Tp, AnyUnit>&) { }
 
-    difference_type
+    Unit
     operator() (dimension_type n, const Tp& x, const Tp& y) const
     { return x(n) - y(n); }
   };
@@ -101,14 +95,12 @@ namespace spatial
   template <typename Tp, typename Unit>
   struct iterator_minus
   {
-    typedef Unit difference_type;
-
     iterator_minus() { }
 
-    template <typename OtherUnit>
-    iterator_minus(const iterator_minus<Tp, OtherUnit>&) { }
+    template <typename AnyUnit>
+    iterator_minus(const iterator_minus<Tp, AnyUnit>&) { }
 
-    difference_type
+    Unit
     operator() (dimension_type n, const Tp& x, const Tp& y) const
     {
       typename Tp::const_iterator ix = x.begin();

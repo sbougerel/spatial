@@ -39,16 +39,13 @@ namespace spatial
    *  be more precise than \ref quadrance in some cases, but it will be
    *  slower in all cases.
    */
-  //@{
-  template<typename Container, typename DistanceType, typename Diff,
-           typename Enable = void>  // Sink for non floating-point types
-  class euclidian { };
-
   template<typename Ct, typename DistanceType, typename Diff>
   class euclidian
-  <Ct, DistanceType, Diff,
-   typename enable_if<std::tr1::is_floating_point<DistanceType> >::type>
   {
+    // Check that DistanceType is a fundamental floating point type
+    typedef typename enable_if<std::tr1::is_floating_point<DistanceType> >::type
+    check_concept_distance_type_is_floating_point;
+
   public:
     /**
      *  The type used to compute the difference between 2 keys along the same
@@ -75,7 +72,12 @@ namespace spatial
     typedef DistanceType distance_type;
 
     //! The constructors allows you to specify a custom difference type.
-    euclidian(const Diff& diff = Diff()) : _diff(diff) { }
+    euclidian(const difference_type& diff = Diff()) : _diff(diff) { }
+
+    //! Copy the metric from another metric with any DistanceType.
+    template <typename AnyDistanceType>
+    euclidian(const euclidian<Ct, AnyDistanceType, Diff>& other)
+      : _diff(other.difference()) { }
 
     /**
      *  Compute the distance between the point of @c origin and the @c key.
@@ -106,8 +108,12 @@ namespace spatial
       return math::euclid_distance_to_plane
         <key_type, difference_type, DistanceType>(dim, origin, key, _diff);
     }
+
+    /**
+     *  Returns the difference functor used in this type.
+     */
+    difference_type difference() const { return _diff; }
   };
-  //@}
 
   /**
    *  Defines a metric in the Euclidian space where only the square of
@@ -131,16 +137,13 @@ namespace spatial
    *  \c #define \c SPATIAL_SAFER_ARITHEMTICS.
    *
    */
-  //@{
-  template<typename Ct, typename DistanceType, typename Diff,
-           typename Enable = void> // Sink for non-arithmetic types
-  class quadrance { };
-
   template<typename Ct, typename DistanceType, typename Diff>
   class quadrance
-  <Ct, DistanceType, Diff,
-   typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type>
   {
+    // Check that DistanceType is a fundamental floating point type
+    typedef typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type
+    check_concept_distance_type_is_arithmetic;
+
   public:
     /**
      *  The type used to compute the difference between 2 keys along the same
@@ -164,7 +167,12 @@ namespace spatial
     typedef DistanceType distance_type;
 
     //! The constructor allows you to specify a custom difference type.
-    quadrance(const Diff& diff = Diff()) : _diff(diff) { }
+    quadrance(const difference_type& diff = Diff()) : _diff(diff) { }
+
+    //! Copy the metric from another metric with any DistanceType.
+    template <typename AnyDistanceType>
+    quadrance(const quadrance<Ct, AnyDistanceType, Diff>& other)
+      : _diff(other.difference()) { }
 
     /**
      *  Compute the distance between the point of @c origin and the @c key.
@@ -191,8 +199,12 @@ namespace spatial
       return math::square_euclid_distance_to_plane
         <key_type, difference_type, DistanceType>(dim, origin, key, _diff);
     }
+
+    /**
+     *  Returns the difference functor used in this type.
+     */
+    difference_type difference() const { return _diff; }
   };
-  //@}
 
   /**
    *  Defines a metric for the a space where distances are the sum
@@ -220,16 +232,13 @@ namespace spatial
    *  arithmetic_error exception upon overflow, compile your application with
    *  \c #define \c SPATIAL_SAFER_ARITHEMTICS.
    */
-  ///@{
-  template<typename Ct, typename DistanceType, typename Diff,
-           typename Enable = void> // Sink for non-arithmetic types
-  class manhattan { };
-
   template<typename Ct, typename DistanceType, typename Diff>
   class manhattan
-  <Ct, DistanceType, Diff,
-   typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type>
   {
+    // Check that DistanceType is a fundamental floating point type
+    typedef typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type
+    check_concept_distance_type_is_arithmetic;
+
   public:
     /**
      *  The type used to compute the difference between 2 keys along the same
@@ -253,7 +262,12 @@ namespace spatial
     typedef DistanceType distance_type;
 
     //! A constructor that allows you to specify the Difference type.
-    manhattan(const Diff& diff = Diff()) : _diff(diff) { }
+    manhattan(const difference_type& diff = Diff()) : _diff(diff) { }
+
+    //! Copy the metric from another metric with any DistanceType.
+    template <typename AnyDistanceType>
+    manhattan(const manhattan<Ct, AnyDistanceType, Diff>& other)
+      : _diff(other.difference()) { }
 
     /**
      *  Compute the distance between the point of \c origin and the \c key.
@@ -281,8 +295,12 @@ namespace spatial
       return math::manhattan_distance_to_plane
         <key_type, difference_type, DistanceType>(dim, origin, key, _diff);
     }
+
+    /**
+     *  Returns the difference functor used in this type.
+     */
+    difference_type difference() const { return _diff; }
   };
-  ///@}
 
 } // namespace spatial
 

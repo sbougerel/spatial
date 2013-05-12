@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(test_difference_iterator)
 BOOST_AUTO_TEST_CASE(test_difference_accessor)
 {
   typedef point_multiset<4, quad, accessor_less<quad_access, quad> > pointset_type;
-  accessor_minus<quad, quad_access, int>
+  accessor_minus<quad_access, quad, int>
     diff = details::with_builtin_difference<pointset_type>()
     (pointset_type());
   quad p(0, 1, 0, 0);
