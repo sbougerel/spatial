@@ -170,10 +170,6 @@ namespace spatial
    *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing to
    *  the nearest neighbor of \c target.
    *
-   *  \param container The container to iterate.
-   *  \param diff A model of \ref DifferenceConcept.
-   *  \param target Search for element in container closest to target.
-   *
    *  The search will occur in euclidian space, where distance are computed in
    *  double, by default. However distances can be expressed in any floating
    *  point type by simply assigning the result to an similar iterator using a
@@ -183,6 +179,10 @@ namespace spatial
    *  euclidian_neighbor_iterator<Ct, float, Diff> my_float_nearest_iterator
    *    = euclidian_neighbor_begin(container, diff(), target);
    *  \endcode
+   *
+   *  \param container The container to iterate.
+   *  \param diff A model of \ref DifferenceConcept.
+   *  \param target Search for element in container closest to target.
    */
   ///@{
   template <typename Ct, typename Diff>
@@ -220,18 +220,18 @@ namespace spatial
    *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing to
    *  the nearest neighbor of \c target.
    *
-   *  \param container The container to iterate.
-   *  \param target Search for element in container closest to target.
-   *
    *  The search will occur in euclidian space, where distance are computed in
    *  double, by default. However distances can be expressed in any floating
    *  point type by simply assigning the result to an similar iterator using a
    *  different distance type:
    *
    *  \code
-   *  euclidian_neighbor_iterator<Ct, float, Diff> my_float_nearest_iterator
-   *    = euclidian_neighbor_begin(container, diff(), target);
+   *  euclidian_neighbor_iterator<Ct, float> my_float_nearest_iterator
+   *    = euclidian_neighbor_begin(container, target);
    *  \endcode
+   *
+   *  \param container The container to iterate.
+   *  \param target Search for element in container closest to target.
    */
   ///@{
   template <typename Ct>
@@ -287,10 +287,6 @@ namespace spatial
    *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
    *  past-the-end.
    *
-   *  \param container The container to iterate.
-   *  \param diff A model of \ref DifferenceConcept.
-   *  \param target Search for element in container closest to target.
-   *
    *  The search will occur in euclidian space, where distance are computed in
    *  double, by default. However distances can be expressed in any floating
    *  point type by simply assigning the result to an similar iterator using a
@@ -300,6 +296,10 @@ namespace spatial
    *  euclidian_neighbor_iterator<Ct, float, Diff> my_float_nearest_iterator
    *    = euclidian_neighbor_end(container, diff(), target);
    *  \endcode
+   *
+   *  \param container The container to iterate.
+   *  \param diff A model of \ref DifferenceConcept.
+   *  \param target Search for element in container closest to target.
    */
   ///@{
   template <typename Ct, typename Diff>
@@ -337,18 +337,18 @@ namespace spatial
    *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
    *  past-the-end.
    *
-   *  \param container The container to iterate.
-   *  \param target Search for element in container closest to target.
-   *
    *  The search will occur in euclidian space, where distance are computed in
    *  double, by default. However distances can be expressed in any floating
    *  point type by simply assigning the result to an similar iterator using a
    *  different distance type:
    *
    *  \code
-   *  euclidian_neighbor_iterator<Ct, float, Diff> my_float_nearest_iterator
-   *    = euclidian_neighbor_end(container, diff(), target);
+   *  euclidian_neighbor_iterator<Ct, float> my_float_nearest_iterator
+   *    = euclidian_neighbor_end(container, target);
    *  \endcode
+   *
+   *  \param container The container to iterate.
+   *  \param target Search for element in container closest to target.
    */
   ///@{
   template <typename Ct>
@@ -632,10 +632,6 @@ namespace spatial
    *  Make a pair of iterators spanning the range of iterable element in \c
    *  container from the closest to the furthest to \c target
    *
-   *  \param container The container to iterate.
-   *  \param diff A model of \ref DifferenceConcept.
-   *  \param target Search for element in container closest to target.
-   *
    *  The search will occur in euclidian space, where distance are computed in
    *  double, by default. However distances can be expressed in any floating
    *  point type by simply assigning the result to an similar iterator using a
@@ -645,6 +641,10 @@ namespace spatial
    *  euclidian_neighbor_iterator_pair<Ct, float, Diff> my_float_iterator_pair
    *    = euclidian_neighbor_range(container, diff(), target);
    *  \endcode
+   *
+   *  \param container The container to iterate.
+   *  \param diff A model of \ref DifferenceConcept.
+   *  \param target Search for element in container closest to target.
    */
   ///@{
   template <typename Ct, typename Diff>
@@ -682,18 +682,18 @@ namespace spatial
    *  Make a pair of iterators spanning the range of iterable elements in \c
    *  container from the closest to the furthest to \c target.
    *
-   *  \param container The container to iterate.
-   *  \param target Search for element in container closest to target.
-   *
-   *  The search will occur in euclidian space, where distance are computed in
+   *  The search will occur in euclidian space, where distances are computed in
    *  double, by default. However distances can be expressed in any floating
    *  point type by simply assigning the result to an similar iterator using a
    *  different distance type:
    *
    *  \code
-   *  euclidian_neighbor_iterator_pair<Ct, float, Diff> my_float_iterator_pair
-   *    = euclidian_neighbor_range(container, diff(), target);
-   *  \rangecode
+   *  euclidian_neighbor_iterator_pair<Ct, float> my_float_iterator_pair
+   *    = euclidian_neighbor_range(container, target);
+   *  \endcode
+   *
+   *  \param container The container to iterate.
+   *  \param target Search for element in container closest to target.
    */
   ///@{
   template <typename Ct>

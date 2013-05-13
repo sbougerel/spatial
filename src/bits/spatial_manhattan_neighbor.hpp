@@ -91,16 +91,16 @@ namespace spatial
    *  Facilitate the creation of an iterator range representing a sequence from
    *  closest to furthest from the target key position, in manhattan space.
    *
+   *  This class has an associated group of functions designed to
+   *  initialize the iterator position at the beginning, end, lower bound or
+   *  upper bound of the container to iterate.
+   *
    *  \tparam Ct The container to iterator.
    *  \tparam DistanceType The type used to represent the distance, it must be a
    *  primitive arithmetic type.
    *  \tparam Diff The difference functor that will compute the difference
    *  between 2 key element in the container, along a specific dimension. See
    *  \ref DifferenceConcept for further explanation.
-   *
-   *  This class has an associated group of functions designed to
-   *  initialize the iterator position at the beginning, end, lower bound or
-   *  upper bound of the container to iterate.
    */
   ///@{
   template <typename Ct, typename DistanceType, typename Diff
@@ -220,18 +220,18 @@ namespace spatial
    *  Returns a \ref manhattan_neighbor_iterator<Ct, double, Diff> pointing to
    *  the nearest neighbor of \c target.
    *
-   *  \param container The container to iterate.
-   *  \param target Search for element in container closest to target.
-   *
    *  The search will occur in manhattan space, where distance are computed in
    *  double, by default. However distances can be expressed in any arithmetic
    *  type by simply assigning the result to an similar iterator using a
    *  different distance type:
    *
    *  \code
-   *  manhattan_neighbor_iterator<Ct, float, Diff> my_float_nearest_iterator
-   *    = manhattan_neighbor_begin(container, diff(), target);
+   *  manhattan_neighbor_iterator<Ct, float> my_float_nearest_iterator
+   *    = manhattan_neighbor_begin(container, target);
    *  \endcode
+   *
+   *  \param container The container to iterate.
+   *  \param target Search for element in container closest to target.
    */
   ///@{
   template <typename Ct>
@@ -287,10 +287,6 @@ namespace spatial
    *  Returns a \ref manhattan_neighbor_iterator<Ct, double, Diff> pointing
    *  past-the-end.
    *
-   *  \param container The container to iterate.
-   *  \param diff A model of \ref DifferenceConcept.
-   *  \param target Search for element in container closest to target.
-   *
    *  The search will occur in manhattan space, where distance are computed in
    *  double, by default. However distances can be expressed in any arithmetic
    *  type by simply assigning the result to an similar iterator using a
@@ -300,6 +296,10 @@ namespace spatial
    *  manhattan_neighbor_iterator<Ct, float, Diff> my_float_nearest_iterator
    *    = manhattan_neighbor_end(container, diff(), target);
    *  \endcode
+   *
+   *  \param container The container to iterate.
+   *  \param diff A model of \ref DifferenceConcept.
+   *  \param target Search for element in container closest to target.
    */
   ///@{
   template <typename Ct, typename Diff>
@@ -337,18 +337,18 @@ namespace spatial
    *  Returns a \ref manhattan_neighbor_iterator<Ct, double, Diff> pointing
    *  past-the-end.
    *
-   *  \param container The container to iterate.
-   *  \param target Search for element in container closest to target.
-   *
    *  The search will occur in manhattan space, where distance are computed in
    *  double, by default. However distances can be expressed in any arithmetic
    *  type by simply assigning the result to an similar iterator using a
    *  different distance type:
    *
    *  \code
-   *  manhattan_neighbor_iterator<Ct, float, Diff> my_float_nearest_iterator
-   *    = manhattan_neighbor_end(container, diff(), target);
+   *  manhattan_neighbor_iterator<Ct, float> my_float_nearest_iterator
+   *    = manhattan_neighbor_end(container, target);
    *  \endcode
+   *
+   *  \param container The container to iterate.
+   *  \param target Search for element in container closest to target.
    */
   ///@{
   template <typename Ct>
@@ -682,18 +682,18 @@ namespace spatial
    *  Make a pair of iterators spanning the range of iterable elements in \c
    *  container from the closest to the furthest to \c target.
    *
-   *  \param container The container to iterate.
-   *  \param target Search for element in container closest to target.
-   *
    *  The search will occur in manhattan space, where distance are computed in
    *  double, by default. However distances can be expressed in any arithmetic
    *  type by simply assigning the result to an similar iterator using a
    *  different distance type:
    *
    *  \code
-   *  manhattan_neighbor_iterator_pair<Ct, float, Diff> my_float_iterator_pair
-   *    = manhattan_neighbor_range(container, diff(), target);
-   *  \rangecode
+   *  manhattan_neighbor_iterator_pair<Ct, float> my_float_iterator_pair
+   *    = manhattan_neighbor_range(container, target);
+   *  \endcode
+   *
+   *  \param container The container to iterate.
+   *  \param target Search for element in container closest to target.
    */
   ///@{
   template <typename Ct>

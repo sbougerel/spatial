@@ -6,7 +6,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_compare_builtin.hpp
+ *  @file   spatial_builtin.hpp
  *  @brief  Defines the set of meta-programing types to find if a comparator is
  *  built-in or not.
  */

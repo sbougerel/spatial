@@ -6,7 +6,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_function.hpp
+ *  @file   function.hpp
  *  @brief  Main functors that are used in the library.
  */
 

@@ -33,10 +33,11 @@
 // For compatibility with older environments
 /**
  *  \def SPATIAL_BAD_CSTDDEF
- *  If you encounter too many mistakes due to undefined \mono{std::size_t} or
- *  \mono{std::ptrdiff_t} during compilation, set this variable in order to
- *  prevent compilation to fail. This will artificially but back \mono{size_t}
- *  and \mono{ptrdiff_t} in the namespace \c std.
+ *
+ *  \brief If you encounter too many mistakes due to undefined
+ *  \mono{std::size_t} or \mono{std::ptrdiff_t} during compilation, set this
+ *  variable in order to prevent compilation to fail. This will artificially but
+ *  back \mono{size_t} and \mono{ptrdiff_t} in the namespace \c std.
  */
 #ifdef SPATIAL_BAD_CSTDDEF
 #include <stddef.h>

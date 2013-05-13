@@ -34,7 +34,7 @@ application as using \STL's \c multiset or \c map containers.
 
 \section feature Features Overview
 
-A brief overview of spatial features is provided below:
+A brief overview of the \Spatial's features is provided below:
 
 - Based on \kdtrees which provide good overall performance for only 4
   pointers of overhead per node
@@ -64,21 +64,28 @@ to change. Work is in progress to put the documentation on par with the source.
 
 \Spatial C++ Library is estimated by its author to be production-ready. The
 library is consistently unit tested, with unit tests covering more than 90% of
-it's current source code, hence library should behave as expected. The \c beta
-status on Sourceforge will be removed once the documentation is on par with the
-source.
+it's current source code, so it should behave as expected. The \c beta status on
+Sourceforge will be removed once the documentation is on par with the source.
 
-\Spatial's unit test suite should compile without error or warning (even on highest warning levels) on the following compilers:
-- GCC G++ 4.5 and later
-- Clang C++ 2.9 and later
-- Microsoft Visual Studio 2010
+\Spatial's unit test suite should compile without error or warning (even on
+highest warning levels) and execute without errors on the following compilers:
 
-\Spatial has not been tested on other compilers. Any feedback in this regard would be greatly appreciated.
+- GCC G++ 4.5 and later (tested on x86_64 architectures only)
+- Clang C++ 3.0 and later (tested on x86_64 architectures only)
+- Microsoft Visual Studio 2010 (tested on both X64 and X86 architectures)
+
+\Spatial has not been tested on other compilers or other architectures. Any
+feedback in this regard is greatly appreciated.
 
 \section history History of the Library
 
 \Spatial was inspired from \libkdtree, and aims at providing a library that
 retains all the great benefits of \libkdtree while broadening its horizons.
+
+\section license Licensing
+
+\Spatial C++ Library is provided under the term of the \license. Alternatively,
+see the file \c COPYING provided with your copy of the library.
 
 \section support Getting Support
 
@@ -92,7 +99,7 @@ to the \project_page. ZIP packages are available at the \project_download
 page.
 
 Packages on the \project_download include the entire content of the source.
-Documentation files are only included in the \c "*_documented.zip" packages.
+Documentation files are only included in the \c *_documented.zip packages.
 
 If you have a Git client and which to use this instead of the packages, you
 can clone the repository using the following command:
@@ -101,8 +108,8 @@ can clone the repository using the following command:
 git clone git://git.code.sf.net/p/spatial/code spatial
 \endcode
 
-The above will only give you readonly access. If you wish to become a
-full-time contributor, you will need to register an account with
+The above will only give you readonly access. If you wish to become a full-time
+contributor, you will need to register an account with
 Sourceforge.net. Thereafter, please send a mail to the current project
 administrators, listed on the \project_page. Once your access is granted, you
 can use the following command to clone the repository:
@@ -119,45 +126,57 @@ git clone ssh://your_username@git.code.sf.net/p/spatial/code spatial
 
 \section ver2 Version 2.0.0
 
-- This is version 2 of the library and since it's a major number
-  update, it means it breaks compatibility with version 1.0.0. If you
-  are using version 1.0.0, you should know that:
-  - pointset is now called point_multiset to reflect truly it's
-  equivalence to multiset, and not set. Similar changes for
-  box_multiset.
-  - frozen_* are now renamed to idle_*, the function are the same, but
-  idle_* just take less characters to write, and provides a more
-  accurate picture to python programmers (which use 'frozen' to
-  describe unmutable objects)
-  - iterators have been vastly changed: their interface is now
-  consistent, and the neighbor iterator works now on MSVC9+. The
-  design used for iterators resemble the design of Boost.Range, e.g:
-  mapping_iterator<const container, dimension>,
-  region_iterator<container, predicate>, etc...
-  - range iterators have been renamed to region_iterator, because you
-  can now request for a region_range(container, predicate) which
-  returns a pair of iterators region_iterator_pair<container,
-  predicate>
-  - a new set of iterator called ordered_iterator<container> have been
-  created, and they iterate all nodes in the tree in deterministic
-  fashion, so that 2 trees build differently but containing the same
-  values will be iterated in the same sequence
+- This is version 2 of the library and since it's a major number update, it
+  means it breaks compatibility with version 1.0.0. If you are using version
+  1.0.0, you should know that:
+
+  - pointset is now called point_multiset to reflect truly it's equivalence to
+  multiset, and not set. Similar changes for box_multiset.
+
+  - \c frozen_* containers are now renamed to \c idle_*, its functions are the
+  same, but \c idle_* just take less characters to write, and provides a more
+  accurate picture to programmers ('frozen' is often used to describe unmutable
+  objects)
+
+  - iterators have been vastly changed: their interface is now consistent, and
+  the neighbor iterator works now on MSVC9+. The design used for iterators
+  resemble the design of Boost.Range, e.g: mapping_iterator<const container,
+  dimension>, region_iterator<container, predicate>, etc...
+
+  - range iterators have been renamed to region_iterator, because you can now
+  request for a region_range(container, predicate) which returns a pair of
+  iterators region_iterator_pair<container, predicate>
+
+  - a new set of iterator called ordered_iterator<container> have been created,
+  and they iterate all nodes in the tree in deterministic fashion, so that 2
+  trees build differently but containing the same values will be iterated in the
+  same sequence
 
 
 \section ver1 Version 1.0.0
 
 - First version with:
+
   - multi-dimension template containers with unlimited number of dimensions to
     store points in space,
+
   - dimensions may be of different types,
+
   - static or dynamic time determination of the number of dimensions,
+
   - <i>O(log(n))</i> complexity on insertion and removal,
+
   - use custom predicate to define a range of elements,
+
   - \STL-compatible iterators that go over that range of elements,
+
   - flexible definition of a metric space for elements in the container,
+
   - \STL-compatible iterators going from the nearest to the furthest neighbor
     of a point according to the metric space applied.
+
 - Documentation
+
 - Examples
 
 */
@@ -187,33 +206,40 @@ directory in the <em>Additional Include Directories</em> of the
 library for your project by including in the source file:
 
 \code
-#include "spatial/poinset.hpp"
+#include "spatial/point_multiset.hpp"
 \endcode
 
 If you wish to install the library in one of the default include directories of
 Visual Studio, then copy the content of the \c src folder into:
 
 \code
-%Visual Studio location%\VC\include\
+$(VCInstallDir)include\
+\endcode
+
+Which is generally equivalent to:
+\code
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include
 \endcode
 
 Rename the folder to \c spatial and you're good to go. You can now use the
 library for your project by including in the source file:
 
 \code
-#include <spatial/poinset.hpp>
+#include <spatial/point_multiset.hpp>
 \endcode
 
 \section linux Linux with autotools/cmake
 
 If you are using the library for several project and youe want the library to
-reside in a different directory from your projects, such as \c "/usr/local/include/",
-just copy the \c src folder of the library in there and rename it to \c
-spatial. Then you must configure your \c "configure.ac" or \c "CMakeList.txt" file
-to add \c "-I$HOME/include/" to the \c CPPFLAGS variable of autoconf or modify the
-\c "include_directories()" directive of cmake.
+reside in a different directory from your projects, such as \c
+"/usr/local/include/", just copy the \c src folder of the library in there and
+rename it to \c spatial. If you copy it in other directories, do not forget to
+configure your \c "configure.ac" or \c "CMakeList.txt" file to add \c
+"-I/path/to/your/include/dir" to the \c CPPFLAGS variable of autoconf or modify
+the \c "include_directories()" directive of cmake.
 
-You can now use the library for your project by including in the source file:
+You can now use the library for your project by including in the source file,
+for example:
 
 \code
 #include <spatial/point_multiset.hpp>
@@ -222,15 +248,15 @@ You can now use the library for your project by including in the source file:
 \section other_platforms Other platforms
 
 Copy the directory \c src and its content to the default C++ header location for
-your compilation environement. You can now use the library for your project by
-including in the source file:
+your compilation environement and rename it \c spatial. You can now use the
+library for your project by including in the source file:
 
 \code
 #include <spatial/point_multiset.hpp>
 \endcode
 
-Or copy the directory 'spatial' and its content to your own project and use the
-library by including in the source file:
+Or copy the directory \c src and its content to your own project, rename it to
+\c spatial and use the library by including in the source file:
 
 \code
 #include "spatial/point_multiset.hpp"
@@ -239,15 +265,90 @@ library by including in the source file:
 */
 
 /**
-\page tutorial Quick Start Guide
+\page tutorial Quick Starting Guide
 \tableofcontents
+
+\section tutorial_step0 Choosing a Container
+
+\Spatial provides 8 different types of containers, all of which can be used to
+store elements in multi-dimension. The container's features can be represented
+in a table:
+
+<table>
+  <tr>
+    <th>Container Name</th>
+    <th>Number of dimensions used is a multiple of 2</th>
+    <th>Ability to Rebalance on insertion or removal</th>
+    <th>Is an associative container</th>
+  </tr>
+  <tr>
+    <td>\ref point_multiset</td>
+    <td>NO</td>
+    <td>YES</td>
+    <td>NO</td>
+  </tr>
+  <tr>
+    <td>\ref idle_point_multiset</td>
+    <td>NO</td>
+    <td>NO</td>
+    <td>NO</td>
+  </tr>
+  <tr>
+    <td>\ref point_multimap</td>
+    <td>NO</td>
+    <td>NO</td>
+    <td>YES</td>
+  </tr>
+  <tr>
+    <td>\ref idle_point_multimap</td>
+    <td>NO</td>
+    <td>YES</td>
+    <td>YES</td>
+  </tr>
+  <tr>
+    <td>\ref box_multiset</td>
+    <td>YES</td>
+    <td>YES</td>
+    <td>NO</td>
+  </tr>
+  <tr>
+    <td>\ref idle_box_multiset</td>
+    <td>YES</td>
+    <td>NO</td>
+    <td>NO</td>
+  </tr>
+  <tr>
+    <td>\ref box_multimap</td>
+    <td>YES</td>
+    <td>NO</td>
+    <td>YES</td>
+  </tr>
+  <tr>
+    <td>\ref idle_box_multimap</td>
+    <td>YES</td>
+    <td>YES</td>
+    <td>YES</td>
+  </tr>
+</table>
+
+As you can see from the table the \c idle_* family of container does not
+rebalance automatically, contrary to other containers. However they use 1 less
+pointer per node, and they can still be rebalanced on demand.
+
+There are no \c box_map or \c point_set container in the library. It is
+currently not provided (it probably will in the future), so in the current
+containers you can store in one container as many copies of the same object as
+you so require.
+
+\c Box* and \c point* containers are in fact the same container, expect that \c
+box* containers are used to represent dimensions in multiple of 2 only.
 
 \section tutorial_step1 Inserting Any Type of Objects
 
 Objects that can be expressed in multi-dimension need to provide a way compare
 each others on specific dimensions. By default, if an object has overloaded the
-bracket operator to access each of its dimension, then it can be inserted in
-\c point_multiset, \c box_multiset or else, right out of the box.
+bracket operator to access each of its dimension, then it can be inserted in \c
+point_multiset, \c box_multiset or else, right out of the box.
 
 \code
 #include <array>
@@ -278,7 +379,7 @@ int main()
 \endcode
 
 \Spatial supports by default objects with overloaded bracket operator, because
-the comparator \c spatial::bracket_less is the default comparator on the
+the comparator \ref spatial::bracket_less is the default comparator on the
 containers. In the example above, you can also see how to insert or count
 elements present in the container.
 
@@ -286,7 +387,8 @@ However, most objects do not overload the bracket operator. \Spatial supports 2
 others ways of accessing dimensions in an object right out-of-the-box: if you
 overloaded the parenthesis operator instead, or if you have iterators to access
 each of your dimensions one by one. To declare a container for both cases, you
-would use a \c spatial::paren_less or an \c spatial::iterator_less comparator.
+would use a \ref spatial::paren_less or an \ref spatial::iterator_less
+comparator.
 
 \code
 typedef std::tr1::array<int, 3> point3d;

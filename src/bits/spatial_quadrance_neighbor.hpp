@@ -682,18 +682,18 @@ namespace spatial
    *  Make a pair of iterators spanning the range of iterable elements in \c
    *  container from the closest to the furthest to \c target.
    *
-   *  \param container The container to iterate.
-   *  \param target Search for element in container closest to target.
-   *
    *  The search will occur in quadrance space, where distance are computed in
    *  double, by default. However distances can be expressed in any arithmetic
    *  type by simply assigning the result to an similar iterator using a
    *  different distance type:
    *
    *  \code
-   *  quadrance_neighbor_iterator_pair<Ct, float, Diff> my_float_iterator_pair
-   *    = quadrance_neighbor_range(container, diff(), target);
-   *  \rangecode
+   *  quadrance_neighbor_iterator_pair<Ct, float> my_float_iterator_pair
+   *    = quadrance_neighbor_range(container, target);
+   *  \endcode
+   *
+   *  \param container The container to iterate.
+   *  \param target Search for element in container closest to target.
    */
   ///@{
   template <typename Ct>
