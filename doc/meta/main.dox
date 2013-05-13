@@ -13,7 +13,7 @@ dimensions. <br> -- Oliver Wendell Holmes, Jr.
 
 \section intro Introduction
 
-\Spatial is a generic header-only C++ library providing
+\Spatial C++ Library is a generic header-only C++ library providing
 multi-dimensional in-memory containers, iterators and functionals. It
 is a general purpose library with good overall performance that makes
 it easy to search for nearest neighors, orthogonal ranges, or perform
@@ -39,12 +39,15 @@ A brief overview of spatial features is provided below:
 - Based on \kdtrees which provide good overall performance for only 4
   pointers of overhead per node
 - Sort objects along several dimensions, which may be of different types
-- static (compile-time) or dynamic (run-time) determination of the number of dimensions
+- static (compile-time) or dynamic (run-time) determination of the number of
+  dimensions
 - Policy-based rebalancing of the \kdtree, limiting worst-case
   performance, upon insertion and removal
-- Insertions in logarithmic amortized time, removals in fractional amortized time
+- Insertions in logarithmic amortized time, removals in fractional amortized
+  time
 - Closely resemble the \STL in design, with compatible containers and iterators
-- Iteration over orthogonal range with custom predicates and support for points or boxes
+- Iteration over orthogonal range with custom predicates and support for points
+  or boxes
 - Iteration over neighbors, from nearest to furthest with custom metrics
 - Iteration over a single dimension, independantly from others
 - and more...
@@ -52,14 +55,44 @@ A brief overview of spatial features is provided below:
 \Spatial provides what is generally needed to get you started on
 spatial analysis.
 
+\section status Status of the Library
+
+\Spatial C++ Library's current tutorials are out-dated compared to the
+library's features. However the current library's API is considered stable
+since there are currently no foreseen development in plan that should cause it
+to change. Work is in progress to put the documentation on par with the source.
+
+\Spatial C++ Library is estimated by its author to be production-ready. The
+library is consistently unit tested, with unit tests covering more than 90% of
+it's current source code, hence library should behave as expected. The \c beta
+status on Sourceforge will be removed once the documentation is on par with the
+source.
+
+\Spatial's unit test suite should compile without error or warning (even on highest warning levels) on the following compilers:
+- GCC G++ 4.5 and later
+- Clang C++ 2.9 and later
+- Microsoft Visual Studio 2010
+
+\Spatial has not been tested on other compilers. Any feedback in this regard would be greatly appreciated.
+
+\section history History of the Library
+
+\Spatial was inspired from \libkdtree, and aims at providing a library that
+retains all the great benefits of \libkdtree while broadening its horizons.
+
+\section support Getting Support
+
+You can ask for support on the general mailing list of the library:
+spatial-main@lists.sourceforge.net.
+
 \section source Getting the Source and Sending Feedbacks
 
-You can access all the above from the \project_page. Some packages are
-available at the \project_download. You can file issues or send feedbacks
-on the \project_issue.
+To access feedback facilities, such as bug or feature requests, please refer
+to the \project_page. ZIP packages are available at the \project_download
+page.
 
-The packages on the \project_download include the entire content of the
-source tree, plus the generated documentation files.
+Packages on the \project_download include the entire content of the source.
+Documentation files are only included in the \c "*_documented.zip" packages.
 
 If you have a Git client and which to use this instead of the packages, you
 can clone the repository using the following command:
@@ -78,10 +111,6 @@ can use the following command to clone the repository:
 git clone ssh://your_username@git.code.sf.net/p/spatial/code spatial
 \endcode
 
-\section history History of the Library
-
-\Spatial was inspired from \libkdtree, and aims at providing a library that
-retains all the great benefits of \libkdtree while broadening its horizons.
 */
 
 /**
@@ -213,12 +242,12 @@ library by including in the source file:
 \page tutorial Quick Start Guide
 \tableofcontents
 
-\section tutorial_step1 Inserting Elements
+\section tutorial_step1 Inserting Any Type of Objects
 
-Object that can be expressed through multi-dimension needs to define an accessor
-to these dimensions. By default, if an object has overloaded the bracket operator
-to access each of its dimension, then it can be inserted in the \c poinset,
-right out of the box.
+Objects that can be expressed in multi-dimension need to provide a way compare
+each others on specific dimensions. By default, if an object has overloaded the
+bracket operator to access each of its dimension, then it can be inserted in
+\c point_multiset, \c box_multiset or else, right out of the box.
 
 \code
 #include <array>
@@ -245,6 +274,7 @@ int main()
   std::cout << "There are " << container.size()
             << "elements in space." << std::end;
   return 0;
+}
 \endcode
 
 \Spatial supports by default objects with overloaded bracket operator, because
@@ -259,11 +289,10 @@ each of your dimensions one by one. To declare a container for both cases, you
 would use a \c spatial::paren_less or an \c spatial::iterator_less comparator.
 
 \code
-#include <tr1/array>
 typedef std::tr1::array<int, 3> point3d;
 
 // Access the dimensions in the point3d through the iterator
-spatial::pointset<3, point3d, spatial::iterator_less<point3d> > container;
+spatial::point_multiset<3, point3d, spatial::iterator_less<point3d> > container;
 
 // Create a new type of point with overloaded parenthesis operator
 struct other_point3d : point3d
@@ -273,15 +302,15 @@ struct other_point3d : point3d
 };
 
 // Access the dimension in other_point3d through the parenthesis operator
-spatial::pointset<3, point3d, spatial::paren_less<point3d> > other_container;
+spatial::point_multiset<3, point3d, spatial::paren_less<point3d> > other_container;
 \endcode
 
-That provides more flexibility so you can use containers such as
+This provides enough flexibility to allow you to use containers such as
 \c std::list inside the \Spatial container itself.
 
-But in some cases this is still not enough: the only way to access your
-dimensions may be through the use of independent members. In such case, you must
-use the \c spatial::accessor_less comparator.
+In some cases this is still not enough: the only way to access your dimensions
+may be through the use of independent members. In such case, you must use the
+\c spatial::accessor_less comparator.
 
 \code
 // A point whose dimensions are accessed directly through it's members:
@@ -291,8 +320,6 @@ struct point3d
   int y;
   int z;
 };
-
-#include <stdexcept> // for std::out_of_range()
 
 // Remedy: define an accessor that takes a dimension_type as a parameter:
 struct point3d_accessor
@@ -310,22 +337,16 @@ struct point3d_accessor
 };
 
 // Now declare the container with the user-defined accessor
-spatial::pointset<3, point3d,
-                  spatial::accessor_less<point3d_accessor, point3d>
-                  > other_container;
+spatial::point_multiset<3, point3d,
+                        spatial::accessor_less<point3d_accessor, point3d>
+                        > point3d_container;
 \endcode
 
 Now you start to see that you can use a wide range of objects, inside your
-container. However, one case is still not covered. What if you have an object
-with different types for each dimension? You have to define your own
-comparator. Did you notice that each of \c spatial::bracket_less, \c
-spatial::paren_less, or \c spatial::iterator_less is actually a comparator
-that wraps an accessor? If an accessor cannot be defined easily, then we
-can create a new comparator, as presented below.
+container. However, what if your object has different types for each dimension?
+In this case, you must define your own comparator, as presented below.
 
 \code
-#include <string>
-
 // We want to create a library of books, according to several dimensions:
 struct book
 {
@@ -350,13 +371,11 @@ struct compare_book
 };
 
 // Now we declare our library
-spatial::pointset<3, book, compare_book> library;
+spatial::point_multiset<3, book, compare_book> library;
 \endcode
 
-With this covered, you can now store any kind of objects, in any number of
-dimension that you wish inside your \Spatial containers. It doesn't take much
-to understand how it all works if you are already familiar with the \STL.
-
+With this covered, you can now insert any kind of objects, in any number of
+dimensions, in the containers.
 
 \section tutorial_step2 Step 2: Basic operations on containers
 
@@ -366,7 +385,7 @@ iterate through all the inserted elements, or finding out if the container
 already contains an particular element.
 
 \code
-typedef spatial::pointset<3, point3d> container_type;
+typedef spatial::point_multiset<3, point3d> container_type;
 container_type container;
 
 // ...
@@ -416,7 +435,7 @@ Pretty straight-forward. Now while most basic operation closely
 resemble the \STL containers, there are a few that are only meaniful for
 the \Spatial containers.
 
-One of them is the spatial::pointset::rebalance() function that, as its name
+One of them is the spatial::point_multiset::rebalance() function that, as its name
 implies, balances all the element in the container. The subtility here, is when
 do you actually call this function? If you are permanently inserting or erasing
 elements in the container, and if you do a lot of searches in the container,
@@ -442,7 +461,7 @@ There are several way to do orthogonal range search with \Spatial. In this
 tutorial, we introduce only 2 ways, in the hope it give enough insight to
 understand how to use the related orthogonal range search \ref view "views".
 
-The most simple way is to use the spatial::view::range view. This view will let
+The most simple way is to use the spatial::region_iterator. This view will let
 you specify a \e low and a \e high value, and all points that satisfy the
 following condition can be iterated in this view:
 
