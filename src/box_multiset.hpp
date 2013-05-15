@@ -30,7 +30,9 @@
 
 namespace spatial
 {
-
+  /**
+   *  This container only accepts dimension that are a multiple of 2.
+   */
   template<dimension_type Rank, typename Key,
            typename Compare = bracket_less<Key>,
            typename BalancingPolicy = loose_balancing,

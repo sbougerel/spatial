@@ -5,6 +5,7 @@
 - \subpage changelog
 - \subpage install
 - \subpage tutorial
+- \subpage compileopts
 
 \quote
 Man's mind, once stretched by a new idea, never regains its original
@@ -79,8 +80,10 @@ feedback in this regard is greatly appreciated.
 
 \section history History of the Library
 
-\Spatial was inspired from \libkdtree, and aims at providing a library that
-retains all the great benefits of \libkdtree while broadening its horizons.
+\Spatial C++ library was inspired from \libkdtree, and aims at providing a
+library that retains all the great benefits of \libkdtree while broadening its
+horizons. It is through the informative feedback of its maintainers and its
+community that the design principles for this library have emerged.
 
 \section license Licensing
 
@@ -270,9 +273,11 @@ Or copy the directory \c src and its content to your own project, rename it to
 
 \section tutorial_step0 Choosing a Container
 
-\Spatial provides 8 different types of containers, all of which can be used to
-store elements in multi-dimension. The container's features can be represented
-in a table:
+\subsection tutorial_step0_sub1 Overview
+
+\Spatial C++ Library provides 8 different types of containers, all of which can
+be used to store elements in multi-dimension. The container's features can be
+represented in a table:
 
 <table>
   <tr>
@@ -282,73 +287,100 @@ in a table:
     <th>Is an associative container</th>
   </tr>
   <tr>
-    <td>\ref point_multiset</td>
+    <td>\point_multiset</td>
     <td>NO</td>
     <td>YES</td>
     <td>NO</td>
   </tr>
   <tr>
-    <td>\ref idle_point_multiset</td>
+    <td>\idle_point_multiset</td>
     <td>NO</td>
     <td>NO</td>
     <td>NO</td>
   </tr>
   <tr>
-    <td>\ref point_multimap</td>
+    <td>\point_multimap</td>
     <td>NO</td>
     <td>NO</td>
     <td>YES</td>
   </tr>
   <tr>
-    <td>\ref idle_point_multimap</td>
+    <td>\idle_point_multimap</td>
     <td>NO</td>
     <td>YES</td>
     <td>YES</td>
   </tr>
   <tr>
-    <td>\ref box_multiset</td>
+    <td>\box_multiset</td>
     <td>YES</td>
     <td>YES</td>
     <td>NO</td>
   </tr>
   <tr>
-    <td>\ref idle_box_multiset</td>
+    <td>\idle_box_multiset</td>
     <td>YES</td>
     <td>NO</td>
     <td>NO</td>
   </tr>
   <tr>
-    <td>\ref box_multimap</td>
+    <td>\box_multimap</td>
     <td>YES</td>
     <td>NO</td>
     <td>YES</td>
   </tr>
   <tr>
-    <td>\ref idle_box_multimap</td>
+    <td>\idle_box_multimap</td>
     <td>YES</td>
     <td>YES</td>
     <td>YES</td>
   </tr>
 </table>
 
-As you can see from the table the \c idle_* family of container does not
-rebalance automatically, contrary to other containers. However they use 1 less
-pointer per node, and they can still be rebalanced on demand.
+As you can see from the table the \c idle family of container does not rebalance
+element in its tree automatically, contrary to other containers. However they
+use one less pointer per node, and they can still be rebalanced on demand.
 
 There are no \c box_map or \c point_set container in the library. It is
 currently not provided (it probably will in the future), so in the current
-containers you can store in one container as many copies of the same object as
-you so require.
+containers you can store in one container as many copies of the same object's
+key as you require. If you wish to store only one key per container, you need to
+accomplish this by checking first if a given key exists. You can do this with
+\ref equal_begin().
 
-\c Box* and \c point* containers are in fact the same container, expect that \c
-box* containers are used to represent dimensions in multiple of 2 only.
+\c Box and \c point containers are in fact the same containers, expect that \c
+box containers can only store objects in dimensions that are a multiple of
+two. They are strickly equivalent to \c point containers otherwise.
+
+\subsection tutorial_step0_sub2 Usage of containers
+
+The table below is a naive view provided to guide you in your choice of
+containers.
+
+<table>
+ <tr>
+  <td></td>
+  <th>I need to remove and insert objects frequently</th>
+  <th>The set of object that I want to store does not change once it's
+ loaded</th>
+ </tr>
+ <tr>
+  <th>I need to modify the object's attributes frequently</th>
+  <td>point_map or box_map</td>
+  <td>idle_point_map or idle_box_map</td>
+ </tr>
+ <tr>
+  <th>The object is the key itself, I won't modify it's attribute</th>
+  <td>point_set or box_set</td>
+  <td>idle_point_set or idle_box_set</td>
+ </tr>
+</table>
 
 \section tutorial_step1 Inserting Any Type of Objects
 
 Objects that can be expressed in multi-dimension need to provide a way compare
 each others on specific dimensions. By default, if an object has overloaded the
-bracket operator to access each of its dimension, then it can be inserted in \c
-point_multiset, \c box_multiset or else, right out of the box.
+bracket operator to access each of its dimension, then it can be inserted in
+\point_multiset, \box_multiset or else, right out of the box.
 
 \code
 #include <array>
@@ -520,7 +552,7 @@ else
   }
 \endcode
 
-What about erasing a point then? As you would expect...
+What about erasing a point then?
 
 \code
 // continued from above...
@@ -533,75 +565,64 @@ if ( container.erase(point_to_erase) != 0 )
   }
 \endcode
 
-Pretty straight-forward. Now while most basic operation closely
-resemble the \STL containers, there are a few that are only meaniful for
-the \Spatial containers.
+While most basic operation closely resemble the \STL containers, there are a few
+that are only meaniful for the \Spatial containers.
 
-One of them is the spatial::point_multiset::rebalance() function that, as its name
-implies, balances all the element in the container. The subtility here, is when
-do you actually call this function? If you are permanently inserting or erasing
-elements in the container, and if you do a lot of searches in the container,
-especially nearest neighbor searches, then you are out to call the rebalance()
-function quite often, but not each time. It's a tricky business to find when to
-call it.
+One of them is the \ref point_multiset::rebalance() function that, as its name
+implies, balances all elements in the container.
 
-Note that in the very near future I'll be completing the self-balancing
-implementation, and when I do so you wont need to call this function anymore.
+\section tutorial_step3 Step 3: Spatial operations on containers
 
+If you have need for a \Spatial container, you're probably looking to do one of
+these operations:
 
-\section tutorial_step3 Step 3: Advanced operations on containers
-
-Where the interesting stuff basically begin. Obviously, if you have used a
-\Spatial container, it's because you probably wanted to do one of these things:
 - find all objects within a certain range,
 - find the nearest neighbor to some point,
 - treat all dimensions as if they where a different way to index each points.
 
+All of these operations are done through the use of external container
+iterators. Short examples of their usage are given in this section.
+
 \subsection tutorial_range Orthogonal range search
 
-There are several way to do orthogonal range search with \Spatial. In this
-tutorial, we introduce only 2 ways, in the hope it give enough insight to
-understand how to use the related orthogonal range search \ref view "views".
-
-The most simple way is to use the spatial::region_iterator. This view will let
-you specify a \e low and a \e high value, and all points that satisfy the
-following condition can be iterated in this view:
+Orthogonal range searches are done through the \region_iterator. This iterator
+lets you go through all elements matching a specific region. By default, a region is
+defined by a pair of `low` and `high` key which bound any `x` in the container,
+along every dimension:
 
 \f[
 \forall _{i = 0 \to n} , low _i \leq x _i < high _i
 \f]
 
-This condition is the multi-dimension equivalent of an half closed interval,
-commonly used when programing, and thus, it is the one you are most likely to be
-needing.
+Hence the default behavior for \region_iterator is to act as an half open region
+search.
 
 \code
-typedef spatial::pointset<3, point3d> container_type;
+using namespace spatial;
+
+typedef point_multiset<3, point3d> container_type;
 container_type container;
 // ... let's imagine a lot of points have been inserted in the container
 
-// define a range to explore
+// define a region to explore
 point3d low = { { -2, -2, -2 } };
 point3d high = { { 2, 2, 2 } };
-spatial::view::range<container_type> sample(container, low, high);
 
 // find all the points between low and high
-for (spatial::view::range<container_type>::iterator iter = sample.begin();
-     iter != sample.end(); ++iter)
+for (region_iterator<container_type> iter = region_begin(container, low, high);
+     iter != region_end(container, low, high); ++iter)
 {
-  // now do something with these points...
+  // do something with elements in the region by deferencing iter...
 }
 \endcode
 
-As shown above above, we are defining a view on the container. All the access to
-advanced functionalities is done through view which are declared similarly. It
-doesn't take long to understand that most of the time, what we just want is to
-iterate through all the points to do something with it, or copy them to a
-separate container. There is a short cut for that, it works like std::for_each,
-as highlighted below.
+Since it is an iterator which follow's the \STL standard, you can also use this
+in a `std::for_each` call.
 
 \code
-typedef spatial::pointset<3, point3d> container_type;
+using namespace spatial;
+
+typedef point_multiset<3, point3d> container_type;
 container_type container;
 // ... let's imagine a lot of points have been inserted in the container
 
@@ -609,24 +630,24 @@ container_type container;
 point3d low = { { -2, -2, -2 } };
 point3d high = { { 2, 2, 2 } };
 
-// create a functor that is gonna do something with each points
+// create a functor that is doing something with each points
 struct functor
 {
   void operator() (const point3d& p) const
   {
-    // now do something with these points...
+    // do something with these points...
   }
 };
 
-spatial::for_each_in_range(container, low, high, functor);
+std::for_each(region_begin(container, low, high),
+              region_end(container, low, high),
+              functor());
 \endcode
 
-Now, both pieces of code are doing strictly the same thing, but depending on your
-needs and your existing code, you might find one more useful than the other.
-
-But what if we need to find all the points within a very particular orthogonal
-range? For example we want all the points that satisfy a peculiar requirement such
-as this one:
+Region defined as half-open intervals are the default behavior of
+\region_iterator, but they are much more versatile than this: we can use them to
+slice or partition of your elements in space. Suppose we are working in 3
+dimensions, and we wish to find all points that match the following criterias:
 
 \f[
 -1 < x _0 < 1,
@@ -638,39 +659,37 @@ Then we must define a predicate for this particular requirement and use it in th
 orthogonal range search.
 
 \code
-typedef spatial::pointset<3, point3d> container_type;
+using namespace spatial;
+typedef point_multiset<3, point3d> container_type;
 container_type container;
 // ... let's imagine again that a lot of points have been inserted in the container
 
-// Now we define our predicate, it returns a spatial::relative_order type,
+// Now we define our predicate, it must return a spatial::relative_order value
 struct predicate
 {
-  spatial::relative_order
+  relative_order
   operator()(dimension_type dim, const point3d& x) const
   {
     switch(dim)
       {
         // for dimension 0, only the interval ]-1, 1[ matches...
-      case 0: return x[0] <= -1 ? spatial::below
-                     : (x[0] >= 1 ? spatial::above : spatial::matching );
+      case 0: return x[0] <= -1 ? below : (x[0] >= 1 ? above : matching );
         // for dimension 1, it's always a match...
-      case 1: return spatial::matching;
+      case 1: return matching;
         // for dimension 2, matches unless it's equal or above 2...
-      case 2: return x[2] < 2 ? spatial::matching : spatial::above;
+      case 2: return x[2] < 2 ? matching : above;
         // else we must be out of range...
       default: throw std::out_of_range();
       }
   }
 };
 
-spatial::view::range_predicate<container_type, predicate>
-  sample(container, predicate());
-
 // find all the points that satisfy the predicate
-for (spatial::view::range_predicate<container_type, predicate>
-     ::iterator iter = sample.begin(); iter != sample.end(); ++iter)
+for (region_iterator<container_type, predicate> iter
+     = region_begin(container, predicate());
+     iter != region_end(container, predicate()); ++iter)
 {
-  // now do something with these points...
+  // do something with these points...
 }
 \endcode
 
@@ -681,81 +700,130 @@ dimension that is being studied: is the key \b below the interval being
 studied? Is it \b above? Or it is \b matching with the interval being studied?
 
 While the predicate may not be intuitive to define, it give complete control
-over the orthogonal range search that is being done on the container.
+over the orthogonal range search query on the container.
 
-\Spatial comes with several orthogonal range search views predefined:
-- spatial::view::range, as seen above, works on half closed intervals,
-- spatial::view::closed_range is similar but works on closed intervals,
-  both \a low and \a high are included in the search,
-- spatial::view::opened_range is the exact opposite of
-  spatial::view::closed_range, neither \a low nor \a high are included in the
-  search
+\Spatial comes with a few specialized version of this iterator:
+
+- spatial::closed_region_iterator is similar but works on closed intervals where
+  both `low` and `high` are included in the search,
+
+- spatial::open_region_iterator is the exact opposite where neither `low` nor
+  `high` are included in the search,
+
+- spatial::enclosed_region_iterator when working with boxes instead of points,
+  it finds all the boxes that are fully contained within a given box,
+
+- spatial::overlap_region_iterator when working with boxes instead of points,
+  it finds all the boxes that are overlapping with a given box.
+
 
 \subsection tutorial_ann Nearest neighbor search
 
 Another kind of search that is commonly done on multi-dimension containers are
-nearest neighbor search. \Spatial provide views with iterators that allow you to
-iterate through the <i>n</i>-nearest points of an origin.
+nearest neighbor search. \neighbor_iterator allow you to iterate through the
+*k*-nearest points to target, and according to a specific metric.
 
-In order to find the nearest neighbor of a point, one must first apply a
-geometry to the container. The container only orders point in a
-multi-dimensional space, but it has no notion of distances. The geometry
-provides metric and angles for all points in the container.
+The container only orders point in a multi-dimensional space, but it has no
+notion of distances. The metrics provided with \Spatial currently include
+\euclidian, \quadrance or \manhattan (a.k.a. taxicab) representation of
+distances.
 
-Note that since the container is independent of the geometry,
-several different geometries can be applied to the same set of points,
-therefore, without modifying the content of the container, you will be able
-to compute nearest neighbor searches through with manhattan metric,
-euclidian metric or even curved riemannian spaces (though no geometry
-is currently available for these spaces, I'll be working on an Earth
-geometry soon, for latitude-longitude-altitude computations)
+\note Since the container is independent of the metric, several different
+metrics can be applied to the same container, without modifying the content of
+the container.
 
-At the moment, 3 different geometries are definied and each have a
-corresponding view:
-
-- spatial::view::neighbor_euclidian, uses the familiar euclidan metric and expect
-  that all elements of the point can be cast into a double,
-- spatial::view::neighbor_euclidian_float, is similar but uses float instead of
-  doubles,
-- spatial::view::neighbor_euclidian_square, also uses the familiar euclidian
-  metric, but does not compute the square root of the distance (it leaves it
-  for you to do, if you need to. This metric is just as precise and much faster
-  than the first one, only you must remember that all distances are expressed
-  at the square of their values,
-- spatial::view::neighbor_euclidian_square_float, is self-explanatory
-- spatial::view::neighbor_manhattan uses the famous Manhattan or taxicab metric
-  (basically compute distances using orthogonal lines), and distances can be
-  computed with any types (not only doubles or float) as long as they overload
-  the assignment, addition, substraction and comparison operators.
-
-Since all these \ref View "views" work in the same way, only one is presented
-below. It is also possible to define your own geometry. If you wish to do so,
-refer to the more complete explanation for the namespace
-spatial::view::geometry.
+The use of \neighbor_iterator is presented below:
 
 \code
+using namespace spatial;
+typedef point_multiset<3, point3d> container_type;
+container_type container;
+// ... let's imagine that at least 4 points have been inserted in the tree.
 
+// We want to find the closest points to:
+point3d target = { { 1, 2, 3 } };
 
-
+// Print the first 4 closest points (from closest to furthest) with their distances:
+neighbor_iterator<container_type> iter = neighbor_begin(container, target);
+std::cout << *iter << " is at " << distance(iter) << "metres\n";
+std::cout << *++iter << " at " << distance(iter) << "metres\n";
+std::cout << *++iter << " at " << distance(iter) << "metres\n";
+std::cout << *++iter << " at " << distance(iter) << "metres\n";
 \endcode
 
-\subsection tutorial_mapping Mapping of the container onto one dimension
+This example assumes that the values for each dimension of the
+type `point3d` can be accessed via one of the built-in comparators of the
+library.
 
-Mapping makes your multi-dimension container behave as if it was only a
-single-dimension container such as ::std::multiset.
+Additionally, this example makes use of \neighbor_iterator in its default form,
+where the euclidian metric is being used and distances are expressed in
+`double`.
 
-Being able to map each dimension of the container independently gives you
-the power of <i>n</i> containers merged into one, and it starts shifting
-the perception of the library from a multi-dimension container to a embryo
-of in-memory database, where every single field of your records are indexed
-and can be searched by range of elements.
-
-The spatial::view::mapping gives you just this power, and to illustrate it
-better, we can start again from the earlier example of the book library.
+This is not always what you want. In the example below, we will return distances
+in `int` using the \quadrance metric:
 
 \code
-#include <string>
+using namespace spatial;
+typedef point_multiset<3, point3d> container_type;
+container_type container;
+// ... let's imagine that at least 4 points have been inserted in the tree.
 
+// We want to find the closest points to:
+point3d target = { { 1, 2, 3 } };
+
+// Print the first 4 closest points (from closest to furthest) with their distances:
+neighbor_iterator<container_type, quadrance<container_type, int> > iter
+  = neighbor_begin(container, target, quadrance<container_type, int>());
+std::cout << *iter << " is at " << distance(iter) << "metres\n";
+std::cout << *++iter << " at " << distance(iter) << "metres\n";
+std::cout << *++iter << " at " << distance(iter) << "metres\n";
+std::cout << *++iter << " at " << distance(iter) << "metres\n";
+\endcode
+
+\quadrance is one of the built-in metrics. Since it should fit most purpose it
+is also a templated type, based on your container type. It becomes tedious to
+express, so fortunately, there is a shorter form, more readable:
+
+\code
+using namespace spatial;
+typedef point_multiset<3, point3d> container_type;
+container_type container;
+// ... let's imagine that at least 4 points have been inserted in the tree.
+
+// We want to find the closest points to:
+point3d target = { { 1, 2, 3 } };
+
+// Print the first 4 closest points (from closest to furthest) with their distances:
+quadrance_neighbor_iterator<container_type, int> iter
+  = quadrance_neighbor_begin(container, target);
+std::cout << *iter << " is at " << distance(iter) << "metres\n";
+std::cout << *++iter << " at " << distance(iter) << "metres\n";
+std::cout << *++iter << " at " << distance(iter) << "metres\n";
+std::cout << *++iter << " at " << distance(iter) << "metres\n";
+\endcode
+
+\neighbor_iterator gives you the possibility to search for the *k* nearest
+neighor according to your own pre-defined metric. Metric are more complex to
+write that your average functor, however you have the possibility to compute
+distances even in a Reimannian metric (e.g. Longitude, Latitude, Altitude
+corrdinates) if necessary.
+
+\subsection tutorial_mapping Mapping of the container onto a single dimension
+
+Mapping makes your multi-dimension container behave as if it was only a
+single dimension container, seamlessly tranforming your \point_multiset into a
+std::set, along one of the dimesion.
+
+Being able to map each of `n` dimensions of the container independently gives
+you a simplicity of `n` \STL set containers merged into one, and it starts
+shifting the perception of the library from a multi-dimension container to a
+simple in-memory database, where every single field of your records are indexed
+and can be searched by range of elements.
+
+To illustrate it better, we can start again from the earlier example of the book
+library:
+
+\code
 // We want to create a library of books, according to several dimensions:
 struct book
 {
@@ -779,29 +847,80 @@ struct compare_book
   }
 };
 
+using namespace spatial;
 // Now we declare our library
-spatial::pointset<3, book, compare_book> library;
+typedef point_multiset<3, book, compare_book> library_type;
 \endcode
 
-Now lets start doing a few searches. For exemples, getting all the books that
-are written within 1981 to 1993, from the first to the last.
+Now lets start doing a few searches. For example, getting all the books that
+are written within 1981 to 1993, from the first to the last (the ordering
+matters here, otherwise we could use a \region_iterator to get that range, but
+without a specific order).
 
 \code
+library_type library;
+// Insert several book object in our library
 
+// The "date" information is on the third dimension (or dimension = 2)
+mapping_iterator<library_type, 2> iter = mapping_lower_bound(library, 2, 1981);
+mapping_iterator<library_type, 2> end = mapping_upper_bound(library, 2, 1993);
+
+for(; iter != end; ++iter)
+{
+  // do something with the books written from 1981 to 1993, in sequence
+}
 \endcode
 
+\note In the example above, the call to \ref mapping_upper_bound() was not
+included in the for loop, because the call is not free. So it is better to call
+it once and save the results.
+
 More similar queries can be done in this way, so you could find the authors
-in lexicographic order, or the titles in lexicographic order, etc...
+in lexicographic order, or the titles in lexicographic order, etc.
 
-\section tutorial_end I need more examples...
+*/
 
-I wanna do \a this, and it's not explained \a how? Well, you can try to have a
-look at the \c example directory in the source of the library, it contains more
-complete programs that would actually execute, but it is a work in progress and
-you may not find what you are looking for. What about sending me a mail? I may
-even take this opportunity to write an additional example, so that other may
-benefit of your question.
+/**
+\page compileopts Compilation Options
+\tableofcontents
 
-There is a documentation for each example too, in the related pages.
+\section compileopts_1 SPATIAL_BAD_CSTDDEF
+
+If you encounter too many errors at compilation due to undefined `std::size_t`
+or `std::ptrdiff_t`, set this preprocessor variable in order to prevent
+compilation to fail. This will force back `size_t` and `ptrdiff_t` in the
+namespace `std`.
+
+\code
+#define SPATIAL_BAD_CSTDDEF
+#include <spatial/point_multiset.hpp>
+\endcode
+
+Alternativerly you can use it in your compiler or environment definition
+\code
+$ export CXXFLAGS="-DSPATIAL_BAD_CSTDDEF"
+\endcode
+
+This variable is simply a define and does not require any associated value.
+
+\section compileopts_2 SPATIAL_ENABLE_ASSERT
+
+This is normally used by the library developers only, to catch programming error
+in the library itself. However, it may be useful to end-users too. For exemple,
+if you try iterate past-the-end (making your program loop infinitely) in an
+obscure section of your program; enable this variable to trigger your program to
+exit with `abort()` and be able to analyse the backtrace.
+
+\code
+#define SPATIAL_ENABLE_ASSERT
+#include <spatial/point_multiset.hpp>
+\endcode
+
+Alternativerly you can use it in your compiler or environment definition
+\code
+$ export CXXFLAGS="-DSPATIAL_ENABLE_ASSERT"
+\endcode
+
+This variable is simply a define and does not require any associated value.
 
 */

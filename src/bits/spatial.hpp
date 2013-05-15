@@ -28,17 +28,9 @@
 #define SPATIAL_VERSION_MINOR 0
 #define SPATIAL_VERSION_RELEASE 0
 #define SPATIAL_VERSION 2000
-//@}
+///@}
 
 // For compatibility with older environments
-/**
- *  \def SPATIAL_BAD_CSTDDEF
- *
- *  \brief If you encounter too many mistakes due to undefined
- *  \mono{std::size_t} or \mono{std::ptrdiff_t} during compilation, set this
- *  variable in order to prevent compilation to fail. This will artificially but
- *  back \mono{size_t} and \mono{ptrdiff_t} in the namespace \c std.
- */
 #ifdef SPATIAL_BAD_CSTDDEF
 #include <stddef.h>
 namespace std
@@ -57,8 +49,8 @@ namespace std
  *  features of the library at once.
  *
  *  The main reason to access the \c spatial namespace is to access one of its
- *  containers, such as \ref pointset, \ref boxmap, or \ref
- *  frozen_pointset. There are many others.
+ *  containers, such as \ref point_multiset, \ref box_multimap, or \ref
+ *  idle_point_multiset. There are many others.
  *
  *  \see Containers
  */

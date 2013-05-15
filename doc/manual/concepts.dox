@@ -138,7 +138,7 @@
  *  strict comparison between two values of a spatial container, over different
  *  dimensions. The functor shall return a boolean value equal true if the first
  *  value is strictly lower than the second value over that dimension.
- *  @concept Definition of the RegularComparison concept.
+ *  \concept Definition of the RegularComparison concept.
  *
  *  The models of RegularComparison shall also model TrivialComparison and publicly
  *  provide the following interface:
@@ -210,7 +210,7 @@
  *  in finding all values between 0 and 10 included, you could write the
  *  following predicate:
  *
- *  \code
+ *  ~~~
  *  struct MySimplePredicate
  *  {
  *    spatial::relative_order
@@ -220,7 +220,7 @@
  *      return key < 0 ? below : ( key > 10 ? above : matching );
  *    }
  *  };
- *  \endcode
+ *  ~~~
  *
  *  In this very simple example, there is no more than one dimension being
  *  considered, so the first and last parameters are not used. As can be seen
@@ -246,7 +246,7 @@
  *  matches only values that are within the slice [-1, 1] of the highest
  *  dimension:
  *
- *  \code
+ *  ~~~
  *  struct HigherSlice
  *  {
  *    typedef std::vector<double> key_type;
@@ -260,7 +260,7 @@
  *        : matching;
  *    }
  *  };
- *  \endcode
+ *  ~~~
  *
  *  The value of \c rank is equal to the rank of the container used for the
  *  orthogonal search. The value of \c dim is the current dimension being
@@ -315,7 +315,7 @@
  *  If you were to write a Metric on your own, you would start from the stub
  *  below:
  *
- *  @code
+ *  ~~~
  *  struct Metric
  *  {
  *    typedef my_distance_type distance_type;                     // [1]
@@ -328,7 +328,7 @@
  *    distance_to_plane(dimension_type rank, dimension_type dim,
  *                      const Key& origin, const Key& key) const; // [3]&[4]
  *  };
- *  @code
+ *  ~~~
  *
  *  The details of the Metric type are as follow:
  *

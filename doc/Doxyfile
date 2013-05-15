@@ -205,12 +205,7 @@ TAB_SIZE               = 4
 # will result in a user-defined paragraph with heading "Side Effects:".
 # You can put \n's in the value part of an alias to insert newlines.
 
-ALIASES                = "ul=<ul><li>" \
-                         "l=</li><li>" \
-                         "lu=</li></ul>" \
-                         "ol=<ol><li>" \
-                         "lo=</li></ol>" \
-                         "libkdtree=<a href=\"http://libkdtree.alioth.debian.org/\"><b>libkdtree++</b></a>" \
+ALIASES                = "libkdtree=<a href=\"http://libkdtree.alioth.debian.org/\"><b>libkdtree++</b></a>" \
                          "Boost=<a href=\"http://www.boost.org/\"><b>Boost</b></a>" \
                          "quote=<div style=\"text-align:right\"><i>" \
                          "endquote=</i></div>" \
@@ -247,6 +242,8 @@ ALIASES                = "ul=<ul><li>" \
                          "dfractime=\complex This function has average \ref DimFracTime \"fractional time complexity\" in dimension \f$d\f$: \Odfrac" \
                          "worstdfractime=\complex This function has worst-case \ref DimFracTime \"fractional time complexity\" in dimension \f$d\f$: \Odfrac" \
                          "mono{1}=<tt>\\1</tt>"
+
+@INCLUDE               = src_aliases
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding
@@ -416,12 +413,12 @@ EXTRACT_ALL            = NO
 # If the EXTRACT_PRIVATE tag is set to YES all private members of a class
 # will be included in the documentation.
 
-EXTRACT_PRIVATE        = NO
+EXTRACT_PRIVATE        = YES
 
 # If the EXTRACT_PACKAGE tag is set to YES all members with package or internal
 # scope will be included in the documentation.
 
-EXTRACT_PACKAGE        = NO
+EXTRACT_PACKAGE        = YES
 
 # If the EXTRACT_STATIC tag is set to YES all static members of a file
 # will be included in the documentation.
@@ -432,7 +429,7 @@ EXTRACT_STATIC         = YES
 # defined locally in source files will be included in the documentation.
 # If set to NO only classes defined in header files are included.
 
-EXTRACT_LOCAL_CLASSES  = NO
+EXTRACT_LOCAL_CLASSES  = YES
 
 # This flag is only useful for Objective-C code. When set to YES local
 # methods, which are defined in the implementation section but not in
@@ -455,14 +452,14 @@ EXTRACT_ANON_NSPACES   = NO
 # various overviews, but no documentation section is generated.
 # This option has no effect if EXTRACT_ALL is enabled.
 
-HIDE_UNDOC_MEMBERS     = YES
+HIDE_UNDOC_MEMBERS     = NO
 
 # If the HIDE_UNDOC_CLASSES tag is set to YES, Doxygen will hide all
 # undocumented classes that are normally visible in the class hierarchy.
 # If set to NO (the default) these classes will be included in the various
 # overviews. This option has no effect if EXTRACT_ALL is enabled.
 
-HIDE_UNDOC_CLASSES     = YES
+HIDE_UNDOC_CLASSES     = NO
 
 # If the HIDE_FRIEND_COMPOUNDS tag is set to YES, Doxygen will hide all
 # friend (class|struct|union) declarations.
@@ -712,8 +709,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = ../src \
-                         meta
+INPUT                  = manual ../src
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -736,7 +732,6 @@ FILE_PATTERNS          = *.c \
                          *.cxx \
                          *.cpp \
                          *.c++ \
-                         *.ii \
                          *.ixx \
                          *.ipp \
                          *.i++ \
@@ -745,7 +740,6 @@ FILE_PATTERNS          = *.c \
                          *.hxx \
                          *.hpp \
                          *.h++ \
-                         *.tpp \
                          *.dox
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories
