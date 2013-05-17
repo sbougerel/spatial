@@ -39,6 +39,8 @@
 #include <boost/mpl/list.hpp>
 
 #define SPATIAL_ENABLE_ASSERT // detect interal issues that should not occur
+//#define SPATIAL_SAFER_ARITHMETICS // verify that the operations for safer
+                                  // arithmetics are correct.
 
 #include "../../src/point_multiset.hpp"
 #include "../../src/idle_point_multiset.hpp"
@@ -356,14 +358,14 @@ struct pointset_fix
  */
 template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
 struct boxset_fix
-  : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::half, Tp, Compare> >
+  : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare> >
 {
   boxset_fix() { }
   explicit boxset_fix(int n)
-    : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::half, Tp, Compare> >
+    : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare> >
       (n, pass()) { }
   template<typename Manip> boxset_fix(int n, const Manip& manip)
-    : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::half, Tp, Compare> >
+    : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare> >
       (n, manip) { }
 };
 
@@ -395,17 +397,17 @@ template<typename Tp, typename Mapped,
          typename Compare = typename compare_traits<Tp>::type >
 struct boxmap_fix
   : basic_fixture<std::pair<Tp, Mapped>,
-                  box_multimap<dimension_traits<Tp>::half, Tp, Mapped, Compare> >
+                  box_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare> >
 {
   boxmap_fix() { }
   explicit boxmap_fix(int n)
     : basic_fixture<std::pair<Tp, Mapped>,
-                    box_multimap<dimension_traits<Tp>::half, Tp, Mapped, Compare> >
+                    box_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare> >
       (n, to_first<pass>()) { }
   template<typename Manip>
   boxmap_fix(int n, const Manip& manip)
     : basic_fixture<std::pair<Tp, Mapped>,
-                    box_multimap<dimension_traits<Tp>::half, Tp, Mapped, Compare> >
+                    box_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare> >
       (n, to_first<Manip>(manip)) { }
 };
 
@@ -432,16 +434,16 @@ struct tight_pointset_fix
  */
 template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
 struct tight_boxset_fix
-  : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::half, Tp, Compare,
+  : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare,
                              tight_balancing> >
 {
   tight_boxset_fix() { }
   explicit tight_boxset_fix(int n)
-    : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::half, Tp, Compare,
+    : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare,
                                      tight_balancing> >(n, pass()) { }
   template<typename Manip>
   tight_boxset_fix(int n, const Manip& manip)
-    : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::half, Tp, Compare,
+    : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare,
                                      tight_balancing> >(n, manip) { }
 };
 
@@ -474,18 +476,18 @@ template<typename Tp, typename Mapped,
          typename Compare = typename compare_traits<Tp>::type >
 struct tight_boxmap_fix
   : basic_fixture<std::pair<Tp, Mapped>,
-                  box_multimap<dimension_traits<Tp>::half, Tp, Mapped, Compare,
+                  box_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
                                tight_balancing> >
 {
   tight_boxmap_fix() { }
   explicit tight_boxmap_fix(int n)
     : basic_fixture<std::pair<Tp, Mapped>,
-                    box_multimap<dimension_traits<Tp>::half, Tp, Mapped, Compare,
+                    box_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
                                  tight_balancing> >(n, to_first<pass>()) { }
   template<typename Manip>
   tight_boxmap_fix(int n, const Manip& manip)
     : basic_fixture<std::pair<Tp, Mapped>,
-                    box_multimap<dimension_traits<Tp>::half, Tp, Mapped, Compare,
+                    box_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
                                  tight_balancing> >(n, to_first<Manip>(manip)) { }
 };
 
@@ -512,16 +514,16 @@ struct runtime_pointset_fix
  */
 template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
 struct runtime_boxset_fix
-  : runtime_fixture<Tp, dimension_traits<Tp>::half,
+  : runtime_fixture<Tp, dimension_traits<Tp>::value,
                     box_multiset<0, Tp, Compare> >
 {
   runtime_boxset_fix() { }
   explicit runtime_boxset_fix(int n)
-    : runtime_fixture<Tp, dimension_traits<Tp>::half,
+    : runtime_fixture<Tp, dimension_traits<Tp>::value,
                       box_multiset<0, Tp, Compare> >(n, pass()) { }
   template<typename Manip>
   runtime_boxset_fix(int n, const Manip& manip)
-    : runtime_fixture<Tp, dimension_traits<Tp>::half,
+    : runtime_fixture<Tp, dimension_traits<Tp>::value,
                       box_multiset<0, Tp, Compare> >(n, manip) { }
 };
 
@@ -554,19 +556,19 @@ struct runtime_point_multimap_fix
 template<typename Tp, typename Mapped,
          typename Compare = typename compare_traits<Tp>::type >
 struct runtime_boxmap_fix
-  : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::half,
+  : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
                     box_multimap<0, Tp, Mapped, Compare> >
 {
   runtime_boxmap_fix() { }
 
   explicit runtime_boxmap_fix(int n)
-    : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::half,
+    : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
                       box_multimap<0, Tp, Mapped, Compare> >
       (n, to_first<pass>()) { }
 
   template<typename Manip>
   runtime_boxmap_fix(int n, const Manip& manip)
-    : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::half,
+    : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
                       box_multimap<0, Tp, Mapped, Compare> >
       (n, to_first<Manip>(manip)) { }
 };
@@ -594,16 +596,16 @@ struct idle_pointset_fix
  */
 template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
 struct idle_boxset_fix
-  : basic_fixture<Tp, idle_box_multiset<dimension_traits<Tp>::half, Tp,
+  : basic_fixture<Tp, idle_box_multiset<dimension_traits<Tp>::value, Tp,
                                         Compare> >
 {
   idle_boxset_fix() { }
   explicit idle_boxset_fix(int n)
-    : basic_fixture<Tp, idle_box_multiset<dimension_traits<Tp>::half, Tp,
+    : basic_fixture<Tp, idle_box_multiset<dimension_traits<Tp>::value, Tp,
                                           Compare> >(n, pass()) { }
   template<typename Manip>
   idle_boxset_fix(int n, const Manip& manip)
-    : basic_fixture<Tp, idle_box_multiset<dimension_traits<Tp>::half, Tp,
+    : basic_fixture<Tp, idle_box_multiset<dimension_traits<Tp>::value, Tp,
                                           Compare> >(n, manip) { }
 };
 
@@ -638,19 +640,19 @@ template<typename Tp, typename Mapped,
          typename Compare = typename compare_traits<Tp>::type >
 struct idle_boxmap_fix
   : basic_fixture<std::pair<Tp, Mapped>,
-                  idle_box_multimap<dimension_traits<Tp>::half,
+                  idle_box_multimap<dimension_traits<Tp>::value,
                                     Tp, Mapped, Compare> >
 {
   idle_boxmap_fix() { }
   explicit idle_boxmap_fix(int n)
     : basic_fixture<std::pair<Tp, Mapped>,
-                    idle_box_multimap<dimension_traits<Tp>::half, Tp,
+                    idle_box_multimap<dimension_traits<Tp>::value, Tp,
                                       Mapped, Compare> >
       (n, to_first<pass>()) { }
   template<typename Manip>
   idle_boxmap_fix(int n, const Manip& manip)
     : basic_fixture<std::pair<Tp, Mapped>,
-                    idle_box_multimap<dimension_traits<Tp>::half, Tp,
+                    idle_box_multimap<dimension_traits<Tp>::value, Tp,
                                       Mapped, Compare> >
       (n, to_first<Manip>(manip)) { }
 };
@@ -678,16 +680,16 @@ struct runtime_idle_pointset_fix
  */
 template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
 struct runtime_idle_boxset_fix
-  : runtime_fixture<Tp, dimension_traits<Tp>::half,
+  : runtime_fixture<Tp, dimension_traits<Tp>::value,
                     idle_box_multiset<0, Tp, Compare> >
 {
   runtime_idle_boxset_fix() { }
   explicit runtime_idle_boxset_fix(int n)
-    : runtime_fixture<Tp, dimension_traits<Tp>::half,
+    : runtime_fixture<Tp, dimension_traits<Tp>::value,
                       idle_box_multiset<0, Tp, Compare> >(n, pass()) { }
   template<typename Manip>
   runtime_idle_boxset_fix(int n, const Manip& manip)
-    : runtime_fixture<Tp, dimension_traits<Tp>::half,
+    : runtime_fixture<Tp, dimension_traits<Tp>::value,
                       idle_box_multiset<0, Tp, Compare> >(n, manip) { }
 };
 
@@ -718,17 +720,17 @@ struct runtime_idle_point_multimap_fix
 template<typename Tp, typename Mapped,
          typename Compare = typename compare_traits<Tp>::type >
 struct runtime_idle_boxmap_fix
-  : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::half,
+  : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
                     idle_box_multimap<0, Tp, Mapped, Compare> >
 {
   runtime_idle_boxmap_fix() { }
   explicit runtime_idle_boxmap_fix(int n)
-    : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::half,
+    : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
                       idle_box_multimap<0, Tp, Mapped, Compare> >
       (n, to_first<pass>()) { }
   template<typename Manip>
   runtime_idle_boxmap_fix(int n, const Manip& manip)
-    : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::half,
+    : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
                       idle_box_multimap<0, Tp, Mapped, Compare> >
       (n, to_first<Manip>(manip)) { }
 };

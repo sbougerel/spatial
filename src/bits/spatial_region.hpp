@@ -18,7 +18,7 @@
 #include "spatial_bidirectional.hpp"
 #include "spatial_traits.hpp"
 #include "spatial_rank.hpp"
-#include "spatial_exceptions.hpp"
+#include "spatial_except.hpp"
 
 namespace spatial
 {

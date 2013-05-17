@@ -144,7 +144,7 @@ namespace spatial
             }
           else
             {
-              if (((numeric_limits<Tp>::max)() / x) < x)
+              if (((numeric_limits<Tp>::min)() / x) < x)
                 throw arithmetic_error
                   ("Square value of element resulted in an arithmetic error");
             }
@@ -177,7 +177,7 @@ namespace spatial
         {
           if (((numeric_limits<Tp>::max)() / x) > y)
             throw arithmetic_error
-              ("Square value of element resulted in an arithmetic error");
+              ("Multiplication of 2 elements resulted in an arithmetic error");
           return x * y;
         }
       return zero;
@@ -280,7 +280,7 @@ namespace spatial
         {
 #ifdef SPATIAL_SAFER_ARITHMETICS
           sum = except::check_positive_add
-            (sqeuclid_distance_to_plane<Key, Difference, Unit>
+            (square_euclid_distance_to_plane<Key, Difference, Unit>
              (i, origin, key, diff), sum);
 #else
           sum += square_euclid_distance_to_plane

@@ -28,9 +28,9 @@ BOOST_AUTO_TEST_CASE(test_metric_trait)
                paren_minus<int2, int> >::distance_type>();
   check_is_same
     <metric_traits<euclidian
-                   <box_multiset<3, double6>, double,
+                   <box_multiset<6, double6>, double,
                     bracket_minus<double6, double> > >::distance_type,
-     euclidian<box_multiset<3, double6>, double,
+     euclidian<box_multiset<6, double6>, double,
                bracket_minus<double6, double> >::distance_type>();
   // The following will not compile, but I comment it out to test enable_if
   //check_is_same

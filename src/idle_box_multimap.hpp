@@ -20,6 +20,7 @@
 
 #include <memory>  // std::allocator
 #include <utility> // std::pair
+#include "bits/spatial_check_concept.hpp"
 #include "bits/spatial_kdtree.hpp"
 #include "function.hpp"
 
@@ -29,13 +30,16 @@ namespace spatial
   template<dimension_type Rank, typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<std::pair<const Key, Mapped> > >
-  struct idle_box_multimap
-    : details::Kdtree<details::Static_rank<Rank << 1>, const Key,
-                      std::pair<const Key, Mapped>, Compare, Alloc>
+  class idle_box_multimap
+    : public details::Kdtree<details::Static_rank<Rank>, const Key,
+                             std::pair<const Key, Mapped>, Compare, Alloc>
   {
   private:
+    typedef typename
+    enable_if_c<(Rank & 1u) == 0>::type check_concept_dimension_is_even;
+
     typedef details::Kdtree
-    <details::Static_rank<Rank << 1>, const Key, std::pair<const Key, Mapped>,
+    <details::Static_rank<Rank>, const Key, std::pair<const Key, Mapped>,
      Compare, Alloc>                                       base_type;
     typedef idle_box_multimap<Rank, Key, Mapped, Compare, Alloc> Self;
 
@@ -45,11 +49,11 @@ namespace spatial
     idle_box_multimap() { }
 
     explicit idle_box_multimap(const Compare& compare)
-      : base_type(details::Static_rank<Rank << 1>())
+      : base_type(details::Static_rank<Rank>())
     { }
 
     idle_box_multimap(const Compare& compare, const Alloc& alloc)
-      : base_type(details::Static_rank<Rank << 1>(), compare, alloc)
+      : base_type(details::Static_rank<Rank>(), compare, alloc)
     { }
 
     idle_box_multimap(const idle_box_multimap& other, bool balancing = false)
@@ -77,9 +81,9 @@ namespace spatial
    *  container.
    */
   template<typename Key, typename Mapped, typename Compare, typename Alloc>
-  struct idle_box_multimap<0, Key, Mapped, Compare, Alloc>
-    : details::Kdtree<details::Dynamic_rank, const Key,
-                      std::pair<const Key, Mapped>, Compare, Alloc>
+  class idle_box_multimap<0, Key, Mapped, Compare, Alloc>
+    : public details::Kdtree<details::Dynamic_rank, const Key,
+                             std::pair<const Key, Mapped>, Compare, Alloc>
   {
   private:
     typedef details::Kdtree<details::Dynamic_rank, const Key,
@@ -93,12 +97,12 @@ namespace spatial
     idle_box_multimap() : base_type(details::Dynamic_rank(2)) { }
 
     explicit idle_box_multimap(dimension_type dim)
-      : base_type(details::Dynamic_rank(dim << 1))
-    { except::check_rank(dim); }
+      : base_type(details::Dynamic_rank(dim))
+    { except::check_even_rank(dim); }
 
     idle_box_multimap(dimension_type dim, const Compare& compare)
-      : base_type(details::Dynamic_rank(dim << 1), compare)
-    { except::check_rank(dim); }
+      : base_type(details::Dynamic_rank(dim), compare)
+    { except::check_even_rank(dim); }
 
     explicit idle_box_multimap(const Compare& compare)
       : base_type(details::Dynamic_rank(2), compare)
@@ -106,8 +110,8 @@ namespace spatial
 
     idle_box_multimap(dimension_type dim, const Compare& compare,
                   const Alloc& alloc)
-      : base_type(details::Dynamic_rank(dim << 1), compare, alloc)
-    { except::check_rank(dim); }
+      : base_type(details::Dynamic_rank(dim), compare, alloc)
+    { except::check_even_rank(dim); }
 
     idle_box_multimap(const Compare& compare, const Alloc& alloc)
       : base_type(details::Dynamic_rank(2), compare, alloc)

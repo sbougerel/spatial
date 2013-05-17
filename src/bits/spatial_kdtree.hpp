@@ -28,7 +28,7 @@
 #include "spatial_region.hpp"
 #include "spatial_compress.hpp"
 #include "spatial_assert.hpp"
-#include "spatial_exceptions.hpp"
+#include "spatial_except.hpp"
 
 namespace spatial
 {

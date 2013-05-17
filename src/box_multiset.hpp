@@ -25,42 +25,46 @@
 #define SPATIAL_BOX_MULTISET_HPP
 
 #include <memory>  // std::allocator
+#include "bits/spatial_check_concept.hpp"
 #include "bits/spatial_relaxed_kdtree.hpp"
 #include "function.hpp"
 
 namespace spatial
 {
   /**
-   *  This container only accepts dimension that are a multiple of 2.
+   *  This container only accepts dimension that are even (multiples of 2).
    */
   template<dimension_type Rank, typename Key,
            typename Compare = bracket_less<Key>,
            typename BalancingPolicy = loose_balancing,
            typename Alloc = std::allocator<Key> >
-  struct box_multiset
-    : details::Relaxed_kdtree<details::Static_rank<Rank << 1>, const Key,
-                              const Key, Compare, BalancingPolicy, Alloc>
+  class box_multiset
+    : public details::Relaxed_kdtree<details::Static_rank<Rank>, const Key,
+                                     const Key, Compare, BalancingPolicy, Alloc>
   {
   private:
+    typedef typename
+    enable_if_c<(Rank & 1u) == 0>::type check_concept_dimension_is_even;
+
     typedef details::Relaxed_kdtree
-    <details::Static_rank<Rank << 1>, const Key, const Key, Compare,
-                          BalancingPolicy, Alloc>               base_type;
+    <details::Static_rank<Rank>, const Key, const Key, Compare,
+                          BalancingPolicy, Alloc> base_type;
     typedef box_multiset<Rank, Key, Compare, BalancingPolicy, Alloc>  Self;
 
   public:
     box_multiset() { }
 
     explicit box_multiset(const Compare& compare)
-      : base_type(details::Static_rank<Rank << 1>())
+      : base_type(details::Static_rank<Rank>())
     { }
 
     box_multiset(const Compare& compare, const BalancingPolicy& balancing)
-      : base_type(details::Static_rank<Rank << 1>(), compare, balancing)
+      : base_type(details::Static_rank<Rank>(), compare, balancing)
     { }
 
     box_multiset(const Compare& compare, const BalancingPolicy& balancing,
              const Alloc& alloc)
-      : base_type(details::Static_rank<Rank << 1>(), compare, balancing, alloc)
+      : base_type(details::Static_rank<Rank>(), compare, balancing, alloc)
     { }
 
     box_multiset(const box_multiset& other)
@@ -73,22 +77,26 @@ namespace spatial
   };
 
   /**
-   *  Specialization for @ref box_multiset with runtime rank support. The rank
-   *  of the @ref box_multiset can be determined at run time and does not need
-   *  to be fixed at compile time. Using:
+   *  Specialization for \box_multiset with runtime rank support. The rank of
+   *  the \box_multiset can be determined at run time and does not need to be
+   *  fixed at compile time.
    *
-   *  @code
+   *  The rank is then passed as a parameter to the constructor. Using:
+   *
+   *  \code
    *    struct box { ... };
-   *    box_multiset<0, box> my_set(2);
-   *  @endcode
+   *    spatial::box_multiset<0, box> my_set(2);
+   *  \endcode
+   *
+   *  If no parameter is given, the rank defaults to 2.
    */
   template<typename Key,
            typename Compare,
            typename BalancingPolicy,
            typename Alloc>
-  struct box_multiset<0, Key, Compare, BalancingPolicy, Alloc>
-    : details::Relaxed_kdtree<details::Dynamic_rank, const Key, const Key,
-                              Compare, BalancingPolicy, Alloc>
+  class box_multiset<0, Key, Compare, BalancingPolicy, Alloc>
+    : public details::Relaxed_kdtree<details::Dynamic_rank, const Key,
+                                     const Key, Compare, BalancingPolicy, Alloc>
   {
   private:
     typedef details::Relaxed_kdtree<details::Dynamic_rank,
@@ -100,22 +108,22 @@ namespace spatial
     box_multiset() : base_type(details::Dynamic_rank(2)) { }
 
     explicit box_multiset(dimension_type dim)
-      : base_type(details::Dynamic_rank(dim << 1))
-    { except::check_rank(dim); }
+      : base_type(details::Dynamic_rank(dim))
+    { except::check_even_rank(dim); }
 
     box_multiset(dimension_type dim, const Compare& compare)
-      : base_type(details::Dynamic_rank(dim << 1), compare)
-    { except::check_rank(dim); }
+      : base_type(details::Dynamic_rank(dim), compare)
+    { except::check_even_rank(dim); }
 
     box_multiset(dimension_type dim, const Compare& compare,
            const BalancingPolicy& policy)
-      : base_type(details::Dynamic_rank(dim << 1), compare, policy)
-    { except::check_rank(dim); }
+      : base_type(details::Dynamic_rank(dim), compare, policy)
+    { except::check_even_rank(dim); }
 
     box_multiset(dimension_type dim, const Compare& compare,
            const BalancingPolicy& policy, const Alloc& alloc)
-      : base_type(details::Dynamic_rank(dim << 1), compare, policy, alloc)
-    { except::check_rank(dim); }
+      : base_type(details::Dynamic_rank(dim), compare, policy, alloc)
+    { except::check_even_rank(dim); }
 
     explicit box_multiset(const Compare& compare)
       : base_type(details::Dynamic_rank(2), compare)

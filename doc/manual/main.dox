@@ -336,20 +336,20 @@ represented in a table:
   </tr>
 </table>
 
-As you can see from the table the \c idle family of container does not rebalance
+As you can see from the table the `idle` family of container does not rebalance
 element in its tree automatically, contrary to other containers. However they
 use one less pointer per node, and they can still be rebalanced on demand.
 
-There are no \c box_map or \c point_set container in the library. It is
-currently not provided (it probably will in the future), so in the current
-containers you can store in one container as many copies of the same object's
-key as you require. If you wish to store only one key per container, you need to
-accomplish this by checking first if a given key exists. You can do this with
-\ref equal_begin().
+There are no `box_map` or `point_set` container in the library. It is currently
+not provided (it probably will in the future), so in the current containers you
+can store in one container as many copies of the same object's key as you
+require. If you wish to store only one key per container, you need to accomplish
+this by checking first if a given key exists. You can do this with \ref
+spatial::equal_begin().
 
-\c Box and \c point containers are in fact the same containers, expect that \c
-box containers can only store objects in dimensions that are a multiple of
-two. They are strickly equivalent to \c point containers otherwise.
+Box and point containers are in fact the same containers, expect that box
+containers can only store objects in dimensions that are a multiple of two. They
+are strickly equivalent to point containers otherwise.
 
 \subsection tutorial_step0_sub2 Usage of containers
 
@@ -374,6 +374,38 @@ containers.
   <td>idle_point_set or idle_box_set</td>
  </tr>
 </table>
+
+\subsection tutorial_step0_sub3 Determining dimension at runtime
+
+By setting the dimension used in the containers to 0, you express your wish to
+define the dimension as a runtime-time parameter, given to the constructor of
+the container. All containers are specialized for the dimension 0 and in this
+case will accept an additional dimension parameter in the constructor.
+
+\code
+#include <iostream>
+#include <tr1/array> // TR1 array
+#include <spatial/point_multiset.hpp>
+
+int main(int argc, char** argv)
+{
+  // This container will be of dimension 3
+  typedef spatial::point_multiset<3, std::tr1::array<int, 3> > static_container;
+  // This container's dimension will be determined at runtime
+  typedef spatial::point_multiset<0, std::tr1::array<int, 3> > runtime_container;
+
+  std::cout << "Enter a dimension for the container: " << std::flush;
+  spatial::dimension_type dim;
+  std::cin >> dim;
+
+  if (dim >= 3) throw spatial::invalid_dimension("dim");
+
+  static_container container1;
+  runtime_container container2(dim); // Note: if dim was equal to 0, a
+                                     // spatial::invalid_dimension would be thrown
+  return 0;
+}
+\endcode
 
 \section tutorial_step1 Inserting Any Type of Objects
 
@@ -922,5 +954,14 @@ $ export CXXFLAGS="-DSPATIAL_ENABLE_ASSERT"
 \endcode
 
 This variable is simply a define and does not require any associated value.
+
+\section compileopts_3 SPATIAL_SAFER_ARITHMETICS
+
+When dealing with objects in space that are scattered over the entire range of
+value permissible for their storage types (e.g. very large values for the type
+int, long, long long, etc) it could happen that distance calculations in
+\neighbor_iterator would overflow or underflow. If the results returned by this
+iterators do not match your expected resutls, try enabling this define, to make
+sure this is not due to an overflow or underflow.
 
 */

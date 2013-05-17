@@ -25,7 +25,7 @@ template<typename Tp> struct dimension_traits { };
  */
 #define define_dimension(Tp, dim)               \
   template<> struct dimension_traits<Tp>        \
-  { enum { value = dim, half = dim >> 1 }; }
+  { enum { value = dim }; }
 
 /**
  *  The compare_traits resolves a given type into a type used for comparison in

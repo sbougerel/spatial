@@ -33,12 +33,15 @@ namespace spatial
   template<dimension_type Rank, typename Key,
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<Key> >
-  struct idle_box_multiset
-    : details::Kdtree<details::Static_rank<Rank << 1>, const Key, const Key,
-                      Compare, Alloc>
+  class idle_box_multiset
+    : public details::Kdtree<details::Static_rank<Rank>, const Key, const Key,
+                             Compare, Alloc>
   {
   private:
-    typedef details::Kdtree<details::Static_rank<Rank << 1>, const Key,
+    typedef typename
+    enable_if_c<(Rank & 1u) == 0>::type check_concept_dimension_is_even;
+
+    typedef details::Kdtree<details::Static_rank<Rank>, const Key,
                             const Key, Compare, Alloc>  base_type;
     typedef idle_box_multiset<Rank, Key, Compare, Alloc>      Self;
 
@@ -46,11 +49,11 @@ namespace spatial
     idle_box_multiset() { }
 
     explicit idle_box_multiset(const Compare& compare)
-      : base_type(details::Static_rank<Rank << 1>())
+      : base_type(details::Static_rank<Rank>())
     { }
 
     idle_box_multiset(const Compare& compare, const Alloc& alloc)
-      : base_type(details::Static_rank<Rank << 1>(), compare, alloc)
+      : base_type(details::Static_rank<Rank>(), compare, alloc)
     { }
 
     idle_box_multiset(const idle_box_multiset& other, bool balancing = false)
@@ -77,9 +80,9 @@ namespace spatial
    *  container.
    */
   template<typename Key, typename Compare, typename Alloc>
-  struct idle_box_multiset<0, Key, Compare, Alloc>
-    : details::Kdtree<details::Dynamic_rank, const Key, const Key,
-                      Compare, Alloc>
+  class idle_box_multiset<0, Key, Compare, Alloc>
+    : public details::Kdtree<details::Dynamic_rank, const Key, const Key,
+                             Compare, Alloc>
   {
   private:
     typedef details::Kdtree<details::Dynamic_rank, const Key,
@@ -90,12 +93,12 @@ namespace spatial
     idle_box_multiset() : base_type(details::Dynamic_rank(2)) { }
 
     explicit idle_box_multiset(dimension_type dim)
-      : base_type(details::Dynamic_rank(dim << 1))
-    { except::check_rank(dim); }
+      : base_type(details::Dynamic_rank(dim))
+    { except::check_even_rank(dim); }
 
     idle_box_multiset(dimension_type dim, const Compare& compare)
-      : base_type(details::Dynamic_rank(dim << 1), compare)
-    { except::check_rank(dim); }
+      : base_type(details::Dynamic_rank(dim), compare)
+    { except::check_even_rank(dim); }
 
     explicit idle_box_multiset(const Compare& compare)
       : base_type(details::Dynamic_rank(2), compare)
@@ -103,8 +106,8 @@ namespace spatial
 
     idle_box_multiset(dimension_type dim, const Compare& compare,
                   const Alloc& alloc)
-      : base_type(details::Dynamic_rank(dim << 1), compare, alloc)
-    { except::check_rank(dim); }
+      : base_type(details::Dynamic_rank(dim), compare, alloc)
+    { except::check_even_rank(dim); }
 
     idle_box_multiset(const Compare& compare, const Alloc& alloc)
       : base_type(details::Dynamic_rank(2), compare, alloc)
