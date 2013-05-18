@@ -1,10 +1,11 @@
 /**
-\mainpage Spatial Manual
+\mainpage Welcome, Noble User
 \tableofcontents
 
 - \subpage changelog
 - \subpage install
 - \subpage tutorial
+- \subpage contributing
 - \subpage compileopts
 
 \quote
@@ -15,31 +16,31 @@ dimensions. <br> -- Oliver Wendell Holmes, Jr.
 \section intro Introduction
 
 \Spatial C++ Library is a generic header-only C++ library providing
-multi-dimensional in-memory containers, iterators and functionals. It
-is a general purpose library with good overall performance that makes
-it easy to search for nearest neighors, orthogonal ranges, or perform
-ordering of objects in any number of dimensions.
+multi-dimensional in-memory containers, iterators and functionals. It is a
+general purpose library with good overall performance that makes it simple to
+search for nearest neighors, orthogonal ranges, or perform ordering of objects
+in any number of dimensions.
 
-\Spatial's design borrows heavily from the \STL, and strives to follow
-it's interface; therefore \Spatial's containers, iterators and
-functionals integrate well with the \STL. Additionally, \Spatial
-implements self-balancing \kdtree-based containers, capable of object
-insertion in logarithmic amortized time and removal in fractional
-amortized time. Given that the tree is always mostly balanced, this
-prevents worst-case computational time on most spatial operation.
+\Spatial's design borrows heavily from the \STL, and strives to follow it's
+elegant interface; therefore \Spatial's containers, iterators and functionals
+integrate well with the \STL. Additionally, \Spatial implements self-balancing
+\kdtree-based containers, capable of object insertion in logarithmic amortized
+time and removal in fractional amortized time. Given that the tree is always
+mostly balanced, this prevents worst-case computational time on most spatial
+operation.
 
-\Spatial was created with tracking analysis and real-time positioning
-in mind, but its good overall performance and its set of algorithms
-should make it as easy for anyone to do spatial analysis in their
-application as using \STL's \c multiset or \c map containers.
+\Spatial was created with tracking analysis and real-time positioning in mind,
+but its good overall performance and its set of algorithms should make it as
+simple for anyone to do spatial analysis in their application as using \STL's \c
+multiset or \c map containers.
 
 \section feature Features Overview
 
-A brief overview of the \Spatial's features is provided below:
+A brief overview of \Spatial's features is provided below:
 
 - Based on \kdtrees which provide good overall performance for only 4
   pointers of overhead per node
-- Sort objects along several dimensions, which may be of different types
+- Sort objects along several dimensions that may be of different types
 - static (compile-time) or dynamic (run-time) determination of the number of
   dimensions
 - Policy-based rebalancing of the \kdtree, limiting worst-case
@@ -53,20 +54,20 @@ A brief overview of the \Spatial's features is provided below:
 - Iteration over a single dimension, independantly from others
 - and more...
 
-\Spatial provides what is generally needed to get you started on
-spatial analysis.
+\Spatial provides what is generally needed to get you started on simple spatial
+analysis. Check out \ref tutorial "Quick Starting Guide" to get you started on
+using \Spatial.
 
 \section status Status of the Library
 
-\Spatial C++ Library's current tutorials are out-dated compared to the
-library's features. However the current library's API is considered stable
-since there are currently no foreseen development in plan that should cause it
-to change. Work is in progress to put the documentation on par with the source.
+\Spatial C++ Library's currently lacks of a proper documentation and set of
+examples. However the current library's API is considered stable since there are
+currently no foreseen development in plan that should cause it to change. Work
+is in progress to put the documentation on par with the source.
 
 \Spatial C++ Library is estimated by its author to be production-ready. The
 library is consistently unit tested, with unit tests covering more than 90% of
-it's current source code, so it should behave as expected. The \c beta status on
-Sourceforge will be removed once the documentation is on par with the source.
+it's current source code, so it should behave as expected.
 
 \Spatial's unit test suite should compile without error or warning (even on
 highest warning levels) and execute without errors on the following compilers:
@@ -85,6 +86,9 @@ library that retains all the great benefits of \libkdtree while broadening its
 horizons. It is through the informative feedback of its maintainers and its
 community that the design principles for this library have emerged.
 
+\Spatial, however, is a complete rewrite and shares none of its sources in
+common with \libkdtree.
+
 \section license Licensing
 
 \Spatial C++ Library is provided under the term of the \license. Alternatively,
@@ -95,11 +99,13 @@ see the file \c COPYING provided with your copy of the library.
 You can ask for support on the general mailing list of the library:
 spatial-main@lists.sourceforge.net.
 
-\section source Getting the Source and Sending Feedbacks
+To access feedback facilities, such as bug or feature requests, please refer to
+the \project_page. If you wish to contribute to the library, check out \ref
+contributing "Contributing".
 
-To access feedback facilities, such as bug or feature requests, please refer
-to the \project_page. ZIP packages are available at the \project_download
-page.
+\section source Getting the Source
+
+ZIP packages are available at the \project_download page.
 
 Packages on the \project_download include the entire content of the source.
 Documentation files are only included in the \c *_documented.zip packages.
@@ -112,15 +118,7 @@ git clone git://git.code.sf.net/p/spatial/code spatial
 \endcode
 
 The above will only give you readonly access. If you wish to become a full-time
-contributor, you will need to register an account with
-Sourceforge.net. Thereafter, please send a mail to the current project
-administrators, listed on the \project_page. Once your access is granted, you
-can use the following command to clone the repository:
-
-\code
-git clone ssh://your_username@git.code.sf.net/p/spatial/code spatial
-\endcode
-
+contributor, check out \ref contributing "Contributing".
 */
 
 /**
@@ -133,32 +131,43 @@ git clone ssh://your_username@git.code.sf.net/p/spatial/code spatial
   means it breaks compatibility with version 1.0.0. If you are using version
   1.0.0, you should know that:
 
-  - pointset is now called point_multiset to reflect truly it's equivalence to
-  multiset, and not set. Similar changes for box_multiset.
+  - `pointset` is now called `point_multiset` to reflect truly it's equivalence
+    to multiset, and not set. Similar changes for `box_multiset`.
 
-  - \c frozen_* containers are now renamed to \c idle_*, its functions are the
-  same, but \c idle_* just take less characters to write, and provides a more
-  accurate picture to programmers ('frozen' is often used to describe unmutable
-  objects)
+  - `box_mulitset` (formerly `boxset`) does not multiply the dimension specified
+    by 2 anymore. Instead it uses concept checking to make sure that the
+    dimension given is even.
+
+  - `frozen` containers are now renamed to `idle`, its functions are the same,
+    but `idle` just take less characters to write, and provides a more accurate
+    picture to programmers ('frozen' is often used to describe unmutable
+    objects)
 
   - iterators have been vastly changed: their interface is now consistent, and
-  the neighbor iterator works now on MSVC9+. The design used for iterators
-  resemble the design of Boost.Range, e.g: mapping_iterator<const container,
-  dimension>, region_iterator<container, predicate>, etc...
+    the neighbor iterator works now correctly on MSVC9+. The design used for
+    iterators resemble the design of Boost.Range, e.g: \ref
+    spatial::mapping_iterator, \ref spatial::region_iterator, etc...
 
-  - range iterators have been renamed to region_iterator, because you can now
-  request for a region_range(container, predicate) which returns a pair of
-  iterators region_iterator_pair<container, predicate>
+  - views have simply been removed. They were clumsily written and presented
+    maintenance burden while providing strictly no advantage over the bare
+    iterators. All their functions have been put in the global spatial
+    namespace, e.g: \ref spatial::mapping_begin(), \ref spatial::region_range(),
+    etc. The new interface is much more elegant and in line with the \STL
+    design.
 
-  - a new set of iterator called ordered_iterator<container> have been created,
-  and they iterate all nodes in the tree in deterministic fashion, so that 2
-  trees build differently but containing the same values will be iterated in the
-  same sequence
+  - range iterators have been renamed to \ref spatial::region_iterator, because
+    you can now request for a \ref spatial::region_range(container, predicate)
+    which returns a pair of iterators \ref spatial::region_iterator_pair
+
+  - a new set of iterator called \ref spatial::ordered_iterator have been
+    created, and they iterate all nodes in the tree in deterministic fashion, so
+    that 2 trees build differently but containing the same values will be
+    iterated in the same sequence
 
 
-\section ver1 Version 1.0.0
+\section ver1 Version 1.0.0 (unsupported)
 
-- First version with:
+- First version, that is now unsupported, with:
 
   - multi-dimension template containers with unlimited number of dimensions to
     store points in space,
@@ -268,6 +277,70 @@ Or copy the directory \c src and its content to your own project, rename it to
 */
 
 /**
+\page contributing Contributing
+\tableofcontents
+
+\section contributing_1 I've noticed a bug...
+
+Please, take a minute to report it here:
+https://sourceforge.net/p/spatial/tickets/new/. It requires you to log in to
+Sourceforge or via OpenId. The rationale is that if you find a bug, you're
+probably interested in the fix, so we would like to help keep track of the
+issue. Also it prevents spamming.
+
+\section contributing_2 I would love if...
+
+You want a new feature? Take a minute to report it here:
+https://sourceforge.net/p/spatial/feature-requests/new/. It requires you to log
+in to Sourceforge or via OpenId. The rationale is that if you want a new
+feature, you're probably interested in it, so we would like to help keep track
+of it. Also it prevents spamming.
+
+\section contributing_3 How can I help?
+
+There are a number of things that can be improved with the library:
+
+- Documentation is still scarce, any contribution in this regard, no matter how
+  small (gramatical mistakes) makes the library better.
+
+- Examples are inexistant. Any contribution of example source, in particular for
+  something that is not very well documented in the library, is welcomed. The
+  source in question must be well written and the purpose of the example must be
+  stated clearly. It must compile and it is preferable if it is portable. It
+  should not be too large for a reader to understand in a matter of minutes.
+
+- Support of additional languages: python, .Net, etc. Why not start a project
+  based on one of the tagged version of \Spatial and provide support for
+  external languages? Cross-developments between the 2 projects would contribute
+  to make the projects better.
+
+- Performance improvements, bug fixing...
+
+\section contributing_4 How can I become a contributor?
+
+If you have found an issue and have a fix for it, send it via a patch to the
+mailing list spatial-main@lists.sourceforge.net. One-time contributions such as
+these are very helpful. Note that if your fix breaks the current unit tests in
+the library we might request for your help to fix this together before accepting
+the patch.
+
+If you wish to become a permanent contributor to the project, annonce your
+interest on the spatial-main@lists.sourceforge.net. Additionally, you will need
+to register an account with Sourceforge.net. Once your access is granted, you
+can use the following command to clone the repository:
+
+~~~~~~
+$ git clone ssh://your_username@git.code.sf.net/p/spatial/code spatial
+~~~~~~
+
+\section contributing_5 Hey this library is cool!
+
+You're satisfied with what you got? Rate us or even write a review for us:
+http://sourceforge.net/projects/spatial/reviews/
+
+*/
+
+/**
 \page tutorial Quick Starting Guide
 \tableofcontents
 
@@ -301,13 +374,13 @@ represented in a table:
   <tr>
     <td>\point_multimap</td>
     <td>NO</td>
-    <td>NO</td>
+    <td>YES/td>
     <td>YES</td>
   </tr>
   <tr>
     <td>\idle_point_multimap</td>
     <td>NO</td>
-    <td>YES</td>
+    <td>NO</td>
     <td>YES</td>
   </tr>
   <tr>
@@ -325,13 +398,13 @@ represented in a table:
   <tr>
     <td>\box_multimap</td>
     <td>YES</td>
-    <td>NO</td>
+    <td>YES</td>
     <td>YES</td>
   </tr>
   <tr>
     <td>\idle_box_multimap</td>
     <td>YES</td>
-    <td>YES</td>
+    <td>NO</td>
     <td>YES</td>
   </tr>
 </table>
@@ -935,13 +1008,35 @@ $ export CXXFLAGS="-DSPATIAL_BAD_CSTDDEF"
 
 This variable is simply a define and does not require any associated value.
 
-\section compileopts_2 SPATIAL_ENABLE_ASSERT
+\section compileopts_2 SPATIAL_SAFER_ARITHMETICS
+
+When dealing with objects in space that are scattered over the entire range of
+values permissible for their storage types (i.e. very large values for the type
+int, long, long long, etc) it could happen that distance calculations in
+\neighbor_iterator would overflow. If the results returned by this iterator do
+not match your expected resutls, try enabling this define, to make sure this is
+not due to an overflow.
+
+\code
+#define SPATIAL_SAFER_ARITHMETICS
+#include <spatial/neighbor_iterator.hpp>
+\endcode
+
+Alternativerly you can use it in your compiler or environment definition
+\code
+$ export CXXFLAGS="-DSPATIAL_SAFER_ARITHMETICS"
+\endcode
+
+This variable is simply a define and does not require any associated value.
+
+\section compileopts_3 SPATIAL_ENABLE_ASSERT
 
 This is normally used by the library developers only, to catch programming error
 in the library itself. However, it may be useful to end-users too. For exemple,
-if you try iterate past-the-end (making your program loop infinitely) in an
-obscure section of your program; enable this variable to trigger your program to
-exit with `abort()` and be able to analyse the backtrace.
+if your program crashes suddenly or loops infinitely by you can't find where you
+are mistakenly iterating past-the-end or deferencing the past-the-end iterator;
+enable this variable to trigger your program to exit with `abort()` and be able
+to analyse the backtrace.
 
 \code
 #define SPATIAL_ENABLE_ASSERT
@@ -954,14 +1049,5 @@ $ export CXXFLAGS="-DSPATIAL_ENABLE_ASSERT"
 \endcode
 
 This variable is simply a define and does not require any associated value.
-
-\section compileopts_3 SPATIAL_SAFER_ARITHMETICS
-
-When dealing with objects in space that are scattered over the entire range of
-value permissible for their storage types (e.g. very large values for the type
-int, long, long long, etc) it could happen that distance calculations in
-\neighbor_iterator would overflow or underflow. If the results returned by this
-iterators do not match your expected resutls, try enabling this define, to make
-sure this is not due to an overflow or underflow.
 
 */
