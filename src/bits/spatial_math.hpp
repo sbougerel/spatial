@@ -22,38 +22,14 @@
 #ifndef SPATIAL_MATH_HPP
 #define SPATIAL_MATH_HPP
 
-#include <stdexcept>
 #include <limits>
 #include <cmath>
-
+#include <sstream>
+#include "../exception.hpp"
 #include "spatial_check_concept.hpp"
 
 namespace spatial
 {
-  /**
-   *  Thrown to report that an negative distance has been passed as a parameter
-   *  while distances are expected to be positive.
-   *
-   *  \see check_addition(), check_multiplication()
-   */
-  struct negative_distance : std::logic_error
-  {
-    explicit negative_distance(const std::string& arg)
-      : std::logic_error(arg) { }
-  };
-
-  /**
-   *  Thrown to report that an arithmetic error has occured during a
-   *  calculation. It could be an overflow, or another kind of error.
-   *
-   *  \see check_addition(), check_multiplication()
-   */
-  struct arithmetic_error : std::logic_error
-  {
-    explicit arithmetic_error(const std::string& arg)
-      : std::logic_error(arg) { }
-  };
-
   namespace except
   {
     /**
@@ -62,10 +38,14 @@ namespace spatial
      */
     template<typename Tp>
     inline typename enable_if<std::tr1::is_arithmetic<Tp> >::type
-    check_positive_distance(const Tp& x)
+    check_positive_distance(Tp x)
     {
       if (x < Tp()) // Tp() == 0 by convention
-        throw negative_distance("distance is negative");
+        {
+          std::stringstream out;
+          out << x << " is negative";
+          throw invalid_distance(out.str());
+        }
     }
 
     /**
@@ -74,23 +54,39 @@ namespace spatial
      *  element has not led to an error such as an overflow, by forcing the
      *  error itself.
      *
-     *  This check is not the best check for arithmetic errors. There are ways
-     *  to make it faster, but it is intended to be portable and provide users
-     *  with the possibility to quickly check the architmectics during
-     *  computation with little efforts from their part.
+     *  This check is not the best check for arithmetic errors. There are
+     *  probably ways to make it faster, but it is intended to be portable and
+     *  provide users with the possibility to quickly check the architmectics
+     *  during computation with little efforts from their part.
+     *
+     *  The std::abs() function is working fine for floating point types,
+     *  however, for signed integral types (char, wchar_t, short, int, long,
+     *  long long) and their signed version, it returns an incorrect value when
+     *  trying to compute std::abs(std::numeric_limits<signed int>::min()). To
+     *  signal this issue we raise an exception in this case.
      */
+    ///@{
     template <typename Tp>
-    inline typename enable_if<std::tr1::is_arithmetic<Tp>, Tp>::type
-    check_abs(const Tp& x)
+    inline typename enable_if_c
+    <std::numeric_limits<Tp>::is_integer
+    && std::numeric_limits<Tp>::is_signed, Tp>::type
+    check_abs(Tp x)
     {
-      using namespace std;
-      if (x >= Tp()) return x; // Tp() == 0
-      Tp a = abs(x);
-      if (x != -a)
-        throw arithmetic_error
-          ("Absolute of an element resulted in an arithmetic error");
-      return a;
+      if (x == (std::numeric_limits<Tp>::min)())
+        {
+          std::stringstream out;
+          out << "absolute of " << x << " caused overflow";
+          throw arithmetic_error(out.str());
+        }
+      return std::abs(x);
     }
+    template <typename Tp>
+    inline typename enable_if_c
+    <!std::numeric_limits<Tp>::is_integer
+    || !std::numeric_limits<Tp>::is_signed, Tp>::type
+    check_abs(Tp x)
+    { return std::abs(x); }
+    ///@}
 
     /**
      *  This arithmetic check is only used when the macro
@@ -108,13 +104,15 @@ namespace spatial
      */
     template <typename Tp>
     inline typename enable_if<std::tr1::is_arithmetic<Tp>, Tp>::type
-    check_positive_add(const Tp& x, const Tp& y)
+    check_positive_add(Tp x, Tp y)
     {
-      using namespace std;
       // The additional bracket is to avoid conflict with MSVC min/max macros
-      if (((numeric_limits<Tp>::max)() - x) < y)
-        throw arithmetic_error
-          ("Addition of two elements resulted in an arithmetic error");
+      if (((std::numeric_limits<Tp>::max)() - x) < y)
+        {
+          std::stringstream out;
+          out << x << " + " << y << " caused overflow";
+          throw arithmetic_error(out.str());
+        }
       return x + y;
     }
 
@@ -130,23 +128,17 @@ namespace spatial
      */
     template <typename Tp>
     inline typename enable_if<std::tr1::is_arithmetic<Tp>, Tp>::type
-    check_square(const Tp& x)
+    check_square(Tp x)
     {
-      using namespace std;
       Tp zero = Tp(); // get 0
       if (x != zero)
         {
-          if (x > zero)
+          Tp abs = check_abs(x);
+          if (((std::numeric_limits<Tp>::max)() / abs) < abs)
             {
-              if (((numeric_limits<Tp>::max)() / x) > x)
-                throw arithmetic_error
-                  ("Square value of element resulted in an arithmetic error");
-            }
-          else
-            {
-              if (((numeric_limits<Tp>::min)() / x) < x)
-                throw arithmetic_error
-                  ("Square value of element resulted in an arithmetic error");
+              std::stringstream out;
+              out << "square(" << x << ") caused overflow";
+              throw arithmetic_error(out.str());
             }
           return x * x;
         }
@@ -169,15 +161,17 @@ namespace spatial
      */
     template <typename Tp>
     inline typename enable_if<std::tr1::is_arithmetic<Tp>, Tp>::type
-    check_positive_mul(const Tp& x, const Tp& y)
+    check_positive_mul(Tp x, Tp y)
     {
-      using namespace std;
       Tp zero = Tp(); // get 0
       if (x != zero)
         {
-          if (((numeric_limits<Tp>::max)() / x) > y)
-            throw arithmetic_error
-              ("Multiplication of 2 elements resulted in an arithmetic error");
+          if (((std::numeric_limits<Tp>::max)() / x) < y)
+            {
+              std::stringstream out;
+              out << x << " * " << y << " caused overflow";
+              throw arithmetic_error(out.str());
+            }
           return x * y;
         }
       return zero;
@@ -195,8 +189,7 @@ namespace spatial
     euclid_distance_to_plane
     (dimension_type dim, Key origin, Key key, Difference diff)
     {
-      using namespace std;
-      return abs(diff(dim, origin, key)); // floating types abs is always okay!
+      return std::abs(diff(dim, origin, key)); // floating types abs is always okay!
     }
 
     /**
@@ -217,7 +210,6 @@ namespace spatial
     euclid_distance_to_key
     (dimension_type rank, Key origin, Key key, Difference diff)
     {
-      using namespace std;
       // Find a non zero maximum or return 0
       Unit max = euclid_distance_to_plane<Key, Difference, Unit>
         (0, origin, key, diff);
@@ -240,9 +232,9 @@ namespace spatial
         }
       const Unit one = ((Unit) 1.0); // Not sure how to represent it otherwise
 #ifdef SPATIAL_SAFER_ARITHMETICS
-      return except::check_positive_mul(max, sqrt(one + sum));
+      return except::check_positive_mul(max, std::sqrt(one + sum));
 #else
-      return max * sqrt(one + sum);
+      return max * std::sqrt(one + sum);
 #endif
     }
 
@@ -303,8 +295,7 @@ namespace spatial
 #ifdef SPATIAL_SAFER_ARITHMETICS
       return except::check_abs(diff(dim, origin, key));
 #else
-      using namespace std;
-      return abs(diff(dim, origin, key));
+      return std::abs(diff(dim, origin, key));
 #endif
     }
 
@@ -321,7 +312,7 @@ namespace spatial
       for (dimension_type i = 1; i < rank; ++i)
         {
 #ifdef SPATIAL_SAFER_ARITHMETICS
-          sum = ::spatial::except::check_positive_add
+          sum = except::check_positive_add
             (manhattan_distance_to_plane<Key, Difference, Unit>
              (i, origin, key, diff), sum);
 #else

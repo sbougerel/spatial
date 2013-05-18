@@ -39,8 +39,6 @@
 #include <boost/mpl/list.hpp>
 
 #define SPATIAL_ENABLE_ASSERT // detect interal issues that should not occur
-//#define SPATIAL_SAFER_ARITHMETICS // verify that the operations for safer
-                                  // arithmetics are correct.
 
 #include "../../src/point_multiset.hpp"
 #include "../../src/idle_point_multiset.hpp"

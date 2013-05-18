@@ -30,6 +30,15 @@ namespace spatial
   };
 
   /**
+   *  \brief  Thrown to report that an odd rank value was passed as a argument.
+   */
+  struct invalid_odd_rank : std::logic_error
+  {
+    explicit invalid_odd_rank(const std::string& arg)
+      : std::logic_error(arg) { }
+  };
+
+  /**
    *  \brief  Thrown to report that an invalid dimension was passed as an
    *  argument.
    */
@@ -92,6 +101,31 @@ namespace spatial
     explicit invalid_box(const std::string& arg)
       : std::logic_error(arg) { }
   };
+
+  /**
+   *  Thrown to report that an negative distance has been passed as a parameter
+   *  while distances are expected to be positive.
+   *
+   *  \see check_addition(), check_multiplication()
+   */
+  struct invalid_distance : std::logic_error
+  {
+    explicit invalid_distance(const std::string& arg)
+      : std::logic_error(arg) { }
+  };
+
+  /**
+   *  Thrown to report that an arithmetic error has occured during a
+   *  calculation. It could be an overflow, or another kind of error.
+   *
+   *  \see check_addition(), check_multiplication()
+   */
+  struct arithmetic_error : std::logic_error
+  {
+    explicit arithmetic_error(const std::string& arg)
+      : std::logic_error(arg) { }
+  };
+
 } // namespace spatial
 
 #endif // SPATIAL_EXCEPTION_HPP

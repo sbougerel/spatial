@@ -13,6 +13,7 @@
 #ifndef SPATIAL_EXCEPT_HPP
 #define SPATIAL_EXCEPT_HPP
 
+#include <sstream>
 #include "../exception.hpp"
 
 namespace spatial
@@ -24,7 +25,7 @@ namespace spatial
      *  \throws invalid_rank is thrown if checks fails.
      */
     inline void check_rank(dimension_type rank)
-    { if (0 == rank) throw invalid_rank("rank is null"); }
+    { if (0 == rank) throw invalid_rank("0"); }
 
     /**
      *  Checks that \c rank is not null and that it is a multiple of 2.
@@ -32,8 +33,13 @@ namespace spatial
      */
     inline void check_even_rank(dimension_type rank)
     {
-      if (0 == rank) throw invalid_rank("rank is null");
-      if (rank & 1u) throw invalid_rank("rank is not a multiple of 2");
+      if (0 == rank) throw invalid_rank("0");
+      if (rank & 1u)
+        {
+          std::stringstream out;
+          out << rank << " is an odd value";
+          throw invalid_odd_rank(out.str());
+        }
     }
 
     /**
@@ -44,7 +50,11 @@ namespace spatial
     (dimension_type rank, dimension_type dimension)
     {
       if (dimension >= rank)
-        throw invalid_dimension("dimension is out of range");
+        {
+          std::stringstream out;
+          out << dimension << " is out of range";
+          throw invalid_dimension(out.str());
+        }
     }
 
     /**
@@ -57,8 +67,7 @@ namespace spatial
     inline void check_node(Node* node)
     {
       if (node == 0 || node->left == node)
-        throw invalid_node
-          ("node points to null or header node");
+        throw invalid_node("node points to null or header node");
     }
 
     /**
@@ -70,8 +79,7 @@ namespace spatial
     inline void check_node_iterator(Node* node)
     {
       if (node == 0 || node->left == node)
-        throw invalid_iterator
-          ("iterator points to null or header node");
+        throw invalid_iterator("iterator points to null or header node");
     }
 
     /**

@@ -15,6 +15,7 @@
 #ifndef SPATIAL_TEST_EXCEPTIONS_HPP
 #define SPATIAL_TEST_EXCEPTIONS_HPP
 
+#include "../../src/bits/spatial_math.hpp"
 
 BOOST_AUTO_TEST_CASE( text_except_check_dimension )
 {
@@ -108,6 +109,41 @@ BOOST_AUTO_TEST_CASE( text_except_check_range )
   BOOST_CHECK_THROW
     (except::check_box(fix.container, lh_box, hlhl_layout_tag()),
      invalid_box);
+}
+
+BOOST_AUTO_TEST_CASE( text_except_check_math )
+{
+  BOOST_CHECK_NO_THROW(except::check_positive_distance(0));
+  BOOST_CHECK_NO_THROW(except::check_positive_distance(1));
+  BOOST_CHECK_THROW(except::check_positive_distance(-1), invalid_distance);
+  BOOST_CHECK_NO_THROW(except::check_abs(0));
+  BOOST_CHECK_EQUAL(except::check_abs(0), 0);
+  BOOST_CHECK_NO_THROW(except::check_abs(1));
+  BOOST_CHECK_EQUAL(except::check_abs(1), 1);
+  BOOST_CHECK_NO_THROW(except::check_abs(-1));
+  BOOST_CHECK_EQUAL(except::check_abs(-1), 1);
+  BOOST_CHECK_THROW(except::check_abs((std::numeric_limits<int>::min)()),
+                    arithmetic_error);
+  BOOST_CHECK_NO_THROW(except::check_positive_add(0, 0));
+  BOOST_CHECK_EQUAL(except::check_positive_add(0, 0), 0);
+  BOOST_CHECK_NO_THROW(except::check_positive_add(1, 1));
+  BOOST_CHECK_EQUAL(except::check_positive_add(1, 1), 2);
+  BOOST_CHECK_THROW(except::check_positive_add
+                    (std::numeric_limits<int>::max(), 1),
+                    arithmetic_error);
+  BOOST_CHECK_NO_THROW(except::check_square(0));
+  BOOST_CHECK_EQUAL(except::check_square(0), 0);
+  BOOST_CHECK_NO_THROW(except::check_square(-1));
+  BOOST_CHECK_EQUAL(except::check_square(-1), 1);
+  BOOST_CHECK_THROW(except::check_square(std::numeric_limits<int>::max()),
+                    arithmetic_error);
+  BOOST_CHECK_NO_THROW(except::check_positive_mul(0, 0));
+  BOOST_CHECK_EQUAL(except::check_positive_mul(0, 0), 0);
+  BOOST_CHECK_NO_THROW(except::check_positive_mul(1, 1));
+  BOOST_CHECK_EQUAL(except::check_positive_mul(1, 1), 1);
+  BOOST_CHECK_THROW(except::check_positive_mul
+                    (std::numeric_limits<int>::max(), 2),
+                    arithmetic_error);
 }
 
 #endif // SPATIAL_TEST_EXCEPTIONS_HPP
