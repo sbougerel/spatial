@@ -39,19 +39,29 @@ multiset or \c map containers.
 A brief overview of \Spatial's features is provided below:
 
 - Based on \kdtrees which provide good overall performance for only 3
-  `std::ptrdiff_t` and sometimes 1 `std::size_t` of overhead per node
+  `std::ptrdiff_t` (\ref spatial::details::Relaxed_kdtree
+  "and sometimes 1 extra \c std::size_t") of overhead per node
+
 - Sort objects along several dimensions that may be of different types
+
 - static (compile-time) or dynamic (run-time) determination of the number of
   dimensions
+
 - Policy-based rebalancing of the \kdtree, limiting worst-case
   performance, upon insertion and removal
+
 - Insertions in logarithmic amortized time, removals in fractional amortized
   time
+
 - Closely resemble the \STL in design, with compatible containers and iterators
+
 - Iteration over orthogonal range with custom predicates and support for points
   or boxes
+
 - Iteration over neighbors, from nearest to furthest with custom metrics
+
 - Iteration over a single dimension, independantly from others
+
 - and more...
 
 \Spatial provides what is generally needed to get you started on simple spatial
@@ -374,7 +384,7 @@ represented in a table:
   <tr>
     <td>\point_multimap</td>
     <td>NO</td>
-    <td>YES/td>
+    <td>YES</td>
     <td>YES</td>
   </tr>
   <tr>
@@ -438,13 +448,13 @@ containers.
  </tr>
  <tr>
   <th>I need to modify the object's attributes frequently</th>
-  <td>point_map or box_map</td>
-  <td>idle_point_map or idle_box_map</td>
+  <td>\point_map or \box_map</td>
+  <td>\idle_point_map or \idle_box_map</td>
  </tr>
  <tr>
   <th>The object is the key itself, I won't modify it's attribute</th>
-  <td>point_set or box_set</td>
-  <td>idle_point_set or idle_box_set</td>
+  <td>\point_set or \box_set</td>
+  <td>\idle_point_set or \idle_box_set</td>
  </tr>
 </table>
 
@@ -616,7 +626,7 @@ spatial::point_multiset<3, book, compare_book> library;
 With this covered, you can now insert any kind of objects, in any number of
 dimensions, in the containers.
 
-\section tutorial_step2 Step 2: Basic operations on containers
+\section tutorial_step2 Basic operations on containers
 
 Briefly, at the beginning of the last section, \ref tutorial_step1, we showed
 how to insert elements inside the container. Now let's figure out how to
@@ -676,7 +686,7 @@ that are only meaniful for the \Spatial containers.
 One of them is the \ref point_multiset::rebalance() function that, as its name
 implies, balances all elements in the container.
 
-\section tutorial_step3 Step 3: Spatial operations on containers
+\section tutorial_step3 Spatial operations on containers
 
 If you have need for a \Spatial container, you're probably looking to do one of
 these operations:

@@ -1,3 +1,9 @@
+2013-05-18  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * Started to update the documentation, some errors have been found when
+        compiling with SPATIAL_SAFER_ARITHMETICS. They are now fixed on the main
+        branch.
+
 2013-05-12  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * Merged task_3432355 into the main branch. This officially results in

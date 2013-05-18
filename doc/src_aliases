@@ -1,18 +1,18 @@
 # Containers
 #
-ALIASES += "point_multiset=\ref spatial::point_multiset \"point_multiset\""
-ALIASES += "idle_point_multiset=\ref spatial::idle_point_multiset \"idle_point_multiset\""
-ALIASES += "box_multiset=\ref spatial::box_multiset \"box_multiset\""
-ALIASES += "idle_box_multiset=\ref spatial::idle_box_multiset \"idle_box_multiset\""
-ALIASES += "point_multimap=\ref spatial::point_multimap \"point_multimap\""
-ALIASES += "idle_point_multimap=\ref spatial::idle_point_multimap \"idle_point_multimap\""
-ALIASES += "box_multimap=\ref spatial::box_multimap \"box_multimap\""
-ALIASES += "idle_box_multimap=\ref spatial::idle_box_multimap \"idle_box_multimap\""
+ALIASES += "point_multiset=\ref spatial::point_multiset"
+ALIASES += "idle_point_multiset=\ref spatial::idle_point_multiset"
+ALIASES += "box_multiset=\ref spatial::box_multiset"
+ALIASES += "idle_box_multiset=\ref spatial::idle_box_multiset"
+ALIASES += "point_multimap=\ref spatial::point_multimap"
+ALIASES += "idle_point_multimap=\ref spatial::idle_point_multimap"
+ALIASES += "box_multimap=\ref spatial::box_multimap"
+ALIASES += "idle_box_multimap=\ref spatial::idle_box_multimap"
 
 # Region Iterators
 #
-ALIASES += "region_iterator=\ref spatial::region_iterator \"region_iterator\""
-ALIASES += "neighbor_iterator=\ref spatial::neighbor_iterator \"neighbor_iterator\""
-ALIASES += "euclidian=\ref spatial::euclidian \"euclidian\""
-ALIASES += "quadrance=\ref spatial::quadrance \"quadrance\""
-ALIASES += "manhattan=\ref spatial::manhattan \"manhattan\""
+ALIASES += "region_iterator=\ref spatial::region_iterator"
+ALIASES += "neighbor_iterator=\ref spatial::neighbor_iterator"
+ALIASES += "euclidian=\ref spatial::euclidian"
+ALIASES += "quadrance=\ref spatial::quadrance"
+ALIASES += "manhattan=\ref spatial::manhattan"
