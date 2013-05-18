@@ -38,8 +38,8 @@ multiset or \c map containers.
 
 A brief overview of \Spatial's features is provided below:
 
-- Based on \kdtrees which provide good overall performance for only 4
-  pointers of overhead per node
+- Based on \kdtrees which provide good overall performance for only 3
+  `std::ptrdiff_t` and sometimes 1 `std::size_t` of overhead per node
 - Sort objects along several dimensions that may be of different types
 - static (compile-time) or dynamic (run-time) determination of the number of
   dimensions
