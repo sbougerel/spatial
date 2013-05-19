@@ -13,6 +13,15 @@ ALIASES += "idle_box_multimap=\ref spatial::idle_box_multimap"
 #
 ALIASES += "region_iterator=\ref spatial::region_iterator"
 ALIASES += "neighbor_iterator=\ref spatial::neighbor_iterator"
+ALIASES += "mapping_iterator=\ref spatial::mapping_iterator"
+ALIASES += "ordered_iterator=\ref spatial::ordered_iterator"
+ALIASES += "region_iterator_pair=\ref spatial::region_iterator_pair"
+ALIASES += "neighbor_iterator_pair=\ref spatial::neighbor_iterator_pair"
+ALIASES += "mapping_iterator_pair=\ref spatial::mapping_iterator_pair"
+ALIASES += "ordered_iterator_pair=\ref spatial::ordered_iterator_pair"
+
+# Metrics
+#
 ALIASES += "euclidian=\ref spatial::euclidian"
 ALIASES += "quadrance=\ref spatial::quadrance"
 ALIASES += "manhattan=\ref spatial::manhattan"

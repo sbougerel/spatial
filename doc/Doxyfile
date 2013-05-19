@@ -228,22 +228,10 @@ ALIASES                = "libkdtree=<a href=\"http://libkdtree.alioth.debian.org
                          "concept_leg=</td></tr><tr><td>Legend</td><td><tt>" \
                          "concept_req=</td></tr><tr><td>Require</td><td><tt>" \
                          "concept_des=</tt></td><td>" \
-                         "concept_end=</td></tr></table>" \
-                         "O1=\f$O(1)\,\f$" \
-                         "On=\f$O(O(n)\,\f$" \
-                         "Olog=\f$O(O(\log n)\,\f$" \
-                         "Onlog=\f$O(O(n \log n)\,\f$" \
-                         "Odfrac=\f$O(n^{1\,-\,1/d})\,\f$" \
-                         "complex=\xrefitem complex \"Function Complexity\" \"Functions with Explicit Complexity\"" \
-                         "consttime=\complex This function has guarenteed \ref ConstTime \"constant time complexity\": \O1" \
-                         "lintime=\complex This function has average \ref LinearTime \"linear time complexity\": \On" \
-                         "logtime=\complex This function has average \ref LogTime \"logarithmic time complexity\": \Olog" \
-                         "bestlogtime=\complex This function has best-case \ref LogTime \"logarithmic time complexity\": \Olog" \
-                         "dfractime=\complex This function has average \ref DimFracTime \"fractional time complexity\" in dimension \f$d\f$: \Odfrac" \
-                         "worstdfractime=\complex This function has worst-case \ref DimFracTime \"fractional time complexity\" in dimension \f$d\f$: \Odfrac" \
-                         "mono{1}=<tt>\\1</tt>"
+                         "concept_end=</td></tr></table>"
 
 @INCLUDE               = src_aliases
+@INCLUDE               = xref_aliases
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding

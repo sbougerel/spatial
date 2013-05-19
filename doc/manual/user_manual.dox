@@ -1,0 +1,35 @@
+/**
+\page usermanual User Manual
+- \subpage usermanual_struct
+- \subpage usermanual_concept
+- \subpage usermanual_performance
+
+Chapters in this manual should provide you with in-depth knowledge of the
+library and it's usage.
+*/
+
+/**
+\page usermanual_struct Structure of the Library
+- \subpage usermanual_struct_container
+
+The library is composed of 3 different categories of components: containers,
+iterators and functionals.
+*/
+
+/**
+\page usermanual_struct_container Containers
+
+The most important structure of the library.
+*/
+
+/**
+\page usermanual_performance Performance of the Library
+- \subpage constant_complexity
+- \subpage fractional_complexity
+- \subpage quasilinear_complexity
+- \subpage linear_complexity
+- \subpage logarithmic_complexity
+
+Functional performance is noted for all functions when the function does not
+have \ref constant_complexity "constant running time".
+*/

@@ -75,8 +75,9 @@ namespace spatial
      *
      *  \tparam Container The container used in the iterator.
      *  \tparam DistanceType The type used to express distances.
+     *
+     *  @{
      */
-    //@{
     template<typename Container, typename Enable = void>
     struct with_builtin_difference { }; // sink for not using built-in compare
 
@@ -94,8 +95,9 @@ namespace spatial
        *
        *  \tparam Compare The comparator used in the container.
        *  \tparam DistanceType The type used to express distances.
+       *
+       *  @{
        */
-      //@{
       template<typename>
       struct builtin_difference { }; // sink type, never used normally
 
@@ -130,7 +132,9 @@ namespace spatial
         type operator() (const accessor_less<Accessor, Key>& cmp) const
         { return type(cmp.accessor()); }
       };
-      //@}
+      /**
+       *  @}
+       */
 
       typedef typename builtin_difference
       <typename container_traits<Container>::key_compare>::type type;
@@ -144,12 +148,19 @@ namespace spatial
           (container.key_comp());
       }
     };
-    //@}
+    /**
+     *  @}
+     */
 
     /**
-     * Help to resolve whether the type used is a builtin difference or not.
+     *  Help to resolve whether the type used is a builtin difference or not.
+     *
+     *  Inherits `std::tr1::true_type` if it is one of the built-in difference
+     *  functors, `std::tr1::false_type` if it is not. Designed to be used with
+     *  \ref spatial::enable_if.
+     *
+     *  @{
      */
-    //@{
     template <typename>
     struct is_difference_builtin : std::tr1::false_type { };
     template <typename Tp, typename Unit>
@@ -164,35 +175,81 @@ namespace spatial
     template <typename Accessor, typename Tp, typename Unit>
     struct is_difference_builtin<accessor_minus<Accessor, Tp, Unit> >
       : std::tr1::true_type { };
-    //@}
+    /**
+     *  @}
+     */
 
     /**
      *  If \c Diff is a builtin difference type, change the current unit of Diff
      *  to the DistanceType specified in the template parameter. If not, type is
      *  simply equivalent to Diff.
      *
+     *  This type is used to rebind the metric from one unit into another when
+     *  using built-in difference type. This is necessary because when calling
+     *  \ref spatial::euclidian_neighbor_begin(container, target), you do not
+     *  have the possibility of specifying a type for the unit to use (the
+     *  library assumes `double`). However that type can be defined in the
+     *  return type, similarly to:
+     *
+     *  \code
+     *  spatial::euclidian_neighbor_iterator<container_type, float> iter
+     *    = spatial::euclidian_neighbor_begin(container, target);
+     *  \endcode
+     *
+     *  \ref spatial::euclidian_neighbor_begin(container, target) first creates
+     *  a metric of type \ref spatial::euclidian<container_type, key_type,
+     *  double>, then this metric is rebound into a metric of type \ref
+     *  spatial::euclidian<container_type, key_type, float>.
+     *
+     *  \tparam Diff Either a built-in difference functor, or one provided by
+     *  the user.
+     *  \tparam DistanceType The distance to use for `Diff`, if `Diff` is a built-in
+     *  difference functor.
+     *
      *  \sa bracket_minus<Tp, Unit>
      *  \sa paren_minus<Tp, Unit>
      */
-    //@{
     template <typename Diff, typename DistanceType>
     struct rebind_builtin_difference
     { typedef Diff type; }; // sink type
+
+    /**
+     *  Specialization of \ref spatial::rebind_builtin_difference for the
+     *  built-in \ref spatial::bracket_minus functor. Rebinds the functor to
+     *  the requested unit type.
+     */
     template <typename Tp, typename Unit, typename DistanceType>
     struct rebind_builtin_difference<bracket_minus<Tp, Unit>, DistanceType>
     { typedef bracket_minus<Tp, DistanceType> type; };
+
+    /**
+     *  Specialization of \ref spatial::rebind_builtin_difference for the
+     *  built-in \ref spatial::paren_minus functor. Rebinds the functor to
+     *  the requested unit type.
+     */
     template <typename Tp, typename Unit, typename DistanceType>
     struct rebind_builtin_difference<paren_minus<Tp, Unit>, DistanceType>
     { typedef paren_minus<Tp, DistanceType> type; };
+
+    /**
+     *  Specialization of \ref spatial::rebind_builtin_difference for the
+     *  built-in \ref spatial::iterator_minus functor. Rebinds the functor to
+     *  the requested unit type.
+     */
     template <typename Tp, typename Unit, typename DistanceType>
     struct rebind_builtin_difference<iterator_minus<Tp, Unit>, DistanceType>
     { typedef iterator_minus<Tp, DistanceType> type; };
+
+    /**
+     *  Specialization of \ref spatial::rebind_builtin_difference for the
+     *  built-in \ref spatial::accessor_minus functor. Rebinds the functor to
+     *  the requested unit type.
+     */
     template <typename Accessor, typename Tp, typename Unit,
               typename DistanceType>
     struct rebind_builtin_difference<accessor_minus<Accessor, Tp, Unit>,
                                      DistanceType>
     { typedef accessor_minus<Accessor, Tp, DistanceType> type; };
-    //@}
   }
 }
 
