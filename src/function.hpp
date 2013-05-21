@@ -14,7 +14,7 @@
 #define SPATIAL_FUNCTION_HPP
 
 #include <iterator> // std::advance
-#include "bits/spatial.hpp"
+#include "spatial.hpp"
 
 namespace spatial
 {

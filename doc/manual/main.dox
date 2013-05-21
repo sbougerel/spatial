@@ -1,5 +1,5 @@
 /**
-\mainpage Welcome, Noble User
+\mainpage Introduction
 \tableofcontents
 
 - \subpage changelog
@@ -12,8 +12,6 @@
 Man's mind, once stretched by a new idea, never regains its original
 dimensions. <br> -- Oliver Wendell Holmes, Jr.
 \endquote
-
-\section intro Introduction
 
 \Spatial C++ Library is a generic header-only C++ library providing
 multi-dimensional in-memory containers, iterators and functionals. It is a

@@ -15,7 +15,7 @@
 
 #include <iterator> // std::bidirectional_iterator_tag and
                     // std::forward_iterator_tag
-#include "spatial.hpp"
+#include "../spatial.hpp"
 #include "spatial_assert.hpp"
 #include "spatial_mutate.hpp"
 
@@ -40,19 +40,18 @@ namespace spatial
      *  tree. Therefore, to store the left-most node in the tree, an additional
      *  pointer is required in each container.
      *
-     *  This class also holds a model of \ref LinkMode to access the key
+     *  This class also holds a model of \linkmode to access the key
      *  and values of the node, without holding these values. It deliberately
      *  does not hold these values for 2 reasons:
      *
-     *  \ul Not all nodes store their keys and values in the same way.
-     *  \li Some nodes have more information than just key and values.
-     *  \ul
+     *  - Not all nodes store their keys and values in the same way.
+     *  - Some nodes have more information than just key and values.
      *
      *  Additionally, when deferencing a pointer from a node, only the minimum
      *  amount of information is transferred to the variable holding the node,
      *  which happens in several algorithms.
      *
-     *  \tparam Mode A model of \ref LinkMode
+     *  \tparam Mode A model of \linkmode
      */
     template <typename Mode>
     struct Node
@@ -91,7 +90,6 @@ namespace spatial
     inline bool header(const Node<Mode>* x)
     { return (x->left == x); }
 
-    //@{
     /**
      *  \brief  Reach the left most node.
      *
@@ -99,6 +97,7 @@ namespace spatial
      *  \tparam Mode a model of \ref LinkMode.
      *  \param x a pointer to a node.
      */
+    //@{
     template <typename Mode>
     inline Node<Mode>* minimum(Node<Mode>* x)
     {
@@ -114,7 +113,6 @@ namespace spatial
     }
     //@}
 
-    //@{
     /**
      *  @brief  Reach the left most node.
      *
@@ -122,6 +120,7 @@ namespace spatial
      *  \tparam Mode a model of \ref LinkMode.
      *  \param x a pointer to a node.
      */
+    //@{
     template <typename Mode>
     inline Node<Mode>* maximum(Node<Mode>* x)
     {
@@ -137,7 +136,6 @@ namespace spatial
     }
     //@}
 
-    //@{
     /**
      *  @brief  Reach the next node in symetric transversal order.
      *
@@ -145,6 +143,7 @@ namespace spatial
      *  \tparam Mode a model of \ref LinkMode.
      *  \param x a pointer to a node.
      */
+    //@{
     template <typename Mode> Node<Mode>*
     increment(Node<Mode>* x);
 
@@ -154,7 +153,6 @@ namespace spatial
     { return increment(const_cast<Node<Mode>*>(x)); }
     //@}
 
-    //@{
     /**
      *  @brief  Reach the previous node in symetric transversal order.
      *
@@ -163,6 +161,7 @@ namespace spatial
      *  \tparam Mode a model of \ref LinkMode.
      *  \param x a pointer to a node.
      */
+    //@{
     template <typename Mode>
     Node<Mode>*
     decrement(Node<Mode>* x);
@@ -206,8 +205,7 @@ namespace spatial
       return d;
     }
 
-    //@{
-    /*
+    /**
      *  The category of invariants for a \kdtree node: strict or relaxed.
      *
      *  This tag is an indicator for one of the library's most central concepts:
@@ -219,10 +217,10 @@ namespace spatial
      *  function that associate a node to its key, \f$l(N)\f$ and \f$r(N)\f$ the
      *  functions that associate a node to its left node and right node
      *  respectively, then for each tag, the following invarient rules are
-     *  respected: \f[ \begin{Bmatrix} k(N)_d \geq  k(l(N))_d \\ k(N)_d \leq
-     *  k(r(N))_d \end{Bmatrix} \f] for relaxed invarient tags, and: \f[
-     *  \begin{Bmatrix} k(N)_d \gt  k(l(N))_d \\ k(N)_d \leq k(r(N))_d
-     *  \end{Bmatrix} \f] for strict invarient tags.
+     *  respected: \f[ \{ k(N)_d \geq  k(l(N))_d \\ k(N)_d \leq
+     *  k(r(N))_d \} \f] for relaxed invarient tags, and: \f[
+     *  \{ k(N)_d >  k(l(N))_d \\ k(N)_d \leq k(r(N))_d
+     *  \} \f] for strict invarient tags.
      *
      *  In other words, in relaxed invarient \kdtree, values equal to the node's
      *  value can be found both in the left and right sub-trees of the node,
@@ -234,6 +232,7 @@ namespace spatial
      *
      *  \see LibraryInternals
      */
+    //@{
     struct relaxed_invariant_tag { };
     struct strict_invariant_tag { };
     //@}
@@ -268,8 +267,8 @@ namespace spatial
       //! The category of invariant associated with this mode.
       typedef strict_invariant_tag                 invariant_category;
 
-          //! Default constructor
-          Kdtree_link() : value() { }
+      //! Default constructor
+      Kdtree_link() : value() { }
 
       /**
        *  The value of the node, required by the @ref Link concept.
@@ -326,8 +325,8 @@ namespace spatial
       //! The category of invariant with associated with this mode.
       typedef relaxed_invariant_tag               invariant_category;
 
-          //! Default constructor
-          Relaxed_kdtree_link() : weight(), value() { }
+      //! Default constructor
+      Relaxed_kdtree_link() : weight(), value() { }
 
       //! The weight is equal to 1 plus the amount of child nodes below the
       //! current node. It is always equal to 1 at least.
@@ -358,7 +357,6 @@ namespace spatial
       operator= (const Relaxed_kdtree_link<Key, Value>&);
     };
 
-    //@{
     /**
      *  This function converts a pointer on a node into a link for a \ref
      *  Kdtree_link type.
@@ -366,6 +364,7 @@ namespace spatial
      *  \tparam Value the value type for the \ref Kdtree_link.
      *  \param node the node to convert to a link.
      */
+    //@{
     template <typename Key, typename Value>
     inline Kdtree_link<Key, Value>*
     link(Node<Kdtree_link<Key, Value> >* node)
@@ -388,7 +387,6 @@ namespace spatial
     }
     //@}
 
-    //@{
     /**
      *  This function converts a pointer on a node into a key for a \ref
      *  Kdtree_link type.
@@ -398,6 +396,7 @@ namespace spatial
      *  \tparam Value the value type for the \ref Kdtree_link.
      *  \param node the node to convert to a key.
      */
+    //@{
     template <typename Value>
     inline typename Kdtree_link<Value, Value>::key_type&
     key(Node<Kdtree_link<Value, Value> >* node)
@@ -420,7 +419,6 @@ namespace spatial
     }
     //@}
 
-    //@{
     /**
      *  This function converts a pointer on a node into a key for a \ref
      *  Kdtree_link type.
@@ -428,6 +426,7 @@ namespace spatial
      *  \tparam Value the value type for the \ref Kdtree_link.
      *  \param node the node to convert to a key.
      */
+    //@{
     template <typename Key, typename Value>
     inline typename Kdtree_link<Key, Value>::key_type&
     key(Node<Kdtree_link<Key, Value> >* node)
@@ -450,7 +449,6 @@ namespace spatial
     }
     //@}
 
-    //@{
     /**
      *  This function converts a pointer on a node into a value for a \ref
      *  Kdtree_link type.
@@ -458,6 +456,7 @@ namespace spatial
      *  \tparam Value the value type for the \ref Kdtree_link.
      *  \param node the node to convert to a key.
      */
+    //@{
     template <typename Key, typename Value>
     inline typename Kdtree_link<Key, Value>::value_type&
     value(Node<Kdtree_link<Key, Value> >* node)
@@ -480,7 +479,6 @@ namespace spatial
     }
     //@}
 
-    //@{
     /**
      *  This function converts a pointer on a node into a link for a \ref
      *  Relaxed_kdtree_link type.
@@ -488,6 +486,7 @@ namespace spatial
      *  \tparam Value the value type for the \ref Relaxed_kdtree_link.
      *  \param node the node to convert to a key.
      */
+    //@{
     template <typename Key, typename Value>
     inline Relaxed_kdtree_link<Key, Value>*
     link(Node<Relaxed_kdtree_link<Key, Value> >* node)
@@ -510,7 +509,6 @@ namespace spatial
     }
     //@}
 
-    //@{
     /**
      *  This function converts a pointer on a node into a key for a @ref
      *  Relaxed_kdtree_link type.
@@ -519,6 +517,7 @@ namespace spatial
      *  \tparam Value the value type for the \ref Relaxed_kdtree_link.
      *  \param node the node to convert to a key.
      */
+    //@{
     template <typename Value>
     inline typename Relaxed_kdtree_link<Value, Value>::key_type&
     key(Node<Relaxed_kdtree_link<Value, Value> >* node)
@@ -543,7 +542,6 @@ namespace spatial
     }
     //@}
 
-    //@{
     /**
      *  This function converts a pointer on a node into a key for a @ref
      *  Relaxed_kdtree_link type.
@@ -551,6 +549,7 @@ namespace spatial
      *  \tparam Value the value type for the \ref Relaxed_kdtree_link.
      *  \param node the node to convert to a key.
      */
+    //@{
     template <typename Key, typename Value>
     inline typename Relaxed_kdtree_link<Key, Value>::key_type&
     key(Node<Relaxed_kdtree_link<Key, Value> >* node)
@@ -575,7 +574,6 @@ namespace spatial
     }
     //@}
 
-    //@{
     /**
      *  This function converts a pointer on a node into a value for a @ref
      *  Relaxed_kdtree_link type.
@@ -583,6 +581,7 @@ namespace spatial
      *  \tparam Value the value type for the \ref Relaxed_kdtree_link.
      *  \param node the node to convert to a key.
      */
+    //@{
     template <typename Key, typename Value>
     inline typename Relaxed_kdtree_link<Key, Value>::value_type&
     value(Node<Relaxed_kdtree_link<Key, Value> >* node)
@@ -605,7 +604,6 @@ namespace spatial
     }
     //@}
 
-    //@{
     /**
      *  \brief  Swaps nodes position in the tree.
      *
@@ -616,6 +614,7 @@ namespace spatial
      *  \see Kdtree_link
      *  \see Relaxed_kdtree_link
      */
+    //@{
     template <typename Mode>
     void swap_node_aux(Node<Mode>* a, Node<Mode>* b);
 

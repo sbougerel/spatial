@@ -14,7 +14,7 @@
 #define SPATIAL_EXCEPTION_HPP
 
 #include <stdexcept>
-#include "bits/spatial.hpp"
+#include "spatial.hpp"
 #include "bits/spatial_traits.hpp"
 
 namespace spatial

@@ -11,3 +11,11 @@ ALIASES += "lintime=\xrefitem linear_complexity \"Complexity\" \"Functions with 
 ALIASES += "quasilintime=\xrefitem quasilinear_complexity \"Complexity\" \"Functions with quasilinear time complexity\" This function has average \ref quasilinear_complexity \"quasilinear time complexity\": \Onlognk"
 ALIASES += "logtime=\xrefitem logarithmic_complexity \"Complexity\" \"Functions with logarithmic time complexity\" This function has average \ref logarithmic_complexity \"logarithmic time complexity\": \Ologn"
 ALIASES += "fractime=\xrefitem fractional_complexity \"Complexity\" \"Functions with fractional time complexity\" This function has average \ref fractional_complexity \"fractional time complexity\": \Onfd"
+
+# Concepts
+#
+ALIASES += "linkmode=\ref linkmode_concept \"Link Mode\""
+ALIASES += "trivialcompare=\ref trivial_comparison_concept \"Trivial Comparison\""
+ALIASES += "regularcompare=\ref regular_comparison_concept \"Regular Comparison\""
+ALIASES += "regionpredicate=\ref region_predicate_concept \"Regular Comparison\""
+ALIASES += "metric=\ref metric_concept \"Metric\""

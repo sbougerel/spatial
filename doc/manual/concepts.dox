@@ -10,9 +10,9 @@ This chapter provides a definition of all concepts in this book.
 */
 
 /**
-\page linkmode_concept LinkMode
+\page linkmode_concept Link Mode
 
-A link mode defines the relationship between a node and the links that bear
+A Link Mode defines the relationship between a node and the links that bear
 the node. It provides all necessary informations in order to get from the
 node to the link, and to access the key and value information contained in
 the link.
@@ -30,7 +30,7 @@ demand.
 
 The models of LinkMode shall publicly provide the following interface:
 \concept_tab
-\concept_leg T \concept_des A model of LinkMode
+\concept_leg T \concept_des A model of Link Mode
 \concept_req typename T::link_type;
 \concept_des The link type which should be defined as Link.
 \concept_req typename T::key_type;
@@ -77,18 +77,19 @@ a type of linking mode at the same time.
 */
 
 /**
-\page trivial_comparison_concept TrivialComparison
-TrivialComparison concept defines the model for a functor class used to
-perform strict comparison between two values of a spatial container,
-over a single dimension. The functor shall return a boolean value equal
-true if the first value is strictly lower than the second value over that
+\page trivial_comparison_concept Trivial Comparison
+
+This concept defines the model for a functor class used to perform
+strict comparison between two values of a spatial container, over a
+single dimension. The functor shall return a boolean value equal true
+if the first value is strictly lower than the second value over that
 dimension.
 
-The models of TrivialComparison shall publicly provide the following
+The models of trivial comparison shall publicly provide the following
 interface:
 \concept_tab
 \concept_leg T
-\concept_des A model of RegularComparison
+\concept_des A model of Trivial Comparison
 \concept_leg V
 \concept_des The key of a spatial container. E.g. in
 <tt>spatial::pointset<3, point></tt>, \c point is the value type.
@@ -104,8 +105,8 @@ RegularComparison.
 */
 
 /**
-\page regular_comparison_concept RegularComparison
-RegularComparison concept defines the model for a functor used to perform a
+\page regular_comparison_concept Regular Comparison
+Regular comparison concept defines the model for a functor used to perform a
 strict comparison between two values of a spatial container, over different
 dimensions. The functor shall return a boolean value equal true if the first
 value is strictly lower than the second value over that dimension.
@@ -114,7 +115,7 @@ The models of RegularComparison shall also model TrivialComparison and publicly
 provide the following interface:
 \concept_tab
 \concept_leg T
-\concept_des A model of \ref RegularComparison and \ref TrivialComparision.
+\concept_des A model of \ref Regular Comparison and \ref Trivial Comparision.
 \concept_leg V
 \concept_des The key of a spatial container. E.g. in
 <tt>spatial::pointset<3, point></tt>, \c point is the value type.
@@ -139,18 +140,19 @@ functors in boxset, dynamic_boxset, and similar containers.
 */
 
 /**
-\page region_predicate_concept RegionPredicate
+\page region_predicate_concept Region Predicate
+
 This concept defines the requirements for a predicate to be used in region
 queries. Region queries are used for orthogonal searches in sets of point and
 overlaping or enclosing orthogonal searches in set of boxes. The models of
 RegionPredicate are used to match points and boxes in the spatial containers
 against predefined intervals along each dimensions.
 
-The models of RegionPredicate shall publicly provide the following
+The models of region predicate shall publicly provide the following
 interfaces:
 \concept_tab
 \concept_leg P
-\concept_des A model of RegionPredicate
+\concept_des A model of Region Predicate
 \concept_leg V
 \concept_des The key of a spatial container. E.g. in
 \concept_req spatial::relative_order P::operator()(spatial::dimension_type
@@ -162,15 +164,15 @@ interval being considered along \c dim. For a more complete explanation read
 the detailed description.
 \concept_end
 
-The definition of a RegionPredicate functor is generally not required.
+The definition of a region predicate functor is generally not required.
 Before you define such predicate, consider using \ref bounds, \ref
 open_bounds, \ref closed_bounds, \ref overlap_bounds, or \ref
 enclosed_bounds.
 
-A model of RegionPredicate generally represents a multi-dimension continuous
+A model of region predicate generally represents a multi-dimension continuous
 interval which is going to be used for orthogonal search. In order to
 provide a generic model of iteration over an interval, \Spatial provides a
-tribool value spatial::relative_order to represent whether any value of the
+tribool value \ref spatial::relative_order to represent whether any value of the
 container is situated above, below or in the interval, for a given
 dimension.
 
@@ -244,7 +246,7 @@ neighbor iterators. Neighbor iterators implement the nearest neighbor search
 algorithm on the container. Initializing the iterator to its begining makes
 it stop at the nearest neighbor of the given point of origin.
 
-The models of RegionPredicate shall publicly provide the following
+The models of Metric shall publicly provide the following
 interfaces:
 \concept_tab
 \concept_leg P
@@ -321,6 +323,6 @@ container. When writing Metrics for Manifolds or Riemanean spaces,
 you must pay special attention to this rule, since the shortest distance
 between the key and the plane is not always easy to represent mentally.
 
-Spatial provides ready-made models of Metric such as \ref euclidian
-and \ref manhattan.
+Spatial provides ready-made models of Metric such as \euclidian,
+\quadrance and \manhattan.
 */

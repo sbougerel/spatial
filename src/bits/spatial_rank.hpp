@@ -14,7 +14,7 @@
 #ifndef SPATIAL_RANK_HPP
 #define SPATIAL_RANK_HPP
 
-#include "spatial.hpp"
+#include "../spatial.hpp"
 
 namespace spatial
 {
