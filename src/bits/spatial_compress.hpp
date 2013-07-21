@@ -60,10 +60,10 @@ namespace spatial
       Compress(const Base& compressed_base, const Member& member)
         : Base(compressed_base), _member(member) { }
 
-      //@{
       /**
        *  Accessor to the base class.
        */
+      ///@{
       const Base&
       base() const
       { return *static_cast<const Base*>(this); }
@@ -71,12 +71,12 @@ namespace spatial
       Base&
       base()
       { return *static_cast<Base*>(this); }
-      //@}
+      ///@}
 
-      //@{
       /**
        *  Quick accessor to the member.
        */
+      ///@{
       const Member&
       operator()() const
       { return _member; }
@@ -84,7 +84,7 @@ namespace spatial
       Member&
       operator()()
       { return _member; }
-      //@}
+      ///@}
 
     private:
       //! Storage for the member value.
