@@ -7,8 +7,8 @@
 
 /**
  *  \file   spatial.hpp
- *  \brief  Introduces the spatial namespace, defines base types used throughout
- *  the library.
+ *  Introduces the spatial namespace, defines base types used throughout the
+ *  library.
  */
 
 #ifndef SPATIAL_HPP
@@ -22,12 +22,14 @@
  *  The version number will loosely follow the major, minor and release number
  *  concatenated together. However this is not guaranteed, as their may be
  *  several digits in each of major, minor and release numbers.
- *  @{
  */
+///@{
 #define SPATIAL_VERSION_MAJOR 2
 #define SPATIAL_VERSION_MINOR 0
-#define SPATIAL_VERSION_RELEASE 0
-#define SPATIAL_VERSION 2000
+#define SPATIAL_VERSION_RELEASE 1
+//! In general, this number will start by the major, then 2 digits for the
+//! minor, then 2 more for the revision.
+#define SPATIAL_VERSION 20001
 ///@}
 
 // For compatibility with older environments
