@@ -351,7 +351,7 @@ namespace spatial
   {
     template <typename Container>
     inline equal_iterator<Container>&
-    increment_equal(equal_iterator<Container>& iter)
+    increment_equal(equal_iterator<Container>& iter, strict_invariant_tag)
     {
       const typename container_traits<Container>::rank_type rank(iter.rank());
       const typename equal_iterator<Container>::key_compare cmp(iter.key_comp());
@@ -361,13 +361,13 @@ namespace spatial
       do
         {
           if (iter.node->right != 0
-              && cmp(iter.node_dim, iter.model(), const_key(iter.node)))
+              && !cmp(iter.node_dim, iter.model(), const_key(iter.node)))
             {
               iter.node = iter.node->right;
               iter.node_dim = incr_dim(rank, iter.node_dim);
               while (iter.node->left != 0
-                     && pred(iter.node_dim, rank(),
-                             const_key(iter.node)) != below)
+                     && cmp(iter.node_dim, iter.model(),
+                            const_key(iter.node)))
                 {
                   iter.node = iter.node->left;
                   iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -392,6 +392,15 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       return iter;
+    }
+
+    template <typename Container>
+    inline equal_iterator<Container>&
+    increment_equal(equal_iterator<Container>& iter)
+    {
+      return increment_equal
+        (iter, typename container_traits<Container>::mode_type
+         ::invariant_category());
     }
 
     template <typename Container, typename Predicate>
