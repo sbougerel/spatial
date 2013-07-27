@@ -19,6 +19,7 @@
 #include "spatial_traits.hpp"
 #include "spatial_rank.hpp"
 #include "spatial_except.hpp"
+#include "spatial_compress.hpp"
 
 namespace spatial
 {
@@ -349,9 +350,35 @@ namespace spatial
 
   namespace details
   {
+    /**
+     *  Return a boolean indicating whether all of \c x's coordinates are
+     *  equal to \c y's coordinates.
+     *
+     *  The key \c x and \c y are tested across all dimesions using the
+     *  comparator \c cmp provided by a container.
+     *  \tparam Rank A type that is a model of \ref Rank.
+     *  \tparam Key A key type defined in the container as the \c Compare.
+     *  \tparam Compare A \ref TrivialComparator type defined in the same
+     *  container as \c Key.
+     *  \param rank The rank from the container.
+     *  \param cmp The comparator used to find equality between the \c x and \c
+     *  y coordinates.
+     *  \param x The key \c x.
+     *  \param y The key \c y.
+     */
+    template<typename Rank, typename Compare, typename Key>
+    inline bool
+    is_equal(const Rank& rank, const Compare& cmp,
+             const Key& x, const Key& y)
+    {
+      for (dimension_type i = 0; i < rank(); ++i)
+        { if (cmp(i, x, y) || cmp(i, y, x)) { return false; } }
+      return true;
+    }
+
     template <typename Container>
     inline equal_iterator<Container>&
-    increment_equal(equal_iterator<Container>& iter, strict_invariant_tag)
+    increment_equal(equal_iterator<Container>& iter, relaxed_invariant_tag)
     {
       const typename container_traits<Container>::rank_type rank(iter.rank());
       const typename equal_iterator<Container>::key_compare cmp(iter.key_comp());
@@ -366,8 +393,7 @@ namespace spatial
               iter.node = iter.node->right;
               iter.node_dim = incr_dim(rank, iter.node_dim);
               while (iter.node->left != 0
-                     && cmp(iter.node_dim, iter.model(),
-                            const_key(iter.node)))
+                     && !cmp(iter.node_dim, const_key(iter.node), iter.model()))
                 {
                   iter.node = iter.node->left;
                   iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -388,7 +414,51 @@ namespace spatial
             }
         }
       while (!header(iter.node)
-             && match_all(rank, const_key(iter.node), pred) == false);
+             && !is_equal(rank, cmp, iter.model(), const_key(iter.node)));
+      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
+      SPATIAL_ASSERT_CHECK(iter.node != 0);
+      return iter;
+    }
+
+    template <typename Container>
+    inline equal_iterator<Container>&
+    increment_equal(equal_iterator<Container>& iter, strict_invariant_tag)
+    {
+      const typename container_traits<Container>::rank_type rank(iter.rank());
+      const typename equal_iterator<Container>::key_compare cmp(iter.key_comp());
+      SPATIAL_ASSERT_CHECK(!header(iter.node));
+      SPATIAL_ASSERT_CHECK(iter.node != 0);
+      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
+      do
+        {
+          if (iter.node->right != 0
+              && !cmp(iter.node_dim, iter.model(), const_key(iter.node)))
+            {
+              iter.node = iter.node->right;
+              iter.node_dim = incr_dim(rank, iter.node_dim);
+              while (iter.node->left != 0 // optimization below
+                     && cmp(iter.node_dim, iter.model(), const_key(iter.node)))
+                {
+                  iter.node = iter.node->left;
+                  iter.node_dim = incr_dim(rank, iter.node_dim);
+                }
+            }
+          else
+            {
+              typename equal_iterator<Container>::node_ptr p
+                = iter.node->parent;
+              while (!header(p) && iter.node == p->right)
+                {
+                  iter.node = p;
+                  iter.node_dim = decr_dim(rank, iter.node_dim);
+                  p = iter.node->parent;
+                }
+              iter.node = p;
+              iter.node_dim = decr_dim(rank, iter.node_dim);
+            }
+        }
+      while (!header(iter.node)
+             && !is_equal(rank, cmp, iter.model(), const_key(iter.node)));
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       return iter;
@@ -403,12 +473,12 @@ namespace spatial
          ::invariant_category());
     }
 
-    template <typename Container, typename Predicate>
+    template <typename Container>
     inline equal_iterator<Container>&
-    decrement_equal(equal_iterator<Container>& iter)
+    decrement_equal(equal_iterator<Container>& iter, relaxed_invariant_tag)
     {
       const typename container_traits<Container>::rank_type rank(iter.rank());
-      const Predicate pred(iter.predicate());
+      const typename equal_iterator<Container>::key_compare cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       if (header(iter.node))
@@ -420,13 +490,12 @@ namespace spatial
       do
         {
           if (iter.node->left != 0
-              && pred(iter.node_dim, rank(), const_key(iter.node)) != below)
+              && !cmp(iter.node_dim, const_key(iter.node), iter.model()))
             {
               iter.node = iter.node->left;
               iter.node_dim = incr_dim(rank, iter.node_dim);
               while (iter.node->right != 0
-                     && pred(iter.node_dim, rank(),
-                             const_key(iter.node)) != above)
+                     && !cmp(iter.node_dim, iter.model(), const_key(iter.node)))
                 {
                   iter.node = iter.node->right;
                   iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -447,18 +516,76 @@ namespace spatial
             }
         }
       while (!header(iter.node)
-             && match_all(rank, const_key(iter.node), pred) == false);
+             && !is_equal(rank, cmp, iter.model(), const_key(iter.node)));
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       return iter;
     }
 
-    template <typename Container, typename Predicate>
+    template <typename Container>
     inline equal_iterator<Container>&
-    minimum_equal(equal_iterator<Container>& iter)
+    decrement_equal(equal_iterator<Container>& iter, strict_invariant_tag)
     {
       const typename container_traits<Container>::rank_type rank(iter.rank());
-      const Predicate pred(iter.predicate());
+      const typename equal_iterator<Container>::key_compare cmp(iter.key_comp());
+      SPATIAL_ASSERT_CHECK(iter.node != 0);
+      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
+      if (header(iter.node))
+        {
+          iter.node = iter.node->parent;
+          iter.node_dim = 0; // root is always compared on dimension 0
+          return maximum_equal(iter);
+        }
+      do
+        {
+          if (iter.node->left != 0 // optimization below
+              && cmp(iter.node_dim, iter.model(), const_key(iter.node)))
+            {
+              iter.node = iter.node->left;
+              iter.node_dim = incr_dim(rank, iter.node_dim);
+              while (iter.node->right != 0
+                     && !cmp(iter.node_dim, iter.model(), const_key(iter.node)))
+                {
+                  iter.node = iter.node->right;
+                  iter.node_dim = incr_dim(rank, iter.node_dim);
+                }
+            }
+          else
+            {
+              typename equal_iterator<Container>::node_ptr p
+                = iter.node->parent;
+              while (!header(p) && iter.node == p->left)
+                {
+                  iter.node = p;
+                  iter.node_dim = decr_dim(rank, iter.node_dim);
+                  p = iter.node->parent;
+                }
+              iter.node = p;
+              iter.node_dim = decr_dim(rank, iter.node_dim);
+            }
+        }
+      while (!header(iter.node)
+             && !is_equal(rank, cmp, iter.model(), const_key(iter.node)));
+      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
+      SPATIAL_ASSERT_CHECK(iter.node != 0);
+      return iter;
+    }
+
+    template <typename Container>
+    inline equal_iterator<Container>&
+    decrement_equal(equal_iterator<Container>& iter)
+    {
+      return decrement_equal
+        (iter, typename container_traits<Container>::mode_type
+         ::invariant_category());
+    }
+
+    template <typename Container>
+    inline equal_iterator<Container>&
+    minimum_equal(equal_iterator<Container>& iter, relaxed_invariant_tag)
+    {
+      const typename container_traits<Container>::rank_type rank(iter.rank());
+      const typename equal_iterator<Container>::key_compare cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
       SPATIAL_ASSERT_CHECK(iter.node != 0);
@@ -466,13 +593,13 @@ namespace spatial
         = iter.node->parent;
       // Quick positioning according to in-order transversal.
       while(iter.node->right != 0
-            && pred(iter.node_dim, rank(), const_key(iter.node)) == below)
+            && cmp(iter.node_dim, const_key(iter.node), iter.model()))
         {
           iter.node = iter.node->right;
           iter.node_dim = incr_dim(rank, iter.node_dim);
         }
       while(iter.node->left != 0
-            && pred(iter.node_dim, rank(), const_key(iter.node)) != below)
+            && !cmp(iter.node_dim, const_key(iter.node), iter.model()))
         {
           iter.node = iter.node->left;
           iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -480,16 +607,14 @@ namespace spatial
       // Start algorithm.
       do
         {
-          if (match_all(rank, const_key(iter.node), pred) == true) { break; }
+          if (is_equal(rank, cmp, iter.model(), const_key(iter.node))) { break; }
           if (iter.node->right != 0
-              && pred(iter.node_dim, rank(),
-                      const_key(iter.node)) != above)
+              && !cmp(iter.node_dim, iter.model(), const_key(iter.node)))
             {
               iter.node = iter.node->right;
               iter.node_dim = incr_dim(rank, iter.node_dim);
               while (iter.node->left != 0
-                     && pred(iter.node_dim, rank(),
-                             const_key(iter.node)) != below)
+                     && !cmp(iter.node_dim, const_key(iter.node), iter.model()))
                 {
                   iter.node = iter.node->left;
                   iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -515,12 +640,81 @@ namespace spatial
       return iter;
     }
 
-    template <typename Container, typename Predicate>
+    template <typename Container>
     inline equal_iterator<Container>&
-    maximum_equal(equal_iterator<Container>& iter)
+    minimum_equal(equal_iterator<Container>& iter, strict_invariant_tag)
     {
       const typename container_traits<Container>::rank_type rank(iter.rank());
-      const Predicate pred(iter.predicate());
+      const typename equal_iterator<Container>::key_compare cmp(iter.key_comp());
+      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
+      SPATIAL_ASSERT_CHECK(!header(iter.node));
+      SPATIAL_ASSERT_CHECK(iter.node != 0);
+      typename equal_iterator<Container>::node_ptr end
+        = iter.node->parent;
+      // Quick positioning according to in-order transversal.
+      while(iter.node->right != 0
+            && cmp(iter.node_dim, const_key(iter.node), iter.model()))
+        {
+          iter.node = iter.node->right;
+          iter.node_dim = incr_dim(rank, iter.node_dim);
+        }
+      while (iter.node->left != 0 // optimization below
+             && cmp(iter.node_dim, iter.model(), const_key(iter.node)))
+        {
+          iter.node = iter.node->left;
+          iter.node_dim = incr_dim(rank, iter.node_dim);
+        }
+      // Start algorithm.
+      do
+        {
+          if (is_equal(rank, cmp, iter.model(), const_key(iter.node))) { break; }
+          if (iter.node->right != 0
+              && !cmp(iter.node_dim, iter.model(), const_key(iter.node)))
+            {
+              iter.node = iter.node->right;
+              iter.node_dim = incr_dim(rank, iter.node_dim);
+              while (iter.node->left != 0 // optimization below
+                     && cmp(iter.node_dim, iter.model(), const_key(iter.node)))
+                {
+                  iter.node = iter.node->left;
+                  iter.node_dim = incr_dim(rank, iter.node_dim);
+                }
+            }
+          else
+            {
+              typename equal_iterator<Container>::node_ptr p
+                = iter.node->parent;
+              while (p != end && iter.node == p->right)
+                {
+                  iter.node = p;
+                  iter.node_dim = decr_dim(rank, iter.node_dim);
+                  p = iter.node->parent;
+                }
+              iter.node = p;
+              iter.node_dim = decr_dim(rank, iter.node_dim);
+            }
+        }
+      while (iter.node != end);
+      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
+      SPATIAL_ASSERT_CHECK(iter.node != 0);
+      return iter;
+    }
+
+    template <typename Container>
+    inline equal_iterator<Container>&
+    minimum_equal(equal_iterator<Container>& iter)
+    {
+      return minimum_equal
+        (iter, typename container_traits<Container>::mode_type
+         ::invariant_category());
+    }
+
+    template <typename Container>
+    inline equal_iterator<Container>&
+    maximum_equal(equal_iterator<Container>& iter, relaxed_invariant_tag)
+    {
+      const typename container_traits<Container>::rank_type rank(iter.rank());
+      const typename equal_iterator<Container>::key_compare cmp(iter.key_comp());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
@@ -528,13 +722,13 @@ namespace spatial
         = iter.node->parent;
       // Quick positioning according to in-order transversal.
       while (iter.node->left != 0
-             && pred(iter.node_dim, rank(), const_key(iter.node)) == above)
+             && cmp(iter.node_dim, iter.model(), const_key(iter.node)))
         {
           iter.node = iter.node->left;
           iter.node_dim = incr_dim(rank, iter.node_dim);
         }
       while (iter.node->right != 0
-             && pred(iter.node_dim, rank(), const_key(iter.node)) != above)
+             && !cmp(iter.node_dim, iter.model(), const_key(iter.node)))
         {
           iter.node = iter.node->right;
           iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -542,15 +736,14 @@ namespace spatial
       // Start algorithm.
       do
         {
-          if (match_all(rank, key(iter.node), pred) == true) { break; }
+          if (is_equal(rank, cmp, iter.model(), const_key(iter.node))) { break; }
           if (iter.node->left != 0
-              && pred(iter.node_dim, rank(), const_key(iter.node)) != below)
+              && !cmp(iter.node_dim, const_key(iter.node), iter.model()))
             {
               iter.node = iter.node->left;
               iter.node_dim = incr_dim(rank, iter.node_dim);
               while (iter.node->right != 0
-                     && pred(iter.node_dim, rank(),
-                             const_key(iter.node)) != above)
+                     && !cmp(iter.node_dim, iter.model(), const_key(iter.node)))
                 {
                   iter.node = iter.node->right;
                   iter.node_dim = incr_dim(rank, iter.node_dim);
@@ -574,6 +767,75 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       return iter;
+    }
+
+    template <typename Container>
+    inline equal_iterator<Container>&
+    maximum_equal(equal_iterator<Container>& iter, strict_invariant_tag)
+    {
+      const typename container_traits<Container>::rank_type rank(iter.rank());
+      const typename equal_iterator<Container>::key_compare cmp(iter.key_comp());
+      SPATIAL_ASSERT_CHECK(iter.node != 0);
+      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
+      SPATIAL_ASSERT_CHECK(!header(iter.node));
+      typename equal_iterator<Container>::node_ptr end
+        = iter.node->parent;
+      // Quick positioning according to in-order transversal.
+      while (iter.node->left != 0
+             && cmp(iter.node_dim, iter.model(), const_key(iter.node)))
+        {
+          iter.node = iter.node->left;
+          iter.node_dim = incr_dim(rank, iter.node_dim);
+        }
+      while (iter.node->right != 0
+             && !cmp(iter.node_dim, iter.model(), const_key(iter.node)))
+        {
+          iter.node = iter.node->right;
+          iter.node_dim = incr_dim(rank, iter.node_dim);
+        }
+      // Start algorithm.
+      do
+        {
+          if (is_equal(rank, cmp, iter.model(), const_key(iter.node))) { break; }
+          if (iter.node->left != 0 // optimization below
+              && cmp(iter.node_dim, iter.model(), const_key(iter.node)))
+            {
+              iter.node = iter.node->left;
+              iter.node_dim = incr_dim(rank, iter.node_dim);
+              while (iter.node->right != 0
+                     && !cmp(iter.node_dim, iter.model(), const_key(iter.node)))
+                {
+                  iter.node = iter.node->right;
+                  iter.node_dim = incr_dim(rank, iter.node_dim);
+                }
+            }
+          else
+            {
+              typename equal_iterator<Container>::node_ptr p
+                = iter.node->parent;
+              while (p != end && iter.node == p->left)
+                {
+                  iter.node = p;
+                  iter.node_dim = decr_dim(rank, iter.node_dim);
+                  p = iter.node->parent;
+                }
+              iter.node = p;
+              iter.node_dim = decr_dim(rank, iter.node_dim);
+            }
+        }
+      while (iter.node != end);
+      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
+      SPATIAL_ASSERT_CHECK(iter.node != 0);
+      return iter;
+    }
+
+    template <typename Container>
+    inline equal_iterator<Container>&
+    maximum_equal(equal_iterator<Container>& iter)
+    {
+      return maximum_equal
+        (iter, typename container_traits<Container>::mode_type
+         ::invariant_category());
     }
 
   } // namespace details

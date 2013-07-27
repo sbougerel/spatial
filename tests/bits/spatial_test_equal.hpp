@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_equal_basics, Tp, every_quad)
   BOOST_CHECK(i == a);
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_deference, Tp, double6_maps )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_deference, Tp, double6_maps )
 {
   Tp fix(1, same()); // insert 1 key containing (1.0, 1.0, 1.0...)
   double6 model; model.assign(1.0);
@@ -50,21 +50,20 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_deference, Tp, double6_maps )
   BOOST_CHECK(b.dimension() == fix.container.dimension());
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_minimum, Tp, double6_sets )
 {
   {
     Tp fix(100, randomize(-1, 1));
-    // Prove that you can find the min value with N nodes, down to 1 nodes
-    double6 l; l.assign(-0.8); // leave a few out...
-    double6 h; h.assign(0.8);
     while (!fix.container.empty())
       {
+        // Randomly pick one of the values in the tree and attempt to find it.
+        typename Tp::container_type::iterator pick = fix.container.begin();
+        std::advance(pick, std::rand() % fix.container.size());
         equal_iterator<typename Tp::container_type>
-          it = equal_begin(fix.container, l, h);
-        if (it == equal_end(fix.container, l, h)) break;
-        // Make sure it is one within [-0.8, 0.8)
-        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
-                                       make_bounds(fix.container, l, h)));
+          it = equal_begin(fix.container, *pick);
+        // It should always find it!
+        BOOST_CHECK(it != equal_end(fix.container, *pick));
+        BOOST_CHECK(*it == *pick);
         fix.container.erase(it);
       }
   }
@@ -79,55 +78,47 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
         fix.container.erase(it);
       }
   }
-  { // test at the limit: a tree with 0 element
-    Tp fix(0);
-    double6 k;
-    equal_iterator<typename Tp::container_type>
-      it = equal_begin(fix.container, k, k);
-    BOOST_CHECK(it == equal_end(fix.container, k, k));
-  }
   { // test at the limit: a tree with 1 element
     Tp fix(1, same());
     double6 k; k.assign(1.0);
     equal_iterator<typename Tp::container_type>
-      it = equal_begin(fix.container, k, k);
-    BOOST_CHECK(it != equal_end(fix.container, k, k));
+      it = equal_begin(fix.container, k);
+    BOOST_CHECK(it != equal_end(fix.container, k));
   }
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
     Tp fix(100, increase());
-    // Prove that you can find the min value with N nodes, down to 1 nodes
-    double6 l; l.assign(20.0); // leave a few out...
-    double6 h; h.assign(80.0);
     while (!fix.container.empty())
       {
+        // Randomly pick one of the values in the tree and attempt to find it.
+        typename Tp::container_type::iterator pick = fix.container.begin();
+        std::advance(pick, std::rand() % fix.container.size());
         equal_iterator<typename Tp::container_type>
-          it = equal_begin(fix.container, l, h);
-        if (it == equal_end(fix.container, l, h)) break;
-        // Make sure it is one within (10, 90)
-        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
-                                       make_open_bounds(fix.container, l, h)));
+          it = equal_begin(fix.container, *pick);
+        // It should always find it!
+        BOOST_CHECK(it != equal_end(fix.container, *pick));
+        BOOST_CHECK(*it == *pick);
         fix.container.erase(it);
       }
   }
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
     Tp fix(100, decrease());
-    // Prove that you can find the min value with N nodes, down to 1 nodes
-    double6 l; l.assign(20.0); // leave a few out...
-    double6 h; h.assign(80.0);
     while (!fix.container.empty())
       {
+        // Randomly pick one of the values in the tree and attempt to find it.
+        typename Tp::container_type::iterator pick = fix.container.begin();
+        std::advance(pick, std::rand() % fix.container.size());
         equal_iterator<typename Tp::container_type>
-          it = equal_begin(fix.container, l, h);
-        if (it == equal_end(fix.container, l, h)) break;
-        // Make sure it is one within (10, 90)
-        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
-                                       make_closed_bounds(fix.container, l, h)));
+          it = equal_begin(fix.container, *pick);
+        // It should always find it!
+        BOOST_CHECK(it != equal_end(fix.container, *pick));
+        BOOST_CHECK(*it == *pick);
         fix.container.erase(it);
       }
   }
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_maximum, Tp, double6_sets )
+/*
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_maximum, Tp, double6_sets )
 {
   {
     Tp fix(100, randomize(-1, 1));
@@ -215,7 +206,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_maximum, Tp, double6_sets )
   }
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_increment, Tp, double6_sets )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_increment, Tp, double6_sets )
 {
   {
     Tp fix(100, boximize(-1, 1));
@@ -323,7 +314,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_increment, Tp, double6_sets )
   }
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_decrement, Tp, double6_sets )
 {
   {
     Tp fix(100, boximize(-1, 1));
@@ -439,5 +430,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
       }
   }
 }
+*/
 
-#endif // SPATIAL_TEST_REGION_HPP
+#endif // SPATIAL_TEST_EQUAL_HPP

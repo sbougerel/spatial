@@ -6,15 +6,15 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_kdtree.hpp
- *  @brief  Kdtree class is defined in this file and its implementation is in
+ *  \file   spatial_kdtree.hpp
+ *  \brief  Kdtree class is defined in this file and its implementation is in
  *  the corresponding *.tpp file.
  *
  *  The Kdtree class defines all the methods and algorithms to store, delete and
  *  iterate over nodes in a Kdtree. This class is the bare definition of the
  *  kdtree and must be rebalanced by the user after nodes have been inserted.
  *
- *  @see Kdtree
+ *  \see Kdtree
  */
 
 #ifndef SPATIAL_KDTREE_HPP
@@ -25,7 +25,7 @@
 
 #include "spatial_ordered.hpp"
 #include "spatial_mapping.hpp"
-#include "spatial_region.hpp"
+#include "spatial_equal.hpp"
 #include "spatial_compress.hpp"
 #include "spatial_assert.hpp"
 #include "spatial_except.hpp"

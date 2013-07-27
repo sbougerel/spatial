@@ -19,14 +19,6 @@
 #ifndef SPATIAL_TEST_FIXTURES_HPP
 #define SPATIAL_TEST_FIXTURES_HPP
 
-//#include <cstdlib> // rand(), srand()
-//#include <memory> // std::allocator
-//#include <utility> // std::pair
-//#include <algorithm> // std::find() and others
-//#include <vector>
-//#include <limits>
-//#include <iomanip>
-
 #ifdef __GLIBCXX__
 #  include <tr1/array>
 #else
@@ -63,10 +55,10 @@ inline
 double
 drand()
 {
-  double out = static_cast<double>(rand())/static_cast<double>(RAND_MAX);
-  out = (static_cast<double>(rand()) + out)/static_cast<double>(RAND_MAX);
-  out = (static_cast<double>(rand()) + out)/static_cast<double>(RAND_MAX);
-  out = (static_cast<double>(rand()) + out)/static_cast<double>(RAND_MAX);
+  double out = static_cast<double>(std::rand())/static_cast<double>(RAND_MAX);
+  out = (static_cast<double>(std::rand()) + out)/static_cast<double>(RAND_MAX);
+  out = (static_cast<double>(std::rand()) + out)/static_cast<double>(RAND_MAX);
+  out = (static_cast<double>(std::rand()) + out)/static_cast<double>(RAND_MAX);
   return out;
 }
 
@@ -77,8 +69,8 @@ inline
 float
 frand()
 {
-  float out = static_cast<float>(rand())/static_cast<float>(RAND_MAX);
-  out = (static_cast<float>(rand()) + out)/static_cast<float>(RAND_MAX);
+  float out = static_cast<float>(std::rand())/static_cast<float>(RAND_MAX);
+  out = (static_cast<float>(std::rand()) + out)/static_cast<float>(RAND_MAX);
   return out;
 }
 
@@ -187,16 +179,16 @@ struct randomize
   randomize(int l = 0, int h = 1) : lower(l), higher(h) { }
   int2& operator()(int2& p, int, int) const
   {
-    p[0] = rand() % (higher - lower) + lower;
-    p[1] = rand() % (higher - lower) + lower;
+    p[0] = std::rand() % (higher - lower) + lower;
+    p[1] = std::rand() % (higher - lower) + lower;
     return p;
   }
   quad& operator()(quad& p, int, int) const
   {
-    p.x = rand() % (higher - lower) + lower;
-    p.y = rand() % (higher - lower) + lower;
-    p.z = rand() % (higher - lower) + lower;
-    p.w = rand() % (higher - lower) + lower;
+    p.x = std::rand() % (higher - lower) + lower;
+    p.y = std::rand() % (higher - lower) + lower;
+    p.z = std::rand() % (higher - lower) + lower;
+    p.w = std::rand() % (higher - lower) + lower;
     return p;
   }
   double6& operator()(double6& d, int, int) const
@@ -230,18 +222,18 @@ struct boximize
     : lower(l), higher(h), layout(v) { }
   int2& operator()(int2& p, int, int) const
   {
-    p[0] = rand() % (higher - lower) + lower;
-    p[1] = rand() % (higher - lower) + lower;
+    p[0] = std::rand() % (higher - lower) + lower;
+    p[1] = std::rand() % (higher - lower) + lower;
     if (llhh || lhlh) order(p[0], p[1]);
     else order(p[1], p[0]);
     return p;
   }
   quad& operator()(quad& p, int, int) const
   {
-    p.x = rand() % (higher - lower) + lower;
-    p.y = rand() % (higher - lower) + lower;
-    p.z = rand() % (higher - lower) + lower;
-    p.w = rand() % (higher - lower) + lower;
+    p.x = std::rand() % (higher - lower) + lower;
+    p.y = std::rand() % (higher - lower) + lower;
+    p.z = std::rand() % (higher - lower) + lower;
+    p.w = std::rand() % (higher - lower) + lower;
     switch(layout)
     {
     case llhh: order(p.x, p.z); order(p.y, p.w); break;

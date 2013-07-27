@@ -19,19 +19,15 @@
  *  framework as a static library.
  */
 
-#include <cstdlib> // rand(), srand()
+#include <cstdlib> // std::rand(), std::srand()
 #include <ctime>
 
 #define BOOST_TEST_MAIN
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-//#include "bits/spatial_test_kdtree.hpp"
-//#include "bits/spatial_test_relaxed_kdtree.hpp"
-//#include "bits/spatial_test_containers.hpp"
-
 BOOST_AUTO_TEST_CASE(install_srand)
 {
   // Not sure where else to put this...
-  srand((unsigned int)time(NULL));
+  std::srand((unsigned int)std::time(NULL));
 }

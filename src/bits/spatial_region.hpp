@@ -414,6 +414,29 @@ namespace spatial
 
   namespace details
   {
+    /**
+     *  Return a boolean indicating whether all of \c key's coordinates are
+     *  within range or not.
+     *
+     *  The key is simply tested across all dimesions over the predicate.
+     *  \tparam Rank A type that is a model of \ref Rank.
+     *  \tparam Key The key type that is used in the comparison.
+     *  \tparam Predicate A type that is a model of \ref RangePredicate.
+     *  \param rank The object of type \c Rank.
+     *  \param key The key whose coordinates are verified to be within the
+     *  range.
+     *  \param predicate The \ref RangePredicate object used to represent the
+     *  range.
+     */
+    template <typename Rank, typename Key, typename Predicate>
+    inline bool
+    match_all(const Rank& rank, const Key& key, const Predicate& predicate)
+    {
+      for (dimension_type i = 0; i < rank(); ++i)
+        { if (predicate(i, rank(), key) != matching) { return false; } }
+      return true;
+    }
+
     template <typename Container, typename Predicate>
     inline region_iterator<Container, Predicate>&
     increment_region(region_iterator<Container, Predicate>& iter)

@@ -6,10 +6,10 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_test_region.hpp
- *  @brief  All tests for the elements defined in spatial_region.hpp are
+ *  \file   spatial_test_region.hpp
+ *  \brief  All tests for the elements defined in region_iterator.hpp are
  *  located in this file.
- *  @see spatial_region.hpp
+ *  \see region_iterator.hpp
  */
 
 #ifndef SPATIAL_TEST_REGION_HPP
@@ -17,27 +17,30 @@
 
 #include "../../src/region_iterator.hpp"
 
-BOOST_AUTO_TEST_CASE( test_equal_bounds )
+BOOST_AUTO_TEST_CASE( test_match_all )
 {
-  int2 t(1, 1);
-  int2 x(0, 1);
-  int2 y(1, 0);
-  int2 z(0, 2);
-  int2 w(2, 0);
-  pointset_fix<int2> fix(0);
-  // Checking this compiles
-  equal_bounds<int2, bracket_less<int2> > bounds
-    = make_equal_bounds(fix.container, t);
-  BOOST_CHECK(bounds(0, 2, t) == matching);
-  BOOST_CHECK(bounds(1, 2, t) == matching);
-  BOOST_CHECK(bounds(0, 2, x) == below);
-  BOOST_CHECK(bounds(1, 2, x) == matching);
-  BOOST_CHECK(bounds(0, 2, y) == matching);
-  BOOST_CHECK(bounds(1, 2, y) == below);
-  BOOST_CHECK(bounds(0, 2, z) == below);
-  BOOST_CHECK(bounds(1, 2, z) == above);
-  BOOST_CHECK(bounds(0, 2, w) == above);
-  BOOST_CHECK(bounds(1, 2, w) == below);
+  pointset_fix<int2> fix;
+  int2 x   (0, 0);
+  int2 y   (1, 1);
+  int2 z   (1, 0);
+  int2 w   (0, 1);
+  int2 _x  (0, -1);
+  int2 y_  (2, 0);
+  int2 _w_ (2, 2);
+  BOOST_CHECK(details::match_all
+              (fix.container.rank(), x, closed_test_range()));
+  BOOST_CHECK(details::match_all
+              (fix.container.rank(), y, closed_test_range()));
+  BOOST_CHECK(details::match_all
+              (fix.container.rank(), z, closed_test_range()));
+  BOOST_CHECK(details::match_all
+              (fix.container.rank(), w, closed_test_range()));
+  BOOST_CHECK(!details::match_all
+              (fix.container.rank(), _x, closed_test_range()));
+  BOOST_CHECK(!details::match_all
+              (fix.container.rank(), y_, closed_test_range()));
+  BOOST_CHECK(!details::match_all
+              (fix.container.rank(), _w_, closed_test_range()));
 }
 
 BOOST_AUTO_TEST_CASE( test_open_bounds )
@@ -311,18 +314,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_basics, Tp, every_quad )
     BOOST_CHECK(i == a);
   }
   {
-    equal_iterator<typename Tp::container_type> a, b(a);
-    equal_iterator<const typename Tp::container_type> c;
-    c = a;
-    equal_iterator_pair<typename Tp::container_type> p, q(a, b);
-    equal_iterator_pair<const typename Tp::container_type>
-      r, s(c, c), t(p);
-    BOOST_CHECK(a == b);
-    BOOST_CHECK(!(a != c));
-    typename Tp::container_type::iterator i = a;
-    BOOST_CHECK(i == a);
-  }
-  {
     open_region_iterator<typename Tp::container_type> a, b(a);
     open_region_iterator<const typename Tp::container_type> c;
     c = a;
@@ -414,18 +405,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
     double6 k; k.assign(100.0); // leave none out...
     while (!fix.container.empty())
       {
-        equal_iterator<typename Tp::container_type>
-          it = equal_begin(fix.container, k);
-        BOOST_CHECK(it != equal_end(fix.container, k));
+        closed_region_iterator<typename Tp::container_type>
+          it = closed_region_begin(fix.container, k, k);
+        BOOST_CHECK(it != closed_region_end(fix.container, k, k));
         fix.container.erase(it);
       }
-  }
-  { // test at the limit: a tree with 0 element
-    Tp fix(0);
-    double6 k;
-    closed_region_iterator<typename Tp::container_type>
-      it = closed_region_begin(fix.container, k, k);
-    BOOST_CHECK(it == closed_region_end(fix.container, k, k));
   }
   { // test at the limit: a tree with 1 element
     Tp fix(1, same());
@@ -495,14 +479,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_maximum, Tp, double6_sets )
     double6 k; k.assign(100.0); // leave none out...
     while (!fix.container.empty())
       {
-        equal_iterator<typename Tp::container_type>
-          it = equal_end(fix.container, k);
-        BOOST_CHECK(equal_begin(fix.container, k) != it);
+        closed_region_iterator<typename Tp::container_type>
+          it = closed_region_end(fix.container, k, k);
+        BOOST_CHECK(closed_region_begin(fix.container, k, k) != it);
         --it;
-        BOOST_CHECK(it != equal_end(fix.container, k));
-        equal_iterator<typename Tp::container_type> tmp = it;
+        BOOST_CHECK(it != closed_region_end(fix.container, k, k));
+        closed_region_iterator<typename Tp::container_type> tmp = it;
         ++tmp;
-        BOOST_CHECK(tmp == equal_end(fix.container, k));
+        BOOST_CHECK(tmp == closed_region_end(fix.container, k, k));
         fix.container.erase(it);
       }
   }

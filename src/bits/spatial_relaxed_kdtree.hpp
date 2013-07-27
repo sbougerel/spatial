@@ -1,8 +1,8 @@
 // -*- C++ -*-
 
 /**
- *  @file   spatial_relaxed_kdtree.hpp
- *  @brief  Defines a \kdtree with a relaxed invariant. On a given dimension, if
+ *  \file   spatial_relaxed_kdtree.hpp
+ *  \brief  Defines a \kdtree with a relaxed invariant. On a given dimension, if
  *  coordinates between a root node and a child node are equal, the child node
  *  may be placed either on the left or the right of the tree. The relaxed
  *  \kdtree is a self-balancing tree.
@@ -23,7 +23,7 @@
  *  amortized insertion and deletion times on the tree, and allow for multiple
  *  balancing policies to be defined.
  *
- *  @see Relaxed_kdtree
+ *  \see Relaxed_kdtree
  */
 
 #ifndef SPATIAL_RELAXED_KDTREE_HPP
@@ -35,7 +35,7 @@
 
 #include "spatial_ordered.hpp"
 #include "spatial_mapping.hpp"
-#include "spatial_region.hpp"
+#include "spatial_equal.hpp"
 #include "spatial_compress.hpp"
 #include "spatial_value_compare.hpp"
 #include "spatial_template_member_swap.hpp"
@@ -485,10 +485,10 @@ namespace spatial
        *
        *  Notice that this function returns an iterator only to one of the
        *  elements with that key. To obtain the entire range of elements with a
-       *  given value, you can use @ref equal_range().
+       *  given value, you can use \ref spatial::equal_range().
        *
-       *  @param key The value to be searched for.
-       *  @return An iterator to that value or an iterator to the element past
+       *  \param key The value search.
+       *  \return An iterator to that value or an iterator to the element past
        *  the end of the container.
        */
       iterator

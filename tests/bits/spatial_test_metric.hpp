@@ -164,14 +164,14 @@ BOOST_AUTO_TEST_CASE( test_euclidian_square_distance_to_key )
     for (int i=0; i<100; ++i)
       {
         quad p, q;
-        p.x = rand() % 80 - 40;
-        p.y = rand() % 80 - 40;
-        p.z = rand() % 80 - 40;
-        p.w = rand() % 80 - 40;
-        q.x = rand() % 80 - 40;
-        q.y = rand() % 80 - 40;
-        q.z = rand() % 80 - 40;
-        q.w = rand() % 80 - 40;
+        p.x = std::rand() % 80 - 40;
+        p.y = std::rand() % 80 - 40;
+        p.z = std::rand() % 80 - 40;
+        p.w = std::rand() % 80 - 40;
+        q.x = std::rand() % 80 - 40;
+        q.y = std::rand() % 80 - 40;
+        q.z = std::rand() % 80 - 40;
+        q.w = std::rand() % 80 - 40;
         int dist = math::square_euclid_distance_to_key
           <quad, accessor_minus<quad_access, quad, int>, int>
           (4, p, q, accessor_minus<quad_access, quad, int>());
@@ -207,14 +207,14 @@ BOOST_AUTO_TEST_CASE( test_manhattan_distance_to_key )
     for (int i=0; i<100; ++i)
       {
         quad p, q;
-        p.x = rand() % 80 - 40;
-        p.y = rand() % 80 - 40;
-        p.z = rand() % 80 - 40;
-        p.w = rand() % 80 - 40;
-        q.x = rand() % 80 - 40;
-        q.y = rand() % 80 - 40;
-        q.z = rand() % 80 - 40;
-        q.w = rand() % 80 - 40;
+        p.x = std::rand() % 80 - 40;
+        p.y = std::rand() % 80 - 40;
+        p.z = std::rand() % 80 - 40;
+        p.w = std::rand() % 80 - 40;
+        q.x = std::rand() % 80 - 40;
+        q.y = std::rand() % 80 - 40;
+        q.z = std::rand() % 80 - 40;
+        q.w = std::rand() % 80 - 40;
         int dist = math::manhattan_distance_to_key
           <quad, accessor_minus<quad_access, quad, int>, int>
           (4, p, q, accessor_minus<quad_access, quad, int>());

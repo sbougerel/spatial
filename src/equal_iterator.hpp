@@ -15,66 +15,108 @@
 
 // One day equal_iterator will be a specialized iterator and will be different
 // from the region_iterator.
-#include "spatial_equal.hpp"
+#include "bits/spatial_equal.hpp"
 
-  template<typename Ct>
+namespace spatial
+{
+  /**
+   *  This structure defines a pair of mutable equal iterator.
+   *
+   *  \tparam Ct The container to which these iterator relate to.
+   *  \see equal_iterator
+   */
+  template <typename Container>
   struct equal_iterator_pair
-    : region_iterator_pair
-  <Ct, equal_bounds<typename container_traits<Ct>::key_type,
-                    typename container_traits<Ct>::key_compare> >
+    : std::pair<equal_iterator<Container>,
+                equal_iterator<Container> >
   {
+    /**
+     *  A pair of iterators that represents a range (that is: a range of
+     *  elements to iterate, and not an orthogonal range).
+     */
+    typedef std::pair<equal_iterator<Container>,
+                      equal_iterator<Container> > Base;
+
+    //! Empty constructor.
     equal_iterator_pair() { }
-    equal_iterator_pair
-    (const region_iterator
-     <Ct, equal_bounds<typename container_traits<Ct>::key_type,
-     typename container_traits<Ct>::key_compare> >& a,
-     const region_iterator
-     <Ct, equal_bounds<typename container_traits<Ct>::key_type,
-     typename container_traits<Ct>::key_compare> >& b)
-      : region_iterator_pair
-        <Ct, equal_bounds<typename container_traits<Ct>::key_type,
-                          typename container_traits<Ct>::key_compare> >
-        (a, b) { }
-  };
-  template<typename Ct>
-  struct equal_iterator_pair<const Ct>
-    : region_iterator_pair
-  <const Ct, equal_bounds<typename container_traits<Ct>::key_type,
-                          typename container_traits<Ct>::key_compare> >
-  {
-    equal_iterator_pair() { }
-    equal_iterator_pair
-    (const region_iterator
-     <const Ct, equal_bounds<typename container_traits<Ct>::key_type,
-     typename container_traits<Ct>::key_compare> >& a,
-     const region_iterator
-     <const Ct, equal_bounds<typename container_traits<Ct>::key_type,
-     typename container_traits<Ct>::key_compare> >& b)
-      : region_iterator_pair
-        <const Ct, equal_bounds<typename container_traits<Ct>::key_type,
-                                typename container_traits<Ct>::key_compare> >
-        (a, b) { }
-    equal_iterator_pair(const equal_iterator_pair<Ct>& other)
-      : region_iterator_pair
-        <const Ct, equal_bounds<typename container_traits<Ct>::key_type,
-                                typename container_traits<Ct>::key_compare> >
-        (other) { }
+
+    //! Regular constructor that builds a equal_iterator_pair out of 2
+    //! equal_iterators.
+    equal_iterator_pair(const equal_iterator<Container>& a,
+                        const equal_iterator<Container>& b)
+          : Base(a, b) { }
   };
 
-  template <typename Ct>
-  inline equal_iterator_pair<Ct>
-  equal_range(Ct& container,
-              const typename container_traits<Ct>::key_type& match)
-  { return region_range(container, make_equal_bounds(container, match)); }
-  template <typename Ct>
-  inline equal_iterator_pair<const Ct>
-  equal_range(const Ct& container,
-              const typename container_traits<Ct>::key_type& match)
-  { return region_range(container, make_equal_bounds(container, match)); }
-  template <typename Ct>
-  inline equal_iterator_pair<const Ct>
-  equal_crange(const Ct& container,
-               const typename container_traits<Ct>::key_type& match)
-  { return region_crange(container, make_equal_bounds(container, match)); }
+  /**
+   *  This structure defines a pair of constant equal iterator.
+   *
+   *  \tparam Ct The container to which these iterator relate to.
+   *  \see equal_iterator
+   */
+  template <typename Container>
+  struct equal_iterator_pair<const Container>
+    : std::pair<equal_iterator<const Container>,
+                equal_iterator<const Container> >
+  {
+    /**
+     *  A pair of iterators that represents a range (that is: a range of
+     *  elements to iterate, and not an orthogonal range).
+     */
+    typedef std::pair<equal_iterator<const Container>,
+                      equal_iterator<const Container> > Base;
+
+    //! Empty constructor.
+    equal_iterator_pair() { }
+
+    //! Regular constructor that builds a equal_iterator_pair out of 2
+    //! equal_iterators.
+    equal_iterator_pair(const equal_iterator<const Container>& a,
+                        const equal_iterator<const Container>& b)
+      : Base(a, b) { }
+
+    //! Convert a mutable equal iterator pair into a const equal iterator
+    //! pair.
+    equal_iterator_pair(const equal_iterator_pair<Container>& p)
+      : Base(p.first, p.second) { }
+  };
+
+  /**
+   *  Creates a pair of iterator that represent the range of element in the
+   *  container that are equal to the model given.
+   *
+   *  \tparam Container The type of the container iterated.
+   *  \param container The container being iterated.
+   *  \param model The key to find in \c container.
+   */
+  ///@(
+  template <typename Container>
+  inline equal_iterator_pair<Container>
+  equal_range(Container& container,
+              const typename equal_iterator<Container>::key_type& model)
+  {
+    return equal_iterator_pair<Container>
+      (equal_begin(container, model), equal_end(container, model));
+  }
+
+  template <typename Container>
+  inline equal_iterator_pair<const Container>
+  equal_range(const Container& container,
+              const typename equal_iterator<Container>::key_type& model)
+  {
+    return equal_iterator_pair<const Container>
+      (equal_begin(container, model), equal_end(container, model));
+  }
+
+  template <typename Container>
+  inline equal_iterator_pair<const Container>
+  equal_crange(const Container& container,
+               const typename equal_iterator<Container>::key_type& model)
+  {
+    return equal_iterator_pair<const Container>
+      (equal_begin(container, model), equal_end(container, model));
+  }
+  ///@)
+
+} // namespace spatial
 
 #endif // SPATIAL_EQUAL_ITERATOR_HPP
