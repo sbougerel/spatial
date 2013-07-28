@@ -77,10 +77,9 @@ namespace spatial
   };
 
   /**
-   *  \brief  Thrown to report that an invalid range bound has been given as
+   *  Thrown to report that an invalid range bound has been given as
    *  argument.
-   *  \see check_invalid_bounds()
-   *  \see bounds
+   *  \see except::check_open_bounds()
    *
    *  Generally, this means that the lower bound has a value that overlaps with
    *  the upper bound over one dimension, at least.
@@ -94,7 +93,7 @@ namespace spatial
   /**
    *  Thrown to report that a box has incorrect coordinates with regards to
    *  its layout.
-   *  \see check_invalid_box()
+   *  \see except::check_invalid_box()
    */
   struct invalid_box : std::logic_error
   {
@@ -106,7 +105,8 @@ namespace spatial
    *  Thrown to report that an negative distance has been passed as a parameter
    *  while distances are expected to be positive.
    *
-   *  \see check_addition(), check_multiplication()
+   *  \see except::check_addition()
+   *  \see except::check_multiplication()
    */
   struct invalid_distance : std::logic_error
   {
@@ -118,7 +118,8 @@ namespace spatial
    *  Thrown to report that an arithmetic error has occured during a
    *  calculation. It could be an overflow, or another kind of error.
    *
-   *  \see check_addition(), check_multiplication()
+   *  \see except::check_addition()
+   *  \see except::check_multiplication()
    */
   struct arithmetic_error : std::logic_error
   {

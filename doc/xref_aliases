@@ -37,7 +37,7 @@ ALIASES += "trivial_compare=\ref trivial_comparison_concept \"Trivial Comparison
 ALIASES += "regular_compare=\ref regular_comparison_concept \"Regular Comparison\""
 ALIASES += "region_predicate=\ref region_predicate_concept \"Region Predicate\""
 ALIASES += "metric=\ref metric_concept \"Metric\""
-ALIASES += "regionpredicateref=\xrefitem region_predicate_concept \"Concept\" \"\" This object is a model of \region_predicate"
+ALIASES += "concept_region_predicate=\xrefitem region_predicate_concept \"Concept\" \"\" This object is a model of \region_predicate"
 ALIASES += "concept_tab=<table><tr><td></td><td>Signature/Typedef</td><td>Description"
 ALIASES += "concept_leg=</td></tr><tr><td>Legend</td><td><tt>"
 ALIASES += "concept_req=</td></tr><tr><td>Require</td><td><tt>"
