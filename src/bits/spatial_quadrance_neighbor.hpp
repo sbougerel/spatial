@@ -167,7 +167,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref quadrance_neighbor_iterator<Ct, double, Diff> pointing to
+   *  Returns a \ref quadrance_neighbor_iterator pointing to
    *  the nearest neighbor of \c target.
    *
    *  \param container The container to iterate.
@@ -217,7 +217,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref quadrance_neighbor_iterator<Ct, double, Diff> pointing to
+   *  Returns a \ref quadrance_neighbor_iterator pointing to
    *  the nearest neighbor of \c target.
    *
    *  \param container The container to iterate.
@@ -284,7 +284,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref quadrance_neighbor_iterator<Ct, double, Diff> pointing
+   *  Returns a \ref quadrance_neighbor_iterator pointing
    *  past-the-end.
    *
    *  \param container The container to iterate.
@@ -334,7 +334,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref quadrance_neighbor_iterator<Ct, double, Diff> pointing
+   *  Returns a \ref quadrance_neighbor_iterator pointing
    *  past-the-end.
    *
    *  \param container The container to iterate.
@@ -401,7 +401,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref quadrance_neighbor_iterator<Ct, double, Diff> pointing
+   *  Returns a \ref quadrance_neighbor_iterator pointing
    *  to the closest element to \c target that is a least as far as \c bound.
    *
    *  \param container The container to iterate.
@@ -451,7 +451,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref quadrance_neighbor_iterator<Ct, double, Diff> pointing
+   *  Returns a \ref quadrance_neighbor_iterator pointing
    *  to the closest element to \c target that is a least as far as \c bound.
    *
    *  \param container The container to iterate.
@@ -515,7 +515,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref quadrance_neighbor_iterator<Ct, double, Diff> pointing
+   *  Returns a \ref quadrance_neighbor_iterator pointing
    *  to the closest element to \c target that further than \c bound.
    *
    *  \param container The container to iterate.
@@ -565,7 +565,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref quadrance_neighbor_iterator<Ct, double, Diff> pointing
+   *  Returns a \ref quadrance_neighbor_iterator pointing
    *  to the closest element to \c target that is further than \c bound.
    *
    *  \param container The container to iterate.

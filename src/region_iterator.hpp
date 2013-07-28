@@ -24,13 +24,23 @@
 namespace spatial
 {
   /**
-   *  @brief  For all @e{x} in the set @e{S}, we define @e{lower} and @e{upper}
-   *  such that orthogonal region iterates over all the @e{x} that satify: for
-   *  all dimensions {0, ..., k-1 | loweri <= xi && higheri >= xi}. In other
-   *  words, iterates over all the region of elements in @{S} that are within the
-   *  interval {lower, upper} with respect to all dimensions.
+   *  A model of \region_predicate that defines an orthogonal region and checks
+   *  if a value of type \c Key is contained within the boundaries marked by \c
+   *  lower and \c upper.
    *
-   *  @concept bounds is a model of RegionPredicate.
+   *  To be very specific, given a dimension \f$d\f$ we define that \f$x\f$ is
+   *  contained in the boundaries \f$(lower, upper)\f$ if:
+   *
+   *  \f[lower_d <= x_d < upper_d\f]
+   *
+   *  Simply stated, \ref bounds used in a \region_iterator will match all keys
+   *  that are within the region defined by \c lower and \c upper, but not
+   *  "touching" the \c upper edge.
+   *
+   *  \tparam Key The type used during the comparison.
+   *  \tparam Compare The comparison functor using to compare 2 objects of type
+   *  \c Key along the same dimension.
+   *  \concept_region_predicate
    */
   template <typename Key, typename Compare>
   class bounds
@@ -38,13 +48,13 @@ namespace spatial
   {
   public:
     /**
-     *  @brief  The default constructor leaves everything un-initialized
+     *  The default constructor leaves everything un-initialized
      */
     bounds()
       : Compare(), _lower(), _upper() { }
 
     /**
-     *  @brief  Set the lower and upper boundary for the orthogonal region
+     *  Set the \c lower and \c upper boundary for the orthogonal region
      *  search.
      */
     bounds(const Compare& compare, const Key& lower, const Key& upper)
@@ -52,7 +62,8 @@ namespace spatial
     { }
 
     /**
-     *  @brief  The operator that tells wheather the point is in region or not.
+     *  The operator that returns \c true if the \c key is within the
+     *  boundaries, \c false if it isn't.
      */
     relative_order
     operator()(dimension_type dim, dimension_type, const Key& key) const
@@ -66,26 +77,33 @@ namespace spatial
 
   private:
     /**
-     *  @brief  The lower bound for the orthogonal region iterator.
+     *  The lower bound for the orthogonal region.
      */
     Key _lower;
 
     /**
-     *  @brief  The upper bound for the orthogonal region iterator.
+     *  The upper bound for the orthogonal region.
      */
     Key _upper;
   };
 
   /**
-   *  Region bounds factory that takes in a @c container, a \c lower and
-   *  \c upper key region, returning an @c open_bounds<Key, Compare> type.
+   *  A \ref bounds factory that takes in a \c container, 2 arguments
+   *  \c lower and \c upper, and returns a fully constructed \ref bounds
+   *  object.
    *
-   *  This factory also check that lower and upper satisfy region requirements
-   *  over an regular interval for each dimension, e.g: \c
-   *  container.key_comp()(d, lower, upper) must be true for all value of \c d
-   *  within 0 and \c container.dimension() or container.key_comp()(d, upper,
-   *  lower) must also be false (which mean the values are equal on that
-   *  particular dimension).
+   *  This factory also checks that \c lower is always less or equal to \c upper
+   *  for every dimension. If it is not, it raises \ref invalid_bounds.
+   *
+   *  Because of this extra check, it is safer to invoke the factory rather than
+   *  the constructor to build this object, especially if you are expecting user
+   *  inputs.
+   *
+   *  \param container A container to iterate.
+   *  \param lower A key defining the lower bound of \ref bounds.
+   *  \param upper A key defining the upper bound of \ref bounds.
+   *  \return a constructed \ref bounds object.
+   *  \throws invalid_bounds
    */
   template <typename Tp>
   bounds<typename container_traits<Tp>::key_type,
@@ -95,7 +113,7 @@ namespace spatial
    const typename container_traits<Tp>::key_type& lower,
    const typename container_traits<Tp>::key_type& upper)
   {
-    ::spatial::except::check_bounds(container, lower, upper);
+    except::check_bounds(container, lower, upper);
     return bounds
       <typename container_traits<Tp>::key_type,
       typename container_traits<Tp>::key_compare>
@@ -197,6 +215,7 @@ namespace spatial
    *  \param container A container to iterate.
    *  \param lower A key defining the lower bound of \ref open_bounds.
    *  \param upper A key defining the upper bound of \ref open_bounds.
+   *  \return a constructed \ref open_bounds object.
    *  \throws invalid_bounds
    */
   template <typename Tp>
@@ -280,16 +299,22 @@ namespace spatial
   };
 
   /**
-   *  @brief  Closed bounds factory that takes in a @c container, a @c lower and
-   *  @c upper key region, returning an @c open_bounds<Key, Compare> type.  @see
-   *  equal_bounds<Key, Compare>
+   *  A \ref closed_bounds factory that takes in a \c container, a region defined
+   *  by \c lower and \c upper, and returns a constructed \ref closed_bounds
+   *  object.
    *
-   *  This factory also check that lower and upper satisfy region requirements
-   *  over an regular interval for each dimension, e.g: @c
-   *  container.key_comp()(d, lower, upper) must be true for all value of @c d
-   *  within 0 and @c container.dimension() or container.key_comp()(d, upper,
-   *  lower) must also be false (which mean the values are equal on that
-   *  particular dimension).
+   *  This factory also checks that \c lower is always less than \c upper for
+   *  every dimension. If it is not, it raises \ref invalid_bounds.
+   *
+   *  Because of this extra check, it is safer to invoke the factory rather than
+   *  the constructor to build this object, especially if you are expecting user
+   *  inputs.
+   *
+   *  \param container A container to iterate.
+   *  \param lower A key defining the lower bound of \ref closed_bounds.
+   *  \param upper A key defining the upper bound of \ref closed_bounds.
+   *  \return a constructed \ref closed_bounds object.
+   *  \throws invalid_bounds
    */
   template <typename Tp>
   closed_bounds<typename container_traits<Tp>::key_type,
@@ -299,7 +324,7 @@ namespace spatial
    const typename container_traits<Tp>::key_type& lower,
    const typename container_traits<Tp>::key_type& upper)
   {
-    ::spatial::except::check_closed_bounds(container, lower, upper);
+    except::check_closed_bounds(container, lower, upper);
     return closed_bounds
       <typename container_traits<Tp>::key_type,
       typename container_traits<Tp>::key_compare>
@@ -339,19 +364,19 @@ namespace spatial
   {
   public:
     /**
-     *  @brief  The default constructor leaves everything un-initialized
+     *  The default constructor leaves everything un-initialized
      */
     overlap_bounds() : Compare(), _target() { }
 
     /**
-     *  @brief  Set the target box and the comparator to the appropriate value.
+     *  Set the target box and the comparator to the appropriate value.
      */
     overlap_bounds(const Compare& compare, const Key& target)
       : Compare(compare), _target(target)
     { }
 
     /**
-     *  @brief  The operator that tells wheather the point is in region or not.
+     *  The operator that tells wheather the point is in region or not.
      */
     relative_order
     operator()(dimension_type dim, dimension_type rank, const Key& key) const
@@ -361,7 +386,7 @@ namespace spatial
 
   private:
     /**
-     *  @brief  The box value that will be used for overlaping comparison.
+     *  The box value that will be used for overlaping comparison.
      */
     Key _target;
 
@@ -406,7 +431,6 @@ namespace spatial
     }
   };
 
-  //@{
   /**
    *  @brief  Overlap bounds factory that takes in a @c container, a @c key and
    *  returns an @ref overlap_bounds type.
@@ -414,6 +438,7 @@ namespace spatial
    *  This factory also checks that box @c key is valid, meaning: all its lower
    *  coordinates are indeed lower or equal to its higher coordinates.
    */
+  ///@{
   template <typename Tp, typename Layout>
   overlap_bounds<typename container_traits<Tp>::key_type,
                  typename container_traits<Tp>::key_compare,
@@ -437,7 +462,7 @@ namespace spatial
   (const Tp& container,
    const typename container_traits<Tp>::key_type& target)
   { return make_overlap_bounds(container, target, llhh_layout_tag()); }
-  //@}
+  ///@}
 
   /**
    *  This region predicate matches keys that are enclosed or equal to a target
@@ -552,7 +577,7 @@ namespace spatial
   };
 
   /**
-   *  @brief  Overlap bounds factory that takes in a @c container, a @c key and
+   *  Overlap bounds factory that takes in a @c container, a @c key and
    *  returns an @ref enclose_bounds type.
    *
    *  This factory also checks that box @c key is valid, meaning: all its lower

@@ -680,7 +680,7 @@ namespace spatial
   //@}
 
   /**
-   *  Build a \ref neighbor_iterator<> pointing to the nearest neighbor of \c
+   *  Build a \ref neighbor_iterator pointing to the nearest neighbor of \c
    *  target using a user-defined \ref Metric.
    *  \param container The container in which a neighbor must be found.
    *  \param metric The metric to use in search of the neighbor.
@@ -717,7 +717,7 @@ namespace spatial
   //@}
 
   /**
-   *  Build a \ref neighbor_iterator<> pointing to the nearest neighbor of \c
+   *  Build a \ref neighbor_iterator pointing to the nearest neighbor of \c
    *  target assuming an euclidian metric with distances expressed in double. It
    *  requires that the container used was defined with a built-in key compare
    *  functor.
@@ -769,7 +769,7 @@ namespace spatial
   //@}
 
   /**
-   *  Build a \ref neighbor_iterator<> pointing to the neighbor closest to
+   *  Build a \ref neighbor_iterator pointing to the neighbor closest to
    *  target but for which distance to target is greater or equal to the value
    *  given in \c bound. Uses a user-defined \ref Metric.
    *  \param container The container in which a neighbor must be found.
@@ -812,7 +812,7 @@ namespace spatial
   //@}
 
   /**
-   *  Build a \ref neighbor_iterator<> pointing to the neighbor closest to
+   *  Build a \ref neighbor_iterator pointing to the neighbor closest to
    *  target but for which distance to target is greater or equal to the value
    *  given in \c bound. It assumes an euclidian metric with distances expressed
    *  in double. It also requires that the container used was defined with one
@@ -868,7 +868,7 @@ namespace spatial
   //@}
 
   /**
-   *  Build a \ref neighbor_iterator<> pointing to the neighbor closest to
+   *  Build a \ref neighbor_iterator pointing to the neighbor closest to
    *  target but for which distance to target is strictly greater than the value
    *  given in \c bound. Uses a user-defined \ref Metric.
    *  \param container The container in which a neighbor must be found.
@@ -911,7 +911,7 @@ namespace spatial
   //@}
 
   /**
-   *  Build a \ref neighbor_iterator<> pointing to the neighbor closest to
+   *  Build a \ref neighbor_iterator pointing to the neighbor closest to
    *  target but for which distance to target is greater than the value given in
    *  \c bound. It assumes an euclidian metric with distances expressed in
    *  double. It also requires that the container used was defined with one of
@@ -967,7 +967,7 @@ namespace spatial
   //@}
 
   /**
-   *  Returns a \ref neighbor_iterator_pair<> representing the range of values
+   *  Returns a \ref neighbor_iterator_pair representing the range of values
    *  from the closest to the furthest in the container iterated. Uses a
    *  user-defined \ref Metric.
    *
@@ -1008,7 +1008,7 @@ namespace spatial
   //@}
 
   /**
-   *  Returns a \ref neighbor_iterator_pair<> representing the range of values
+   *  Returns a \ref neighbor_iterator_pair representing the range of values
    *  from the closest to the furthest in the container iterated. It assumes an
    *  euclidian metric with distances expressed in double. It also requires that
    *  the container used was defined with one of the built-in key compare

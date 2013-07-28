@@ -167,7 +167,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing to
+   *  Returns a \ref euclidian_neighbor_iterator pointing to
    *  the nearest neighbor of \c target.
    *
    *  The search will occur in euclidian space, where distance are computed in
@@ -217,7 +217,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing to
+   *  Returns a \ref euclidian_neighbor_iterator pointing to
    *  the nearest neighbor of \c target.
    *
    *  The search will occur in euclidian space, where distance are computed in
@@ -284,7 +284,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
+   *  Returns a \ref euclidian_neighbor_iterator pointing
    *  past-the-end.
    *
    *  The search will occur in euclidian space, where distance are computed in
@@ -334,7 +334,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
+   *  Returns a \ref euclidian_neighbor_iterator pointing
    *  past-the-end.
    *
    *  The search will occur in euclidian space, where distance are computed in
@@ -401,7 +401,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
+   *  Returns a \ref euclidian_neighbor_iterator pointing
    *  to the closest element to \c target that is a least as far as \c bound.
    *
    *  \param container The container to iterate.
@@ -451,7 +451,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
+   *  Returns a \ref euclidian_neighbor_iterator pointing
    *  to the closest element to \c target that is a least as far as \c bound.
    *
    *  \param container The container to iterate.
@@ -515,7 +515,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
+   *  Returns a \ref euclidian_neighbor_iterator pointing
    *  to the closest element to \c target that further than \c bound.
    *
    *  \param container The container to iterate.
@@ -565,7 +565,7 @@ namespace spatial
   ///@}
 
   /**
-   *  Returns a \ref euclidian_neighbor_iterator<Ct, double, Diff> pointing
+   *  Returns a \ref euclidian_neighbor_iterator pointing
    *  to the closest element to \c target that is further than \c bound.
    *
    *  \param container The container to iterate.

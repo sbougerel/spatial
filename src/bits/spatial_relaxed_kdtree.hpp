@@ -703,7 +703,7 @@ namespace spatial
      *  The == and != operations is performed by first comparing sizes, and if
      *  they match, the elements are compared sequentially using algorithm
      *  std::equal, which stops at the first mismatch. The sequence of element
-     *  in each container is extracted using \ref ordered_iterator<>.
+     *  in each container is extracted using \ref ordered_iterator.
      *  \param lhs Left-hand side container.
      *  \param rhs Right-hand side container.
      */
@@ -735,7 +735,7 @@ namespace spatial
      *  Operations <, >, <= and >= behave as if using algorithm
      *  lexicographical_compare, which compares the elements sequentially using
      *  operator< reflexively, stopping at the first mismatch. The sequence of
-     *  element in each container is extracted using \ref ordered_iterator<>.
+     *  element in each container is extracted using \ref ordered_iterator.
      *  \param lhs Left-hand side container.
      *  \param rhs Right-hand side container.
      */

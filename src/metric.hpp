@@ -224,7 +224,7 @@ namespace spatial
    *  an acceptable approaximation to the euclidian metric. However the
    *  distance calculated by this metric cannot be converted into Euclidian
    *  distances. If you are looking for a fast metric that is convertible in
-   *  Euclidian distances, check out \ref quadrance<>.
+   *  Euclidian distances, check out \ref quadrance.
    *
    *  This metric has one important drawback: if you are working with large
    *  value over the entire range permissible by DistanceType, then chances
