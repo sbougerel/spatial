@@ -414,8 +414,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
   { // test at the limit: a tree with 1 element
     Tp fix(1, same());
     double6 k; k.assign(1.0);
-    closed_region_iterator<typename Tp::container_type>
-      it = closed_region_begin(fix.container, k, k);
+    closed_region_iterator<const typename Tp::container_type>
+      it = closed_region_cbegin(fix.container, k, k);
     BOOST_CHECK(it != closed_region_end(fix.container, k, k));
   }
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
@@ -508,13 +508,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_maximum, Tp, double6_sets )
         open_region_iterator<typename Tp::container_type>
           it = open_region_end(fix.container, l, h);
         --it;
-        if (it == open_region_end(fix.container, l, h)) break;
+        if (it == open_region_cend(fix.container, l, h)) break;
         // Make sure it is one within (10, 90)
         BOOST_CHECK(details::match_all(fix.container.rank(), *it,
                                        make_open_bounds(fix.container, l, h)));
         open_region_iterator<typename Tp::container_type> tmp = it;
         ++tmp;
-        BOOST_CHECK(tmp == open_region_end(fix.container, l, h));
+        BOOST_CHECK(tmp == open_region_cend(fix.container, l, h));
         fix.container.erase(it);
       }
   }
@@ -608,7 +608,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_increment, Tp, double6_sets )
             if (details::match_all(fix.container.rank(), *it, orb))
               ++count_it;
           }
-        open_region_iterator<typename Tp::container_type>
+        open_region_iterator<const typename Tp::container_type>
           re = open_region_begin(fix.container, l, h);
         for (;re != open_region_end(fix.container, l, h); ++re)
           {
@@ -635,9 +635,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_increment, Tp, double6_sets )
             if (details::match_all(fix.container.rank(), *it, orb))
               ++count_it;
           }
-        open_region_iterator<typename Tp::container_type>
+        open_region_iterator<const typename Tp::container_type>
           re = open_region_begin(fix.container, l, h);
-        for (;re != open_region_end(fix.container, l, h); ++re)
+        for (;re != open_region_cend(fix.container, l, h); ++re)
           {
             BOOST_CHECK(details::match_all(fix.container.rank(), *re, orb));
             ++count_re;
@@ -722,16 +722,16 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
               ++count_it;
           }
         std::reverse_iterator
-          <open_region_iterator<typename Tp::container_type> >
-          re(open_region_end(fix.container, l, h)),
-          rend(open_region_begin(fix.container, l, h));
+          <open_region_iterator<const typename Tp::container_type> >
+          re(open_region_cend(fix.container, l, h)),
+          rend(open_region_cbegin(fix.container, l, h));
         for (;re != rend; ++re)
           {
             BOOST_CHECK(details::match_all(fix.container.rank(), *re, orb));
             ++count_re;
           }
         BOOST_CHECK_EQUAL(count_it, count_re);
-        fix.container.erase(fix.container.begin());
+        fix.container.erase(--(fix.container.end()));
       }
   }
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
@@ -751,9 +751,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
               ++count_it;
           }
         std::reverse_iterator
-          <open_region_iterator<typename Tp::container_type> >
-          re(open_region_end(fix.container, l, h)),
-          rend(open_region_begin(fix.container, l, h));
+          <open_region_iterator<const typename Tp::container_type> >
+          re(open_region_cend(fix.container, l, h)),
+          rend(open_region_cbegin(fix.container, l, h));
         for (;re != rend; ++re)
           {
             BOOST_CHECK(details::match_all(fix.container.rank(), *re, orb));

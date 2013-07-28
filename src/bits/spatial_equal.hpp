@@ -238,7 +238,7 @@ namespace spatial
 
     //! Return the value of the model key used to find equal keys in the
     //! container.
-    key_type model() const { return _model; }
+    key_type model() const { return _model(); }
 
     //! Return the functor used to compare keys in this iterator.
     key_compare key_comp() const { return _model.base(); }
