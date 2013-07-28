@@ -135,7 +135,7 @@ contributor, check out \ref contributing "Contributing".
 
 \section ver210 Version 2.1.0
 
-- \ref spatial::equal_iterator was rewritten independantly from \region_iterator. This
+- \equal_iterator was rewritten independantly from \region_iterator. This
   means that you can't call the \c predicate() accessors from \region_iterator.
   This has been replaced by the \c model() and \c key_comp() accessors. The
   rest of the interface remains similar, and unless you were using

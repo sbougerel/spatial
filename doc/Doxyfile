@@ -34,7 +34,7 @@ PROJECT_NAME           = "Spatial C++ Library"
 # This could be handy for archiving the generated documentation or
 # if some version control system is used.
 
-PROJECT_NUMBER         = 
+PROJECT_NUMBER         =
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer
@@ -207,65 +207,9 @@ TAB_SIZE               = 4
 # will result in a user-defined paragraph with heading "Side Effects:".
 # You can put \n's in the value part of an alias to insert newlines.
 
-ALIASES                = "libkdtree=<a href=\"http://libkdtree.alioth.debian.org/\"><b>libkdtree++</b></a>" \
-                         "Boost=<a href=\"http://www.boost.org/\"><b>Boost</b></a>" \
-                         "quote=<div style=\"text-align:right\"><i>" \
-                         "endquote=</i></div>" \
-                         "Spatial=\b Spatial" \
-                         "STL=<a href=\"http://en.wikipedia.org/wiki/Standard_Template_Library\"><b>STL</b></a>" \
-                         "kdtree=<a href=\"http://en.wikipedia.org/wiki/Kd-tree\"><b><i>k</i>-d tree</b></a>" \
-                         "kdtrees=<a href=\"http://en.wikipedia.org/wiki/Kd-tree\"><b><i>k</i>-d trees</b></a>" \
-                         "rbtree=<a href=\"http://en.wikipedia.org/wiki/Red-black_tree\"><b>Red-black tree</b></a>" \
-                         "rbtrees=<a href=\"http://en.wikipedia.org/wiki/Red-black_tree\"><b>Red-black trees</b></a>" \
-                         "license=<a href=\"http://www.boost.org/LICENSE_1_0.txt\"><b>Boost license</b></a>" \
-                         "project=<a href=\"http://projectpage.willsee\"><b>Project page</b></a>" \
-                         "prev=<div style=\"text-align:right\">Previous:&nbsp;<b>" \
-                         "next=</b>Next:&nbsp;<b>" \
-                         "endprevnext=</b></div>" \
-                         "project_page=<a href=\"http://sourceforge.net/projects/spatial/\"><b>Project Page on Sourceforge</b></a>" \
-                         "project_download=<a href=\"http://sourceforge.net/projects/spatial/files/\"><b>Project Download Page on Sourceforge</b></a>" \
-                         "project_issue=<a href=\"http://sourceforge.net/projects/spatial/support\"><b>Project Issue Trackers on Sourceforge</b></a>" \
-                         "concept=\xrefitem concept \"Concept\" \"Concepts\"" \
-                         "concept_tab=<table><tr><td></td><td>Signature/Typedef</td><td>Description" \
-                         "concept_leg=</td></tr><tr><td>Legend</td><td><tt>" \
-                         "concept_req=</td></tr><tr><td>Require</td><td><tt>" \
-                         "concept_des=</tt></td><td>" \
-                         "concept_end=</td></tr></table>" \
-                         "point_multiset=\ref spatial::point_multiset" \
-                         "idle_point_multiset=\ref spatial::idle_point_multiset" \
-                         "box_multiset=\ref spatial::box_multiset" \
-                         "idle_box_multiset=\ref spatial::idle_box_multiset" \
-                         "point_multimap=\ref spatial::point_multimap" \
-                         "idle_point_multimap=\ref spatial::idle_point_multimap" \
-                         "box_multimap=\ref spatial::box_multimap" \
-                         "idle_box_multimap=\ref spatial::idle_box_multimap" \
-                         "region_iterator=\ref spatial::region_iterator" \
-                         "neighbor_iterator=\ref spatial::neighbor_iterator" \
-                         "mapping_iterator=\ref spatial::mapping_iterator" \
-                         "ordered_iterator=\ref spatial::ordered_iterator" \
-                         "region_iterator_pair=\ref spatial::region_iterator_pair" \
-                         "neighbor_iterator_pair=\ref spatial::neighbor_iterator_pair" \
-                         "mapping_iterator_pair=\ref spatial::mapping_iterator_pair" \
-                         "ordered_iterator_pair=\ref spatial::ordered_iterator_pair" \
-                         "euclidian=\ref spatial::euclidian" \
-                         "quadrance=\ref spatial::quadrance" \
-                         "manhattan=\ref spatial::manhattan" \
-                         "O1=\f$O(1)\,\f$" \
-                         "On=\f$O(O(n)\,\f$" \
-                         "Ologn=\f$O(O(\log n)\,\f$" \
-                         "Onlogn=\f$O(O(n \log n)\,\f$" \
-                         "Onlognk=\f$O(n (\log n)^{1/k})\,\f$" \
-                         "Onfd=\f$O(n^{1\,-\,1/d})\,\f$" \
-                         "consttime=\xrefitem constant_complexity \"Complexity\" \"Functions with constant time complexity\" This function has guarenteed \ref constant_complexity \"constant time complexity\": \O1" \
-                         "lintime=\xrefitem linear_complexity \"Complexity\" \"Functions with linear time complexity\" This function has average \ref linear_complexity \"linear time complexity\": \On" \
-                         "quasilintime=\xrefitem quasilinear_complexity \"Complexity\" \"Functions with quasilinear time complexity\" This function has average \ref quasilinear_complexity \"quasilinear time complexity\": \Onlognk" \
-                         "logtime=\xrefitem logarithmic_complexity \"Complexity\" \"Functions with logarithmic time complexity\" This function has average \ref logarithmic_complexity \"logarithmic time complexity\": \Ologn" \
-                         "fractime=\xrefitem fractional_complexity \"Complexity\" \"Functions with fractional time complexity\" This function has average \ref fractional_complexity \"fractional time complexity\": \Onfd" \
-                         "linkmode=\ref linkmode_concept \"Link Mode\"" \
-                         "trivialcompare=\ref trivial_comparison_concept \"Trivial Comparison\"" \
-                         "regularcompare=\ref regular_comparison_concept \"Regular Comparison\"" \
-                         "regionpredicate=\ref region_predicate_concept \"Regular Comparison\"" \
-                         "metric=\ref metric_concept \"Metric\""
+ALIASES                =
+@INCLUDE               = src_aliases
+@INCLUDE               = xref_aliases
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding

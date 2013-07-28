@@ -29,6 +29,7 @@ namespace spatial
    *  constructor. The given key is called the model.
    *
    *  \tparam Container The container upon which these iterator relate to.
+   *  \headerfile equal_iterator.hpp
    */
   template <typename Container>
   class equal_iterator

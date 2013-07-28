@@ -21,13 +21,12 @@ namespace spatial
   {
     /**
      *  A common template for bidirectional iterators that work on identical
-     *  \ref LinkMode "modes of linking".
+     *  \ref linkmode_concept "modes of linking".
      *
      *  This template defines all the basic features of a bidirectional
      *  iterator for this library.
      *
-     *  \tparam Mode      The mode used to \ref LinkMode "link nodes to
-     *                    their values".
+     *  \tparam Mode      A model of \linkmode.
      *  \tparam Rank      The rank of the iterator.
      */
     template <typename Mode, typename Rank>
@@ -68,7 +67,7 @@ namespace spatial
 
       /**
        *  A bidirectional iterator can be compared with a node iterator if they
-       *  work on identical \ref LinkMode "linking modes".
+       *  work on identical \ref linkmode_concept "linking modes".
        *
        *  \param x The iterator on the right.
        */
@@ -77,7 +76,7 @@ namespace spatial
 
       /**
        *  A bidirectional iterator can be compared for inequality with a node
-       *  iterator if they work on identical \ref LinkMode "linking modes".
+       *  iterator if they work on identical \ref linkmode_concept "linking modes".
        *
        *  \param x The iterator on the right.
        */
@@ -132,13 +131,12 @@ namespace spatial
 
     /**
      *  A common template for constant bidirectional iterators that work on
-     *  identical \ref LinkMode "modes of linking".
+     *  identical \ref linkmode_concept "modes of linking".
      *
      *  This template defines all the basic features of a bidirectional
      *  iterator for this library.
      *
-     *  \tparam Mode      The mode used to \ref LinkMode "link nodes to
-     *                    their values".
+     *  \tparam Mode      A type that is a model of \linkmode.
      *  \tparam Rank      The rank of the iterator.
      */
     template <typename Mode, typename Rank>
@@ -179,7 +177,7 @@ namespace spatial
 
       /**
        *  A bidirectional iterator can be compared with a node iterator if they
-       *  work on identical \ref LinkMode "linking modes".
+       *  work on identical \ref linkmode_concept "linking modes".
        *
        *  \param x The iterator on the right.
        */
@@ -188,7 +186,8 @@ namespace spatial
 
       /**
        *  A bidirectional iterator can be compared for inequality with a node
-       *  iterator if they work on identical \ref LinkMode "linking modes".
+       *  iterator if they work on identical \ref linkmode_concept "linking
+       *  modes".
        *
        *  \param x The iterator on the right.
        */
@@ -198,10 +197,7 @@ namespace spatial
       /**
        *  Children of this iterator can be casted silently into a container
        *  iterator. You can therefore use this iterator as an argument to the
-       *  erase function of the container, for example.
-       *
-       *  \warning When using this iterator as an argument to the erase function
-       *  of the container, this iterator will get invalidated after erase.
+       *  other function of the container that are working on iterators.
        */
       operator Const_node_iterator<Mode>() const
       { return Const_node_iterator<Mode>(node); }

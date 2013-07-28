@@ -19,13 +19,21 @@
 namespace spatial
 {
   /**
-   *  @brief  For all @e{x} in the set @e{S}, we define @e{lower} and @e{upper}
-   *  such that orthogonal region iterates over all the @e{x} that satify: for
-   *  all dimensions {0, ..., k-1 | loweri <= xi && higheri >= xi}. In other
-   *  words, iterates over all the region of elements in @{S} that are within
-   *  the interval {lower, upper} with respect to all dimensions.
+   *  A model of \region_predicate that checks if a value of type \c Key is
+   *  contained within the open boundaries defined by \c lower and \c upper.
    *
-   *  @concept open_bounds is a model of RegionPredicate.
+   *  To be very specific, given a dimension \f$d\f$ we define that \f$x\f$ is
+   *  contained in the open boundaries \f$(lower, upper)\f$ if:
+   *
+   *  \f[lower_d < x_d < upper_d\f]
+   *
+   *  Simply stated, open_bounds used in a region_iterator will match all keys
+   *  that are strictly within the region defined by \c lower and \c upper.
+   *
+   *  \tparam Key The type used during the comparison.
+   *  \tparam Compare The comparison functor using to compare 2 objects of type
+   *  \c Key along the same dimension.
+   *  \regionpredicateref
    */
   template <typename Key, typename Compare>
   class open_bounds
@@ -33,27 +41,40 @@ namespace spatial
   {
   public:
     /**
-     *  @brief  The default constructor leaves everything un-initialized
+     *  The default constructor leaves everything un-initialized
      */
     open_bounds()
       : Compare(), _lower(), _upper() { }
 
     /**
-     *  @brief  Set the lower and upper boundary for the orthogonal range
+     *  Set the lower and upper boundary for the orthogonal range
      *  search in the region.
-     *  @see make_open_bounds
+     *  \see make_open_bounds
      *
-     *  The constructor does not check the lower and upper satisfy the following
-     *  requierment: @c compare(d, lower, upper) must return true for all @c d
-     *  for the keys @c lower and @c upper.
+     *  The constructor does not check that elements of lower are lesser
+     *  than elements of \c upper along any dimension. Therefore you must be
+     *  careful of the order in which these values are inserted.
+     *
+     *  \param compare The comparison functor, for initialization.
+     *  \param lower The value of the lower bound.
+     *  \param upper The value of the upper bound.
      */
     open_bounds(const Compare& compare, const Key& lower,
-                      const Key& upper)
+                const Key& upper)
       : Compare(compare), _lower(lower), _upper(upper)
     { }
 
     /**
-     *  @brief  The operator that tells wheather the point is in region or not.
+     *  The operator that returns wheather the point is in region or not.
+     *
+     *  \param dim The dimension of comparison, that should always be less than
+     *  the rank of the type \c Key.
+     *  \param key The value to compare to the interval defined by \c _lower and
+     *  \c _upper.
+     *  \returns spatial::below to indicate that \c key is lesser or equal to \c
+     *  _lower; spatial::above to indicate that \c key is great or equal to \c
+     *  _upper; spatial::matching to indicate that \c key is strictly within \c
+     *  _lower and _upper.
      */
     relative_order
     operator()(dimension_type dim, dimension_type, const Key& key) const

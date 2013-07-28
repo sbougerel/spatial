@@ -34,7 +34,7 @@ namespace spatial
      *  new iterator altogether.
      *
      *  \tparam Ct The container to which these iterator relate to.
-     *  \tparam Metric The type of metric applied to the iterator.
+     *  \tparam Metric The type of \metric applied to the iterator.
      *  \tparam DistanceType The type used to store the distance value.
      */
     template<typename Ct, typename Metric>
@@ -73,14 +73,13 @@ namespace spatial
   /**
    *  A spatial iterator for a container \c Ct that goes through the nearest
    *  to the furthest element from a target key, with distances applied
-   *  according to a user-defined geometric space of type \ref Metric.
+   *  according to a user-defined geometric space that is a model of \metric.
    *
    *  \tparam Ct The container type bound to the iterator.
    *  \tparam DistanceType The type used to represent distances.
-   *  \tparam Metric An type that follow the \ref Metric concept.
+   *  \tparam Metric An type that is a model of \metric.
    *
-   *  The Metric type is a complex type that must be a model of \ref
-   *  Metric:
+   *  The Metric type is a complex type that must be a model of \metric:
    *
    *  \code
    *  struct Metric
@@ -97,11 +96,11 @@ namespace spatial
    *  };
    *  \endcode
    *
-   *  The details of the \c Metric type are explained in \ref Metric.
-   *  The library provides ready-made models of \ref Metric such as \ref
-   *  euclidian and \ref manhattan that are designed to work only with C++'s
+   *  The details of the \c Metric type are explained in \metric.
+   *  The library provides ready-made models of \c Metric such as
+   *  \euclidian and \manhattan that are designed to work only with C++'s
    *  built-in arithmetic types. If more metrics needs to be defined, see the
-   *  explanation in \ref Metric.
+   *  explanation in \metric.
    */
   template <typename Ct, typename Metric =
             euclidian<typename details::mutate<Ct>::type,
@@ -138,7 +137,7 @@ namespace spatial
      *  iterator on a container, and that container.
      *
      *  \param container The container to iterate.
-     *  \param metric The metric applied during the iteration.
+     *  \param metric The \metric applied during the iteration.
      *  \param target The target of the neighbor iteration.
      *  \param it An iterator on container.
      */
@@ -158,7 +157,7 @@ namespace spatial
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
-     *  dimension, such as the function \ref modulo().
+     *  dimension, such as the function \ref spatial::details::modulo().
      *
      *  \attention Specifying the incorrect dimension value for the node will
      *  result in unknown behavior. It is recommended that you do not use this

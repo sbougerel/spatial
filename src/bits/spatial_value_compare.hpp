@@ -19,23 +19,24 @@ namespace spatial
   {
     /**
      *  Value compare functor for container storing pairs of (Key, Value) types,
-     *  such as in \ref pointmap, \ref boxmap, etc. These container provide a
+     *  such as in \point_multimap, \box_multimap, etc. These container provide a
      *  \c key_compare functor type that is being used for the comparison of the
      *  value.
      *
-     *  In \ref pointmap, \ref boxmap and other containers, the value type
+     *  In \point_multimap, \box_multimap and other containers, the value type
      *  differs from the key type. Value type is a pair of key type and mapped
      *  type. The \c KeyCompare functor, provided to the container is reused
      *  to compare the value by using the first element of each value which is
      *  the key.
      *
-     *  \tparam Value A ::std::pair of key and value type.
-     *  \tparam KeyCompare A type that is a model of \ref RegularComparison.
+     *  \tparam Value A \c std::pair of key and value type.
+     *  \tparam KeyCompare A type that is a model of \regular_compare.
      */
     template <typename Value, typename KeyCompare>
     struct ValueCompare : private KeyCompare
     {
-      //! Comparator being initilized with a specific key comparison.
+      //! Comparator being initilized with a value to copy into the interal
+      //! comparison function.
       ValueCompare(const KeyCompare& x) : KeyCompare(x) { }
 
       //! Unintialized comparator.

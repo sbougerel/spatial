@@ -56,10 +56,10 @@ VERSION 2.1.0
            milestone 2.0 release, and the end of the beta period, if
            enough people have used it. In progress...
 
-* Jun 13 Equal_iterator should stand on its own with its own
-           optimizations for the static invarient in the kdree.
+* Jul 13 Equal_iterator should stand on its own with its own
+           optimizations for the static invarient in the kdree. DONE!
 
-* Jul 13 Final optimization: work on adding performance-based tests
+* Sep 13 Final optimization: work on adding performance-based tests
            and comparison with other libraries in the market. Wouldn't
            it be nice to see how it fares against ANN or libkdtree++?
 
