@@ -162,8 +162,8 @@ BOOST_AUTO_TEST_CASE( test_Kdtree_insert_100_iterate_forward )
   for(std::tr1::array<point2d, 100>::iterator i
         = points.begin(); i != points.end(); ++i)
     {
-      (*i)[0] = rand() % 20; // to increase chances of collisions
-      (*i)[1] = rand() % 20;
+      (*i)[0] = std::rand() % 20; // to increase chances of collisions
+      (*i)[1] = std::rand() % 20;
       BOOST_REQUIRE_NO_THROW(fix.kdtree.insert(*i));
       BOOST_TEST_CHECKPOINT("Adding element " << (i - points.begin()));
     }
@@ -193,8 +193,8 @@ BOOST_AUTO_TEST_CASE( test_Kdtree_insert_100_iterate_backward )
   for(std::tr1::array<point2d, 100>::iterator i
         = points.begin(); i != points.end(); ++i)
     {
-      (*i)[0] = rand() % 20;
-      (*i)[1] = rand() % 20;
+      (*i)[0] = std::rand() % 20;
+      (*i)[1] = std::rand() % 20;
       iterator result; // result iterator must be useful too
       BOOST_REQUIRE_NO_THROW(result = fix.kdtree.insert(*i));
       BOOST_TEST_CHECKPOINT("Adding element " << (i - points.begin()));
@@ -343,8 +343,8 @@ BOOST_AUTO_TEST_CASE( test_kdtree_bulk_insert )
   for(std::tr1::array<point2d, 100>::iterator i
         = points.begin(); i != points.end(); ++i)
     {
-      (*i)[0] = rand() % 20;
-      (*i)[1] = rand() % 20;
+      (*i)[0] = std::rand() % 20;
+      (*i)[1] = std::rand() % 20;
     }
   BOOST_REQUIRE_NO_THROW(fix.kdtree.insert(points.begin(), points.end()));
   BOOST_CHECK(fix.kdtree.empty() == false);

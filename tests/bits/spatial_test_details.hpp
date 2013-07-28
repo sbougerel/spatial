@@ -65,25 +65,6 @@ BOOST_AUTO_TEST_CASE( test_details_template_swap )
   BOOST_CHECK_EQUAL(o[1], zeros[1]);
 }
 
-BOOST_AUTO_TEST_CASE( test_details_less_by_ref )
-{
-  int2 x(0, 1);
-  int2 y(1, 0);
-  int2 z(0, 1);
-  bracket_less<int2> cmp;
-  BOOST_CHECK(details::less_by_ref(cmp, 0, x, y));
-  BOOST_CHECK(!details::less_by_ref(cmp, 0, y, x));
-  BOOST_CHECK(!details::less_by_ref(cmp, 1, x, y));
-  BOOST_CHECK(details::less_by_ref(cmp, 1, y, x));
-  BOOST_CHECK((&x < &z)
-              ? details::less_by_ref(cmp, 0, x, z)
-              : !details::less_by_ref(cmp, 0, x, z));
-  BOOST_CHECK((&z < &x)
-              ? details::less_by_ref(cmp, 1, z, x)
-              : !details::less_by_ref(cmp, 1, z, x));
-  BOOST_CHECK(!details::less_by_ref(cmp, 1, x, x));
-}
-
 BOOST_AUTO_TEST_CASE( test_details_match )
 {
   // Rather than testing match, it's testing that closed_test_range is properly
@@ -96,90 +77,6 @@ BOOST_AUTO_TEST_CASE( test_details_match )
   BOOST_CHECK(closed_test_range()(1, 2, y) == matching);
   BOOST_CHECK(closed_test_range()(0, 2, _x) == below);
   BOOST_CHECK(closed_test_range()(1, 2, x_) == above);
-}
-
-BOOST_AUTO_TEST_CASE( test_details_match_all )
-{
-  pointset_fix<int2> fix;
-  int2 x   (0, 0);
-  int2 y   (1, 1);
-  int2 z   (1, 0);
-  int2 w   (0, 1);
-  int2 _x  (0, -1);
-  int2 y_  (2, 0);
-  int2 _w_ (2, 2);
-  BOOST_CHECK(details::match_all
-              (fix.container.rank(), x, closed_test_range()));
-  BOOST_CHECK(details::match_all
-              (fix.container.rank(), y, closed_test_range()));
-  BOOST_CHECK(details::match_all
-              (fix.container.rank(), z, closed_test_range()));
-  BOOST_CHECK(details::match_all
-              (fix.container.rank(), w, closed_test_range()));
-  BOOST_CHECK(!details::match_all
-              (fix.container.rank(), _x, closed_test_range()));
-  BOOST_CHECK(!details::match_all
-              (fix.container.rank(), y_, closed_test_range()));
-  BOOST_CHECK(!details::match_all
-              (fix.container.rank(), _w_, closed_test_range()));
-}
-
-BOOST_AUTO_TEST_CASE( test_details_match_any )
-{
-  pointset_fix<int2> fix;
-  int2 x   (0, 0);
-  int2 y   (1, 1);
-  int2 z   (1, 0);
-  int2 w   (0, 1);
-  int2 _x  (0, -1);
-  int2 y_  (2, 0);
-  int2 _w_ (2, 2);
-  BOOST_CHECK(details::match_any
-              (fix.container.rank(), x, closed_test_range()));
-  BOOST_CHECK(details::match_any
-              (fix.container.rank(), y, closed_test_range()));
-  BOOST_CHECK(details::match_any
-              (fix.container.rank(), z, closed_test_range()));
-  BOOST_CHECK(details::match_any
-              (fix.container.rank(), w, closed_test_range()));
-  BOOST_CHECK(details::match_any
-              (fix.container.rank(), _x, closed_test_range()));
-  BOOST_CHECK(details::match_any
-              (fix.container.rank(), y_, closed_test_range()));
-  BOOST_CHECK(!details::match_any
-              (fix.container.rank(), _w_, closed_test_range()));
-}
-
-BOOST_AUTO_TEST_CASE( test_details_match_most )
-{
-  pointset_fix<int2> fix;
-  int2 x   (0, 0);
-  int2 y   (1, 1);
-  int2 z   (1, 0);
-  int2 w   (0, 1);
-  int2 _x  (0, -1);
-  int2 y_  (2, 0);
-  int2 _w_ (2, 2);
-  BOOST_CHECK(details::match_most
-              (fix.container.rank(), 0, x, closed_test_range()));
-  BOOST_CHECK(details::match_most
-              (fix.container.rank(), 1, y, closed_test_range()));
-  BOOST_CHECK(details::match_most
-              (fix.container.rank(), 1, z, closed_test_range()));
-  BOOST_CHECK(details::match_most
-              (fix.container.rank(), 0, w, closed_test_range()));
-  BOOST_CHECK(!details::match_most
-              (fix.container.rank(), 0, _x, closed_test_range()));
-  BOOST_CHECK(details::match_most
-              (fix.container.rank(), 1, _x, closed_test_range()));
-  BOOST_CHECK(details::match_most
-              (fix.container.rank(), 0, y_, closed_test_range()));
-  BOOST_CHECK(!details::match_most
-              (fix.container.rank(), 1, y_, closed_test_range()));
-  BOOST_CHECK(!details::match_most
-              (fix.container.rank(), 0, _w_, closed_test_range()));
-  BOOST_CHECK(!details::match_most
-              (fix.container.rank(), 1, _w_, closed_test_range()));
 }
 
 #endif // SPATIAL_TEST_DETAILS_HPP

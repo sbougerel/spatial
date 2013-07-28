@@ -629,6 +629,25 @@ namespace spatial
 
   namespace details
   {
+    /**
+     *  Return true if \c x coordinate is less than \c y coordinate over
+     *  dimension \c node_dim, given \c compare. If both coordinate are equal,
+     *  then return true if address of \c x is less than address of \c y.
+     *
+     *  This operator always discriminate \c x and \c y unless they are
+     *  precisely the same object.
+     *  \tparam Key The key object to use in the comparison.
+     *  \tparam Compare The comparison object that is a model of
+     *  \ref TrivialComparison.
+     */
+    template <typename Key, typename Compare>
+    inline bool
+    less_by_ref(const Compare& compare, dimension_type node_dim,
+                const Key& x, const Key& y)
+    {
+      return (compare(node_dim, x, y) || (&x < &y && !compare(node_dim, y, x)));
+    }
+
     //! Specialization for iterators pointing to node using the relaxed
     //! invariant.
     //! \see increment<Container>(typename mapping<Container>::iterator&)

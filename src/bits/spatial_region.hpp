@@ -76,14 +76,13 @@ namespace spatial
   };
 
   /**
-   *  @brief  Region bounds factory that takes in a @c container, a @c lower and
-   *  @c upper key region, returning an @c open_bounds<Key, Compare> type.  @see
-   *  equal_bounds<Key, Compare>
+   *  Region bounds factory that takes in a @c container, a \c lower and
+   *  \c upper key region, returning an @c open_bounds<Key, Compare> type.
    *
    *  This factory also check that lower and upper satisfy region requirements
-   *  over an regular interval for each dimension, e.g: @c
-   *  container.key_comp()(d, lower, upper) must be true for all value of @c d
-   *  within 0 and @c container.dimension() or container.key_comp()(d, upper,
+   *  over an regular interval for each dimension, e.g: \c
+   *  container.key_comp()(d, lower, upper) must be true for all value of \c d
+   *  within 0 and \c container.dimension() or container.key_comp()(d, upper,
    *  lower) must also be false (which mean the values are equal on that
    *  particular dimension).
    */
@@ -100,72 +99,6 @@ namespace spatial
       <typename container_traits<Tp>::key_type,
       typename container_traits<Tp>::key_compare>
       (container.key_comp(), lower, upper);
-  }
-
-  /**
-   *  @brief  For all @c x in the set @c S, we define @c y such that the
-   *  orthogonal region iterates over all the @e{x} that satify: for all
-   *  dimensions {0, ..., k-1 | yi <= xi && yi >= xi}. In other words, iterates
-   *  orthogonally over all the region of elements in @c S that are equal to y
-   *  with respect to all dimensions.
-   *
-   *  @concept equal_bounds is a model of RegionPredicate.
-   */
-  template <typename Key, typename Compare>
-  class equal_bounds
-    : private Compare // empty member optimization
-  {
-  public:
-    /**
-     *  @brief  The default constructor leaves everything un-initialized
-     */
-    equal_bounds()
-      : Compare(), _match() { }
-
-    /**
-     *  @brief  Set the key for the boundaries.
-     */
-    equal_bounds(const Compare &compare, const Key& match)
-      : Compare(compare), _match(match)
-    { }
-
-    /**
-     *  @brief  The operator that tells wheather the key is in region or not.
-     */
-    relative_order
-    operator()(dimension_type dim, dimension_type, const Key& key) const
-    {
-      return (Compare::operator()(dim, key, _match)
-              ? below
-              : (Compare::operator()(dim, _match, key)
-                 ? above
-                 : matching));
-    }
-
-    /**
-     *  @brief  The unique element that defines both lower and upper region for
-     *  the equal region iterator.
-     */
-  private:
-    Key _match;
-  };
-
-  /**
-   *  @brief  Equal bound factory that takes in a @c container and a @c key,
-   *  returning an @c equal_bounds<Key, Compare> type.
-   *  @see equal_bounds<Key, Compare>
-   */
-  template <typename Tp>
-  equal_bounds<typename container_traits<Tp>::key_type,
-               typename container_traits<Tp>::key_compare>
-  make_equal_bounds
-  (const Tp& container,
-   const typename container_traits<Tp>::key_type& key)
-  {
-    return equal_bounds
-      <typename container_traits<Tp>::key_type,
-      typename container_traits<Tp>::key_compare>
-      (container.key_comp(), key);
   }
 
   /**
@@ -479,84 +412,31 @@ namespace spatial
   region_cbegin(const Ct& container, const Predicate& pred)
   { return region_begin(container, pred); }
 
-  template<typename Ct>
-  struct equal_iterator
-    : region_iterator
-  <Ct, equal_bounds<typename container_traits<Ct>::key_type,
-                    typename container_traits<Ct>::key_compare> >
-  {
-    equal_iterator() { }
-    equal_iterator
-    (const region_iterator
-     <Ct, equal_bounds<typename container_traits<Ct>::key_type,
-     typename container_traits<Ct>::key_compare> >&
-     other)
-      : region_iterator
-        <Ct, equal_bounds<typename container_traits<Ct>::key_type,
-                          typename container_traits<Ct>::key_compare> >
-        (other) { }
-  };
-  template<typename Ct>
-  struct equal_iterator<const Ct>
-    : region_iterator
-  <const Ct, equal_bounds<typename container_traits<Ct>::key_type,
-                          typename container_traits<Ct>::key_compare> >
-  {
-    equal_iterator() { }
-    equal_iterator
-    (const region_iterator
-     <const Ct, equal_bounds<typename container_traits<Ct>::key_type,
-     typename container_traits<Ct>::key_compare> >&
-     other)
-      : region_iterator
-        <const Ct, equal_bounds<typename container_traits<Ct>::key_type,
-                                typename container_traits<Ct>::key_compare> >
-        (other) { }
-    equal_iterator
-    (const region_iterator
-     <Ct, equal_bounds<typename container_traits<Ct>::key_type,
-     typename container_traits<Ct>::key_compare> >&
-     other)
-      : region_iterator
-        <const Ct, equal_bounds<typename container_traits<Ct>::key_type,
-                                typename container_traits<Ct>::key_compare> >
-        (other) { }
-  };
-
-  template <typename Ct>
-  inline equal_iterator<Ct>
-  equal_begin(Ct& container,
-    const typename container_traits<Ct>::key_type& match)
-  { return region_begin(container, make_equal_bounds(container, match)); }
-  template <typename Ct>
-  inline equal_iterator<const Ct>
-  equal_begin(const Ct& container,
-    const typename container_traits<Ct>::key_type& match)
-  { return region_begin(container, make_equal_bounds(container, match)); }
-  template <typename Ct>
-  inline equal_iterator<const Ct>
-  equal_cbegin(const Ct& container,
-    const typename container_traits<Ct>::key_type& match)
-  { return region_cbegin(container, make_equal_bounds(container, match)); }
-
-  template <typename Ct>
-  inline equal_iterator<Ct>
-  equal_end(Ct& container,
-            const typename container_traits<Ct>::key_type& match)
-  { return region_end(container, make_equal_bounds(container, match)); }
-  template <typename Ct>
-  inline equal_iterator<const Ct>
-  equal_end(const Ct& container,
-            const typename container_traits<Ct>::key_type& match)
-  { return region_end(container, make_equal_bounds(container, match)); }
-  template <typename Ct>
-  inline equal_iterator<const Ct>
-  equal_cend(const Ct& container,
-             const typename container_traits<Ct>::key_type& match)
-  { return region_cend(container, make_equal_bounds(container, match)); }
-
   namespace details
   {
+    /**
+     *  Return a boolean indicating whether all of \c key's coordinates are
+     *  within range or not.
+     *
+     *  The key is simply tested across all dimesions over the predicate.
+     *  \tparam Rank A type that is a model of \ref Rank.
+     *  \tparam Key The key type that is used in the comparison.
+     *  \tparam Predicate A type that is a model of \ref RangePredicate.
+     *  \param rank The object of type \c Rank.
+     *  \param key The key whose coordinates are verified to be within the
+     *  range.
+     *  \param predicate The \ref RangePredicate object used to represent the
+     *  range.
+     */
+    template <typename Rank, typename Key, typename Predicate>
+    inline bool
+    match_all(const Rank& rank, const Key& key, const Predicate& predicate)
+    {
+      for (dimension_type i = 0; i < rank(); ++i)
+        { if (predicate(i, rank(), key) != matching) { return false; } }
+      return true;
+    }
+
     template <typename Container, typename Predicate>
     inline region_iterator<Container, Predicate>&
     increment_region(region_iterator<Container, Predicate>& iter)

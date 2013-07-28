@@ -423,8 +423,8 @@ represented in a table:
   </tr>
 </table>
 
-As you can see from the table the `idle` family of container does not rebalance
-element in its tree automatically, contrary to other containers. However they
+As you can see from the table, the `idle` family of container does not rebalance
+elements in its tree automatically, contrary to other containers. However they
 use one less pointer per node, and they can still be rebalanced on demand.
 
 There are no `box_map` or `point_set` container in the library. It is currently
@@ -452,47 +452,24 @@ containers.
  </tr>
  <tr>
   <th>I need to modify the object's attributes frequently</th>
-  <td>\point_map or \box_map</td>
-  <td>\idle_point_map or \idle_box_map</td>
+  <td>\point_multimap or \box_multimap</td>
+  <td>\idle_point_multimap or \idle_box_multimap</td>
  </tr>
  <tr>
   <th>The object is the key itself, I won't modify it's attribute</th>
-  <td>\point_set or \box_set</td>
-  <td>\idle_point_set or \idle_box_set</td>
+  <td>\point_multiset or \box_multiset</td>
+  <td>\idle_point_multiset or \idle_box_multiset</td>
  </tr>
 </table>
 
 \subsection tutorial_step0_sub3 Determining dimension at runtime
 
-By setting the dimension used in the containers to 0, you express your wish to
-define the dimension as a runtime-time parameter, given to the constructor of
-the container. All containers are specialized for the dimension 0 and in this
-case will accept an additional dimension parameter in the constructor.
+By setting the dimension used in the containers to 0, you can define the
+dimension as a runtime-time parameter, passed to the constructor of the
+container. All containers are specialized for the dimension 0 and will accept an
+additional dimension parameter in the constructor:
 
-\code
-#include <iostream>
-#include <tr1/array> // TR1 array
-#include <spatial/point_multiset.hpp>
-
-int main(int argc, char** argv)
-{
-  // This container will be of dimension 3
-  typedef spatial::point_multiset<3, std::tr1::array<int, 3> > static_container;
-  // This container's dimension will be determined at runtime
-  typedef spatial::point_multiset<0, std::tr1::array<int, 3> > runtime_container;
-
-  std::cout << "Enter a dimension for the container: " << std::flush;
-  spatial::dimension_type dim;
-  std::cin >> dim;
-
-  if (dim >= 3) throw spatial::invalid_dimension("dim");
-
-  static_container container1;
-  runtime_container container2(dim); // Note: if dim was equal to 0, a
-                                     // spatial::invalid_dimension would be thrown
-  return 0;
-}
-\endcode
+\include runtime_container_rank.cpp
 
 \section tutorial_step1 Inserting Any Type of Objects
 

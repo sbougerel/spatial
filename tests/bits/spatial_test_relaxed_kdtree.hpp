@@ -238,8 +238,8 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_bulk_insert )
   for(std::tr1::array<point2d, 100>::iterator i
         = points.begin(); i != points.end(); ++i)
     {
-      (*i)[0] = rand() % 20;
-      (*i)[1] = rand() % 20;
+      (*i)[0] = std::rand() % 20;
+      (*i)[1] = std::rand() % 20;
     }
   BOOST_REQUIRE_NO_THROW(kdtree.insert(points.begin(), points.end()));
   BOOST_CHECK(kdtree.empty() == false);
