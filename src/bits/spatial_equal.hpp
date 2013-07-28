@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_equal.hpp
- *  @brief  Contains the definition of the equal iterators. These iterators
+ *  \file   spatial_equal.hpp
+ *  \brief  Contains the definition of the equal iterators. These iterators
  *  walk through all items in the container that are equal to a key given in
  *  parameter of the iterator.
  */
@@ -320,6 +320,16 @@ namespace spatial
              const typename equal_iterator<Container>::key_type& model)
   { return equal_end(container, model); }
 
+  /**
+   *  Find the first element in \c container that compares equally to \c model,
+   *  using \c container's \c key_compare comparator.
+   *
+   *  \tparam Container The container type being iterated.
+   *  \param container The container being iterated.
+   *  \param model A model to find matches among other keys stored in the
+   *  container.
+   */
+  ///@{
   template <typename Container>
   inline equal_iterator<Container>
   equal_begin(Container& container,
@@ -347,6 +357,7 @@ namespace spatial
   equal_cbegin(const Container& container,
                const typename equal_iterator<Container>::key_type& model)
   { return equal_begin(container, model); }
+  ///@}
 
   namespace details
   {

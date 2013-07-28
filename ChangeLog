@@ -1,3 +1,9 @@
+2013-07-28  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * v2.1.0 Added the new equal_iterator optimized for containers with
+        strict invariant trees, such as idle_point_multiset, idle_box_multiset,
+        etc.
+
 2013-07-21  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * v2.0.1 Some updates to the documentation.

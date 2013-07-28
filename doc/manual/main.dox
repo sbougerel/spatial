@@ -133,6 +133,19 @@ contributor, check out \ref contributing "Contributing".
 \page changelog Change Log
 \tableofcontents
 
+\section ver210 Version 2.1.0
+
+- \ref spatial::equal_iterator was rewritten independantly from \region_iterator. This
+  means that you can't call the \c predicate() accessors from \region_iterator.
+  This has been replaced by the \c model() and \c key_comp() accessors. The
+  rest of the interface remains similar, and unless you were using
+  \c predicate(), the changes will apply transparently.
+
+\section ver201 Version 2.0.1
+
+- Some minor improvements to documentation and examples. Plus some addition of
+  tests and fixes.
+
 \section ver2 Version 2.0.0
 
 - This is version 2 of the library and since it's a major number update, it
@@ -432,7 +445,7 @@ not provided (it probably will in the future), so in the current containers you
 can store in one container as many copies of the same object's key as you
 require. If you wish to store only one key per container, you need to accomplish
 this by checking first if a given key exists. You can do this with \ref
-spatial::equal_begin().
+spatial::equal_begin() or by calling \c find() from the container.
 
 Box and point containers are in fact the same containers, expect that box
 containers can only store objects in dimensions that are a multiple of two. They

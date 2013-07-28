@@ -9,7 +9,7 @@ ALIASES += "idle_point_multimap=\ref spatial::idle_point_multimap"
 ALIASES += "box_multimap=\ref spatial::box_multimap"
 ALIASES += "idle_box_multimap=\ref spatial::idle_box_multimap"
 
-# Region Iterators
+# Iterators
 #
 ALIASES += "region_iterator=\ref spatial::region_iterator"
 ALIASES += "neighbor_iterator=\ref spatial::neighbor_iterator"
@@ -19,6 +19,8 @@ ALIASES += "region_iterator_pair=\ref spatial::region_iterator_pair"
 ALIASES += "neighbor_iterator_pair=\ref spatial::neighbor_iterator_pair"
 ALIASES += "mapping_iterator_pair=\ref spatial::mapping_iterator_pair"
 ALIASES += "ordered_iterator_pair=\ref spatial::ordered_iterator_pair"
+ALIASES += "equal_iterator=\ref spatial::equal_iterator"
+ALIASES += "equal_iterator_pair=\ref spatial::equal_iterator_pair"
 
 # Metrics
 #

@@ -13,8 +13,6 @@
 #ifndef SPATIAL_EQUAL_ITERATOR_HPP
 #define SPATIAL_EQUAL_ITERATOR_HPP
 
-// One day equal_iterator will be a specialized iterator and will be different
-// from the region_iterator.
 #include "bits/spatial_equal.hpp"
 
 namespace spatial
