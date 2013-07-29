@@ -6,10 +6,10 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_test_exceptions.hpp
- *  @brief  All tests for the elements defined in spatial_exceptions.hpp are
+ *  \file   spatial_test_exceptions.hpp
+ *  All tests for the elements defined in spatial_exceptions.hpp are
  *  located in this file.
- *  @see spatial_exceptions.hpp
+ *  \see spatial_exceptions.hpp
  */
 
 #ifndef SPATIAL_TEST_EXCEPTIONS_HPP

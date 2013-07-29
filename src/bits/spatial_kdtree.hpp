@@ -7,7 +7,7 @@
 
 /**
  *  \file   spatial_kdtree.hpp
- *  \brief  Kdtree class is defined in this file and its implementation is in
+ *  Kdtree class is defined in this file and its implementation is in
  *  the corresponding *.tpp file.
  *
  *  The Kdtree class defines all the methods and algorithms to store, delete and
@@ -89,7 +89,7 @@ namespace spatial
 
     private:
       /**
-       *  @brief The tree header.
+       *  \brief The tree header.
        *
        *  The header node contains pointers to the root, the right most node and
        *  the header node marker (which is the left node of the header). The
@@ -196,7 +196,7 @@ namespace spatial
       }
 
       /**
-       *  @brief  Destroy and deallocate @c node.
+       *  Destroy and deallocate \c node.
        */
       void
       destroy_node(node_ptr node)
@@ -206,19 +206,19 @@ namespace spatial
       }
 
       /**
-       *  @brief  Destroy and deallocate all nodes in the container.
+       *  Destroy and deallocate all nodes in the container.
        */
       void
       destroy_all_nodes();
 
     private:
       /**
-       *  @brief  Insert a node already allocated into the tree.
+       *  Insert a node already allocated into the tree.
        */
       iterator insert_node(node_ptr target_node);
 
       /**
-       *  @brief  Insert all the nodes in @p [first,last) into the tree, by
+       *  Insert all the nodes in \p [first,last) into the tree, by
        *  first sorting the nodes according to the dimension of interest.
        *
        *  This function is semi-recursive. It iterates when walking down left
@@ -229,24 +229,24 @@ namespace spatial
        typename std::vector<node_ptr>::iterator last, dimension_type dim);
 
       /**
-       *  @brief  Copy the exact sturcture of the sub-tree pointed to by @c
+       *  Copy the exact sturcture of the sub-tree pointed to by \c
        *  other_node into the current empty tree.
        *
        *  The structural copy preserve all characteristics of the sub-tree
-       *  pointed to by @c other_node.
+       *  pointed to by \c other_node.
        */
       void copy_structure(const Self& other);
 
       /**
-       *  @brief  Copy the content of @p other to the tree and rebalances the
-       *  values in the tree resulting in most query having an @c O(log(n))
+       *  Copy the content of \p other to the tree and rebalances the
+       *  values in the tree resulting in most query having an \c O(log(n))
        *  order of complexity.
        */
       void copy_rebalance(const Self& other);
 
       /**
-       *  @brief  Erase the node located at @c node with current dimension
-       *  @c node_dim.
+       *  Erase the node located at \c node with current dimension
+       *  \c node_dim.
        */
       void erase_node(dimension_type node_dim, node_ptr node);
 
@@ -318,34 +318,34 @@ namespace spatial
       get_allocator() const { return get_value_allocator(); }
 
       /**
-       *  @brief  True if the tree is empty.
+       *  True if the tree is empty.
        */
       bool empty() const { return (get_header() == get_root()); }
 
       /**
-       *  @brief  Returns the number of elements in the K-d tree.
+       *  Returns the number of elements in the K-d tree.
        */
       size_type size() const { return _impl._count(); }
 
       /**
-       *  @brief  Returns the number of elements in the K-d tree. Same as size().
-       *  @see size()
+       *  Returns the number of elements in the K-d tree. Same as size().
+       *  \see size()
        */
       size_type count() const { return _impl._count(); }
 
       /**
-       *  @brief  Erase all elements in the K-d tree.
+       *  Erase all elements in the K-d tree.
        */
       void clear()
       { destroy_all_nodes(); _impl.initialize(); }
 
       /**
-       *  @brief  The maximum number of elements that can be allocated.
+       *  The maximum number of elements that can be allocated.
        */
       size_type max_size() const
       { return _impl._header.base().max_size(); }
 
-      //@{
+      ///@{
       /**
        *  Find the first node that matches with \c key and returns an iterator
        *  to it found, otherwise it returns an iterator to the element past the
@@ -370,7 +370,7 @@ namespace spatial
       const_iterator
       find(const key_type& key) const
       { return equal_begin(*this, key); }
-      //@}
+      ///@}
 
     public:
       Kdtree()
@@ -401,8 +401,8 @@ namespace spatial
        *  structure of \c other tree. Therefore, all operations should behave
        *  similarly to both trees after the copy.
        *
-       *  If \c balancing is @c true, the new tree is a balanced copy of a \c
-       *  other tree, resulting in \Ofrac order of complexity on most search
+       *  If \c balancing is \c true, the new tree is a balanced copy of a \c
+       *  other tree, resulting in \Onfd order of complexity on most search
        *  functions.
        */
       Kdtree(const Self& other, bool balancing = false) : _impl(other._impl)
@@ -415,12 +415,12 @@ namespace spatial
       }
 
       /**
-       *  @brief  Assignment of @c other into the tree, with deep copy.
+       *  Assignment of \c other into the tree, with deep copy.
        *
-       *  The copy preserve the structure of the tree @c other. Therefore, all
+       *  The copy preserve the structure of the tree \c other. Therefore, all
        *  operations should behave similarly to both trees after the copy.
        *
-       *  @note  The allocator of the tree is not modified by the assignment.
+       *  \note  The allocator of the tree is not modified by the assignment.
        */
       Self&
       operator=(const Self& other)
@@ -439,18 +439,18 @@ namespace spatial
       }
 
       /**
-       *  @brief  Deallocate all nodes in the destructor.
+       *  Deallocate all nodes in the destructor.
        */
       ~Kdtree()
       { destroy_all_nodes(); }
 
     public:
       /**
-       *  @brief  Swap the K-d tree content with others
+       *  Swap the K-d tree content with others
        *
        *  The extra overhead of the test is not required in common cases:
        *  users intentionally swap different objects.
-       *  @warning  This function do not test: (this != &other)
+       *  \warning  This function do not test: (this != &other)
        */
       void
       swap(Self& other)
@@ -486,24 +486,22 @@ namespace spatial
 
       // Mutable functions
       /**
-       *  @brief  Rebalance the K-d tree near-optimally, resulting in @c log(n)
-       *  order of complexity on most search functions.
+       *  Rebalance the \kdtree near-optimally, resulting in \Ologn order of
+       *  complexity on most search functions.
        *
        *  This function is time & memory consuming. Internally, it creates a
-       *  vector of pointer to the node, and thus requires a substantial amount of
-       *  memory for a large K-d tree. Ideally, this function should be called
+       *  vector of pointer to the node, and thus requires a substantial amount
+       *  of memory for a large \kdtree. Ideally, this function should be called
        *  only once, when all the elements you will be working on have been
        *  inserted in the tree.
        *
        *  If you need to insert and erase multiple elements continuously, consider
        *  using other containers than the "idle" family of containers.
-       *
-       *  @see Relaxed_kdtree
        */
       void rebalance();
 
       /**
-       *  @brief  Insert a single @c value element in the container.
+       *  Insert a single \c value element in the container.
        */
       iterator
       insert(const value_type& value)
@@ -513,9 +511,9 @@ namespace spatial
       }
 
       /**
-       *  @brief  Insert a serie of values in the container at once.
+       *  Insert a serie of values in the container at once.
        *
-       *  The parameter @c first and @c last only need to be a model of @c
+       *  The parameter \c first and \c last only need to be a model of \c
        *  InputIterator. Elements are inserted in a single pass.
        */
       template<typename InputIterator>
@@ -524,7 +522,7 @@ namespace spatial
       { for (; first != last; ++first) { insert(*first); } }
 
       /**
-       *  @brief  Deletes the node pointed to by the iterator.
+       *  Deletes the node pointed to by the iterator.
        *
        *  The iterator must be pointing to an existing node belonging to the
        *  related tree, or dire things may happen.
@@ -533,11 +531,11 @@ namespace spatial
       erase(iterator pointer);
 
       /**
-       *  @brief  Deletes all nodes that match key @c value.
-       *  @see    find
-       *  @param  value that will be compared with the tree nodes.
+       *  Deletes all nodes that match key \c value.
+       *  \see    find
+       *  \param  value that will be compared with the tree nodes.
        *
-       *  The type @c key_type must be equally comparable.
+       *  The type \c key_type must be equally comparable.
        */
       size_type
       erase(const key_type& value);
@@ -564,7 +562,7 @@ namespace spatial
     };
 
     /**
-     *  @brief  Swap the content of the tree @p left and @p right.
+     *  Swap the content of the tree \p left and \p right.
      */
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Alloc>
@@ -581,7 +579,7 @@ namespace spatial
      *  \param lhs Left-hand side container.
      *  \param rhs Right-hand side container.
      */
-    //@{
+    ///@{
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Alloc>
     inline bool
@@ -599,7 +597,7 @@ namespace spatial
     operator!=(const Kdtree<Rank, Key, Value, Compare, Alloc>& lhs,
                const Kdtree<Rank, Key, Value, Compare, Alloc>& rhs)
     { return !(lhs.size() == rhs.size()); }
-    //@}
+    ///@}
 
     /**
      *  Operations <, >, <= and >= behave as if using algorithm
@@ -609,7 +607,7 @@ namespace spatial
      *  \param lhs Left-hand side container.
      *  \param rhs Right-hand side container.
      */
-    //@{
+    ///@{
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Alloc>
     inline bool
@@ -641,7 +639,7 @@ namespace spatial
     operator>=(const Kdtree<Rank, Key, Value, Compare, Alloc>& lhs,
                const Kdtree<Rank, Key, Value, Compare, Alloc>& rhs)
     { return !(lhs < rhs); }
-    //@}
+    ///@}
 
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Alloc>

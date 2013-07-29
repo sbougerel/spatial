@@ -6,9 +6,9 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_test_fixtures.hpp
+ *  \file   spatial_test_fixtures.hpp
  *
- *  @brief  Defines the types that will be used in the unit tests.
+ *  Defines the types that will be used in the unit tests.
  */
 
 #ifndef SPATIAL_TEST_TYPES_HPP
@@ -56,7 +56,7 @@ template <typename Tp> struct unit_traits { };
 /**
  *  Reports an error if type Tp1 differs from type Tp2.
  */
-//@{
+///@{
 template<typename Tp1, typename Tp2>
 struct check_is_same
 {
@@ -67,7 +67,7 @@ struct check_is_same<Tp, Tp>
 {
   check_is_same() { }
 };
-//@}
+///@}
 
 // Definitions of int2 below, a simple array of simple type
 

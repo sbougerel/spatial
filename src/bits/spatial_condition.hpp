@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_condition.hpp
- *  @brief  Defines spatial::details::condition meta programing type
+ *  \file   spatial_condition.hpp
+ *  Defines spatial::details::condition meta programing type
  */
 
 #ifndef SPATIAL_CONDITION_HPP
@@ -17,7 +17,7 @@ namespace spatial
 {
   namespace details
   {
-    //@{
+    ///@{
     /*
      *  A meta-programing type that picks Tp1 if \e true or Tp2 otherwise.
      */
@@ -27,7 +27,7 @@ namespace spatial
     template<typename Tp1, typename Tp2>
     struct condition<false, Tp1, Tp2>
     { typedef Tp2 type; };
-    //@}
+    ///@}
   }
 }
 

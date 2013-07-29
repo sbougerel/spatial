@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_math.hpp
- *  @brief  Gather in one file all the mathematical operations, mainly for the
+ *  \file   spatial_math.hpp
+ *  Gather in one file all the mathematical operations, mainly for the
  *  metric types.
  *
  *  Most of the mathematical operations written in this file are not very well
@@ -181,8 +181,8 @@ namespace spatial
   namespace math
   {
     /**
-     *  Compute the distance between the @p origin and the closest point to the
-     *  plane orthogonal to the axis of dimension @c dim and passing by @c key.
+     *  Compute the distance between the \p origin and the closest point to the
+     *  plane orthogonal to the axis of dimension \c dim and passing by \c key.
      */
     template <typename Key, typename Difference, typename Unit>
     inline typename enable_if<std::tr1::is_floating_point<Unit>, Unit>::type
@@ -239,9 +239,9 @@ namespace spatial
     }
 
     /**
-     *  @brief  Compute the distance between the @p origin and the closest point
-     *  to the plane orthogonal to the axis of dimension @c dim and passing by
-     *  @c key.
+     *  Compute the distance between the \p origin and the closest point
+     *  to the plane orthogonal to the axis of dimension \c dim and passing by
+     *  \c key.
      */
     template <typename Key, typename Difference, typename Unit>
     inline typename enable_if<std::tr1::is_arithmetic<Unit>, Unit>::type
@@ -257,8 +257,8 @@ namespace spatial
     }
 
     /**
-     *  @brief  Compute the square value of the distance between @p origin and
-     *  @p key.
+     *  Compute the square value of the distance between \p origin and
+     *  \p key.
      */
     template <typename Key, typename Difference, typename Unit>
     inline typename enable_if<std::tr1::is_arithmetic<Unit>, Unit>::type
@@ -283,9 +283,9 @@ namespace spatial
     }
 
     /**
-     *  @brief  Compute the distance between the @p origin and the closest point
-     *  to the plane orthogonal to the axis of dimension @c dim and passing by
-     *  @c key.
+     *  Compute the distance between the \p origin and the closest point
+     *  to the plane orthogonal to the axis of dimension \c dim and passing by
+     *  \c key.
      */
     template <typename Key, typename Difference, typename Unit>
     inline typename enable_if<std::tr1::is_arithmetic<Unit>, Unit>::type
@@ -300,7 +300,7 @@ namespace spatial
     }
 
     /**
-     *  @brief  Compute the manhattan distance between @p origin and @p key.
+     *  Compute the manhattan distance between \p origin and \p key.
      */
     template <typename Key, typename Difference, typename Unit>
     inline typename enable_if<std::tr1::is_arithmetic<Unit>, Unit>::type

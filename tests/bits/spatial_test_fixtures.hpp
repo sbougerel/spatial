@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_test_fixtures.hpp
- *  @brief  Contains the list of all fixtures required for the test in the
+ *  \file   spatial_test_fixtures.hpp
+ *  Contains the list of all fixtures required for the test in the
  *  library.
  *
  *  This file defines 2 type of components: fixtures and manipulators. Fixtures

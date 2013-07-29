@@ -7,7 +7,7 @@
 
 /**
  *  \file   spatial_test_region.hpp
- *  \brief  All tests for the elements defined in region_iterator.hpp are
+ *  All tests for the elements defined in region_iterator.hpp are
  *  located in this file.
  *  \see region_iterator.hpp
  */

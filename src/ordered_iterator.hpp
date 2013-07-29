@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   ordered_iterator.hpp
- *  @brief  Provides ordered iterator and all the functions around it.
+ *  \file   ordered_iterator.hpp
+ *  Provides \ordered_iterator and all the functions around it.
  */
 
 #ifndef SPATIAL_ORDERED_ITERATOR_HPP
@@ -19,7 +19,7 @@
 namespace spatial
 {
   /**
-   *  This structure defines a pair of mutable ordered iterator.
+   *  This structure defines a pair of mutable \ordered_iterator.
    *
    *  \tparam Ct The container to which these iterator relate to.
    *  \see ordered_iterator
@@ -38,7 +38,7 @@ namespace spatial
     ordered_iterator_pair() { }
 
     //! Regular constructor that builds a ordered_iterator_pair out of 2
-    //! ordered_iterators.
+    //! \ordered_iterators.
     ordered_iterator_pair(const ordered_iterator<Ct>& a,
                           const ordered_iterator<Ct>& b) : Base(a, b) { }
   };
@@ -64,7 +64,7 @@ namespace spatial
     ordered_iterator_pair() { }
 
     //! Regular constructor that builds a ordered_iterator_pair out of 2
-    //! ordered_iterators.
+    //! \ordered_iterators.
     ordered_iterator_pair(const ordered_iterator<const Ct>& a,
                           const ordered_iterator<const Ct>& b) : Base(a, b)
     { }
@@ -78,24 +78,17 @@ namespace spatial
   /**
    *  Returns a pair of iterator on the first and the last value in the range
    *  that can be iterated. This function is convenient to use with
-   *  \tc{std::tie}, and is equivalent to calling \ref ordered_begin() and \ref
+   *  \c std::tie, and is equivalent to calling \ref ordered_begin() and \ref
    *  ordered_end() on both iterators.
-   *
-   *  \attention This iterator impose constness constraints on its \c value_type
-   *  if the container's is a set and not a map. Iterators on sets prevent
-   *  modification of the \c value_type because modifying the key may result in
-   *  invalidation of the tree. If the container is a map, only the \c
-   *  mapped_type can be modified (the \c second element).
    *
    *  \tparam Container The type of container to iterate.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the past-the-end position in the
    *  container.
    *
-   *  \dfractime
-   *  \see ordered
+   *  \fractime
    */
   template <typename Container>
   inline ordered_iterator_pair<Container>
@@ -105,22 +98,21 @@ namespace spatial
                                             ordered_end(container));
   }
 
-  //@{
+  ///@{
   /**
    *  Returns a pair of constant iterator on the first and the last value in the
    *  range that can be iterated. This function is convenient to use with
-   *  \tc{std::tie}, and is equivalent to calling \ref ordered_begin() and \ref
+   *  \c std::tie, and is equivalent to calling \ref ordered_begin() and \ref
    *  ordered_end() on both iterators.
    *
    *  \tparam Container The type of container to iterate.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the past-the-end position in the
    *  container.
    *
-   *  \dfractime
-   *  \see ordered
+   *  \fractime
    */
   template <typename Container>
   inline ordered_iterator_pair<const Container>
@@ -137,7 +129,7 @@ namespace spatial
     return ordered_iterator_pair<const Container>(ordered_begin(container),
                                                   ordered_end(container));
   }
-  //@}
+  ///@}
 
   namespace details
   {
@@ -161,7 +153,7 @@ namespace spatial
      *  greater or equal to \c bound along \c iter's \c ordered_dim, or to the
      *  parent of the value pointed to.
      *
-     *  \dfractime
+     *  \fractime
      */
     template <typename Container>
     ordered_iterator<Container>&
@@ -189,7 +181,7 @@ namespace spatial
      *  less than \c bound along \c iter's \c ordered_dim, or to the
      *  parent of the value pointed to.
      *
-     *  \dfractime
+     *  \fractime
      */
     template <typename Container>
     ordered_iterator<Container>&
@@ -213,12 +205,11 @@ namespace spatial
    *  \param bound The lowest bound to the iterator position.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the value with the smallest coordinate
    *  greater or equal to \c bound along \c ordered_dim.
    *
-   *  \dfractime
-   *  \see ordered
+   *  \fractime
    */
   template <typename Container>
   inline ordered_iterator<Container>
@@ -232,7 +223,7 @@ namespace spatial
     return details::lower_bound_ordered(it, bound);
   }
 
-  //@{
+  ///@{
   /**
    *  Finds the value with the smallest coordinate along the ordered dimension
    *  that is greater or equal to \c bound, and return a constant iterator to
@@ -242,12 +233,11 @@ namespace spatial
    *  \param bound The lowest bound to the iterator position.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the value with the smallest coordinate
    *  greater or equal to \c bound along \c ordered_dim.
    *
-   *  \dfractime
-   *  \see ordered
+   *  \fractime
    */
   template <typename Container>
   inline ordered_iterator<const Container>
@@ -267,7 +257,7 @@ namespace spatial
   (const Container& container,
    const typename container_traits<Container>::key_type& bound)
   { return ordered_lower_bound(container, bound); }
-  //@}
+  ///@}
 
   /**
    *  Finds the value with the largest coordinate along the ordered dimension
@@ -284,12 +274,12 @@ namespace spatial
    *  \param bound The lowest bound to the iterator position.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the value with the smallest coordinate
    *  greater or equal to \c bound along \c ordered_dim.
    *
-   *  \dfractime
-   *  \see ordered
+   *  \fractime
+   *  \see ordered_iterator
    */
   template <typename Container>
   inline ordered_iterator<Container>
@@ -303,7 +293,7 @@ namespace spatial
     return details::upper_bound_ordered(it, bound);
   }
 
-  //@{
+  ///@{
   /**
    *  Finds the value with the largest coordinate along the ordered dimension
    *  that is stricly less than \c bound, and return an iterator pointing to
@@ -313,12 +303,12 @@ namespace spatial
    *  \param bound The lowest bound to the iterator position.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the value with the smallest coordinate
    *  greater or equal to \c bound along \c ordered_dim.
    *
-   *  \dfractime
-   *  \see ordered
+   *  \fractime
+   *  \see ordered_iterator
    */
   template <typename Container>
   inline ordered_iterator<const Container>
@@ -338,7 +328,7 @@ namespace spatial
   (const Container& container,
    const typename container_traits<Container>::key_type& bound)
   { return ordered_upper_bound(container, bound); }
-  //@}
+  ///@}
 
   namespace details
   {

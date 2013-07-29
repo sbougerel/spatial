@@ -7,7 +7,7 @@
 
 /**
  *  \file   exception.hpp
- *  \brief  Defines exceptions that are being thrown by the library.
+ *  Defines exceptions that are being thrown by the library.
  */
 
 #ifndef SPATIAL_EXCEPTION_HPP
@@ -15,12 +15,11 @@
 
 #include <stdexcept>
 #include "spatial.hpp"
-#include "bits/spatial_traits.hpp"
 
 namespace spatial
 {
   /**
-   *  \brief  Thrown to report that an invalid rank was passed as an argument.
+   *  Thrown to report that an invalid rank was passed as an argument.
    *  Generally thrown because 0 was passed as an argument for the rank.
    */
   struct invalid_rank : std::logic_error
@@ -30,7 +29,7 @@ namespace spatial
   };
 
   /**
-   *  \brief  Thrown to report that an odd rank value was passed as a argument.
+   *  Thrown to report that an odd rank value was passed as a argument.
    */
   struct invalid_odd_rank : std::logic_error
   {
@@ -39,7 +38,7 @@ namespace spatial
   };
 
   /**
-   *  \brief  Thrown to report that an invalid dimension was passed as an
+   *  Thrown to report that an invalid dimension was passed as an
    *  argument.
    */
   struct invalid_dimension : std::logic_error
@@ -49,7 +48,7 @@ namespace spatial
   };
 
   /**
-   *  \brief  Thrown to report that an invalid node was passed as an argument.
+   *  Thrown to report that an invalid node was passed as an argument.
    */
   struct invalid_node : std::logic_error
   {
@@ -58,7 +57,7 @@ namespace spatial
   };
 
   /**
-   *  \brief  Thrown to report that an invalid iterator was passed as an argument.
+   *  Thrown to report that an invalid iterator was passed as an argument.
    */
   struct invalid_iterator : std::logic_error
   {
@@ -67,7 +66,7 @@ namespace spatial
   };
 
   /**
-   *  \brief  Thrown to report that an empty container was passed as an argument,
+   *  Thrown to report that an empty container was passed as an argument,
    *  while the function does not accept an empty container.
    */
   struct invalid_empty_container : std::logic_error

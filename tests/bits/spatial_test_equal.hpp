@@ -7,7 +7,7 @@
 
 /**
  *  \file   spatial_test_equal.hpp
- *  \brief  All tests for the elements defined in equal_iterator.hpp are
+ *  All tests for the elements defined in equal_iterator.hpp are
  *  located in this file.
  *  \see equal_iterator.hpp
  */

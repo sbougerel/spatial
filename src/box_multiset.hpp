@@ -6,19 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   box_multiset.hpp
- *  @brief  Contains the definition of the @ref box_multiset and @ref
- *  runtime_box_multiset containers. These containers are not mapped containers and
- *  store values in space that can be represented as boxes.
- *
- *  Iterating these containers always yield a constant value iterator. That is
- *  because modifying the value stored in the container may compromise the
- *  ordering in the container. One way around this issue is to use a @ref
- *  box_multimap container or to @c const_cast the value dereferenced from the
- *  iterator.
- *
- *  @see box_multimap
- *  @see box_multiset
+ *  \file   box_multiset.hpp
+ *  Contains the definition of the \box_multiset.
  */
 
 #ifndef SPATIAL_BOX_MULTISET_HPP
@@ -32,7 +21,15 @@
 namespace spatial
 {
   /**
-   *  This container only accepts dimension that are even (multiples of 2).
+   *  These containers are not mapped containers and store values in space that
+   *  can be represented as boxes. Hence, this container only accepts dimension
+   *  that are even (multiples of 2).
+   *
+   *  Iterating these containers always yield a constant value iterator. That is
+   *  because modifying the value stored in the container may compromise the
+   *  ordering in the container. One way around this issue is to use a \ref
+   *  box_multimap container or to \c const_cast the value dereferenced from the
+   *  iterator.
    */
   template<dimension_type Rank, typename Key,
            typename Compare = bracket_less<Key>,

@@ -6,10 +6,10 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_test_kdtree.hpp
- *  @brief  All tests for the elements defined in spatial_kdtree.hpp are
+ *  \file   spatial_test_kdtree.hpp
+ *  All tests for the elements defined in spatial_kdtree.hpp are
  *  located in this file.
- *  @see spatial_kdtree.hpp
+ *  \see spatial_kdtree.hpp
  */
 
 #ifndef SPATIAL_TEST_KDTREE_HPP

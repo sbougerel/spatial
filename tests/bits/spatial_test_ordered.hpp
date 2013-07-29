@@ -6,10 +6,10 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_test_ordered.hpp
- *  @brief  All tests for the elements defined in spatial_ordered.hpp are
+ *  \file   spatial_test_ordered.hpp
+ *  All tests for the elements defined in spatial_ordered.hpp are
  *  located in this file.
- *  @see spatial_ordered.hpp
+ *  \see spatial_ordered.hpp
  */
 
 #ifndef SPATIAL_TEST_ORDERED_HPP

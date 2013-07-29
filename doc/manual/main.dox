@@ -160,7 +160,7 @@ contributor, check out \ref contributing "Contributing".
   - `sptial::pointset` is now called \point_multiset to reflect truly it's
     equivalence to multiset, and not set. Similar changes for \box_multiset.
 
-  - \box_mulitset (formerly `spatial::boxset`) does not multiply the dimension
+  - \box_multiset (formerly `spatial::boxset`) does not multiply the dimension
     specified by 2 anymore. Instead it uses concept checking to make sure that
     the dimension given is even.
 
@@ -181,9 +181,9 @@ contributor, check out \ref contributing "Contributing".
     etc. The new interface is much more elegant and in line with the \STL
     design.
 
-  - range iterators have been renamed to \region_iterator, because you can now
-    request for a \ref spatial::region_range(container, predicate) which returns
-    a pair of iterators \region_iterator_pair
+  - range iterators have been renamed to \region_iterator, because you
+    can now request for a \ref spatial::region_range() which returns a
+    pair of iterators \region_iterator_pair
 
   - a new set of iterator called \ordered_iterator have been created, and they
     iterate all nodes in the tree in deterministic fashion, so that 2 trees
@@ -677,8 +677,11 @@ if ( container.erase(point_to_erase) != 0 )
 While most basic operation closely resemble the \STL containers, there are a few
 that are only meaniful for the \Spatial containers.
 
-One of them is the \ref point_multiset::rebalance() function that, as its name
-implies, balances all elements in the container.
+One of them is the inherited \ref spatial::details::Kdtree::rebalance() function
+that, as its name implies, balances all elements in the container. It makes
+sense only for containers which do not reblance their elements on insertion,
+such as \idle_point_multiset, \idle_point_multimap, \idle_box_multiset, or
+\idle_box_multimap.
 
 \section tutorial_step3 Spatial operations on containers
 
@@ -980,13 +983,12 @@ for(; iter != end; ++iter)
 }
 \endcode
 
-\note In the example above, the call to \ref mapping_upper_bound() was not
-included in the for loop, because the call is not free. So it is better to call
-it once and save the results.
+\note In the example above, the call to \ref spatial::mapping_upper_bound() was
+not included in the for loop, because the call is not free. So it is better to
+call it once and save the results.
 
 More similar queries can be done in this way, so you could find the authors
 in lexicographic order, or the titles in lexicographic order, etc.
-
 */
 
 /**

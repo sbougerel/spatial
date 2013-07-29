@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   equal_iterator.hpp
- *  @brief  Provides equal_iterator and all the functions around it.
+ *  \file   equal_iterator.hpp
+ *  Provides equal_iterator and all the functions around it.
  */
 
 #ifndef SPATIAL_EQUAL_ITERATOR_HPP

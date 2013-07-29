@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   metric.hpp
- *  @brief  Contains the definition of the default metrics available to use
+ *  \file   metric.hpp
+ *  Contains the definition of the default metrics available to use
  *  with the neighbor iterators.
  *
  *  \see neighbor
@@ -29,7 +29,7 @@ namespace spatial
    *  Defines a metric working on the Euclidian space where distances are
    *  expressed in one of C++'s floating point types.
    *
-   *  \concept A concept of \ref Metric.
+   *  \concept A concept of \metric.
    *
    *  \attention \c This metric works on floating types only. It will fail
    *  to compile if given non-floating types as a parameter for the distance.
@@ -80,8 +80,8 @@ namespace spatial
       : _diff(other.difference()) { }
 
     /**
-     *  Compute the distance between the point of @c origin and the @c key.
-     *  @return The resulting distance.
+     *  Compute the distance between the point of \c origin and the \c key.
+     *  \return The resulting distance.
      */
     distance_type
     distance_to_key(dimension_type rank,
@@ -120,10 +120,10 @@ namespace spatial
    *  the distances are being computed into a scalar value expressed with
    *  the DistanceType which is one of C++'s arithmetic types.
    *
-   *  \concept A concept of \ref Metric.
+   *  \concept A concept of \metric.
    *
-   *  This method of distance calculation is more flexible than \ref
-   *  euclidian<> since it can support all of the C++'s arithmetic types.
+   *  This method of distance calculation is more flexible than
+   *  \euclidian since it can support all of the C++'s arithmetic types.
    *
    *  When using this metric and reading the distance value, you must
    *  remember that you are reading the square of the distance, and not the
@@ -175,8 +175,8 @@ namespace spatial
       : _diff(other.difference()) { }
 
     /**
-     *  Compute the distance between the point of @c origin and the @c key.
-     *  @return The resulting square distance.
+     *  Compute the distance between the point of \c origin and the \c key.
+     *  \return The resulting square distance.
      */
     distance_type
     distance_to_key(dimension_type rank,
@@ -187,8 +187,8 @@ namespace spatial
     }
 
     /**
-     *  The distance between the point of @c origin and the closest point to
-     *  the plane orthogonal to the axis of dimension @c dim and crossing @c
+     *  The distance between the point of \c origin and the closest point to
+     *  the plane orthogonal to the axis of dimension \c dim and crossing \c
      *  key.
      *  \return The resulting square distance.
      */
@@ -210,15 +210,15 @@ namespace spatial
    *  Defines a metric for the a space where distances are the sum
    *  of all the elements of the vector. Also known as the taxicab metric.
    *
-   *  \concept A concept of \ref Metric.
+   *  \concept A concept of \metric.
    *
    *  \tparam Ct The container used with this metric.
    *  \tparam DistanceType The type used to compute distance values.
    *  \tparam Diff A difference functor that compute the difference between 2
    *  elements of a the Container's key type, along the same dimension.
    *
-   *  This method of distance calculation is more flexible than \ref
-   *  euclidian<> since it can support all of the C++'s arithmetic types.
+   *  This method of distance calculation is more flexible than \euclidian
+   *  since it can support all of the C++'s arithmetic types.
    *
    *  This metric is the fastest of all built-in metric, and generally offers
    *  an acceptable approaximation to the euclidian metric. However the

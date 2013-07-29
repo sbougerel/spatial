@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_traits.hpp
- *  @brief  Define several trait classes for types in the library, including
+ *  \file   traits.hpp
+ *  Define several trait classes for types in the library, including
  *  containers and metric types.
  */
 
@@ -23,6 +23,8 @@ namespace spatial
    *  binds together in the same object the node information, the key and the
    *  value type. The linking mode allows to retrieve each of these objects from
    *  the node, and allows to retrieve the node from the link itself.
+   *
+   *  \tparam Mode A model of \linkmode.
    */
   template<typename Mode>
   struct mode_traits
@@ -32,7 +34,7 @@ namespace spatial
   };
 
   /**
-   *  \brief  The traits type for all containers in the spatial
+   *  The traits type for all containers in the spatial
    *  namespace. Defines all the types that must be published or resolved from
    *  the spatial container types.
    */
@@ -48,9 +50,9 @@ namespace spatial
     /**
      *  When mapped_type and key_type are different, value_type holds a pair
      *  formed by key_type (first) and mapped_type (second); this is the case
-     *  for \ref pointmap or \ref boxmap containers. In \ref pointset and \ref
-     *  boxset containers, \c key_type, \c mapped_type and \c value_type are all
-     *  similar types.
+     *  for \point_multimap or \box_multimap containers. In \point_multiset and
+     *  \box_multiset containers, \c key_type, \c mapped_type and \c value_type
+     *  are all similar types.
      */
     typedef typename Tp::value_type             value_type;
 
@@ -73,7 +75,7 @@ namespace spatial
     typedef typename Tp::const_reference        const_reference;
 
     /**
-     *  The \ref LinkMode type that is associated with the container. Accessing
+     *  The \linkmode type that is associated with the container. Accessing
      *  this type allows external iterators to tie the nodes in the container
      *  with the proper linking type.
      */
@@ -90,8 +92,8 @@ namespace spatial
 
     /**
      *  Comparison functor used to compare two instances of \c key_type. It is
-     *  also the type provided by the user in the various containers, \ref
-     *  pointset, \ref boxset, \ref pointmap or \ref boxmap.
+     *  also the type provided by the user in the various containers,
+     *  \point_multiset, \box_multiset, \point_multimap or \box_multimap.
      */
     typedef typename Tp::key_compare            key_compare;
 
@@ -102,9 +104,9 @@ namespace spatial
     typedef typename Tp::value_compare          value_compare;
 
     /**
-     *  The type used to represent the rank of the container. It is not a number
-     *  but a wrapper around a dimension_type value. A rank_type is a model of
-     *  \ref Rank.
+     *  The type used to represent the rank of the container. Either
+     *  \static_rank or \dynamic_rank. It is not a number but a wrapper around a
+     *  dimension_type value.
      */
     typedef typename Tp::rank_type              rank_type;
 
@@ -122,19 +124,21 @@ namespace spatial
   };
 
   /**
-   *  \brief  The traits type for all metrics in the spatial
-   *  namespace. Defines all the types that must be published or resolved from a
-   *  metric.
+   *  The traits type for all metrics in the spatial namespace. Defines all the
+   *  types that must be published or resolved from objects that are a model of
+   *  \metric.
+   *
+   *  \tparam Tp A model of \metric.
    */
   template <typename Tp>
   struct metric_traits
   {
     /**
-     *  \brief  The type used by the metric to represent distances.
+     *  The type used by the metric to represent distances.
      *
-     *  Distance may be user defined in some metric such as
-     *  spatial::manhathan, but in this case, the type must follow specific
-     *  rules to the metric, such as overload of specific operators.
+     *  Distance may be user defined in some metric such as \euclidian,
+     *  \quadrance or \manhathan, but in this case, the type must follow
+     *  specific rules to the metric, such as overload of specific operators.
      */
     typedef typename Tp::distance_type         distance_type;
   };

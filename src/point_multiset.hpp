@@ -6,18 +6,18 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   point_multiset.hpp
- *  @brief  Contains the definition of the @ref point_multiset. These
+ *  \file   point_multiset.hpp
+ *  Contains the definition of the \point_multiset. These
  *  containers are not mapped containers and store values in space that can
  *  be represented as points.
  *
  *  Iterating these containers always yield a constant value iterator. That is
  *  because modifying the value stored in the container may compromise the
- *  ordering in the container. One way around this issue is to use a @ref
- *  pointmap container or to @c const_cast the value dereferenced from the
+ *  ordering in the container. One way around this issue is to use a \ref
+ *  pointmap container or to \c const_cast the value dereferenced from the
  *  iterator.
  *
- *  @see point_multiset
+ *  \see point_multiset
  */
 
 #ifndef SPATIAL_POINT_MULTISET_HPP
@@ -70,14 +70,14 @@ namespace spatial
   };
 
   /**
-   *  Specialization for @ref point_multiset with runtime rank support. The rank of
-   *  the @ref point_multiset can be determined at run time and does not need to be
+   *  Specialization for \point_multiset with runtime rank support. The rank of
+   *  the \point_multiset can be determined at run time and does not need to be
    *  fixed at compile time. Using:
    *
-   *  @code
+   *  \code
    *    struct point { ... };
    *    point_multiset<0, point> my_set;
-   *  @endcode
+   *  \endcode
    */
   template<typename Key, typename Compare, typename BalancingPolicy,
            typename Alloc>

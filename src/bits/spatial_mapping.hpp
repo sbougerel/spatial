@@ -6,20 +6,15 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_mapping.hpp
- *  @brief  Contains the definition of the mapping iterators. These iterators
- *  walk through all items in the container in order from the lowest to the
- *  highest value along a particular dimension. The @key_comp comparator of the
- *  container is used for comparision.
- *
- *  @see mapping
+ *  \file   spatial_mapping.hpp
+ *  Contains the definition of the \mapping_iterator.
  */
 
 #ifndef SPATIAL_MAPPING_HPP
 #define SPATIAL_MAPPING_HPP
 
 #include <utility> // provides ::std::pair<> and ::std::make_pair()
-#include "spatial_traits.hpp"
+#include "../traits.hpp"
 #include "spatial_bidirectional.hpp"
 #include "spatial_rank.hpp"
 #include "spatial_except.hpp"
@@ -80,7 +75,7 @@ namespace spatial
        *  \f]
        *  Rank being the template rank provider for the iterator.
        *
-       *  \Warning If you modify this value directly, no safety check will be
+       *  \attention If you modify this value directly, no safety check will be
        *  performed.
        */
       dimension_type mapping_dim;
@@ -88,23 +83,17 @@ namespace spatial
   }
 
   /**
-   *  All elements returned by this iterator are ordered from the smallest to
-   *  the largest value of their key's coordinate along a single dimension,
-   *  called the mapping dimension.
+   *  This iterator walks through all items in the container in order from the
+   *  lowest to the highest value along a particular dimension. The \c key_comp
+   *  comparator of the container is used for comparision.
    *
-   *  In effect, that makes any container of the library behave as a std::set
-   *  or std::map. Through this iterator, a spatial container with 3
-   *  dimensions can provide the same features as 3 std::set(s) or std::map(s)
-   *  containing the same elements and ordered on each of these dimensions.
-   *  Beware that iteration through the tree is very efficient when the
-   *  dimension K-d tree is very small by comparison to the number of objects,
-   *  but pretty inefficient otherwise, by comparison to a std::set.
-   *
-   *  \attention This iterator impose constness constraints on its \c
-   *  value_type if the container's is a set and not a map. Iterators on sets
-   *  prevent modification of the \c value_type because modifying the key may
-   *  result in invalidation of the tree. If the container is a map, only the
-   *  \c mapped_type can be modified (the \c second element).
+   *  In effect, that makes any container of the library behave as a \c std::set
+   *  or \c std::map. Through this iterator, a spatial container with 3
+   *  dimensions can provide the same features as 3 \c std::set(s) or \c
+   *  std::map(s) containing the same elements and ordered on each of these
+   *  dimensions. Beware that iteration through the tree is very efficient when
+   *  the dimension \kdtree is very small by comparison to the number of
+   *  objects, but pretty inefficient otherwise, by comparison to a \c std::set.
    */
   template<typename Ct>
   class mapping_iterator
@@ -134,7 +123,7 @@ namespace spatial
      *
      *  \param node_dim    The dimension of the node pointed to by iterator.
      *
-     *  \param iter        Use the value of \iter as the start point for the
+     *  \param iter        Use the value of \c iter as the start point for the
      *                     iteration.
      */
     mapping_iterator(Ct& container, dimension_type mapping_dim,
@@ -151,7 +140,7 @@ namespace spatial
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
-     *  dimension, such as the function \ref modulo().
+     *  dimension, such as the function \ref spatial::details::modulo().
      *
      *  \attention Specifying the incorrect dimension value for the node will
      *  result in unknown behavior. It is recommended that you do not use this
@@ -211,8 +200,9 @@ namespace spatial
      *
      *  No check is performed on this accessor if a new mapping dimension is
      *  given. If you need to check that the mapping dimension given does not
-     *  exceed the rank use the function \ref
-     *  spatial::mapping_dimension(const iterator&, dimension_type) instead:
+     *  exceed the rank use the function \ref spatial::mapping_dimension()
+     *  instead:
+     *
      *  \code
      *  // Create a mapping iterator that works on dimension 0
      *  mapping_iterator<my_container> iter (begin_mapping(container, 0));
@@ -220,13 +210,13 @@ namespace spatial
      *  mapping_dimension(iter, 2);
      *  // This will throw if the container used has a rank lower than 3.
      *  \endcode
-     *  @{
      */
+    ///@{
     dimension_type
     mapping_dimension() const { return _data.mapping_dim; }
     dimension_type&
     mapping_dimension() { return _data.mapping_dim; }
-    //@}
+    ///@}
 
   private:
     //! The related data for the iterator.
@@ -234,17 +224,17 @@ namespace spatial
   };
 
   /**
-   *  All elements returned by this iterator are ordered from the smallest to
-   *  the largest value of their key's coordinate along a single dimension,
-   *  called the mapping dimension.
+   *  This iterator walks through all items in the container in order from the
+   *  lowest to the highest value along a particular dimension. The \c key_comp
+   *  comparator of the container is used for comparision.
    *
-   *  In effect, that makes any container of the library behave as a std::set
-   *  or std::map. Through this iterator, a spatial container with 3
-   *  dimensions can provide the same features as 3 std::set(s) or std::map(s)
-   *  containing the same elements and ordered on each of these
-   *  dimensions. Beware that iteration through the tree is very efficient
-   *  when the dimension K-d tree is very small by comparison to the number of
-   *  objects, but pretty inefficient otherwise, by comparison to a std::set.
+   *  In effect, that makes any container of the library behave as a \c std::set
+   *  or \c std::map. Through this iterator, a spatial container with 3
+   *  dimensions can provide the same features as 3 \c std::set(s) or \c
+   *  std::map(s) containing the same elements and ordered on each of these
+   *  dimensions. Beware that iteration through the tree is very efficient when
+   *  the dimension \kdtree is very small by comparison to the number of
+   *  objects, but pretty inefficient otherwise, by comparison to a \c std::set.
    *
    *  Object deferenced by this iterator are always constant.
    */
@@ -274,7 +264,7 @@ namespace spatial
      *  \param mapping_dim The dimension used to order all nodes during the
      *  iteration.
      *  \param node_dim The dimension of the node pointed to by iterator.
-     *  \param iter Use the value of \iter as the start point for the
+     *  \param iter Use the value of \c iter as the start point for the
      *  iteration.
      */
     mapping_iterator(const Ct& container, dimension_type mapping_dim,
@@ -291,7 +281,7 @@ namespace spatial
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
-     *  dimension, such as the function \ref modulo().
+     *  dimension, such as the function \ref spatial::details::modulo().
      *
      *  \attention Specifying the incorrect dimension value for the node will
      *  result in unknown behavior. It is recommended that you do not use this
@@ -356,8 +346,9 @@ namespace spatial
      *
      *  No check is performed on this accessor if a new mapping dimension is
      *  given. If you need to check that the mapping dimension given does not
-     *  exceed the rank use the function \ref
-     *  spatial::mapping_dimension(const iterator&, dimension_type) instead:
+     *  exceed the rank use the function \ref spatial::mapping_dimension()
+     *  instead:
+     *
      *  \code
      *  // Create a mapping iterator that works on dimension 0
      *  mapping_iterator<my_container> iter (begin_mapping(container, 0));
@@ -365,13 +356,13 @@ namespace spatial
      *  mapping_dimension(iter, 2);
      *  // This will throw if the container used has a rank lower than 3.
      *  \endcode
-     *  @{
      */
+    ///@{
     dimension_type
     mapping_dimension() const { return _data.mapping_dim; }
     dimension_type&
     mapping_dimension() { return _data.mapping_dim; }
-    //@}
+    ///@}
 
   private:
     //! The related data for the iterator.
@@ -408,15 +399,16 @@ namespace spatial
      *  iteration of values along the mapping dimension.
      *
      *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking for \ref
-     *  mapping<>::iterator(). In any case, use it cautiously, as this function
+     *  library, but not by the end users of the library. You should use the
+     *  overload \c operator++ on the \mapping_iterator instead. This function
      *  does not perform any sanity checks on the iterator given in parameter.
      *
-     *  \bestlogtime \worstdfractime Since Container is based on \kdtree and
-     *  \kdtree exhibit good locality of reference (for arranging values in
-     *  space, not for values location in memory), the function will run with
-     *  time complexity close to \Olog in practice.
+     *  Since Container is based on \kdtree and \kdtree exhibit good locality of
+     *  reference (for arranging values in space, not for values location in
+     *  memory), the function will run with time complexity close to \Onlognk in
+     *  practice.
+     *
+     *  \fractime
      */
     template <typename Container>
     mapping_iterator<Container>&
@@ -427,11 +419,9 @@ namespace spatial
      *  ordered iteration of values along the mapping dimension.
      *
      *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking for \ref
-     *  mapping<>::const_iterator. In any case, use it cautiously, as this
-     *  function does not perform any sanity checks on the iterator given in
-     *  parameter.
+     *  library, but not by the end users of the library. You should use the
+     *  overload \c operator-- on the \mapping_iterator instead. This function
+     *  does not perform any sanity checks on the iterator given in parameter.
      *
      *  \tparam Container The type of container to iterate.
      *  \param iter The reference iterator that points to the current node.
@@ -439,10 +429,12 @@ namespace spatial
      *  along \c iter's \c mapping_dim, and among the children of the node
      *  pointed to by \c iter.
      *
-     *  \bestlogtime \worstdfractime Since Container is based on \kdtree and
-     *  \kdtree exhibit good locality of reference (for arranging values in
-     *  space, not for values location in memory), the function will run with
-     *  time complexity close to \Olog in practice.
+     *  Since Container is based on \kdtree and \kdtree exhibit good locality of
+     *  reference (for arranging values in space, not for values location in
+     *  memory), the function will run with time complexity close to \Onlognk in
+     *  practice.
+     *
+     *  \fractime
      */
     template <typename Container>
     mapping_iterator<Container>&
@@ -456,8 +448,8 @@ namespace spatial
      *  \attention This function is meant to be used by other algorithms in the
      *  library, but not by the end users of the library. If you feel that you
      *  must use this function, maybe you were actually looking for \ref
-     *  mapping_begin(). In any case, use it cautiously, as this function does
-     *  not perform any sanity checks on the iterator given in parameter.
+     *  spatial::mapping_begin(). This function does not perform any sanity
+     *  checks on the iterator given in parameter.
      *
      *  \tparam Container The type of container to iterate.
      *  \param iter An iterator that points to the root node of the search.
@@ -465,7 +457,7 @@ namespace spatial
      *  smallest coordinate along \c iter's \c mapping_dim, and among the
      *  children of the node pointed to by \c iter.
      *
-     *  \dfractime
+     *  \fractime
      */
     template <typename Container>
     mapping_iterator<Container>&
@@ -479,8 +471,8 @@ namespace spatial
      *  \attention This function is meant to be used by other algorithms in the
      *  library, but not by the end users of the library. If you feel that you
      *  must use this function, maybe you were actually looking for \ref
-     *  mapping_begin(). In any case, use it cautiously, as this function does
-     *  not perform any sanity checks on the iterator given in parameter.
+     *  spatial::mapping_end().  This function does not perform any sanity
+     *  checks on the iterator given in parameter.
      *
      *  \tparam Container The type of container to iterate.
      *  \param iter An iterator that points to the root node of the search.
@@ -488,7 +480,7 @@ namespace spatial
      *  largest coordinate along \c iter's \c mapping_dim, among the children of
      *  the node pointed to by \c iter.
      *
-     *  \dfractime
+     *  \fractime
      */
     template <typename Container>
     mapping_iterator<Container>&
@@ -511,12 +503,11 @@ namespace spatial
    *  largest.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the past-the-end position in the
    *  container.
    *
    *  \consttime
-   *  \see mapping
    */
   template <typename Container>
   inline mapping_iterator<Container>
@@ -528,7 +519,7 @@ namespace spatial
        container.end().node); // At header (dim = rank - 1)
   }
 
-  //@{
+  ///@{
   /**
    *  Finds the past-the-end position in \c container for this constant
    *  iterator.
@@ -539,12 +530,11 @@ namespace spatial
    *  largest.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the past-the-end position in the
    *  container.
    *
    *  \consttime
-   *  \see mapping
    */
   template <typename Container>
   inline mapping_iterator<const Container>
@@ -560,7 +550,7 @@ namespace spatial
   inline mapping_iterator<const Container>
   mapping_cend(const Container& container, dimension_type mapping_dim)
   { return mapping_end(container, mapping_dim); }
-  //@}
+  ///@}
 
   /**
    *  Finds the value in \c container for which its key has the smallest
@@ -578,10 +568,9 @@ namespace spatial
    *  largest.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *
-   *  \dfractime
-   *  \see mapping
+   *  \fractime
    */
   template <typename Container>
   inline mapping_iterator<Container>
@@ -594,7 +583,7 @@ namespace spatial
     return details::minimum_mapping(it);
   }
 
-  //@{
+  ///@{
   /**
    *  Finds the value in \c container for which its key has the smallest
    *  coordinate over the dimension \c mapping_dim.
@@ -605,10 +594,9 @@ namespace spatial
    *  largest.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *
-   *  \dfractime
-   *  \see mapping
+   *  \fractime
    */
   template <typename Container>
   inline mapping_iterator<const Container>
@@ -625,7 +613,7 @@ namespace spatial
   inline mapping_iterator<const Container>
   mapping_cbegin(const Container& container, dimension_type mapping_dim)
   { return mapping_begin(container, mapping_dim); }
-  //@}
+  ///@}
 
   namespace details
   {
@@ -638,7 +626,7 @@ namespace spatial
      *  precisely the same object.
      *  \tparam Key The key object to use in the comparison.
      *  \tparam Compare The comparison object that is a model of
-     *  \ref TrivialComparison.
+     *  \trivial_compare.
      */
     template <typename Key, typename Compare>
     inline bool
@@ -650,7 +638,6 @@ namespace spatial
 
     //! Specialization for iterators pointing to node using the relaxed
     //! invariant.
-    //! \see increment<Container>(typename mapping<Container>::iterator&)
     template <typename Container>
     inline mapping_iterator<Container>&
     increment_mapping(mapping_iterator<Container>& iter,
@@ -788,7 +775,6 @@ namespace spatial
 
     //! Specialization for iterators pointing to node using the strict
     //! invariant.
-    //! \see increment<Container>(typename mapping<Container>::iterator&)
     template <typename Container>
     inline mapping_iterator<Container>&
     increment_mapping(mapping_iterator<Container>& iter,
@@ -935,7 +921,6 @@ namespace spatial
 
     //! Specialization for iterators pointed to node using the relaxed
     //! invariant.
-    //! \see maximum<Container>(typename mapping<Container>::iterator&)
     template<typename Container>
     inline mapping_iterator<Container>&
     maximum_mapping(mapping_iterator<Container>& iter,
@@ -1003,7 +988,6 @@ namespace spatial
 
     //! Specialization for iterators pointed to node using the strict
     //! invariant.
-    //! \see maximum<Container>(typename mapping_iterator<Container>&)
     template<typename Container>
     inline mapping_iterator<Container>&
     maximum_mapping(mapping_iterator<Container>& iter,

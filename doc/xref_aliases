@@ -20,6 +20,7 @@ ALIASES += "project_issue=<a href=\"http://sourceforge.net/projects/spatial/supp
 #
 ALIASES += "O1=\f$O(1)\,\f$"
 ALIASES += "On=\f$O(O(n)\,\f$"
+ALIASES += "Olog=\f$O(O(\log n)\,\f$"
 ALIASES += "Ologn=\f$O(O(\log n)\,\f$"
 ALIASES += "Onlogn=\f$O(O(n \log n)\,\f$"
 ALIASES += "Onlognk=\f$O(n (\log n)^{1/k})\,\f$"
@@ -34,7 +35,7 @@ ALIASES += "fractime=\xrefitem fractional_complexity \"Complexity\" \"\" This fu
 #
 ALIASES += "linkmode=\ref linkmode_concept \"Link Mode\""
 ALIASES += "trivial_compare=\ref trivial_comparison_concept \"Trivial Comparison\""
-ALIASES += "regular_compare=\ref regular_comparison_concept \"Regular Comparison\""
+ALIASES += "generalized_compare=\ref generalized_comparison_concept \"Generalized Comparison\""
 ALIASES += "region_predicate=\ref region_predicate_concept \"Region Predicate\""
 ALIASES += "metric=\ref metric_concept \"Metric\""
 ALIASES += "concept_region_predicate=\xrefitem region_predicate_concept \"Concept\" \"\" This object is a model of \region_predicate"

@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   neighbor_iterator.hpp
- *  @brief  Provides neighbor iterator and all the functions around it.
+ *  \file   neighbor_iterator.hpp
+ *  Provides neighbor iterator and all the functions around it.
  */
 
 #ifndef SPATIAL_NEIGHBOR_ITERATOR_HPP

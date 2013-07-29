@@ -27,3 +27,8 @@ ALIASES += "equal_iterator_pair=\ref spatial::equal_iterator_pair"
 ALIASES += "euclidian=\ref spatial::euclidian"
 ALIASES += "quadrance=\ref spatial::quadrance"
 ALIASES += "manhattan=\ref spatial::manhattan"
+
+# Others
+#
+ALIASES += "static_rank=\ref spatial::details::Static_rank"
+ALIASES += "dynamic_rank=\ref spatial::details::Dynamic_rank"

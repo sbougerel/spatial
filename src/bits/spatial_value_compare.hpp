@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_value_compare.hpp
- *  @brief  Define the ValueCompare class.
+ *  \file   spatial_value_compare.hpp
+ *  Define the ValueCompare class.
  */
 
 #ifndef SPATIAL_VALUE_COMPARE_HPP
@@ -30,7 +30,7 @@ namespace spatial
      *  the key.
      *
      *  \tparam Value A \c std::pair of key and value type.
-     *  \tparam KeyCompare A type that is a model of \regular_compare.
+     *  \tparam KeyCompare A type that is a model of \generalized_compare.
      */
     template <typename Value, typename KeyCompare>
     struct ValueCompare : private KeyCompare

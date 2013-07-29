@@ -6,12 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   point_multimap.hpp
- *  @brief  Contains the definition of the @ref point_multimap and @ref
- *  runtime_point_multimap containers. These containers are mapped containers and
- *  store values in space that can be represented as points.
- *
- *  @see point_multimap
+ *  \file   point_multimap.hpp
+ *  Contains the definition of the \point_multimap.
  */
 
 #ifndef SPATIAL_POINT_MULTIMAP_HPP
@@ -24,6 +20,10 @@
 
 namespace spatial
 {
+  /**
+   *  These containers are mapped containers and store values in space that can
+   *  be represented as points.
+   */
   template<dimension_type Rank, typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
            typename BalancingPolicy = loose_balancing,

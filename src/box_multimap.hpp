@@ -6,12 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   box_multimap.hpp
- *  @brief  Contains the definition of the @ref box_multimap and @ref
- *  box_multimap containers. These containers are mapped containers and
- *  store values in space that can be represented as boxes.
- *
- *  @see box_multimap
+ *  \file   box_multimap.hpp
+ *  Contains the definition of the \box_multimap containers.
  */
 
 #ifndef SPATIAL_BOX_MULTIMAP_HPP
@@ -25,6 +21,10 @@
 namespace spatial
 {
 
+  /**
+   *  A mapped containers to store values in space that can be represented as
+   *  boxes.
+   */
   template<dimension_type Rank, typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
            typename BalancingPolicy = loose_balancing,

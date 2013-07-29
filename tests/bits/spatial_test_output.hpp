@@ -7,8 +7,8 @@
 
 
 /**
- *  @file   spatial_test_output.hpp
- *  @brief
+ *  \file   spatial_test_output.hpp
+ *  \brief
  *
  */
 #include <iostream>

@@ -2,7 +2,7 @@
 \page usermanual_concept Concepts
 - \subpage linkmode_concept
 - \subpage trivial_comparison_concept
-- \subpage regular_comparison_concept
+- \subpage generalized_comparison_concept
 - \subpage region_predicate_concept
 - \subpage metric_concept
 
@@ -70,10 +70,6 @@ exists.
 This level of abstraction allows the same algorithms to be used for regular
 and intrusive containers, without loss of performance and without the use of
 an otherwise cumbersome syntax.
-
-Currently, \ref Kdtree_link and \ref Relaxed_kdtree_link types are models of
-LinkMode. These two types have the peculiarity to be both a type of link and
-a type of linking mode at the same time.
 */
 
 /**
@@ -91,40 +87,40 @@ interface:
 \concept_leg T
 \concept_des A model of Trivial Comparison
 \concept_leg V
-\concept_des The key of a spatial container. E.g. in
-<tt>spatial::pointset<3, point></tt>, \c point is the value type.
+\concept_des The key used a spatial container.
 \concept_req bool T::operator()(spatial::dimension_type x, const V& a,
 const V&b) const
-\concept_des Returns true if <tt> a < b </tt> over dimension \c d.
+\concept_des Returns true if <tt>a < b</tt> over dimension \c d.
 \concept_end
 
-Models of this concept are required for comparison functors in pointset,
-dynamic_pointset and similar containers. Comparison functors in boxset,
-dynamic_boxset, and similar containers are required to be models of
-RegularComparison.
+Models of this concept are required for comparison functors in \point_multiset,
+\idle_point_multiset and other point containers. However, this model is not suitable
+for Comparison functors in \box_multiset, \box_multimap, and other box
+containers. For these container, look at \generalized_compare.
 */
 
 /**
-\page regular_comparison_concept Regular Comparison
-Regular comparison concept defines the model for a functor used to perform a
-strict comparison between two values of a spatial container, over different
-dimensions. The functor shall return a boolean value equal true if the first
-value is strictly lower than the second value over that dimension.
+\page generalized_comparison_concept Generalized Comparison
 
-The models of RegularComparison shall also model TrivialComparison and publicly
-provide the following interface:
+Generalized comparison concept defines the model for a functor used to perform a
+strict comparison between two values of a spatial container, over the same or a
+different dimension. The functor shall return a boolean value equal true if the
+first value is strictly lower than the second value over that dimension.
+
+All models of Generalized Comparison shall also model \trivial_compare and
+publicly provide the following interface:
 \concept_tab
 \concept_leg T
-\concept_des A model of \ref Regular Comparison and \ref Trivial Comparision.
+\concept_des A model of Generalized Comparison and \trivial_compare.
 \concept_leg V
-\concept_des The key of a spatial container. E.g. in
-<tt>spatial::pointset<3, point></tt>, \c point is the value type.
+\concept_des The key used in a spatial container.
 \concept_req bool T::operator()(spatial::dimension_type x, const V& a,
 const V&b) const
-\concept_des Returns true if <tt> a < b </tt> over dimension \c d.
+\concept_des Returns true if <tt>a < b</tt> over dimension \c d. (inherited from
+\trivial_compare.)
 \concept_req bool T::operator()(spatial::dimension_type x, const V& a,
 spatial::dimension_type y, const V&b) const
-\concept_des Returns true if <tt> a(x) < b(y) </tt> where a(x) is the value
+\concept_des Returns true if <tt>a(x) < b(y)</tt> where \c a(x) is the value
 of \c a over dimension \c x and \c b(y) is the value of \c b over dimension
 \c y.
 \concept_end
@@ -136,7 +132,7 @@ bounds are stored on different dimensions in the library, the functor need
 to be able to perform comparison on different dimension.
 
 As you can guess, models of this concept are required for comparison
-functors in boxset, dynamic_boxset, and similar containers.
+functors in \box_multiset, \idle_box_multiset, and other box containers.
 */
 
 /**
@@ -165,9 +161,9 @@ the detailed description.
 \concept_end
 
 The definition of a region predicate functor is generally not required.
-Before you define such predicate, consider using \ref bounds, \ref
-open_bounds, \ref closed_bounds, \ref overlap_bounds, or \ref
-enclosed_bounds.
+Before you define such predicate, consider using \ref spatial::bounds, \ref
+spatial::open_bounds, \ref spatial::closed_bounds, \ref spatial::overlap_bounds,
+or \ref spatial::enclosed_bounds.
 
 A model of region predicate generally represents a multi-dimension continuous
 interval which is going to be used for orthogonal search. In order to
@@ -186,30 +182,30 @@ struct MySimplePredicate
   spatial::relative_order
   operator()(dimension_type, const int& key, dimension_type)
   {
-    using spatial;
-    return key < 0 ? below : ( key > 10 ? above : matching );
+    return key < 0 ? spatial::below
+      : ( key > 10 ? spatial::above : spatial::matching );
   }
 };
 \endcode
 
 In this very simple example, there is no more than one dimension being
-considered, so the first and last parameters are not used. As can be seen
-from the implementation of the predicate, any value between 0 and 10
-included for \c key, would result in the return value equal to
-spatial::matching. If the value of \c key is less than 0, the lower bound of
-the interval, then the return value is equal to spatial::below. If the value
-of \c key is more than 10, the return value is spatial::above.
+considered, so the first and last parameters are not used. As can be seen from
+the implementation of the predicate, any value between 0 and 10 included would
+result in the return value equal to spatial::matching. If the value of \c key is
+less than 0, the lower bound of the interval, then the return value is equal to
+spatial::below. If the value of \c key is more than 10, the return value is
+spatial::above.
 
-It may not be appearing immediately from the example above, but there are
-several limitation, by design, for a model a RegionPredicate:
-\ul Comparison have to be along the axes of your spaces, you can't compare
-along a complicated polygon or a circle: i.e. for an euclidian space of rank
-2, if the interval is closed, then the shape of the interval will be a box.
-\l The interval of comparison must be continuous. There cannot be holes in
-in the interval. If you \b must have a predicate with a hole, you have no
-choice but to split this predicate in several different predicate which have
-no holes, and make separated queries.
-\lu
+There are several limitation, by design, for a model a \region_predicate:
+
+\li Comparison are made along the axes of your space, you can't compare keys
+against a complicated polygon or a circle: i.e. for an euclidian space of rank
+2, then the shape of the interval will be a box.
+
+\li The interval of comparison must be continuous. There cannot be "holes" in in
+the interval. If you \b must have a non-continuous predicate with, you have no
+choice but to split this predicate in several different predicate which have no
+holes, and make separated queries.
 
 Let's look at a more complex example, probably closer to reality. This
 predicate will work on any key that is a \c std::vector<double>, and
@@ -224,27 +220,29 @@ struct HigherSlice
   spatial::relative_order
   operator()(dimension_type dim, const key_type& key, dimension_type rank)
   {
-    using spatial;
     return rank - 1 == dim
-      ? (key[dim] < -1.0 ? below : (key[dim] > 1.0 ? above : matching))
-      : matching;
+      ? (key[dim] < -1.0 ? spatial::below
+         : (key[dim] > 1.0 ? spatial::above : spatial::matching))
+      : spatial::matching;
   }
 };
 \endcode
 
 The value of \c rank is equal to the rank of the container used for the
 orthogonal search. The value of \c dim is the current dimension being
-considered. It is always in the interval [0, rank).
+considered. It is always in the interval <tt>[0, rank)</tt>.
 
 More examples of predicates can be found in the example and the tutorial.
 */
 
 /**
 \page metric_concept Metric
+
 This concept defines the requirements for a Metric to be used with
-neighbor iterators. Neighbor iterators implement the nearest neighbor search
-algorithm on the container. Initializing the iterator to its begining makes
-it stop at the nearest neighbor of the given point of origin.
+\neighbor_iterator. \neighbor_iterator provide iterative nearest neighbor
+search algorithms on the container. Initializing the iterator to its begining
+makes it stop at the nearest neighbor of the given point of origin. In order for
+the \neighbor_iterator to compute distances, a Metric type must be provided.
 
 The models of Metric shall publicly provide the following
 interfaces:
@@ -254,9 +252,9 @@ interfaces:
 \concept_leg V
 \concept_des A type that is the key of the spatial container.
 \concept_leg D
-\concept_des A type that is the distance used for calculation. D itself must
-must mimic numeric types (it must be comparable, it must support addition,
-substraction, multiplication, division, etc).
+\concept_des A type that is the distance used for calculation. \c D must have
+the same interface as arithmetic types (it must be comparable, it must support
+addition, substraction, multiplication, division, etc).
 \concept_req typedef D distance_type
 \concept_des The type used to express the distance between 2 element of the
 container.
@@ -271,20 +269,18 @@ the axis along dimension \c dim and containing \c origin, in a space of
 dimension \c rank.
 \concept_end
 
-The purpose of the Metric itself is to represent the metric space in which
-the metric calculation in between elements of the container take place.
-Because of the way Metrics are defined, any metric space that is a
-continous space topology can be expressed. And so, it is possible to write a
-Metric where calculation for \c distance_to_key and \c distance_to_plane
-take place in a Manifold, and not just a regular Euclidean space. (However
-the Metric provided by default only represent more simple Euclidean
-spaces.)
+The purpose of the Metric itself is to represent the metric space in which the
+metric calculation in between elements of the container take place.  With this
+concept you have the freedom to create any metric space that is a continous
+space topology. And so, it is possible to write a Metric where calculations for
+\c distance_to_key and \c distance_to_plane take place in a Manifold, and not
+just a regular Euclidean space.
 
 If you were to write a Metric on your own, you would start from the stub
-below:
+below, that is following the interface of this concept:
 
 \code
-struct Metric
+struct MyMetric
 {
   typedef my_distance_type distance_type;     // [1]
 
@@ -298,23 +294,23 @@ struct Metric
 };
 \endcode
 
-The details of the Metric type are as follow:
+The details of the \c MyMetric type are as follow:
 
-- [1] is the definition of the type used for the computation of the
-distance, generally defined as double.
+\li [1] is the definition of the type used for the computation of the
+distance, often defined as double.
 
-- [2] is the general understanding of a \em{distance}: the quantity
+\li [2] is the general understanding of a \c distance: the quantity
 that separates two points \c origin and \c key in the current metric
 space.
 
-- [3] represents the shortest possible distance between a point named
+\li [3] represents the shortest possible distance between a point named
 \c origin and the plane that is orthogonal to the axis along the
 dimension \c dim and that contains the point \c key. While this may seem
 difficult to understand, in euclidian space, this operation is
 equivalent to computing the difference in coordinates of \c origin and
 \c key along the dimension \c dim.
 
-- [4] for any 2 points \c origin and \c key, [3] must always return a
+\li [4] for any 2 points \c origin and \c key, [3] must always return a
 result that is lower or equal to [2], regardless of the dimension being
 considered. If rule [4] is not enforced in the metric (For example, due to
 errors in approximations during the calculation), then the
@@ -323,6 +319,6 @@ container. When writing Metrics for Manifolds or Riemanean spaces,
 you must pay special attention to this rule, since the shortest distance
 between the key and the plane is not always easy to represent mentally.
 
-Spatial provides ready-made models of Metric such as \euclidian,
+\Spatial provides ready-made models of Metric such as \euclidian,
 \quadrance and \manhattan.
 */

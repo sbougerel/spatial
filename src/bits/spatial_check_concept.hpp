@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_check_concept.hpp
- *  @brief  This file contains the definition of the enable_if trick for
+ *  \file   spatial_check_concept.hpp
+ *  This file contains the definition of the enable_if trick for
  *  spatial.
  *
  *  Obliged to duplicate the trick since the library intends to support C99/TR1
@@ -37,14 +37,14 @@ namespace spatial
    *  The brief description and the explanation given above are paraphrased from
    *  http://en.cppreference.com/w/cpp/types/enable_if
    */
-  //@{
+  ///@{
   template <bool B, typename Tp = void> struct enable_if_c { };
 
   template <typename Tp> struct enable_if_c<true, Tp> { typedef Tp type; };
 
   template <typename Cond, typename Tp = void>
   struct enable_if : public enable_if_c<Cond::value, Tp> { };
-  //@}
+  ///@}
 
 } // namespace spatial
 

@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_bidirectional.hpp
- *  @brief  Defines the base bidirectional iterators.hpp
+ *  \file   spatial_bidirectional.hpp
+ *  Defines the base bidirectional iterators.hpp
  */
 
 #ifndef SPATIAL_BIDIRECTIONAL_HPP
@@ -83,7 +83,7 @@ namespace spatial
       bool operator!=(const Const_node_iterator<Mode>& x) const
       { return node != x.node; }
 
-      //@{
+      ///@{
       /**
        *  This iterator can be casted silently into a container iterator. You can
        *  therefore use this iterator as an argument to the erase function of
@@ -97,7 +97,7 @@ namespace spatial
 
       operator Const_node_iterator<Mode>() const
       { return Const_node_iterator<Mode>(node); }
-      //@}
+      ///@}
 
       /**
        *  Return the current Rank type used by the iterator.

@@ -6,10 +6,10 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_test_neighbor.hpp
- *  @brief  Remaining tests for the elements defined in spatial_neighbor.hpp are
+ *  \file   spatial_test_neighbor.hpp
+ *  Remaining tests for the elements defined in spatial_neighbor.hpp are
  *  here. These are compiled with SPATIAL_SAFER_ARITHMETICS enabled.
- *  @see spatial_neighbor.hpp
+ *  \see spatial_neighbor.hpp
  */
 
 #ifndef SPATIAL_TEST_NEIGHBOR_SAFER_HPP

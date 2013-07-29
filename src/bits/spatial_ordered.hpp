@@ -6,19 +6,14 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_ordered.hpp
- *  @brief  Contains the definition of the ordered iterators. These iterators
- *  walk through all items in the container in order from the lowest to the
- *  highest value along a particular dimension. The @key_comp comparator of the
- *  container is used for comparision.
- *
- *  @see ordered_iterator
+ *  \file   spatial_ordered.hpp
+ *  Contains the definition of \ordered_iterator.
  */
 
 #ifndef SPATIAL_ORDERED_HPP
 #define SPATIAL_ORDERED_HPP
 
-#include "spatial_traits.hpp"
+#include "../traits.hpp"
 #include "spatial_bidirectional.hpp"
 #include "spatial_rank.hpp"
 #include "spatial_except.hpp"
@@ -28,6 +23,10 @@ namespace spatial
   /**
    *  All elements returned by this iterator are ordered from the smallest to
    *  the largest value of their key's coordinate along a single dimension.
+   *
+   *  These iterators walk through all items in the container in order from the
+   *  lowest to the highest value along a particular dimension. The key
+   *  comparator of the container is used for comparision.
    */
   template<typename Ct>
   class ordered_iterator
@@ -54,7 +53,7 @@ namespace spatial
      *
      *  \param node_dim    The dimension of the node pointed to by iterator.
      *
-     *  \param iter        Use the value of \iter as the start point for the
+     *  \param iter        Use the value of \c iter as the start point for the
      *                     iteration.
      */
     ordered_iterator(Ct& container,
@@ -71,7 +70,7 @@ namespace spatial
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
-     *  dimension, such as the function \ref modulo().
+     *  dimension, such as the function \ref spatial::details::modulo().
      *
      *  \attention Specifying the incorrect dimension value for the node will
      *  result in unknown behavior. It is recommended that you do not use this
@@ -132,14 +131,6 @@ namespace spatial
    *  the largest value of their key's coordinate along a single dimension,
    *  called the ordered dimension.
    *
-   *  In effect, that makes any container of the library behave as a std::set
-   *  or std::map. Through this iterator, a spatial container with 3
-   *  dimensions can provide the same features as 3 std::set(s) or std::map(s)
-   *  containing the same elements and ordered on each of these
-   *  dimensions. Beware that iteration through the tree is very efficient
-   *  when the dimension K-d tree is very small by comparison to the number of
-   *  objects, but pretty inefficient otherwise, by comparison to a std::set.
-   *
    *  Object deferenced by this iterator are always constant.
    */
   template<typename Ct>
@@ -166,7 +157,7 @@ namespace spatial
      *
      *  \param container The container to iterate.
      *  \param node_dim The dimension of the node pointed to by iterator.
-     *  \param iter Use the value of \iter as the start point for the
+     *  \param iter Use the value of \c iter as the start point for the
      *  iteration.
      */
     ordered_iterator(const Ct& container,
@@ -183,7 +174,7 @@ namespace spatial
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
-     *  dimension, such as the function \ref modulo().
+     *  dimension, such as the function \ref spatial::details::modulo().
      *
      *  \attention Specifying the incorrect dimension value for the node will
      *  result in unknown behavior. It is recommended that you do not use this
@@ -256,14 +247,15 @@ namespace spatial
      *
      *  \attention This function is meant to be used by other algorithms in the
      *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking for \ref
-     *  ordered<>::iterator(). In any case, use it cautiously, as this function
-     *  does not perform any sanity checks on the iterator given in parameter.
+     *  must use this function, maybe you were actually looking to increment an
+     *  \ordered_iterator via the overloaded \c operator++().
      *
-     *  \bestlogtime \worstdfractime Since Container is based on \kdtree and
-     *  \kdtree exhibit good locality of reference (for arranging values in
-     *  space, not for values location in memory), the function will run with
-     *  time complexity close to \Olog in practice.
+     *  Since Container is based on a \kdtree and \kdtrees exhibit good locality
+     *  of reference (for arranging values in space, not for values location in
+     *  memory), the function will run with time complexity close to \Olog in
+     *  practice.
+     *
+     *  \fractime
      */
     template <typename Container>
     ordered_iterator<Container>&
@@ -275,10 +267,8 @@ namespace spatial
      *
      *  \attention This function is meant to be used by other algorithms in the
      *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking for \ref
-     *  ordered<>::const_iterator. In any case, use it cautiously, as this
-     *  function does not perform any sanity checks on the iterator given in
-     *  parameter.
+     *  must use this function, maybe you were actually looking to decrement an
+     *  \ordered_iterator via the overloaded \c operator--().
      *
      *  \tparam Container The type of container to iterate.
      *  \param iter The reference iterator that points to the current node.
@@ -286,10 +276,12 @@ namespace spatial
      *  along \c iter's \c ordered_dim, and among the children of the node
      *  pointed to by \c iter.
      *
-     *  \bestlogtime \worstdfractime Since Container is based on \kdtree and
-     *  \kdtree exhibit good locality of reference (for arranging values in
-     *  space, not for values location in memory), the function will run with
-     *  time complexity close to \Olog in practice.
+     *  Since Container is based on a \kdtree and \kdtrees exhibit good locality
+     *  of reference (for arranging values in space, not for values location in
+     *  memory), the function will run with time complexity close to \Olog in
+     *  practice.
+     *
+     *  \fractime
      */
     template <typename Container>
     ordered_iterator<Container>&
@@ -312,7 +304,7 @@ namespace spatial
      *  smallest coordinate along \c iter's \c ordered_dim, and among the
      *  children of the node pointed to by \c iter.
      *
-     *  \dfractime
+     *  \fractime
      */
     template <typename Container>
     ordered_iterator<Container>&
@@ -335,7 +327,7 @@ namespace spatial
      *  largest coordinate along \c iter's \c ordered_dim, among the children of
      *  the node pointed to by \c iter.
      *
-     *  \dfractime
+     *  \fractime
      */
     template <typename Container>
     ordered_iterator<Container>&
@@ -355,12 +347,11 @@ namespace spatial
    *  \tparam Container The type of container to iterate.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the past-the-end position in the
    *  container.
    *
    *  \consttime
-   *  \see ordered
    */
   template <typename Container>
   inline ordered_iterator<Container>
@@ -371,7 +362,7 @@ namespace spatial
       (container, container.dimension() - 1, container.end().node);
   }
 
-  //@{
+  ///@{
   /**
    *  Finds the past-the-end position in \c container for this constant
    *  iterator.
@@ -379,12 +370,11 @@ namespace spatial
    *  \tparam Container The type of container to iterate.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the past-the-end position in the
    *  container.
    *
    *  \consttime
-   *  \see ordered
    */
   template <typename Container>
   inline ordered_iterator<const Container>
@@ -399,7 +389,7 @@ namespace spatial
   inline ordered_iterator<const Container>
   ordered_cend(const Container& container)
   { return ordered_end(container); }
-  //@}
+  ///@}
 
   /**
    *  Finds the value in \c container for which its key has the smallest
@@ -414,10 +404,9 @@ namespace spatial
    *  \tparam Container The type of container to iterate.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *
-   *  \dfractime
-   *  \see ordered
+   *  \fractime
    */
   template <typename Container>
   inline ordered_iterator<Container>
@@ -429,7 +418,7 @@ namespace spatial
     return details::minimum_ordered(it);
   }
 
-  //@{
+  ///@{
   /**
    *  Finds the value in \c container for which its key has the smallest
    *  coordinate over the dimension \c ordered_dim.
@@ -437,10 +426,9 @@ namespace spatial
    *  \tparam Container The type of container to iterate.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *
-   *  \dfractime
-   *  \see ordered
+   *  \fractime
    */
   template <typename Container>
   inline ordered_iterator<const Container>
@@ -456,7 +444,7 @@ namespace spatial
   inline ordered_iterator<const Container>
   ordered_cbegin(const Container& container)
   { return ordered_begin(container); }
-  //@}
+  ///@}
 
   namespace details
   {
@@ -488,7 +476,6 @@ namespace spatial
 
     //! Specialization for iterators pointing to node using the relaxed
     //! invariant.
-    //! \see increment<Container>(typename ordered<Container>::iterator&)
     template <typename Container>
     inline ordered_iterator<Container>&
     increment_ordered(ordered_iterator<Container>& iter,
@@ -621,7 +608,6 @@ namespace spatial
 
     //! Specialization for iterators pointing to node using the strict
     //! invariant.
-    //! \see increment<Container>(typename ordered<Container>::iterator&)
     template <typename Container>
     inline ordered_iterator<Container>&
     increment_ordered(ordered_iterator<Container>& iter,
@@ -1119,7 +1105,6 @@ namespace spatial
 
     //! Specialization for iterators pointed to node using the relaxed
     //! invariant.
-    //! \see maximum<Container>(typename ordered<Container>::iterator&)
     template<typename Container>
     inline ordered_iterator<Container>&
     maximum_ordered(ordered_iterator<Container>& iter,
@@ -1187,7 +1172,6 @@ namespace spatial
 
     //! Specialization for iterators pointed to node using the strict
     //! invariant.
-    //! \see maximum<Container>(typename ordered_iterator<Container>&)
     template<typename Container>
     inline ordered_iterator<Container>&
     maximum_ordered(ordered_iterator<Container>& iter,

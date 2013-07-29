@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_pull_tr1.hpp
- *  @brief  Contains the macro to pull the TR1 headers
+ *  \file   spatial_pull_tr1.hpp
+ *  Contains the macro to pull the TR1 headers
  *
  */
 

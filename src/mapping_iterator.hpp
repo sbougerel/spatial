@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   mapping_iterator.hpp
- *  @brief  Provides mapping iterator and all the functions around it.
+ *  \file   mapping_iterator.hpp
+ *  Provides mapping iterator and all the functions around it.
  */
 
 #ifndef SPATIAL_MAPPING_ITERATOR_HPP
@@ -90,13 +90,14 @@ namespace spatial
      *  mapping_begin(). In any case, use it cautiously, as this function does
      *  not perform any sanity checks on the iterator given in parameter.
      *
-     *  \fractime
      *  \tparam Container The type of container to iterate.
      *  \param iter An iterator that points to the root node of the search.
      *  \param bound The lower bound to the iterator position.
      *  \return An iterator pointing to the value with the smallest coordinate
      *  greater or equal to \c bound along \c iter's \c mapping_dim, or to the
      *  parent of the value pointed to.
+     *
+     *  \fractime
      */
     template <typename Container>
     mapping_iterator<Container>&
@@ -117,14 +118,14 @@ namespace spatial
      *  mapping_begin(). In any case, use it cautiously, as this function does
      *  not perform any sanity checks on the iterator given in parameter.
      *
-     *  \fractime
-     *
      *  \tparam Container The type of container to iterate.
      *  \param iter An iterator that points to the root node of the search.
      *  \param bound The upper bound to the iterator position.
      *  \return \c iter moved to the value with the largest coordinate strictly
      *  less than \c bound along \c iter's \c mapping_dim, or to the
      *  parent of the value pointed to.
+     *
+     *  \fractime
      */
     template <typename Container>
     mapping_iterator<Container>&
@@ -136,10 +137,10 @@ namespace spatial
   /**
    *  Returns a pair of iterator on the first and the last value in the range
    *  that can be iterated. This function is convenient to use with
-   *  \tc{std::tie}, and is equivalent to calling \ref mapping_begin() and \ref
+   *  \c std::tie, and is equivalent to calling \ref mapping_begin() and \ref
    *  mapping_end() on both iterators.
    *
-   *  To combine it with \tc{std::tie}, use it this way:
+   *  To combine it with \c std::tie, use it this way:
    *  \code
    *  mapping<pointset<2, int> >::iterator it, end;
    *  std::tie(it, end) = mapping_range(0, my_points);
@@ -157,18 +158,17 @@ namespace spatial
    *  invalidation of the tree. If the container is a map, only the \c
    *  mapped_type can be modified (the \c second element).
    *
-   *  \fractime
-   *
    *  \tparam Container The type of container to iterate.
    *  \param mapping_dim The dimension that is the reference for the iteration:
    *  all iterated values will be ordered along this dimension, from smallest to
    *  largest.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the past-the-end position in the
    *  container.
-   *  \see mapping
+   *
+   *  \fractime
    */
   template <typename Container>
   inline mapping_iterator_pair<Container>
@@ -179,14 +179,14 @@ namespace spatial
            mapping_end(container, mapping_dim));
   }
 
-  //@{
+  ///@{
   /**
    *  Returns a pair of constant iterator on the first and the last value in the
    *  range that can be iterated. This function is convenient to use with
-   *  \tc{std::tie}, and is equivalent to calling \ref mapping_begin() and \ref
+   *  \c std::tie, and is equivalent to calling \ref mapping_begin() and \ref
    *  mapping_end() on both iterators.
    *
-   *  To combine it with \tc{std::tie}, use it this way:
+   *  To combine it with \c std::tie, use it this way:
    *  \code
    *  mapping<pointset<2, int> >::iterator it, end;
    *  std::tie(it, end) = mapping_range(0, my_points);
@@ -198,18 +198,17 @@ namespace spatial
    *  Notice that an \c iterator type is declared, and not an \c iterator_pair
    *  type.
    *
-   *  \fractime
-   *
    *  \tparam Container The type of container to iterate.
    *  \param mapping_dim The dimension that is the reference for the iteration:
    *  all iterated values will be ordered along this dimension, from smallest to
    *  largest.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the past-the-end position in the
    *  container.
-   *  \see mapping
+   *
+   *  \fractime
    */
   template <typename Container>
   inline mapping_iterator_pair<const Container>
@@ -228,7 +227,7 @@ namespace spatial
       (mapping_begin(container, mapping_dim),
        mapping_end(container, mapping_dim));
   }
-  //@}
+  ///@}
 
   /**
    *  Finds the value with the smallest coordinate along the mapping dimension
@@ -241,8 +240,6 @@ namespace spatial
    *  invalidation of the tree. If the container is a map, only the \c
    *  mapped_type can be modified (the \c second element).
    *
-   *  \fractime
-   *
    *  \tparam Container The type of container to iterate.
    *  \param mapping_dim The dimension that is the reference for the iteration:
    *  all iterated values will be ordered along this dimension, from smallest to
@@ -250,11 +247,11 @@ namespace spatial
    *  \param bound The lowest bound to the iterator position.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the value with the smallest coordinate
    *  greater or equal to \c bound along \c mapping_dim.
    *
-   *  \see mapping
+   *  \fractime
    */
   template <typename Container>
   inline mapping_iterator<Container>
@@ -269,13 +266,11 @@ namespace spatial
     return details::lower_bound_mapping(it, bound);
   }
 
-  //@{
+  ///@{
   /**
    *  Finds the value with the smallest coordinate along the mapping dimension
    *  that is greater or equal to \c bound, and return a constant iterator to
    *  this value.
-   *
-   *  \fractime
    *
    *  \tparam Container The type of container to iterate.
    *  \param mapping_dim The dimension that is the reference for the iteration:
@@ -284,11 +279,11 @@ namespace spatial
    *  \param bound The lowest bound to the iterator position.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the value with the smallest coordinate
    *  greater or equal to \c bound along \c mapping_dim.
    *
-   *  \see mapping
+   *  \fractime
    */
   template <typename Container>
   inline mapping_iterator<const Container>
@@ -309,7 +304,7 @@ namespace spatial
   (const Container& container, dimension_type mapping_dim,
    const typename container_traits<Container>::key_type& bound)
   { return mapping_lower_bound(container, mapping_dim, bound); }
-  //@}
+  ///@}
 
   /**
    *  Finds the value with the largest coordinate along the mapping dimension
@@ -322,8 +317,6 @@ namespace spatial
    *  invalidation of the tree. If the container is a map, only the \c
    *  mapped_type can be modified (the \c second element).
    *
-   *  \fractime
-   *
    *  \tparam Container The type of container to iterate.
    *  \param mapping_dim The dimension that is the reference for the iteration:
    *  all iterated values will be ordered along this dimension, from smallest to
@@ -331,11 +324,11 @@ namespace spatial
    *  \param bound The lowest bound to the iterator position.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the value with the smallest coordinate
    *  greater or equal to \c bound along \c mapping_dim.
    *
-   *  \see mapping
+   *  \fractime
    */
   template <typename Container>
   inline mapping_iterator<Container>
@@ -350,7 +343,7 @@ namespace spatial
     return details::upper_bound_mapping(it, bound);
   }
 
-  //@{
+  ///@{
   /**
    *  Finds the value with the largest coordinate along the mapping dimension
    *  that is stricly less than \c bound, and return an iterator pointing to
@@ -363,12 +356,11 @@ namespace spatial
    *  \param bound The lowest bound to the iterator position.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the \ref Rank "rank" of the container.
+   *  dimension from the rank of the container.
    *  \return An iterator pointing to the value with the smallest coordinate
    *  greater or equal to \c bound along \c mapping_dim.
    *
-   *  \dfractime
-   *  \see mapping
+   *  \fractime
    */
   template <typename Container>
   inline mapping_iterator<const Container>
@@ -389,7 +381,7 @@ namespace spatial
   (const Container& container, dimension_type mapping_dim,
    const typename container_traits<Container>::key_type& bound)
   { return mapping_upper_bound(container, mapping_dim, bound); }
-  //@}
+  ///@}
 
   namespace details
   {

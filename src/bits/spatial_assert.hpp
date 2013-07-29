@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_assert.hpp
- *  @brief  Provide a smiliar functionality than \c cassert, except that
+ *  \file   spatial_assert.hpp
+ *  Provide a smiliar functionality than \c cassert, except that
  *  SPATIAL_ENABLE_ASSERT must be defined to enable it, by default, no spatial
  *  assertion check is performed.
  *

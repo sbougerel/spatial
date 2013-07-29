@@ -6,12 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   idle_point_multimap.hpp
- *  @brief  Contains the definition of the @ref idle_point_multimap and @ref
- *  runtime_idle_point_multimap containers. These containers are mapped containers
- *  and store values in space that can be represented as points.
- *
- *  @see idle_point_multimap
+ *  \file   idle_point_multimap.hpp
+ *  Contains the definition of the \idle_point_multimap.
  */
 
 #ifndef SPATIAL_IDLE_POINT_MULTIMAP_HPP
@@ -25,6 +21,10 @@
 namespace spatial
 {
 
+  /**
+   *  These containers are mapped containers and store values in space that can
+   *  be represented as points.
+   */
   template<dimension_type Rank, typename Key, typename Mapped,
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<std::pair<const Key, Mapped> > >

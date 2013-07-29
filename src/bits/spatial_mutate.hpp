@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_mutate.hpp
- *  @brief  Defines spatial::details::mutate meta-programing type
+ *  \file   spatial_mutate.hpp
+ *  Defines spatial::details::mutate meta-programing type
  */
 
 #ifndef SPATIAL_MUTATE_HPP
@@ -17,7 +17,7 @@ namespace spatial
 {
   namespace details
   {
-    //@{
+    ///@{
     /**
      *  Changes a const type into a mutable type.
      */
@@ -25,9 +25,9 @@ namespace spatial
     struct mutate { typedef Tp type; };
     template <typename Tp>
     struct mutate<const Tp> { typedef Tp type; };
-    //@}
+    ///@}
 
-    //@{
+    ///@{
     /**
      *  A helper functions that mutates pointers. Required to unallocate
      *  key values, which are always constant.
@@ -39,7 +39,7 @@ namespace spatial
     template<typename Tp>
     inline Tp*
     mutate_pointer(Tp* p) { return p; } // hoping this one gets optimized away
-    //@}
+    ///@}
   }
 }
 

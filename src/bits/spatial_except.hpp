@@ -7,7 +7,7 @@
 
 /**
  *  \file   spatial_except.hpp
- *  \brief  Defines except that are being thrown by the library
+ *  Defines except that are being thrown by the library
  */
 
 #ifndef SPATIAL_EXCEPT_HPP
@@ -175,7 +175,7 @@ namespace spatial
             ("upper is stricly less than lower over one dimension at least");
     }
 
-    //@{
+    ///@{
     /**
      *  Checks that all coordinates of a box are matching with the layout
      *  specified or else, raise an \ref invalid_box exception.
@@ -234,7 +234,7 @@ namespace spatial
           throw invalid_box
             ("box does not follow specified layout or coordinates are invalid");
     }
-    //@}
+    ///@}
   } // namespace except
 } // namespace spatial
 

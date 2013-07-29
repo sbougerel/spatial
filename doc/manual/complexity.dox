@@ -62,9 +62,9 @@ running time of a function in a tree.
 <table>
 <tr><th rowspan="2">Number of elements in the container</th>
 <th colspan="2">Number of dimension = 1: \Ologn</th>
-<th colspan="2">Number of dimension = 2: \Odfrac</th>
-<th colspan="2">Number of dimension = 3: \Odfrac</th>
-<th colspan="2">Number of dimension = 4: \Odfrac</th></tr>
+<th colspan="2">Number of dimension = 2: \Onfd</th>
+<th colspan="2">Number of dimension = 3: \Onfd</th>
+<th colspan="2">Number of dimension = 4: \Onfd</th></tr>
 <tr><th>nodes visited</th><th>node prunned</th>
 <th>nodes visited</th><th>node prunned</th>
 <th>nodes visited</th><th>node prunned</th>

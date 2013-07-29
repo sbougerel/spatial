@@ -2,7 +2,7 @@
 
 /**
  *  \file   spatial_relaxed_kdtree.hpp
- *  \brief  Defines a \kdtree with a relaxed invariant. On a given dimension, if
+ *  Defines a \kdtree with a relaxed invariant. On a given dimension, if
  *  coordinates between a root node and a child node are equal, the child node
  *  may be placed either on the left or the right of the tree. The relaxed
  *  \kdtree is a self-balancing tree.
@@ -45,7 +45,7 @@
 namespace spatial
 {
   /**
-   *  @brief  This policy triggers rebalancing for the node when the
+   *  This policy triggers rebalancing for the node when the
    *  difference in weight between left or right is more than a half. The
    *  default policy for rebalancing.
    *
@@ -60,11 +60,11 @@ namespace spatial
   struct loose_balancing
   {
     /**
-     *  @brief  Rebalancing predicate.
-     *  @param r     The current dimension function to use for examination.
-     *  @param left  The weight at the left
-     *  @param right The weight at the right
-     *  @return  true indicate that reblancing must occurs, otherwise false.
+     *  Rebalancing predicate.
+     *  \param r     The current dimension function to use for examination.
+     *  \param left  The weight at the left
+     *  \param right The weight at the right
+     *  \return  true indicate that reblancing must occurs, otherwise false.
      */
     template <typename Rank>
     bool
@@ -78,7 +78,7 @@ namespace spatial
   };
 
   /**
-   *  @brief  A policy that balances a node if the difference in weight
+   *  A policy that balances a node if the difference in weight
    *  between left and right is higher than the current rank of the tree.
    *
    *  The dimension is choosen as a limiter because balancing the tree even
@@ -88,11 +88,11 @@ namespace spatial
   struct tight_balancing
   {
     /**
-     *  @brief  Rebalancing predicate.
-     *  @param r     The current dimension function to use for examination.
-     *  @param left  The weight at the left
-     *  @param right The weight at the right
-     *  @return true Indicate that reblancing must occurs, otherwise false.
+     *  Rebalancing predicate.
+     *  \param r     The current dimension function to use for examination.
+     *  \param left  The weight at the left
+     *  \param right The weight at the right
+     *  \return true Indicate that reblancing must occurs, otherwise false.
      */
     template <typename Rank>
     bool
@@ -162,7 +162,7 @@ namespace spatial
 
     private:
       /**
-       *  @brief The tree header.
+       *  \brief The tree header.
        *
        *  The header node contains pointers to the root, the right most node and
        *  the header node marker (which is the left node of the header). The
@@ -280,7 +280,7 @@ namespace spatial
       }
 
       /**
-       *  @brief  Destroy and deallocate @c node.
+       *  Destroy and deallocate \c node.
        */
       void
       destroy_node(node_ptr node)
@@ -290,79 +290,79 @@ namespace spatial
       }
 
       /**
-       *  @brief  Destroy and deallocate all nodes in the container.
+       *  Destroy and deallocate all nodes in the container.
        */
       void
       destroy_all_nodes();
 
     private:
       /**
-       *  @brief  Copy the exact sturcture of the sub-tree pointed to by @c
+       *  Copy the exact sturcture of the sub-tree pointed to by \c
        *  other_node into the current empty tree.
        *
        *  The structural copy preserve all characteristics of the sub-tree
-       *  pointed to by @c other_node.
+       *  pointed to by \c other_node.
        */
       void
       copy_structure(const Self& other);
 
       /**
-       *  Insert the new node @c new_node into the tree located at node. If the
+       *  Insert the new node \c new_node into the tree located at node. If the
        *  last parameter is 0, the node will also be created.
        *
-       *  @param node_dim  The current dimension for the node.
-       *  @param node      The node below which the new key shall be inserted.
-       *  @param mew_node  The new node to insert
+       *  \param node_dim  The current dimension for the node.
+       *  \param node      The node below which the new key shall be inserted.
+       *  \param mew_node  The new node to insert
        */
       iterator
       insert_node(dimension_type node_dim, node_ptr node, node_ptr new_node);
 
       /**
-       *  Erase the node pointed by @c node.
+       *  Erase the node pointed by \c node.
        *
-       *  @c node cannot be null or a root node, or else dire things may
+       *  \c node cannot be null or a root node, or else dire things may
        *  happen. This function does not destroy the node and it does not
        *  decrement weight to the parents of node.
        *
-       *  @param dim      The current dimension for @c node
-       *  @param node     The node to erase
-       *  @return         The address of the node that has replaced the erased
-       *                  one or @c node if it was a leaf.
+       *  \param dim      The current dimension for \c node
+       *  \param node     The node to erase
+       *  \return         The address of the node that has replaced the erased
+       *                  one or \c node if it was a leaf.
        */
       node_ptr erase_node(dimension_type dim, node_ptr node);
 
       /**
-       *  Erase the node pointed by @c node and balance tree up to
+       *  Erase the node pointed by \c node and balance tree up to
        *  header. Finish the work started by erase_node by reducing weight in
-       *  parent of @c node, up to the header.
+       *  parent of \c node, up to the header.
        *
-       *  @c node cannot be null or a root node, or else dire things may
+       *  \c node cannot be null or a root node, or else dire things may
        *  happen. This function does not destroy the node.
        *
-       *  @param dim      The current dimension for @c node
-       *  @param node     The node to erase
+       *  \param dim      The current dimension for \c node
+       *  \param node     The node to erase
        */
       void erase_node_balance(dimension_type dim, node_ptr node);
 
       /**
        *  Attempt to balance the current node.
        *
-       *  @c node cannot be null or a root node, or else dire things may
+       *  \c node cannot be null or a root node, or else dire things may
        *  happen. This function does not destroy the node and it does not
        *  modify weight of the parents of node.
        *
-       *  @param dim      The current dimension for @c node
-       *  @param node     The node to erase
-       *  @return         The address of the node that has replaced the current
+       *  \param dim      The current dimension for \c node
+       *  \param node     The node to erase
+       *  \return         The address of the node that has replaced the current
        *                  node.
        */
       node_ptr balance_node(dimension_type dim, node_ptr node);
 
       /**
-       *  @brief  Return true if the node is not balanced, false otherwise.
-       *  @param node       The node to check
-       *  @param more_left  Add @c more_left to the weight of the left nodes
-       *  @param more_right Add @c more_right to the weight of the right nodes
+       *  Return true if the node is not balanced, false otherwise.
+       *  \param node       The node to check
+       *  \param more_left  Add \c more_left to the weight of the left nodes
+       *  \param more_right Add \c more_right to the weight of the right nodes
        */
       bool is_node_unbalanced(node_ptr node, weight_type more_left = 0,
                               weight_type more_right = 0) const;
@@ -446,14 +446,14 @@ namespace spatial
       get_allocator() const { return get_value_allocator(); }
 
       /**
-       *  @brief  True if the tree is empty.
+       *  True if the tree is empty.
        */
       bool
       empty() const
       { return ( get_root() == get_header() ); }
 
       /**
-       *  @brief  Returns the number of elements in the K-d tree.
+       *  Returns the number of elements in the K-d tree.
        */
       size_type
       size() const
@@ -463,23 +463,23 @@ namespace spatial
       }
 
       /**
-       *  @brief  Returns the number of elements in the K-d tree. Same as size().
-       *  @see size()
+       *  Returns the number of elements in the K-d tree. Same as size().
+       *  \see size()
        */
       size_type
       count() const
       { return size(); }
 
       /**
-       *  @brief  The maximum number of elements that can be allocated.
+       *  The maximum number of elements that can be allocated.
        */
       size_type
       max_size() const
       { return _impl._header.base().max_size(); }
 
-      //@{
+      ///@{
       /**
-       *  @brief  Find the first node that matches with @c key and returns an
+       *  Find the first node that matches with \c key and returns an
        *  iterator to it found, otherwise it returns an iterator to the element
        *  past the end of the container.
        *
@@ -498,7 +498,7 @@ namespace spatial
       const_iterator
       find(const key_type& key) const
       { return equal_begin(*this, key); }
-      //@}
+      ///@}
 
     public:
       Relaxed_kdtree()
@@ -525,9 +525,9 @@ namespace spatial
       { }
 
       /**
-       *  @brief  Deep copy of @c other into the new tree.
+       *  Deep copy of \c other into the new tree.
        *
-       *  This operation results in an identical the structure to the @p other
+       *  This operation results in an identical the structure to the \p other
        *  tree. Therefore, all operations should behave similarly to both trees
        *  after the copy.
        */
@@ -535,12 +535,12 @@ namespace spatial
       { if (!other.empty()) { copy_structure(other); } }
 
       /**
-       *  @brief  Assignment of @c other into the tree, with deep copy.
+       *  Assignment of \c other into the tree, with deep copy.
        *
-       *  The copy preserve the structure of the tree @c other. Therefore, all
+       *  The copy preserve the structure of the tree \c other. Therefore, all
        *  operations should behave similarly to both trees after the copy.
        *
-       *  @note  Allocator is not modified with this assignment and remains the
+       *  \note  Allocator is not modified with this assignment and remains the
        *  same.
        */
       Relaxed_kdtree&
@@ -562,7 +562,7 @@ namespace spatial
       }
 
       /**
-       *  @brief  Deallocate all nodes in the destructor.
+       *  Deallocate all nodes in the destructor.
        */
       ~Relaxed_kdtree()
       { destroy_all_nodes(); }
@@ -570,11 +570,11 @@ namespace spatial
     public:
       // Mutable functions
       /**
-       *  @brief  Swap the K-d tree content with others
+       *  Swap the K-d tree content with others
        *
        *  The extra overhead of the test is not required in common cases:
        *  users intentionally swap different objects.
-       *  @warning  This function do not test: (this != &other)
+       *  \warning  This function do not test: (this != &other)
        */
       void
       swap(Self& other)
@@ -610,7 +610,7 @@ namespace spatial
       }
 
       /**
-       *  @brief  Erase all elements in the K-d tree.
+       *  Erase all elements in the K-d tree.
        */
       void
       clear()
@@ -620,7 +620,7 @@ namespace spatial
       }
 
       /**
-       *  @brief  Insert a single key @c key in the tree.
+       *  Insert a single key \c key in the tree.
        */
       iterator
       insert(const value_type& value)
@@ -641,7 +641,7 @@ namespace spatial
       }
 
       /**
-       *  @brief  Insert a serie of values in the tree at once.
+       *  Insert a serie of values in the tree at once.
        */
       template<typename InputIterator>
       void
@@ -650,7 +650,7 @@ namespace spatial
 
       // Deletion
       /**
-       *  @brief  Deletes the node pointed to by the iterator.
+       *  Deletes the node pointed to by the iterator.
        *
        *  The iterator must be pointing to an existing node belonging to the
        *  related tree, or dire things may happen.
@@ -659,11 +659,11 @@ namespace spatial
       erase(iterator position);
 
       /**
-       *  @brief  Deletes all nodes that match key @c value.
-       *  @see    find
-       *  @param  value that will be compared with the tree nodes.
+       *  Deletes all nodes that match key \c value.
+       *  \see    find
+       *  \param  value that will be compared with the tree nodes.
        *
-       *  The type @c key_type must be equally comparable.
+       *  The type \c key_type must be equally comparable.
        */
       size_type
       erase(const key_type& key);
@@ -690,7 +690,7 @@ namespace spatial
     };
 
     /**
-     *  @brief  Swap the content of the relaxed @kdtree @p left and @p right.
+     *  Swap the content of the relaxed \kdtree \p left and \p right.
      */
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Balancing, typename Alloc>
@@ -707,7 +707,7 @@ namespace spatial
      *  \param lhs Left-hand side container.
      *  \param rhs Right-hand side container.
      */
-    //@{
+    ///@{
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Balancing, typename Alloc>
     inline bool
@@ -729,7 +729,7 @@ namespace spatial
                const Relaxed_kdtree
                <Rank, Key, Value, Compare, Balancing, Alloc>& rhs)
     { return !(lhs.size() == rhs.size()); }
-    //@}
+    ///@}
 
     /**
      *  Operations <, >, <= and >= behave as if using algorithm
@@ -739,7 +739,7 @@ namespace spatial
      *  \param lhs Left-hand side container.
      *  \param rhs Right-hand side container.
      */
-    //@{
+    ///@{
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Balancing, typename Alloc>
     inline bool
@@ -779,7 +779,7 @@ namespace spatial
                const Relaxed_kdtree
                <Rank, Key, Value, Compare, Balancing, Alloc>& rhs)
     { return !(lhs < rhs); }
-    //@}
+    ///@}
 
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Balancing, typename Alloc>

@@ -6,10 +6,10 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_test_pointset.hpp
- *  @brief  All tests for the elements defined in spatial_pointset.hpp are
+ *  \file   spatial_test_pointset.hpp
+ *  All tests for the elements defined in spatial_pointset.hpp are
  *  located in this file.
- *  @see spatial_pointset.hpp
+ *  \see spatial_pointset.hpp
  */
 
 #ifndef SPATIAL_TEST_POINTSET_HPP

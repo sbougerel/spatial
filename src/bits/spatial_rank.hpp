@@ -6,9 +6,9 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_rank.hpp
- *  @brief  Defines spatial::details::Static_rank and
- *  spatial::details::Dynamic_rank as well as associated functions on rank.
+ *  \file   spatial_rank.hpp
+ *  Defines \ref spatial::details::Static_rank and
+ *  \ref spatial::details::Dynamic_rank as well as associated functions on rank.
  */
 
 #ifndef SPATIAL_RANK_HPP
@@ -24,7 +24,7 @@ namespace spatial
      *  The dimension value is set by a template value, thus consuming
      *  no memory.
      *
-     *  \tparam The dimension of the rank.
+     *  \tparam Value The magnitude of the rank.
      */
     template <dimension_type Value>
     struct Static_rank
@@ -46,7 +46,7 @@ namespace spatial
       { return _rank; }
 
       //! Build a rank with a default dimension of 1.
-      //! \param rank The specified rank dimension.
+      //! \param rank The magnitude of the rank.
       explicit
       Dynamic_rank(dimension_type rank = 1)
         : _rank(rank)
@@ -59,8 +59,8 @@ namespace spatial
 
     /**
      *  Increment dimension \c node_dim, given \c rank.
-     *  \tparam Rank The model of \ref Rank used in this function.
-     *  \param rank An object that is a model of \ref Rank.
+     *  \tparam Rank Either \static_rank or \dynamic_rank.
+     *  \param rank The magnitude of the rank.
      *  \param node_dim The value of the dimension for the node.
      */
     template<typename Rank>
@@ -70,8 +70,8 @@ namespace spatial
 
     /**
      *  Decrement dimension \c node_dim, given \c rank.
-     *  \tparam Rank The model of \ref Rank used in this function.
-     *  \param rank An object that is a model of \ref Rank.
+     *  \tparam Rank Either \static_rank or \dynamic_rank.
+     *  \param rank The magnitude of the rank.
      *  \param node_dim The value of the dimension for the node.
      */
     template<typename Rank>

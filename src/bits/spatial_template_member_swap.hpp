@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_template_member_swap.hpp
- *  @brief  Defines the template member swap function that is optimized for
+ *  \file   spatial_template_member_swap.hpp
+ *  Defines the template member swap function that is optimized for
  *  empty base types.
  */
 
@@ -22,9 +22,9 @@ namespace spatial
 {
   namespace details
   {
-    //@{
+    ///@{
     /**
-     *  @brief  Perform a specialized assign for empty classes.
+     *  Perform a specialized assign for empty classes.
      */
     template<bool, typename Tp>
     struct template_member_assign_provider
@@ -41,11 +41,11 @@ namespace spatial
     struct template_member_assign
       : template_member_assign_provider<std::tr1::is_empty<Tp>::value, Tp>
     { };
-    //@}
+    ///@}
 
-    //@{
+    ///@{
     /**
-     *  @brief  Perform a specialized swap for empty classes.
+     *  Perform a specialized swap for empty classes.
      */
     template<bool, typename Tp>
     struct template_member_swap_provider
@@ -65,7 +65,7 @@ namespace spatial
     struct template_member_swap
       : template_member_swap_provider<std::tr1::is_empty<Tp>::value, Tp>
     { };
-    //@}
+    ///@}
   }
 }
 

@@ -6,18 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   idle_box_multiset.hpp
- *  @brief  Contains the definition of the @ref idle_box_multiset and @ref
- *  runtime_idle_box_multiset containers. These containers are not mapped containers
- *  and store values in space that can be represented as boxes.
- *
- *  Iterating these containers always yield a constant value iterator. That is
- *  because modifying the value stored in the container may compromise the
- *  ordering in the container. One way around this issue is to use a @ref
- *  idle_boxmap container or to @c const_cast the value dereferenced from the
- *  iterator.
- *
- *  @see idle_box_multiset
+ *  \file   idle_box_multiset.hpp
+ *  Contains the definition of \idle_box_multiset containers.
  */
 
 #ifndef SPATIAL_IDLE_BOX_MULTISET_HPP
@@ -29,7 +19,16 @@
 
 namespace spatial
 {
-
+  /**
+   *  Non-associative containers that and store values in space that can be
+   *  represented as boxes.
+   *
+   *  Iterating these containers always yield a constant value iterator. That is
+   *  because modifying the value stored in the container may compromise the
+   *  ordering in the container. One way around this issue is to use a
+   *  \idle_box_multimap container or to \c const_cast the value dereferenced
+   *  from the iterator.
+   */
   template<dimension_type Rank, typename Key,
            typename Compare = bracket_less<Key>,
            typename Alloc = std::allocator<Key> >
@@ -68,15 +67,15 @@ namespace spatial
   };
 
   /**
-   *  Specialization for @ref idle_box_multiset with runtime rank support. The
-   *  rank of the @ref idle_box_multiset can be determined at run time and does not
+   *  Specialization for \idle_box_multiset with runtime rank support. The
+   *  rank of the \idle_box_multiset can be determined at run time and does not
    *  need to be fixed at compile time. Using:
-   *  @code
+   *  \code
    *    struct box { ... };
    *    idle_box_multiset<0, box> my_set;
-   *  @endcode
+   *  \endcode
    *
-   *  @see runtime_idle_box_multiset for more information about how to use this
+   *  \see runtime_idle_box_multiset for more information about how to use this
    *  container.
    */
   template<typename Key, typename Compare, typename Alloc>

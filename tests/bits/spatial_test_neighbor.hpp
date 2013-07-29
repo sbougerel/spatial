@@ -6,10 +6,10 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_test_neighbor.hpp
- *  @brief  Most tests for the elements defined in spatial_neighbor.hpp are
+ *  \file   spatial_test_neighbor.hpp
+ *  Most tests for the elements defined in spatial_neighbor.hpp are
  *  located in this file.
- *  @see spatial_neighbor.hpp
+ *  \see spatial_neighbor.hpp
  */
 
 #ifndef SPATIAL_TEST_NEIGHBOR_HPP

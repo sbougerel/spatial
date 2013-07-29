@@ -6,10 +6,10 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_test_metric.hpp
- *  @brief  All tests for the elements defined in spatial_metric.hpp are
+ *  \file   spatial_test_metric.hpp
+ *  All tests for the elements defined in spatial_metric.hpp are
  *  located in this file.
- *  @see spatial_metric.hpp
+ *  \see spatial_metric.hpp
  */
 
 #ifndef SPATIAL_TEST_METRIC_HPP

@@ -6,13 +6,13 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   idle_box_multimap.hpp
- *  @brief  Contains the definition of the @ref idle_box_multimap containers.
+ *  \file   idle_box_multimap.hpp
+ *  Contains the definition of the \idle_box_multimap containers.
  *  These containers are mapped containers and store values in space that can
  *  be represented as boxes.
  *
- *  @see idle_box_multimap
- *  @see runtime_idle_box_multimap
+ *  \see idle_box_multimap
+ *  \see runtime_idle_box_multimap
  */
 
 #ifndef SPATIAL_IDLE_BOX_MULTIMAP_HPP
@@ -68,16 +68,16 @@ namespace spatial
   };
 
   /**
-   *  Specialization for @ref idle_box_multimap with runtime rank support. The
-   *  rank of the @ref idle_box_multimap can be determined at run time and does not
+   *  Specialization for \idle_box_multimap with runtime rank support. The
+   *  rank of the \idle_box_multimap can be determined at run time and does not
    *  need to be fixed at compile time. Using:
-   *  @code
+   *  \code
    *    struct box { ... };
    *    struct mapped { ... };
    *    idle_box_multimap<0, box, mapped> my_set;
-   *  @endcode
+   *  \endcode
    *
-   *  @see runtime_idle_box_multimap for more information about how to use this
+   *  \see runtime_idle_box_multimap for more information about how to use this
    *  container.
    */
   template<typename Key, typename Mapped, typename Compare, typename Alloc>

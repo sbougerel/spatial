@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_neighbor.hpp
- *  @brief  Provides neighbor iterator and all the functions around it.
+ *  \file   spatial_neighbor.hpp
+ *  Provides neighbor iterator and all the functions around it.
  */
 
 #ifndef SPATIAL_NEIGHBOR_HPP
@@ -15,8 +15,8 @@
 
 #include <utility> // provides ::std::pair<>
 #include "../metric.hpp"
+#include "../traits.hpp"
 #include "spatial_bidirectional.hpp"
-#include "spatial_traits.hpp"
 #include "spatial_except.hpp"
 
 namespace spatial
@@ -96,11 +96,11 @@ namespace spatial
    *  };
    *  \endcode
    *
-   *  The details of the \c Metric type are explained in \metric.
-   *  The library provides ready-made models of \c Metric such as
-   *  \euclidian and \manhattan that are designed to work only with C++'s
-   *  built-in arithmetic types. If more metrics needs to be defined, see the
-   *  explanation in \metric.
+   *  The details of the \c Metric type are explained in \metric. The library
+   *  provides ready-made models of \c Metric such as \euclidian and \manhattan
+   *  that are designed to work only with C++'s built-in arithmetic types. If
+   *  more metrics needs to be defined, see the explanation in the \metric
+   *  concept.
    */
   template <typename Ct, typename Metric =
             euclidian<typename details::mutate<Ct>::type,
@@ -186,7 +186,7 @@ namespace spatial
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
-     *  dimension, such as the function \ref modulo().
+     *  dimension, such as the function \ref spatial::details::modulo().
      *
      *  \attention Specifying the incorrect dimension value for the node will
      *  result in unknown behavior. It is recommended that you do not use this
@@ -272,8 +272,8 @@ namespace spatial
    *  to the furthest element from a target key, with distances applied
    *  according to a user-defined geometric space of type \c Metric.
    *
-   *  The Metric type is a complex type that must be a model of \ref
-   *  Metric:
+   *  The Metric type is a complex type that must be a model of
+   *  \metric:
    *
    *  \code
    *  struct Metric
@@ -290,18 +290,17 @@ namespace spatial
    *  };
    *  \endcode
    *
-   *  The details of the \c Metric type are explained in \ref Metric.
-   *  Metrics are generally not defined by the user of the library, given
-   *  their complexity. Rather, the user of the library uses ready-made
-   *  models of \ref Metric such as \ref euclid and \ref manhattan. If
-   *  more metrics needs to be defined, see the explanation in \ref
-   *  Metric.
+   *  The details of the \c Metric type are explained in \metric.  Metrics are
+   *  generally not defined by the user of the library, given their
+   *  complexity. Rather, the user of the library uses ready-made models of
+   *  \metric such as \euclidian and \manhattan. If more metrics needs to be
+   *  defined, see the explanation in for the \metric concept.
    *
    *  This iterator only returns constant objects.
    *
    *  \tparam Ct The container type bound to the iterator.
    *  \tparam DistanceType The type used to represent distances.
-   *  \tparam Metric An type that follow the \ref Metric concept.
+   *  \tparam Metric An type that follow the \metric concept.
    */
   template<typename Ct, typename Metric>
   class neighbor_iterator<const Ct, Metric>
@@ -355,7 +354,7 @@ namespace spatial
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
-     *  dimension, such as the function \ref modulo().
+     *  dimension, such as the function \ref spatial::details::modulo().
      *
      *  \attention Specifying the incorrect dimension value for the node will
      *  result in unknown behavior. It is recommended that you do not use this
@@ -385,7 +384,7 @@ namespace spatial
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
-     *  dimension, such as the function \ref modulo().
+     *  dimension, such as the function \ref spatial::details::modulo().
      *
      *  \attention Specifying the incorrect dimension value for the node will
      *  result in unknown behavior. It is recommended that you do not use this
@@ -476,7 +475,7 @@ namespace spatial
    *  calculated distance from the target. The distance read is only relevant if
    *  the iterator does not point past-the-end.
    */
-  //@{
+  ///@{
   template <typename Ct, typename Metric>
   inline typename Metric::distance_type
   distance(const neighbor_iterator<Ct, Metric>& iter)
@@ -487,7 +486,7 @@ namespace spatial
   distance(neighbor_iterator<Ct, Metric>& iter,
            const typename Metric::distance_type& dist)
   { iter.distance() = dist; }
-  //@}
+  ///@}
 
   /**
    *  A quick accessor for neighbor iterators that retrive the key that is the
@@ -595,12 +594,12 @@ namespace spatial
   } // namespace details
 
   /**
-   *  Build a past-the-end neighbor iterator with a user-defined \ref Metric.
+   *  Build a past-the-end neighbor iterator with a user-defined \metric.
    *  \param container The container in which a neighbor must be found.
    *  \param metric The metric to use in search of the neighbor.
    *  \param target The target key used in the neighbor search.
    */
-  //@{
+  ///@{
   template <typename Ct, typename Metric>
   inline neighbor_iterator<Ct, Metric>
   neighbor_end(Ct& container, const Metric& metric,
@@ -626,7 +625,7 @@ namespace spatial
   neighbor_cend(const Ct& container, const Metric& metric,
                 const typename container_traits<Ct>::key_type& target)
   { return neighbor_end(container, metric, target); }
-  //@}
+  ///@}
 
   /**
    *  Build a past-the-end neighbor iterator, assuming an euclidian metric with
@@ -635,7 +634,7 @@ namespace spatial
    *  \param container The container in which a neighbor must be found.
    *  \param target The target key used in the neighbor search.
    */
-  //@{
+  ///@{
   template <typename Ct>
   inline typename enable_if<details::is_compare_builtin<Ct>,
                             neighbor_iterator<Ct> >::type
@@ -677,16 +676,16 @@ namespace spatial
          (details::with_builtin_difference<Ct>()(container)),
        target);
   }
-  //@}
+  ///@}
 
   /**
    *  Build a \ref neighbor_iterator pointing to the nearest neighbor of \c
-   *  target using a user-defined \ref Metric.
+   *  target using a user-defined \metric.
    *  \param container The container in which a neighbor must be found.
    *  \param metric The metric to use in search of the neighbor.
    *  \param target The target key used in the neighbor search.
    */
-  //@{
+  ///@{
   template <typename Ct, typename Metric>
   inline neighbor_iterator<Ct, Metric>
   neighbor_begin(Ct& container, const Metric& metric,
@@ -714,7 +713,7 @@ namespace spatial
   neighbor_cbegin(const Ct& container, const Metric& metric,
                   const typename container_traits<Ct>::key_type& target)
   { return neighbor_begin(container, metric, target); }
-  //@}
+  ///@}
 
   /**
    *  Build a \ref neighbor_iterator pointing to the nearest neighbor of \c
@@ -724,7 +723,7 @@ namespace spatial
    *  \param container The container in which a neighbor must be found.
    *  \param target The target key used in the neighbor search.
    */
-  //@{
+  ///@{
   template <typename Ct>
   inline typename enable_if<details::is_compare_builtin<Ct>,
                             neighbor_iterator<Ct> >::type
@@ -766,17 +765,17 @@ namespace spatial
          (details::with_builtin_difference<Ct>()(container)),
        target);
   }
-  //@}
+  ///@}
 
   /**
    *  Build a \ref neighbor_iterator pointing to the neighbor closest to
    *  target but for which distance to target is greater or equal to the value
-   *  given in \c bound. Uses a user-defined \ref Metric.
+   *  given in \c bound. Uses a user-defined \metric.
    *  \param container The container in which a neighbor must be found.
    *  \param metric The metric to use in search of the neighbor.
    *  \param target The target key used in the neighbor search.
    */
-  //@{
+  ///@{
   template <typename Ct, typename Metric>
   inline neighbor_iterator<Ct, Metric>
   neighbor_lower_bound(Ct& container, const Metric& metric,
@@ -809,7 +808,7 @@ namespace spatial
                         const typename container_traits<Ct>::key_type& target,
                         typename Metric::distance_type bound)
   { return neighbor_lower_bound(container, metric, target, bound); }
-  //@}
+  ///@}
 
   /**
    *  Build a \ref neighbor_iterator pointing to the neighbor closest to
@@ -820,7 +819,7 @@ namespace spatial
    *  \param container The container in which a neighbor must be found.
    *  \param target The target key used in the neighbor search.
    */
-  //@{
+  ///@{
   template <typename Ct>
   inline typename enable_if<details::is_compare_builtin<Ct>,
                             neighbor_iterator<Ct> >::type
@@ -865,17 +864,17 @@ namespace spatial
          (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
-  //@}
+  ///@}
 
   /**
    *  Build a \ref neighbor_iterator pointing to the neighbor closest to
    *  target but for which distance to target is strictly greater than the value
-   *  given in \c bound. Uses a user-defined \ref Metric.
+   *  given in \c bound. Uses a user-defined \metric.
    *  \param container The container in which a neighbor must be found.
    *  \param metric The metric to use in search of the neighbor.
    *  \param target The target key used in the neighbor search.
    */
-  //@{
+  ///@{
   template <typename Ct, typename Metric>
   inline neighbor_iterator<Ct, Metric>
   neighbor_upper_bound(Ct& container, const Metric& metric,
@@ -908,7 +907,7 @@ namespace spatial
                         const typename container_traits<Ct>::key_type& target,
                         typename Metric::distance_type bound)
   { return neighbor_upper_bound(container, metric, target); }
-  //@}
+  ///@}
 
   /**
    *  Build a \ref neighbor_iterator pointing to the neighbor closest to
@@ -919,7 +918,7 @@ namespace spatial
    *  \param container The container in which a neighbor must be found.
    *  \param target The target key used in the neighbor search.
    */
-  //@{
+  ///@{
   template <typename Ct>
   inline typename enable_if<details::is_compare_builtin<Ct>,
                             neighbor_iterator<Ct> >::type
@@ -964,18 +963,18 @@ namespace spatial
          (details::with_builtin_difference<Ct>()(container)),
        target, bound);
   }
-  //@}
+  ///@}
 
   /**
    *  Returns a \ref neighbor_iterator_pair representing the range of values
    *  from the closest to the furthest in the container iterated. Uses a
-   *  user-defined \ref Metric.
+   *  user-defined \metric.
    *
    *  \param container The container in which a neighbor must be found.
    *  \param metric The metric to use in search of the neighbor.
    *  \param target The target key used in the neighbor search.
    */
-  //@{
+  ///@{
   template <typename Ct, typename Metric>
   inline neighbor_iterator_pair<Ct, Metric>
   neighbor_range(Ct& container, const Metric& metric,
@@ -1005,7 +1004,7 @@ namespace spatial
       (neighbor_begin(container, metric, target),
        neighbor_end(container, metric, target));
   }
-  //@}
+  ///@}
 
   /**
    *  Returns a \ref neighbor_iterator_pair representing the range of values
@@ -1017,7 +1016,7 @@ namespace spatial
    *  \param container The container in which a neighbor must be found.
    *  \param target The target key used in the neighbor search.
    */
-  //@{
+  ///@{
   template <typename Ct>
   inline typename enable_if<details::is_compare_builtin<Ct>,
                             neighbor_iterator_pair<Ct> >::type
@@ -1047,7 +1046,7 @@ namespace spatial
     return neighbor_iterator_pair<const Ct>
       (neighbor_begin(container, target), neighbor_end(container, target));
   }
-  //@}
+  ///@}
 
   namespace details
   {

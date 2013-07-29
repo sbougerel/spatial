@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_builtin.hpp
- *  @brief  Defines the set of meta-programing types to find if a comparator is
+ *  \file   spatial_builtin.hpp
+ *  Defines the set of meta-programing types to find if a comparator is
  *  built-in or not.
  */
 
@@ -34,7 +34,7 @@ namespace spatial
      * Help to resolve whether the type used is a builtin comparator or not. It
      * is used as the base type of \ref is_compare_builtin.
      */
-    //@{
+    ///@{
     template <typename>
     struct is_compare_builtin_helper : std::tr1::false_type { };
     template <typename Tp>
@@ -49,7 +49,7 @@ namespace spatial
     template <typename Accessor, typename Tp>
     struct is_compare_builtin_helper<accessor_less<Accessor, Tp> >
       : std::tr1::true_type { };
-    //@}
+    ///@}
 
     /**
      *  Statically resolve if key_compare used in the container \c corresponds
@@ -186,28 +186,31 @@ namespace spatial
      *
      *  This type is used to rebind the metric from one unit into another when
      *  using built-in difference type. This is necessary because when calling
-     *  \ref spatial::euclidian_neighbor_begin(container, target), you do not
-     *  have the possibility of specifying a type for the unit to use (the
-     *  library assumes `double`). However that type can be defined in the
-     *  return type, similarly to:
+     *  \ref spatial::euclidian_neighbor_begin(), you do not have the
+     *  possibility of specifying a type for the unit to use (the library
+     *  assumes `double`). However that type can be defined in the return type,
+     *  similarly to:
      *
      *  \code
      *  spatial::euclidian_neighbor_iterator<container_type, float> iter
      *    = spatial::euclidian_neighbor_begin(container, target);
      *  \endcode
      *
-     *  \ref spatial::euclidian_neighbor_begin(container, target) first creates
-     *  a metric of type \ref spatial::euclidian<container_type, key_type,
-     *  double>, then this metric is rebound into a metric of type \ref
-     *  spatial::euclidian<container_type, key_type, float>.
+     *  \ref spatial::euclidian_neighbor_begin() first creates
+     *  a metric of type \euclidian with \c
+     *  spatial::euclidian<container_type, double>,
+     *  then this metric is rebound into a metric of type \c
+     *  spatial::euclidian<container_type, float>.
      *
      *  \tparam Diff Either a built-in difference functor, or one provided by
      *  the user.
      *  \tparam DistanceType The distance to use for `Diff`, if `Diff` is a built-in
      *  difference functor.
      *
-     *  \sa bracket_minus<Tp, Unit>
-     *  \sa paren_minus<Tp, Unit>
+     *  \sa spatial::bracket_minus
+     *  \sa spatial::paren_minus
+     *  \sa spatial::accessor_minus
+     *  \sa spatial::iterator_minus
      */
     template <typename Diff, typename DistanceType>
     struct rebind_builtin_difference

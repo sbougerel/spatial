@@ -6,8 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   function.hpp
- *  @brief  Main functors that are used in the library.
+ *  \file   function.hpp
+ *  Main functors that are used in the library.
  */
 
 #ifndef SPATIAL_FUNCTION_HPP
@@ -23,7 +23,7 @@ namespace spatial
    *  elements of Tp along the dimension \c n accessed through a custom
    *  accessor. The returned value is cast into the type \c Unit.
    *
-   *  @concept bracket_minus is a concept of \ref ElementDifference.
+   *  \concept bracket_minus is a concept of \ref ElementDifference.
    */
   template <typename Accessor, typename Tp, typename Unit>
   struct accessor_minus
@@ -50,7 +50,7 @@ namespace spatial
    *  elements of Tp along the dimension \c n accessed through the bracket
    *  operator. The returned value is cast into the type \c Unit.
    *
-   *  @concept bracket_minus is a concept of \ref ElementDifference.
+   *  \concept bracket_minus is a concept of \ref ElementDifference.
    */
   template <typename Tp, typename Unit>
   struct bracket_minus
@@ -66,11 +66,11 @@ namespace spatial
   };
 
   /**
-   *  @brief This functor uses the minus operator to calculate the difference
+   *  \brief This functor uses the minus operator to calculate the difference
    *  between 2 elements of Tp along the dimension \c n accessed through the
    *  parenthesis operator. The returned value is cast into the type \c Unit.
    *
-   *  @concept bracket_minus is a concept of \ref ElementDifference.
+   *  \concept bracket_minus is a concept of \ref ElementDifference.
    */
   template <typename Tp, typename Unit>
   struct paren_minus
@@ -90,7 +90,7 @@ namespace spatial
    *  elements of Tp along the dimension \c n accessed through an iterator. The
    *  returned value is cast into the type \c Unit.
    *
-   *  @concept bracket_minus is a concept of \ref ElementDifference.
+   *  \concept bracket_minus is a concept of \ref ElementDifference.
    */
   template <typename Tp, typename Unit>
   struct iterator_minus
@@ -115,7 +115,7 @@ namespace spatial
    *  that has coordinate that are not accessible via the bracket, parenthesis
    *  operator or iterator deference.
    *
-   *  @concept accessor_less is a model of RegularComparison to accomodate both
+   *  \concept accessor_less is a model of RegularComparison to accomodate both
    *  pointset and boxset family of container.
    *
    *  Generally, the spatial containers are used with one of bracket_less,
@@ -151,7 +151,7 @@ namespace spatial
    *  A comparator that simplifies using the spatial containers with a Key type
    *  that has coordiates accessible via the bracket operator.
    *
-   *  @concept accessor_less is a model of RegularComparison to accomodate both
+   *  \concept accessor_less is a model of RegularComparison to accomodate both
    *  pointset and boxset family of container.
    */
   template <typename Tp>
@@ -174,7 +174,7 @@ namespace spatial
    *  A comparator that simplifies using the spatial containers with a Key type
    *  that has coordiates accessible via the parenthesis operator.
    *
-   *  @concept accessor_less is a model of RegularComparison to accomodate both
+   *  \concept accessor_less is a model of RegularComparison to accomodate both
    *  pointset and boxset family of container.
    */
   template <typename Tp>
@@ -197,7 +197,7 @@ namespace spatial
    *  A comparator that simplifies using the spatial containers with a Key type
    *  that has coordiates accessible via iterator deference.
    *
-   *  @concept accessor_less is a model of RegularComparison to accomodate both
+   *  \concept accessor_less is a model of RegularComparison to accomodate both
    *  pointset and boxset family of container.
    */
   template <typename Tp>

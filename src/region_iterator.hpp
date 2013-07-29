@@ -7,17 +7,17 @@
 
 /**
  *  \file   region_iterator.hpp
- *  \brief  Contains the definition of \ref region_iterator. These iterators
- *  walk through all items in the container that are contained within an
- *  orthogonal region defined by a predicate.
+ *  Contains the definition of \region_iterator. These iterators walk through
+ *  all items in the container that are contained within an orthogonal region
+ *  defined by a predicate.
  */
 
 #ifndef SPATIAL_REGION_ITERATOR_HPP
 #define SPATIAL_REGION_ITERATOR_HPP
 
 #include <utility> // std::pair<> and std::make_pair()
+#include "traits.hpp"
 #include "bits/spatial_bidirectional.hpp"
-#include "bits/spatial_traits.hpp"
 #include "bits/spatial_rank.hpp"
 #include "bits/spatial_except.hpp"
 
@@ -190,12 +190,12 @@ namespace spatial
 
   private:
     /**
-     *  @brief  The lower bound for the orthogonal region iterator.
+     *  The lower bound for the orthogonal region iterator.
      */
     Key _lower;
 
     /**
-     *  @brief  The upper bound for the orthogonal region iterator.
+     *  The upper bound for the orthogonal region iterator.
      */
     Key _upper;
   };
@@ -264,9 +264,6 @@ namespace spatial
     /**
      *  Set the lower and upper boundary for the orthogonal region
      *  search.
-     *
-     *  \throws a std::out_of_region if an element of lower is strictly greater
-     *  than the corresponding element of upper with respect to their dimension.
      */
     closed_bounds(const Compare& compare, const Key& lower,
                         const Key& upper)
@@ -274,7 +271,7 @@ namespace spatial
     { }
 
     /**
-     *  @brief  The operator that tells wheather the point is in region or not.
+     *  The operator that tells wheather the point is in region or not.
      */
     relative_order
     operator()(dimension_type dim, dimension_type, const Key& key) const
@@ -288,12 +285,12 @@ namespace spatial
 
   private:
     /**
-     *  @brief  The lower bound for the orthogonal region iterator.
+     *  The lower bound for the orthogonal region iterator.
      */
     Key _lower;
 
     /**
-     *  @brief  The upper bound for the orthogonal region iterator.
+     *  The upper bound for the orthogonal region iterator.
      */
     Key _upper;
   };
@@ -332,30 +329,41 @@ namespace spatial
   }
 
   /**
-   *  This region predicate matches keys that are overlap with a target
-   *  box. The keys must represent boxes, not points.
+   *  This class is a model of \region_predicate that matches any keys that is
+   *  overlapping with a given test box. In this predicate, keys should be
+   *  representing boxes, and not points.
    *
-   *  @concept overlap_bounds is a model of RegionPredicate.
+   *  In this predicate, the Compare functor is expected to be a model of
+   *  \generalized_compare, in order to compare information on different
+   *  dimensions.
    *
-   *  The Compare functor is expected to be a model of \s RegularComparison.
+   *  Additionally, in order to interpret the boxe's coordinates appropriately,
+   *  overlap_bounds expects a Layout template argument. Layout is one of:
+   *  \li \ref llhh_layout_tag,
+   *  \li \ref lhlh_layout_tag,
+   *  \li \ref hhll_layout_tag,
+   *  \li \ref hlhl_layout_tag.
    *
-   *  In order to interpret the box coordinates appropriately, overlap_bounds
-   *  expects a Layout template argument. Layout is one of:
-   *  @ul @ref llhh_layout_tag,
-   *  @l @ref lhlh_layout_tag,
-   *  @l @ref hhll_layout_tag,
-   *  @l @ref hlhl_layout_tag.
-   *  @lu
    *  Each layout provides information on how to interpret the coordinates
-   *  returned for each dimension of the boxes values.
+   *  returned for each dimension of the boxes keys.
    *
-   *  For a given target box @f$_P{(x, y)}@f$, this region predicate matches any
-   *  box @f$_B{(x, y)}@f$ in a space of rank @f$r@f$ such as:
+   *  For a given target box \f$_P{(x, y)}\f$, this region predicate matches any
+   *  box \f$_B{(x, y)}\f$ in a space of rank \f$r\f$ such as:
    *
-   *  @f[
+   *  \f[
    *  \_sum{i=1}^{r} \left( _B{x_i} \le _P{x_i} \le _B{y_i}
    *                        \; or \; _B{x_i} \le _P{y_i} \le _B{y_i} \right)
-   *  @f]
+   *  \f]
+   *
+   *  This predicate is used with \region_iterator to define the
+   *  \overlap_iterator.
+   *
+   *  \tparam Key A key type representing boxes.
+   *  \tparam Compare A model of \generalized_compare
+   *  \tparam Layout One of \ref llhh_layout_tag, \ref lhlh_layout_tag, \ref
+   *  hhll_layout_tag or \ref hlhl_layout_tag.
+   *  \see overlap_iterator
+   *  \concept_region_predicate
    */
   template <typename Key, typename Compare,
             typename Layout = llhh_layout_tag>
@@ -432,10 +440,10 @@ namespace spatial
   };
 
   /**
-   *  @brief  Overlap bounds factory that takes in a @c container, a @c key and
-   *  returns an @ref overlap_bounds type.
+   *  Overlap bounds factory that takes in a \c container, a \c key and
+   *  returns an \ref overlap_bounds type.
    *
-   *  This factory also checks that box @c key is valid, meaning: all its lower
+   *  This factory also checks that box \c key is valid, meaning: all its lower
    *  coordinates are indeed lower or equal to its higher coordinates.
    */
   ///@{
@@ -468,27 +476,27 @@ namespace spatial
    *  This region predicate matches keys that are enclosed or equal to a target
    *  box. The keys must represent boxes, not points.
    *
-   *  @concept enclose_bounds is a model of RegionPredicate.
-   *
-   *  The Compare functor is expected to be a model of \s RegularComparison.
+   *  The Compare functor is expected to be a model of \generalized_compare.
    *
    *  In order to interpret the box coordinates appropriately, overlap_bounds
    *  expects a Layout template argument. Layout is one of:
-   *  @ul @ref llhh_layout_tag,
-   *  @l @ref lhlh_layout_tag,
-   *  @l @ref hhll_layout_tag,
-   *  @l @ref hlhl_layout_tag.
-   *  @lu
+   *  \li \ref llhh_layout_tag,
+   *  \li \ref lhlh_layout_tag,
+   *  \li \ref hhll_layout_tag,
+   *  \li \ref hlhl_layout_tag.
+   *
    *  Each layout provides information on how to interpret the coordinates
    *  returned for each dimension of the boxes values.
    *
-   *  For a given target box @f$_P{(x, y)}@f$, this region predicate matches any
-   *  box @f$_B{(x, y)}@f$ in a space of rank @f$r@f$ such as:
+   *  For a given target box \f$_P{(x, y)}\f$, this region predicate matches any
+   *  box \f$_B{(x, y)}\f$ in a space of rank \f$r\f$ such as:
    *
-   *  @f[
+   *  \f[
    *  \_sum{i=1}^{r} \left( _P{x_i} \le _B{x_i} \; and \;
    *                        _B{y_i} \le _P{y_i} \right)
-   *  @f]
+   *  \f]
+   *
+   *  \concept_region_predicate
    */
   template <typename Key, typename Compare,
             typename Layout = llhh_layout_tag>
@@ -497,19 +505,19 @@ namespace spatial
   {
   public:
     /**
-     *  @brief  The default constructor leaves everything un-initialized
+     *  The default constructor leaves everything un-initialized
      */
     enclosed_bounds() : Compare(), _target() { }
 
     /**
-     *  @brief  Set the target box and the comparator to the appropriate value.
+     *  Set the target box and the comparator to the appropriate value.
      */
     enclosed_bounds(const Compare& compare, const Key& target)
       : Compare(compare), _target(target)
     { }
 
     /**
-     *  @brief  The operator that tells wheather the point is in region or not.
+     *  The operator that tells wheather the point is in region or not.
      */
     relative_order
     operator()(dimension_type dim, dimension_type rank, const Key& key) const
@@ -519,7 +527,7 @@ namespace spatial
 
   private:
     /**
-     *  @brief  The box value that will be used for the enclosing comparison.
+     *  The box value that will be used for the enclosing comparison.
      */
     Key _target;
 
@@ -577,10 +585,10 @@ namespace spatial
   };
 
   /**
-   *  Overlap bounds factory that takes in a @c container, a @c key and
-   *  returns an @ref enclose_bounds type.
+   *  Enclosed bounds factory that takes in a \c container, a \c key and
+   *  returns an \ref enclosed_bounds type.
    *
-   *  This factory also checks that box @c key is valid, meaning: all its lower
+   *  This factory also checks that box \c key is valid, meaning: all its lower
    *  coordinates are indeed lower or equal to its higher coordinates.
    */
   ///@{
@@ -618,7 +626,7 @@ namespace spatial
    *  inclusive of lower values, but exclusive of upper values.
    *
    *  \tparam Ct The container upon which these iterator relate to.
-   *  \tparam Predicate A model of \ref RegionPredicate, defaults to \ref
+   *  \tparam Predicate A model of \region_predicate, defaults to \ref
    *  bounds
    *  \see region_query<>::iterator
    *  \see region_query<>::const_iterator
@@ -651,7 +659,7 @@ namespace spatial
      *  perfectly balanced.
      *
      *  \param container The container being iterated.
-     *  \param pred A model of the \ref RegionPredicate concept.
+     *  \param pred A model of the \region_predicate concept.
      *  \param iter An iterator on the type Ct.
      */
     region_iterator(Ct& container, const Predicate& pred,
@@ -671,7 +679,7 @@ namespace spatial
      *  longer than \Olog in general, and so it is not likely to affect the
      *  performance of your application in any major way.
      *
-     *  \param pred A model of the \ref RegionPredicate concept.
+     *  \param pred A model of the \region_predicate concept.
      *  \param ptr An iterator on the type Ct.
      *  \param dim The node's dimension for the node pointed to by node.
      *  \param container The container being iterated.
@@ -726,7 +734,7 @@ namespace spatial
    *  inclusive of lower values, but exclusive of upper values.
    *
    *  \tparam Ct The container upon which these iterator relate to.
-   *  \tparam Predicate A model of \ref RegionPredicate, defaults to \ref
+   *  \tparam Predicate A model of \region_predicate, defaults to \ref
    *  bounds
    *  \see region_query<>::iterator
    *  \see region_query<>::const_iterator
@@ -757,7 +765,7 @@ namespace spatial
      *  perfectly balanced.
      *
      *  \param container The container being iterated.
-     *  \param predicate A model of the \ref RegionPredicate concept.
+     *  \param predicate A model of the \region_predicate concept.
      *  \param iter An iterator on the type Ct.
      */
     region_iterator(const Ct& container, const Predicate& pred,
@@ -778,7 +786,7 @@ namespace spatial
      *  performance of your application in any major way.
      *
      *  \param container The container being iterated.
-     *  \param predicate A model of the \ref RegionPredicate concept.
+     *  \param predicate A model of the \region_predicate concept.
      *  \param iter An iterator on the type Ct.
      */
     region_iterator
@@ -841,11 +849,11 @@ namespace spatial
      *  delimited by p. If multiple nodes are matching, return the first
      *  matching node in in-order transversal.
      *
-     *  \param node_dim  The current dimension for @c node.
+     *  \param node_dim  The current dimension for \c node.
      *  \param node  The node from which to find the minimum.
      *  \param key_dimension  The number of dimensions of key.
      *  \param predicate  The predicate for the orthogonal region query.
-     *  \return  An iterator pointing the minimum, or to the parent of @c node.
+     *  \return  An iterator pointing the minimum, or to the parent of \c node.
      *
      *  If \c node is a header node, the search will stop immediately.
      */
@@ -858,11 +866,11 @@ namespace spatial
      *  delimited by p. If multiple nodes are matching, return the last
      *  matching node in in-order transversal.
      *
-     *  \param node_dim  The current dimension for @c node.
+     *  \param node_dim  The current dimension for \c node.
      *  \param node  The node from which to find the minimum.
      *  \param key_dimension  The number of dimensions of key.
      *  \param predicate  The predicate for the orthogonal region query.
-     *  \return  An iterator pointing the maximum, or to the parent of @c node.
+     *  \return  An iterator pointing the maximum, or to the parent of \c node.
      *
      *  If \c node is a header node, the search will stop immediately.
      */
@@ -983,6 +991,18 @@ namespace spatial
       : Base(p.first, p.second) { }
   };
 
+  /**
+   *  Returns a \region_iterator_pair where \c first points to the first element
+   *  matching the predicate \c pred in \c container, and \c second points after
+   *  the last element matching \c pred in \c container.
+   *
+   *  \tparam Ct The type of \c container.
+   *  \tparam Predicate The type of \c pred, which must be a model of
+   *  \region_predicate.
+   *  \param container The container being searched.
+   *  \param pred The predicate used for the search.
+   */
+  ///@{
   template <typename Ct, typename Predicate>
   inline region_iterator_pair<Ct, Predicate>
   region_range(Ct& container, const Predicate& pred)
@@ -991,6 +1011,9 @@ namespace spatial
       (region_begin(container, pred), region_end(container, pred));
   }
 
+  //! This overload works only on constant containers and will return a set of
+  //! constant iterators, where the value dereferrenced by the iterator is
+  //! constant.
   template <typename Ct, typename Predicate>
   inline region_iterator_pair<const Ct, Predicate>
   region_range(const Ct& container, const Predicate& pred)
@@ -999,6 +1022,9 @@ namespace spatial
       (region_begin(container, pred), region_end(container, pred));
   }
 
+  //! This overload works only on constant containers and will return a set of
+  //! constant iterators, where the value dereferrenced by the iterator is
+  //! constant.
   template <typename Ct, typename Predicate>
   inline region_iterator_pair<const Ct, Predicate>
   region_crange(const Ct& container, const Predicate& pred)
@@ -1006,6 +1032,7 @@ namespace spatial
     return region_iterator_pair<const Ct, Predicate>
       (region_begin(container, pred), region_end(container, pred));
   }
+  ///@}
 
 /* MACRO FOR GENERATION OF FACTORIES FOR ALL TYPES OF REGION ITERATORS
  *
@@ -1378,13 +1405,13 @@ namespace spatial
      *  within range or not.
      *
      *  The key is simply tested across all dimesions over the predicate.
-     *  \tparam Rank A type that is a model of \ref Rank.
+     *  \tparam Rank Either \static_rank or \dynamic_rank.
      *  \tparam Key The key type that is used in the comparison.
-     *  \tparam Predicate A type that is a model of \ref RangePredicate.
-     *  \param rank The object of type \c Rank.
+     *  \tparam Predicate A type that is a model of \region_predicate.
+     *  \param rank The magnitude of the rank.
      *  \param key The key whose coordinates are verified to be within the
      *  range.
-     *  \param predicate The \ref RangePredicate object used to represent the
+     *  \param predicate The \region_predicate object used to represent the
      *  range.
      */
     template <typename Rank, typename Key, typename Predicate>

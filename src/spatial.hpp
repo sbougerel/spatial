@@ -47,12 +47,12 @@ namespace std
 /**
  *  The main namespace used in the library. All types, functions and variables
  *  defined in the library are contained within this namespace. Declaring
- *  \mono{using ::spatial} in the source of your program gives you access to all
+ *  <tt>using spatial</tt> in the source of your program gives you access to all
  *  features of the library at once.
  *
  *  The main reason to access the \c spatial namespace is to access one of its
- *  containers, such as \ref point_multiset, \ref box_multimap, or \ref
- *  idle_point_multiset. There are many others.
+ *  containers, such as \point_multiset, \box_multimap, or
+ *  \idle_point_multiset.
  *
  *  \see Containers
  */
@@ -60,23 +60,23 @@ namespace spatial
 {
 
   /**
-   *  @brief  Defines a positive integral type for counting objects or storing
+   *  Defines a positive integral type for counting objects or storing
    *  absolute values.
    */
   typedef std::size_t size_type;
 
   /**
-   *  @brief  Defines the type for the dimension as being a size.
+   *  Defines the type for the dimension as being a size.
    */
   typedef std::size_t dimension_type;
 
   /**
-   *  @brief  Defines weight as being a size.
+   *  Defines weight as being a size.
    */
   typedef std::size_t weight_type;
 
   /**
-   *  @brief  Defines values for relative ordering.
+   *  Defines values for relative ordering.
    */
   typedef
   enum { below = -1, matching = 0, above = 1 }
@@ -149,12 +149,12 @@ namespace spatial
    *  its address will differ for each translation unit.
    *
    */
-  //@{
+  ///@{
   const llhh_layout_tag llhh_layout = llhh_layout_tag();
   const lhlh_layout_tag lhlh_layout = lhlh_layout_tag();
   const hhll_layout_tag hhll_layout = hhll_layout_tag();
   const hlhl_layout_tag hlhl_layout = hlhl_layout_tag();
-  //@}
+  ///@}
 }
 
 #endif // SPATIAL_HPP

@@ -7,7 +7,7 @@
 
 /**
  *  \file   spatial_equal.hpp
- *  \brief  Contains the definition of the equal iterators. These iterators
+ *  Contains the definition of the equal iterators. These iterators
  *  walk through all items in the container that are equal to a key given in
  *  parameter of the iterator.
  */
@@ -16,7 +16,7 @@
 #define SPATIAL_EQUAL_HPP
 
 #include "spatial_bidirectional.hpp"
-#include "spatial_traits.hpp"
+#include "../traits.hpp"
 #include "spatial_rank.hpp"
 #include "spatial_except.hpp"
 #include "spatial_compress.hpp"
@@ -264,11 +264,11 @@ namespace spatial
      *  delimited by p. If multiple nodes are matching, return the first
      *  matching node in in-order transversal.
      *
-     *  \param node_dim  The current dimension for @c node.
+     *  \param node_dim  The current dimension for \c node.
      *  \param node  The node from which to find the minimum.
      *  \param key_dimension  The number of dimensions of key.
      *  \param predicate  The predicate for the orthogonal equal query.
-     *  \return  An iterator pointing the minimum, or to the parent of @c node.
+     *  \return  An iterator pointing the minimum, or to the parent of \c node.
      *
      *  If \c node is a header node, the search will stop immediately.
      */
@@ -281,11 +281,11 @@ namespace spatial
      *  delimited by p. If multiple nodes are matching, return the last
      *  matching node in in-order transversal.
      *
-     *  \param node_dim  The current dimension for @c node.
+     *  \param node_dim  The current dimension for \c node.
      *  \param node  The node from which to find the minimum.
      *  \param key_dimension  The number of dimensions of key.
      *  \param predicate  The predicate for the orthogonal equal query.
-     *  \return  An iterator pointing the maximum, or to the parent of @c node.
+     *  \return  An iterator pointing the maximum, or to the parent of \c node.
      *
      *  If \c node is a header node, the search will stop immediately.
      */
@@ -368,11 +368,11 @@ namespace spatial
      *
      *  The key \c x and \c y are tested across all dimesions using the
      *  comparator \c cmp provided by a container.
-     *  \tparam Rank A type that is a model of \ref Rank.
+     *  \tparam Rank Either \static_rank or \dynamic_rank.
      *  \tparam Key A key type defined in the container as the \c Compare.
-     *  \tparam Compare A \ref TrivialComparator type defined in the same
+     *  \tparam Compare A \trivial_compare type defined in the same
      *  container as \c Key.
-     *  \param rank The rank from the container.
+     *  \param rank The magnitude of the rank.
      *  \param cmp The comparator used to find equality between the \c x and \c
      *  y coordinates.
      *  \param x The key \c x.

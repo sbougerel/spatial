@@ -6,10 +6,10 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   spatial_test_mapping.hpp
- *  @brief  All tests for the elements defined in spatial_mapping.hpp are
+ *  \file   spatial_test_mapping.hpp
+ *  All tests for the elements defined in spatial_mapping.hpp are
  *  located in this file.
- *  @see spatial_mapping.hpp
+ *  \see spatial_mapping.hpp
  */
 
 #ifndef SPATIAL_TEST_MAPPING_HPP
