@@ -61,7 +61,6 @@ namespace spatial
   {
     /**
      *  Rebalancing predicate.
-     *  \param r     The current dimension function to use for examination.
      *  \param left  The weight at the left
      *  \param right The weight at the right
      *  \return  true indicate that reblancing must occurs, otherwise false.
@@ -71,9 +70,9 @@ namespace spatial
     operator()(const Rank&, weight_type left, weight_type right) const
     {
       if (left < right)
-        { return (left < (right >> 1)) ? true : false; }
+        { return (left < (right >> 1)); }
       else
-        { return (right < (left >> 1)) ? true : false; }
+        { return (right < (left >> 1)); }
     }
   };
 
@@ -89,20 +88,20 @@ namespace spatial
   {
     /**
      *  Rebalancing predicate.
-     *  \param r     The current dimension function to use for examination.
+     *  \param rank  The current dimension function to use for examination.
      *  \param left  The weight at the left
      *  \param right The weight at the right
      *  \return true Indicate that reblancing must occurs, otherwise false.
      */
     template <typename Rank>
     bool
-    operator()(const Rank& r, weight_type left, weight_type right) const
+    operator()(const Rank& rank, weight_type left, weight_type right) const
     {
-      weight_type rank = static_cast<weight_type>(r());
+      weight_type weight = static_cast<weight_type>(rank());
       if (left < right)
-        { return (right - left > rank) ? true : false; }
+        { return (right - left > weight); }
       else
-        { return (left - right > rank) ? true : false; }
+        { return (left - right > weight); }
     }
   };
 
@@ -312,7 +311,7 @@ namespace spatial
        *
        *  \param node_dim  The current dimension for the node.
        *  \param node      The node below which the new key shall be inserted.
-       *  \param mew_node  The new node to insert
+       *  \param new_node  The new node to insert
        */
       iterator
       insert_node(dimension_type node_dim, node_ptr node, node_ptr new_node);
@@ -660,8 +659,7 @@ namespace spatial
 
       /**
        *  Deletes all nodes that match key \c value.
-       *  \see    find
-       *  \param  value that will be compared with the tree nodes.
+       *  \param  key To be compared with the tree nodes.
        *
        *  The type \c key_type must be equally comparable.
        */

@@ -355,14 +355,13 @@ namespace spatial
    *                        \; or \; _B{x_i} \le _P{y_i} \le _B{y_i} \right)
    *  \f]
    *
-   *  This predicate is used with \region_iterator to define the
-   *  \overlap_iterator.
+   *  This predicate is used together with \region_iterator to make up
+   *  \overlap_region_iterator.
    *
    *  \tparam Key A key type representing boxes.
    *  \tparam Compare A model of \generalized_compare
    *  \tparam Layout One of \ref llhh_layout_tag, \ref lhlh_layout_tag, \ref
    *  hhll_layout_tag or \ref hlhl_layout_tag.
-   *  \see overlap_iterator
    *  \concept_region_predicate
    */
   template <typename Key, typename Compare,
@@ -496,6 +495,13 @@ namespace spatial
    *                        _B{y_i} \le _P{y_i} \right)
    *  \f]
    *
+   *  This predicate is used with \region_iterator to define the
+   *  \enclosed_region_iterator.
+   *
+   *  \tparam Key A key type representing boxes.
+   *  \tparam Compare A model of \generalized_compare
+   *  \tparam Layout One of \ref llhh_layout_tag, \ref lhlh_layout_tag, \ref
+   *  hhll_layout_tag or \ref hlhl_layout_tag.
    *  \concept_region_predicate
    */
   template <typename Key, typename Compare,
@@ -751,11 +757,15 @@ namespace spatial
      typename container_traits<Ct>::rank_type> Base;
 
   public:
-    //! Uninitialized iterator.
+    //! \empty
     region_iterator() { }
 
     /**
      *  Build a region iterator from a container's iterator type.
+     *
+     *  \param container The container being iterated.
+     *  \param pred A model of the \region_predicate concept.
+     *  \param iter An iterator on the type Ct.
      *
      *  This constructor should be used in the general case where the
      *  dimension for the node pointed to by \c iter is not known. The
@@ -763,10 +773,6 @@ namespace spatial
      *  iterating through all parents until the header node has been
      *  reached. This iteration is bounded by \Olog in case the tree is
      *  perfectly balanced.
-     *
-     *  \param container The container being iterated.
-     *  \param predicate A model of the \region_predicate concept.
-     *  \param iter An iterator on the type Ct.
      */
     region_iterator(const Ct& container, const Predicate& pred,
                     typename container_traits<Ct>::const_iterator iter)
@@ -777,6 +783,12 @@ namespace spatial
      *  Build a region iterator from the node and current dimension of a
      *  container's element.
      *
+     *  \param container The container being iterated.
+     *  \param pred A model of the \region_predicate concept.
+     *  \param dim The dimension associated with \c ptr when checking the
+     *  invariant in \c container.
+     *  \param ptr A pointer to a node belonging to \c container.
+     *
      *  This constructor should be used only when the dimension of the node
      *  pointed to by iter is known. If in doubt, use the other
      *  constructor. This constructor perform slightly faster than the other,
@@ -784,10 +796,6 @@ namespace spatial
      *  the calculation of the dimension in the other iterator takes slightly
      *  longer than \Olog in general, and so it is not likely to affect the
      *  performance of your application in any major way.
-     *
-     *  \param container The container being iterated.
-     *  \param predicate A model of the \region_predicate concept.
-     *  \param iter An iterator on the type Ct.
      */
     region_iterator
     (const Ct& container, const Predicate& pred, dimension_type dim,
@@ -836,43 +844,58 @@ namespace spatial
 
   namespace details
   {
+    /**
+     *  From \c iter, returns the next matching iterator in the region delimited
+     *  by \c Predicate, using in-order transversal.
+     *
+     *  \param iter A valid region iterator.
+     *  \tparam Predicate  The type of predicate for the orthogonal query.
+     *  \tparam Ct The type of container to iterate.
+     *  \return  An iterator pointing the next matching value.
+     */
     template <typename Ct, typename Predicate>
     region_iterator<Ct, Predicate>&
     increment_region(region_iterator<Ct, Predicate>& iter);
 
+    /**
+     *  From \c iter, returns the previous matching iterator in the region
+     *  delimited by \c Predicate, using in-order transversal.
+     *
+     *  \param iter A valid region iterator or a past-the-end iterator.
+     *  \tparam Predicate  The type of predicate for the orthogonal query.
+     *  \tparam Ct The type of container to iterate.
+     *  \return  An iterator pointing the previous value.
+     *
+     *  If \c iter is a past-the-end iterator (pointing to a header node), the
+     *  function will return the maximum iterator in region.
+     */
     template <typename Ct, typename Predicate>
     region_iterator<Ct, Predicate>&
     decrement_region(region_iterator<Ct, Predicate>& iter);
 
     /**
-     *  From \c x, find the node with the minimum value in the region
-     *  delimited by p. If multiple nodes are matching, return the first
-     *  matching node in in-order transversal.
+     *  In the children of the node pointed to by \c iter, find the first
+     *  matching iterator in the region delimited by \c Predicate, using
+     *  in-order transversal.  If no match can be found, returns past-the-end.
      *
-     *  \param node_dim  The current dimension for \c node.
-     *  \param node  The node from which to find the minimum.
-     *  \param key_dimension  The number of dimensions of key.
-     *  \param predicate  The predicate for the orthogonal region query.
-     *  \return  An iterator pointing the minimum, or to the parent of \c node.
-     *
-     *  If \c node is a header node, the search will stop immediately.
+     *  \param iter A valid region iterator.
+     *  \tparam Predicate  The type of predicate for the orthogonal query.
+     *  \tparam Ct The type of container to look up.
+     *  \return  An iterator pointing the minimum, or past-the-end.
      */
     template <typename Ct, typename Predicate>
     region_iterator<Ct, Predicate>&
     minimum_region(region_iterator<Ct, Predicate>& iter);
 
     /**
-     *  From \c x, find the node with the maximum value in the region
-     *  delimited by p. If multiple nodes are matching, return the last
-     *  matching node in in-order transversal.
+     *  In the children of the node pointed to by \c iter, find the last
+     *  matching iterator in the region delimited by \c Predicate, using
+     *  in-order transversal. If no match can be found, returns past-the-end.
      *
-     *  \param node_dim  The current dimension for \c node.
-     *  \param node  The node from which to find the minimum.
-     *  \param key_dimension  The number of dimensions of key.
-     *  \param predicate  The predicate for the orthogonal region query.
-     *  \return  An iterator pointing the maximum, or to the parent of \c node.
-     *
-     *  If \c node is a header node, the search will stop immediately.
+     *  \param iter A valid region iterator.
+     *  \tparam Predicate  The type of predicate for the orthogonal query.
+     *  \tparam Ct The type of container to look up.
+     *  \return  An iterator pointing the maximum, or past-the-end.
      */
     template <typename Ct, typename Predicate>
     region_iterator<Ct, Predicate>&

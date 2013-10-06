@@ -758,7 +758,7 @@ std::for_each(region_begin(container, low, high),
 
 Region defined as half-open intervals are the default behavior of
 \region_iterator, but they are much more versatile than this: we can use them to
-slice or partition of your elements in space. Suppose we are working in 3
+slice or partition your elements in space. Suppose we are working in 3
 dimensions, and we wish to find all points that match the following criterias:
 
 \f[
@@ -809,23 +809,23 @@ As you can see, the predicate must return a spatial::relative_order type.
 spatial::relative_order defines 3 values: below, matching and above. These
 values tell the algorithm the current postion of the key with regard to the
 dimension that is being studied: is the key \b below the interval being
-studied? Is it \b above? Or it is \b matching with the interval being studied?
+studied? Is it \b above? Or it is \b matching the region being studied?
 
 While the predicate may not be intuitive to define, it give complete control
 over the orthogonal range search query on the container.
 
 \Spatial comes with a few specialized version of this iterator:
 
-- spatial::closed_region_iterator is similar but works on closed intervals where
+- \ref spatial::closed_region_iterator is similar but works on closed intervals where
   both `low` and `high` are included in the search,
 
-- spatial::open_region_iterator is the exact opposite where neither `low` nor
+- \ref spatial::open_region_iterator is the exact opposite where neither `low` nor
   `high` are included in the search,
 
-- spatial::enclosed_region_iterator when working with boxes instead of points,
+- \ref spatial::enclosed_region_iterator when working with boxes instead of points,
   it finds all the boxes that are fully contained within a given box,
 
-- spatial::overlap_region_iterator when working with boxes instead of points,
+- \ref spatial::overlap_region_iterator when working with boxes instead of points,
   it finds all the boxes that are overlapping with a given box.
 
 

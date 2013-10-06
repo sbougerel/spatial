@@ -21,6 +21,8 @@ ALIASES += "mapping_iterator_pair=\ref spatial::mapping_iterator_pair"
 ALIASES += "ordered_iterator_pair=\ref spatial::ordered_iterator_pair"
 ALIASES += "equal_iterator=\ref spatial::equal_iterator"
 ALIASES += "equal_iterator_pair=\ref spatial::equal_iterator_pair"
+ALIASES += "overlap_region_iterator=\ref spatial::overlap_region_iterator"
+ALIASES += "enclosed_region_iterator=\ref spatial::enclosed_region_iterator"
 
 # Metrics
 #

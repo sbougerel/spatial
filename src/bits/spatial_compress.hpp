@@ -56,7 +56,7 @@ namespace spatial
 
       //! Standard initializer with \c Base and \c Member values
       //! \param compressed_base The value of the \c Base type.
-      //! \param memeber The value of the \c Member type.
+      //! \param member The value of the \c Member type.
       Compress(const Base& compressed_base, const Member& member)
         : Base(compressed_base), _member(member) { }
 

@@ -117,12 +117,8 @@ namespace spatial
      *  iterator on a container, and that container.
      *
      *  \param container   The container to iterate.
-     *
      *  \param mapping_dim The dimension used to order all nodes during the
      *                     iteration.
-     *
-     *  \param node_dim    The dimension of the node pointed to by iterator.
-     *
      *  \param iter        Use the value of \c iter as the start point for the
      *                     iteration.
      */
@@ -148,12 +144,9 @@ namespace spatial
      *  other constructors instead.
      *
      *  \param container The container to iterate.
-     *
      *  \param mapping_dim The dimension used to order all nodes during the
      *                     iteration.
-     *
      *  \param dim The dimension of the node pointed to by iterator.
-     *
      *  \param ptr Use the value of node as the start point for the
      *             iteration.
      */
@@ -263,7 +256,6 @@ namespace spatial
      *  \param container The container to iterate.
      *  \param mapping_dim The dimension used to order all nodes during the
      *  iteration.
-     *  \param node_dim The dimension of the node pointed to by iterator.
      *  \param iter Use the value of \c iter as the start point for the
      *  iteration.
      */

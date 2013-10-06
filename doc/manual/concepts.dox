@@ -5,6 +5,7 @@
 - \subpage generalized_comparison_concept
 - \subpage region_predicate_concept
 - \subpage metric_concept
+- \subpage difference_concept
 
 This chapter provides a definition of all concepts in this book.
 */
@@ -321,4 +322,37 @@ between the key and the plane is not always easy to represent mentally.
 
 \Spatial provides ready-made models of Metric such as \euclidian,
 \quadrance and \manhattan.
+*/
+
+/**
+\page difference_concept Difference
+
+This concept defines the requirements for objects to be used in nearest neighbor
+queries with the library's built-in metrics such as \euclidian, \quadrance or
+\manhattan. The models of Difference are used to calculate the difference
+between 2 keys along the same dimension. That difference is expressed in a \c
+Unit chosen by the user. Very often, the difference consist in a simple
+substraction of the coordinates of 2 keys along the dimenion specified.
+
+The models of Difference shall publicly provide the following
+interfaces:
+\concept_tab
+\concept_leg D
+\concept_des A model of Difference
+\concept_leg K
+\concept_des The key type of a spatial container.
+\concept_leg Unit
+\concept_des The type unit chosen to express a difference.
+\concept_req Unit D::operator()(spatial::dimension_type
+dim, const K& x, const K& y) const
+\concept_des Returns the difference (or very often, the substraction) of \c
+x minus \c y along the dimension \c dim.
+\concept_end
+
+If you have build your current container based on \ref spatial::paren_less, \ref
+spatial::bracket_less, \ref spatial::iterator_less or \ref
+spatial::accessor_less, and if you wish to use your container for nearest
+neighbor search, then you might not need to define a new Difference functor: the
+library will be able to deduce the right functor, based on the comparators used
+in the container.
 */

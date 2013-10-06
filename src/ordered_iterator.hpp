@@ -34,11 +34,11 @@ namespace spatial
      */
     typedef std::pair<ordered_iterator<Ct>, ordered_iterator<Ct> > Base;
 
-    //! Empty constructor.
+    //! \empty
     ordered_iterator_pair() { }
 
     //! Regular constructor that builds a ordered_iterator_pair out of 2
-    //! \ordered_iterators.
+    //! \ordered_iterator.
     ordered_iterator_pair(const ordered_iterator<Ct>& a,
                           const ordered_iterator<Ct>& b) : Base(a, b) { }
   };
@@ -60,11 +60,11 @@ namespace spatial
     typedef std::pair<ordered_iterator<const Ct>, ordered_iterator<const Ct> >
           Base;
 
-    //! Empty constructor.
+    //! \empty
     ordered_iterator_pair() { }
 
     //! Regular constructor that builds a ordered_iterator_pair out of 2
-    //! \ordered_iterators.
+    //! \ordered_iterator.
     ordered_iterator_pair(const ordered_iterator<const Ct>& a,
                           const ordered_iterator<const Ct>& b) : Base(a, b)
     { }
@@ -332,8 +332,8 @@ namespace spatial
 
   namespace details
   {
-    //! Specialization for iterators pointed to node using the relaxed
-    //! invariant.
+    // Specialization for iterators pointed to node using the relaxed
+    // invariant.
     template<typename Container>
     inline ordered_iterator<Container>&
     lower_bound_ordered
@@ -412,8 +412,8 @@ namespace spatial
       return iter;
     }
 
-    //! Specialization for iterators pointed to node using the strict
-    //! invariant.
+    // Specialization for iterators pointed to node using the strict
+    // invariant.
     template<typename Container>
     inline ordered_iterator<Container>&
     lower_bound_ordered

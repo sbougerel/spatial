@@ -188,15 +188,14 @@ namespace spatial
      *
      *  This constructor should be used only when the dimension of the node
      *  pointed to by iter is known. If in doubt, use the other
-     *  constructor. This constructor perform slightly faster than the other,
-     *  since the dimension does not have to be calculated. Note however that
-     *  the calculation of the dimension in the other iterator takes slightly
-     *  longer than \Olog in general, and so it is not likely to affect the
-     *  performance of your application in any major way.
+     *  constructor. This constructor perform slightly faster thanskuuuu THE OTHER,
+     *  since the dimension does not have to be calculated.
      *
      *  \param container The container being iterated.
      *  \param model_ The key to look for.
-     *  \param iter An iterator from the container.
+     *  \param dim The dimension associated with \c ptr when checking the
+     *  invariant in \c container.
+     *  \param ptr A pointer to a node belonging to \c container.
      */
     equal_iterator
     (const Container& container, const key_type& model_, dimension_type dim,
@@ -251,43 +250,57 @@ namespace spatial
 
   namespace details
   {
+    /**
+     *  Returns the next matching iterator, whose value is equal to the model.
+     *
+     *  \param iter A valid region iterator.
+     *  \tparam Predicate  The type of predicate for the orthogonal query.
+     *  \tparam Ct The type of container to iterate.
+     *  \return  An iterator pointing the next matching value.
+     */
     template <typename Container>
     equal_iterator<Container>&
     increment_equal(equal_iterator<Container>& iter);
 
+    /**
+     *  Returns the previous matching iterator, whose value is equal to the
+     *  model.
+     *
+     *  \param iter A valid region iterator or a past-the-end iterator.
+     *  \tparam Predicate  The type of predicate for the orthogonal query.
+     *  \tparam Ct The type of container to iterate.
+     *  \return  An iterator pointing the previous value.
+     *
+     *  If \c iter is a past-the-end iterator (pointing to a header node), the
+     *  function will return the last iterator whose value is equal to the model.
+     */
     template <typename Container>
     equal_iterator<Container>&
     decrement_equal(equal_iterator<Container>& iter);
 
     /**
-     *  From \c x, find the node with the minimum value in the equal
-     *  delimited by p. If multiple nodes are matching, return the first
-     *  matching node in in-order transversal.
+     *  In the children of the node pointed to by \c iter, find the first
+     *  matching iterator whose value is equal to the model. If no match can be
+     *  found, returns past-the-end.
      *
-     *  \param node_dim  The current dimension for \c node.
-     *  \param node  The node from which to find the minimum.
-     *  \param key_dimension  The number of dimensions of key.
-     *  \param predicate  The predicate for the orthogonal equal query.
-     *  \return  An iterator pointing the minimum, or to the parent of \c node.
-     *
-     *  If \c node is a header node, the search will stop immediately.
+     *  \param iter A valid region iterator.
+     *  \tparam Predicate  The type of predicate for the orthogonal query.
+     *  \tparam Ct The type of container to look up.
+     *  \return  An iterator pointing the first value, or past-the-end.
      */
     template <typename Container>
     equal_iterator<Container>&
     minimum_equal(equal_iterator<Container>& iter);
 
     /**
-     *  From \c x, find the node with the maximum value in the equal
-     *  delimited by p. If multiple nodes are matching, return the last
-     *  matching node in in-order transversal.
+     *  In the children of the node pointed to by \c iter, find the last
+     *  matching iterator in the region delimited by \c Predicate, using
+     *  in-order transversal. If no match can be found, returns past-the-end.
      *
-     *  \param node_dim  The current dimension for \c node.
-     *  \param node  The node from which to find the minimum.
-     *  \param key_dimension  The number of dimensions of key.
-     *  \param predicate  The predicate for the orthogonal equal query.
-     *  \return  An iterator pointing the maximum, or to the parent of \c node.
-     *
-     *  If \c node is a header node, the search will stop immediately.
+     *  \param iter A valid region iterator.
+     *  \tparam Predicate  The type of predicate for the orthogonal query.
+     *  \tparam Ct The type of container to look up.
+     *  \return  An iterator pointing the last value, or past-the-end.
      */
     template <typename Container>
     equal_iterator<Container>&

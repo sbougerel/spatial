@@ -47,14 +47,15 @@ namespace spatial
        *  Builds required neighbor data from the given container, metric and
        *  dimension.
        *
-       *  \param c The container being iterated.
-       *  \param g The metric to apply during iteration
-       *  \param n The node dimension for the node pointed to by the iterator.
+       *  \param container The container being iterated.
+       *  \param metric The metric to apply during iteration
+       *  \param key The key representing the iteration target.
        */
       Neighbor_data
-      (const typename container_traits<Ct>::key_compare& c, const Metric& g,
-       const typename container_traits<Ct>::key_type& k)
-        : container_traits<Ct>::key_compare(c), _target(g, k) { }
+      (const typename container_traits<Ct>::key_compare& container,
+       const Metric& metric,
+       const typename container_traits<Ct>::key_type& key)
+        : container_traits<Ct>::key_compare(container), _target(metric, key) { }
 
       /**
        *  The target of the iteration; element of the container are iterate
@@ -136,10 +137,10 @@ namespace spatial
      *  The standard way to build this iterator: specify a metric to apply, an
      *  iterator on a container, and that container.
      *
-     *  \param container The container to iterate.
-     *  \param metric The \metric applied during the iteration.
-     *  \param target The target of the neighbor iteration.
-     *  \param it An iterator on container.
+     *  \param container_ The container to iterate.
+     *  \param metric_ The \metric applied during the iteration.
+     *  \param target_ The target of the neighbor iteration.
+     *  \param iter_ An iterator on container.
      */
     neighbor_iterator
     (Ct& container_, const Metric& metric_,
@@ -154,6 +155,13 @@ namespace spatial
      *  pointed to by the iterator is known, this constructor saves some CPU
      *  cycle, by comparison to the other constructor.
      *
+     *  \param container_ The container to iterate.
+     *  \param metric_ The metric applied during the iteration.
+     *  \param target_ The target of the neighbor iteration.
+     *  \param node_dim_ The dimension of the node pointed to by iterator.
+     *  \param node_ Use the value of node as the start point for the
+     *  iteration.
+     *
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
@@ -163,13 +171,6 @@ namespace spatial
      *  result in unknown behavior. It is recommended that you do not use this
      *  constructor if you are not sure about this dimension, and use the
      *  other constructors instead.
-     *
-     *  \param container The container to iterate.
-     *  \param metric The metric applied during the iteration.
-     *  \param target The target of the neighbor iteration.
-     *  \param node_dim The dimension of the node pointed to by iterator.
-     *  \param node Use the value of node as the start point for the
-     *  iteration.
      */
     neighbor_iterator
     (Ct& container_, const Metric& metric_,
@@ -333,10 +334,10 @@ namespace spatial
      *  The standard way to build this iterator: specify a metric to apply,
      *  an iterator on a container, and that container.
      *
-     *  \param container The container to iterate.
-     *  \param metric The metric applied during the iteration.
-     *  \param target The target of the neighbor iteration.
-     *  \param iter An iterator on \c container.
+     *  \param container_ The container to iterate.
+     *  \param metric_ The metric applied during the iteration.
+     *  \param target_ The target of the neighbor iteration.
+     *  \param iter_ An iterator on \c container.
      */
     neighbor_iterator
     (const Ct& container_, const Metric& metric_,
@@ -351,6 +352,13 @@ namespace spatial
      *  pointed to by the iterator is known, this constructor saves some CPU
      *  cycle, by comparison to the other constructor.
      *
+     *  \param container_ The container to iterate.
+     *  \param metric_ The metric applied during the iteration.
+     *  \param target_ The target of the neighbor iteration.
+     *  \param node_dim_ The dimension of the node pointed to by iterator.
+     *  \param node_ Use the value of node as the start point for the
+     *  iteration.
+     *
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
@@ -360,13 +368,6 @@ namespace spatial
      *  result in unknown behavior. It is recommended that you do not use this
      *  constructor if you are not sure about this dimension, and use the
      *  other constructors instead.
-     *
-     *  \param container_ The container to iterate.
-     *  \param metric_ The metric applied during the iteration.
-     *  \param target_ The target of the neighbor iteration.
-     *  \param node_dim_ The dimension of the node pointed to by iterator.
-     *  \param node_ Use the value of node as the start point for the
-     *  iteration.
      */
     neighbor_iterator
     (const Ct& container_, const Metric& metric_,
@@ -381,6 +382,14 @@ namespace spatial
      *  container is not available. It requires the node information to be
      *  known but is a fast constructor.
      *
+     *  \param rank_ The rank of the container being iterated.
+     *  \param key_comp_ The key compare functor associated with the iterator.
+     *  \param metric_ The metric applied during the iteration.
+     *  \param target_ The target of the neighbor iteration.
+     *  \param node_dim_ The dimension of the node pointed to by iterator.
+     *  \param node_ Use the value of node as the start point for the
+     *  iteration.
+     *
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
@@ -390,14 +399,6 @@ namespace spatial
      *  result in unknown behavior. It is recommended that you do not use this
      *  constructor if you are not sure about this dimension, and use the
      *  other constructors instead.
-     *
-     *  \param rank_ The rank of the container being iterated.
-     *  \param key_comp_ The key compare functor associated with the iterator.
-     *  \param metric_ The metric applied during the iteration.
-     *  \param target_ The target of the neighbor iteration.
-     *  \param node_dim_ The dimension of the node pointed to by iterator.
-     *  \param node_ Use the value of node as the start point for the
-     *  iteration.
      */
     neighbor_iterator
     (const typename container_traits<Ct>::rank_type& rank_,
@@ -771,9 +772,11 @@ namespace spatial
    *  Build a \ref neighbor_iterator pointing to the neighbor closest to
    *  target but for which distance to target is greater or equal to the value
    *  given in \c bound. Uses a user-defined \metric.
+   *
    *  \param container The container in which a neighbor must be found.
    *  \param metric The metric to use in search of the neighbor.
    *  \param target The target key used in the neighbor search.
+   *  \param bound The minimum distance from the target.
    */
   ///@{
   template <typename Ct, typename Metric>
@@ -816,8 +819,10 @@ namespace spatial
    *  given in \c bound. It assumes an euclidian metric with distances expressed
    *  in double. It also requires that the container used was defined with one
    *  of the built-in key compare functor.
+   *
    *  \param container The container in which a neighbor must be found.
    *  \param target The target key used in the neighbor search.
+   *  \param bound The minimum distance from the target.
    */
   ///@{
   template <typename Ct>
@@ -870,9 +875,11 @@ namespace spatial
    *  Build a \ref neighbor_iterator pointing to the neighbor closest to
    *  target but for which distance to target is strictly greater than the value
    *  given in \c bound. Uses a user-defined \metric.
+   *
    *  \param container The container in which a neighbor must be found.
    *  \param metric The metric to use in search of the neighbor.
    *  \param target The target key used in the neighbor search.
+   *  \param bound The minimum distance from the target.
    */
   ///@{
   template <typename Ct, typename Metric>
@@ -915,8 +922,10 @@ namespace spatial
    *  \c bound. It assumes an euclidian metric with distances expressed in
    *  double. It also requires that the container used was defined with one of
    *  the built-in key compare functor.
+   *
    *  \param container The container in which a neighbor must be found.
    *  \param target The target key used in the neighbor search.
+   *  \param bound The minimum distance to the target.
    */
   ///@{
   template <typename Ct>

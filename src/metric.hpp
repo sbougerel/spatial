@@ -29,7 +29,7 @@ namespace spatial
    *  Defines a metric working on the Euclidian space where distances are
    *  expressed in one of C++'s floating point types.
    *
-   *  \concept A concept of \metric.
+   *  \concept_metric
    *
    *  \attention \c This metric works on floating types only. It will fail
    *  to compile if given non-floating types as a parameter for the distance.
@@ -120,7 +120,7 @@ namespace spatial
    *  the distances are being computed into a scalar value expressed with
    *  the DistanceType which is one of C++'s arithmetic types.
    *
-   *  \concept A concept of \metric.
+   *  \concept_metric
    *
    *  This method of distance calculation is more flexible than
    *  \euclidian since it can support all of the C++'s arithmetic types.
@@ -134,7 +134,7 @@ namespace spatial
    *  value over the entire range permissible by DistanceType, then chances
    *  that the computation overflows is non-negligible. To receive an \ref
    *  arithmetic_error exception upon overflow, compile your application with
-   *  \c #define \c SPATIAL_SAFER_ARITHEMTICS.
+   *  \c \#define \c SPATIAL_SAFER_ARITHEMTICS.
    *
    */
   template<typename Ct, typename DistanceType, typename Diff>
@@ -210,7 +210,7 @@ namespace spatial
    *  Defines a metric for the a space where distances are the sum
    *  of all the elements of the vector. Also known as the taxicab metric.
    *
-   *  \concept A concept of \metric.
+   *  \concept_metric.
    *
    *  \tparam Ct The container used with this metric.
    *  \tparam DistanceType The type used to compute distance values.
@@ -230,7 +230,7 @@ namespace spatial
    *  value over the entire range permissible by DistanceType, then chances
    *  that the computation overflows is non-negligible. To receive an \ref
    *  arithmetic_error exception upon overflow, compile your application with
-   *  \c #define \c SPATIAL_SAFER_ARITHEMTICS.
+   *  \c \#define \c SPATIAL_SAFER_ARITHEMTICS.
    */
   template<typename Ct, typename DistanceType, typename Diff>
   class manhattan

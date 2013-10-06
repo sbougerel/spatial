@@ -15,6 +15,7 @@ ALIASES += "project=<a href=\"http://projectpage.willsee\"><b>Project page</b></
 ALIASES += "project_page=<a href=\"http://sourceforge.net/projects/spatial/\"><b>Project Page on Sourceforge</b></a>"
 ALIASES += "project_download=<a href=\"http://sourceforge.net/projects/spatial/files/\"><b>Project Download Page on Sourceforge</b></a>"
 ALIASES += "project_issue=<a href=\"http://sourceforge.net/projects/spatial/support\"><b>Project Issue Trackers on Sourceforge</b></a>"
+ALIASES += "empty=Construct an empty, uninitialized object."
 
 # Complexity
 #
@@ -38,7 +39,11 @@ ALIASES += "trivial_compare=\ref trivial_comparison_concept \"Trivial Comparison
 ALIASES += "generalized_compare=\ref generalized_comparison_concept \"Generalized Comparison\""
 ALIASES += "region_predicate=\ref region_predicate_concept \"Region Predicate\""
 ALIASES += "metric=\ref metric_concept \"Metric\""
+ALIASES += "difference=\ref difference_concept \"Difference\""
 ALIASES += "concept_region_predicate=\xrefitem region_predicate_concept \"Concept\" \"\" This object is a model of \region_predicate"
+ALIASES += "concept_generalized_compare=\xrefitem generalized_comparison_concept \"Concept\" \"\" This object is a model of \generalized_compare"
+ALIASES += "concept_difference=\xrefitem difference_concept \"Concept\" \"\" This object is a model of \difference"
+ALIASES += "concept_metric=\xrefitem metric_concept \"Concept\" \"\" This object is a model of \metric"
 ALIASES += "concept_tab=<table><tr><td></td><td>Signature/Typedef</td><td>Description"
 ALIASES += "concept_leg=</td></tr><tr><td>Legend</td><td><tt>"
 ALIASES += "concept_req=</td></tr><tr><td>Require</td><td><tt>"

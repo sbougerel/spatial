@@ -34,7 +34,7 @@ namespace spatial
    *  primitive floating point type.
    *  \tparam Diff The difference functor that will compute the difference
    *  between 2 key element in the container, along a specific dimension. See
-   *  \ref DifferenceConcept for further explanation.
+   *  \difference for further explanation.
    */
   ///@{
   template <typename Ct, typename DistanceType, typename Diff
@@ -96,7 +96,7 @@ namespace spatial
    *  primitive floating point type.
    *  \tparam Diff The difference functor that will compute the difference
    *  between 2 key element in the container, along a specific dimension. See
-   *  \ref DifferenceConcept for further explanation.
+   *  \difference for further explanation.
    *
    *  This class has an associated group of functions designed to
    *  initialize the iterator position at the beginning, end, lower bound or
@@ -181,7 +181,7 @@ namespace spatial
    *  \endcode
    *
    *  \param container The container to iterate.
-   *  \param diff A model of \ref DifferenceConcept.
+   *  \param diff A model of \difference.
    *  \param target Search for element in container closest to target.
    */
   ///@{
@@ -298,7 +298,7 @@ namespace spatial
    *  \endcode
    *
    *  \param container The container to iterate.
-   *  \param diff A model of \ref DifferenceConcept.
+   *  \param diff A model of \difference.
    *  \param target Search for element in container closest to target.
    */
   ///@{
@@ -405,7 +405,7 @@ namespace spatial
    *  to the closest element to \c target that is a least as far as \c bound.
    *
    *  \param container The container to iterate.
-   *  \param diff A model of \ref DifferenceConcept.
+   *  \param diff A model of \difference.
    *  \param target Search for element in container closest to target.
    *  \param bound The minimum distance at which a neighbor should be found.
    */
@@ -519,7 +519,7 @@ namespace spatial
    *  to the closest element to \c target that further than \c bound.
    *
    *  \param container The container to iterate.
-   *  \param diff A model of \ref DifferenceConcept.
+   *  \param diff A model of \difference.
    *  \param target Search for element in container closest to target.
    *  \param bound The minimum distance at which a neighbor should be found.
    */
@@ -643,7 +643,7 @@ namespace spatial
    *  \endcode
    *
    *  \param container The container to iterate.
-   *  \param diff A model of \ref DifferenceConcept.
+   *  \param diff A model of \difference.
    *  \param target Search for element in container closest to target.
    */
   ///@{

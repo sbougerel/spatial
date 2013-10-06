@@ -137,7 +137,7 @@ namespace spatial
      *  The type used by the metric to represent distances.
      *
      *  Distance may be user defined in some metric such as \euclidian,
-     *  \quadrance or \manhathan, but in this case, the type must follow
+     *  \quadrance or \manhattan, but in this case, the type must follow
      *  specific rules to the metric, such as overload of specific operators.
      */
     typedef typename Tp::distance_type         distance_type;

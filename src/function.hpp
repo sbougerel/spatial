@@ -23,7 +23,7 @@ namespace spatial
    *  elements of Tp along the dimension \c n accessed through a custom
    *  accessor. The returned value is cast into the type \c Unit.
    *
-   *  \concept bracket_minus is a concept of \ref ElementDifference.
+   *  \concept_difference
    */
   template <typename Accessor, typename Tp, typename Unit>
   struct accessor_minus
@@ -50,7 +50,7 @@ namespace spatial
    *  elements of Tp along the dimension \c n accessed through the bracket
    *  operator. The returned value is cast into the type \c Unit.
    *
-   *  \concept bracket_minus is a concept of \ref ElementDifference.
+   *  \concept_difference
    */
   template <typename Tp, typename Unit>
   struct bracket_minus
@@ -70,7 +70,7 @@ namespace spatial
    *  between 2 elements of Tp along the dimension \c n accessed through the
    *  parenthesis operator. The returned value is cast into the type \c Unit.
    *
-   *  \concept bracket_minus is a concept of \ref ElementDifference.
+   *  \concept_difference
    */
   template <typename Tp, typename Unit>
   struct paren_minus
@@ -90,7 +90,7 @@ namespace spatial
    *  elements of Tp along the dimension \c n accessed through an iterator. The
    *  returned value is cast into the type \c Unit.
    *
-   *  \concept bracket_minus is a concept of \ref ElementDifference.
+   *  \concept_difference
    */
   template <typename Tp, typename Unit>
   struct iterator_minus
@@ -115,13 +115,13 @@ namespace spatial
    *  that has coordinate that are not accessible via the bracket, parenthesis
    *  operator or iterator deference.
    *
-   *  \concept accessor_less is a model of RegularComparison to accomodate both
-   *  pointset and boxset family of container.
+   *  \concept_generalized_compare
    *
-   *  Generally, the spatial containers are used with one of bracket_less,
-   *  paren_less, or iterator_less. However, when the Key to the spatial
-   *  container cannot be compared through one of the above mean, the following
-   *  helper comparator can be used.
+   *  Generally, the spatial containers are used with one of \ref bracket_less,
+   *  \ref paren_less, or \ref iterator_less. However, when the key used in the
+   *  container cannot be compared through one of the above comparator, the
+   *  following helper comparator can be used to define one through a custom
+   *  accessor.
    */
   template<typename Accessor, typename Tp>
   struct accessor_less
@@ -151,8 +151,7 @@ namespace spatial
    *  A comparator that simplifies using the spatial containers with a Key type
    *  that has coordiates accessible via the bracket operator.
    *
-   *  \concept accessor_less is a model of RegularComparison to accomodate both
-   *  pointset and boxset family of container.
+   *  \concept_generalized_compare
    */
   template <typename Tp>
   struct bracket_less
@@ -174,8 +173,7 @@ namespace spatial
    *  A comparator that simplifies using the spatial containers with a Key type
    *  that has coordiates accessible via the parenthesis operator.
    *
-   *  \concept accessor_less is a model of RegularComparison to accomodate both
-   *  pointset and boxset family of container.
+   *  \concept_generalized_compare
    */
   template <typename Tp>
   struct paren_less
@@ -197,8 +195,7 @@ namespace spatial
    *  A comparator that simplifies using the spatial containers with a Key type
    *  that has coordiates accessible via iterator deference.
    *
-   *  \concept accessor_less is a model of RegularComparison to accomodate both
-   *  pointset and boxset family of container.
+   *  \concept_generalized_compare
    */
   template <typename Tp>
   struct iterator_less

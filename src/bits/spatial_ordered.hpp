@@ -50,9 +50,6 @@ namespace spatial
      *  iterator on a container, and that container.
      *
      *  \param container   The container to iterate.
-     *
-     *  \param node_dim    The dimension of the node pointed to by iterator.
-     *
      *  \param iter        Use the value of \c iter as the start point for the
      *                     iteration.
      */
@@ -78,9 +75,7 @@ namespace spatial
      *  other constructors instead.
      *
      *  \param container The container to iterate.
-     *
      *  \param dim The dimension of the node pointed to by iterator.
-     *
      *  \param ptr Use the value of node as the start point for the
      *             iteration.
      */
@@ -156,8 +151,7 @@ namespace spatial
      *  an iterator on a container, and that container.
      *
      *  \param container The container to iterate.
-     *  \param node_dim The dimension of the node pointed to by iterator.
-     *  \param iter Use the value of \c iter as the start point for the
+     *  \param iter Use the iterator \c iter as the start point for the
      *  iteration.
      */
     ordered_iterator(const Ct& container,
@@ -171,6 +165,10 @@ namespace spatial
      *  pointed to by the iterator is known, this function saves some CPU
      *  cycle, by comparison to the other.
      *
+     *  \param container The container to iterate.
+     *  \param dim The dimension of the node pointed to by iterator.
+     *  \param ptr Use \c node as the start point for the iteration.
+     *
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
@@ -180,16 +178,6 @@ namespace spatial
      *  result in unknown behavior. It is recommended that you do not use this
      *  constructor if you are not sure about this dimension, and use the
      *  other constructors instead.
-     *
-     *  \param container The container to iterate.
-     *
-     *  \param ordered_dim The dimension used to order all nodes during the
-     *                     iteration.
-     *
-     *  \param dim The dimension of the node pointed to by iterator.
-     *
-     *  \param ptr Use the value of \c node as the start point for the
-     *             iteration.
      */
     ordered_iterator
     (const Ct& container, dimension_type dim,
@@ -245,6 +233,12 @@ namespace spatial
      *  Move the pointer given in parameter to the next element in the ordered
      *  iteration of values along the ordered dimension.
      *
+     *  \tparam Container The type of container to iterate.
+     *  \param iter The reference iterator that points to the current node.
+     *  \return An iterator pointing to the value with the smallest coordinate
+     *  along \c iter's \c ordered_dim, and among the children of the node
+     *  pointed to by \c iter.
+     *
      *  \attention This function is meant to be used by other algorithms in the
      *  library, but not by the end users of the library. If you feel that you
      *  must use this function, maybe you were actually looking to increment an
@@ -265,16 +259,16 @@ namespace spatial
      *  Move the pointer given in parameter to the previous element in the
      *  ordered iteration of values along the ordered dimension.
      *
-     *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking to decrement an
-     *  \ordered_iterator via the overloaded \c operator--().
-     *
      *  \tparam Container The type of container to iterate.
      *  \param iter The reference iterator that points to the current node.
      *  \return An iterator pointing to the value with the smallest coordinate
      *  along \c iter's \c ordered_dim, and among the children of the node
      *  pointed to by \c iter.
+     *
+     *  \attention This function is meant to be used by other algorithms in the
+     *  library, but not by the end users of the library. If you feel that you
+     *  must use this function, maybe you were actually looking to decrement an
+     *  \ordered_iterator via the overloaded \c operator--().
      *
      *  Since Container is based on a \kdtree and \kdtrees exhibit good locality
      *  of reference (for arranging values in space, not for values location in
@@ -292,17 +286,17 @@ namespace spatial
      *  iterator's ordered dimension but only in the sub-tree composed of the
      *  node pointed to by the iterator and its children.
      *
-     *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking for \ref
-     *  ordered_begin(). In any case, use it cautiously, as this function does
-     *  not perform any sanity checks on the iterator given in parameter.
-     *
      *  \tparam Container The type of container to iterate.
      *  \param iter An iterator that points to the root node of the search.
      *  \return The iterator given in parameter is moved to the value with the
      *  smallest coordinate along \c iter's \c ordered_dim, and among the
      *  children of the node pointed to by \c iter.
+     *
+     *  \attention This function is meant to be used by other algorithms in the
+     *  library, but not by the end users of the library. If you feel that you
+     *  must use this function, maybe you were actually looking for \ref
+     *  ordered_begin(). In any case, use it cautiously, as this function does
+     *  not perform any sanity checks on the iterator given in parameter.
      *
      *  \fractime
      */
@@ -315,17 +309,17 @@ namespace spatial
      *  iterator's ordered dimension but only in the sub-tree composed of the
      *  node pointed to by the iterator and its children.
      *
-     *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking for \ref
-     *  ordered_begin(). In any case, use it cautiously, as this function does
-     *  not perform any sanity checks on the iterator given in parameter.
-     *
      *  \tparam Container The type of container to iterate.
      *  \param iter An iterator that points to the root node of the search.
      *  \return The iterator given in parameter is moved to the value with the
      *  largest coordinate along \c iter's \c ordered_dim, among the children of
      *  the node pointed to by \c iter.
+     *
+     *  \attention This function is meant to be used by other algorithms in the
+     *  library, but not by the end users of the library. If you feel that you
+     *  must use this function, maybe you were actually looking for \ref
+     *  ordered_begin(). In any case, use it cautiously, as this function does
+     *  not perform any sanity checks on the iterator given in parameter.
      *
      *  \fractime
      */
@@ -338,12 +332,6 @@ namespace spatial
    *  Finds the past-the-end position in \c container for this constant
    *  iterator.
    *
-   *  \attention This iterator impose constness constraints on its \c value_type
-   *  if the container's is a set and not a map. Iterators on sets prevent
-   *  modification of the \c value_type because modifying the key may result in
-   *  invalidation of the tree. If the container is a map, only the \c
-   *  mapped_type can be modified (the \c second element).
-   *
    *  \tparam Container The type of container to iterate.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
@@ -352,6 +340,12 @@ namespace spatial
    *  container.
    *
    *  \consttime
+   *
+   *  \attention This iterator impose constness constraints on its \c value_type
+   *  if the container's is a set and not a map. Iterators on sets prevent
+   *  modification of the \c value_type because modifying the key may result in
+   *  invalidation of the tree. If the container is a map, only the \c
+   *  mapped_type can be modified (the \c second element).
    */
   template <typename Container>
   inline ordered_iterator<Container>
@@ -395,18 +389,18 @@ namespace spatial
    *  Finds the value in \c container for which its key has the smallest
    *  coordinate over the dimension \c ordered_dim.
    *
-   *  \attention This iterator impose constness constraints on its \c value_type
-   *  if the container's is a set and not a map. Iterators on sets prevent
-   *  modification of the \c value_type because modifying the key may result in
-   *  invalidation of the tree. If the container is a map, only the \c
-   *  mapped_type can be modified (the \c second element).
-   *
    *  \tparam Container The type of container to iterate.
    *  \param container The container to iterate.
    *  \throw invalid_dimension If the dimension specified is larger than the
    *  dimension from the rank of the container.
    *
    *  \fractime
+   *
+   *  \attention This iterator impose constness constraints on its \c value_type
+   *  if the container's is a set and not a map. Iterators on sets prevent
+   *  modification of the \c value_type because modifying the key may result in
+   *  invalidation of the tree. If the container is a map, only the \c
+   *  mapped_type can be modified (the \c second element).
    */
   template <typename Container>
   inline ordered_iterator<Container>
