@@ -11,15 +11,17 @@ int main(int argc, char** argv)
   typedef spatial::point_multiset<0, std::tr1::array<int, 3> >
     runtime_container;
 
-  std::cout << "Enter a dimension for the container: " << std::flush;
+  std::cout << "Enter a dimension for container: " << std::flush;
   spatial::dimension_type dim;
   std::cin >> dim;
 
-  // We are not interested in dealing with ranks larger than 10
+  // If we are not interested in dealing with ranks larger than 10
   if (dim >= 10) throw spatial::invalid_dimension("dim");
 
-  runtime_container container2(dim); // Note: if dim was equal to 0,
-                                     // spatial::invalid_dimension would be
-                                     // thrown
+  runtime_container container(dim); // Note: if dim was equal to 0,
+                                    // spatial::invalid_dimension would be
+                                    // thrown
+
+  std::cout << "container rank is: " << container.dimension() << std::endl;
   return 0;
 }

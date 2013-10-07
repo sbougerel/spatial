@@ -1,0 +1,11 @@
+Compiling examples
+==================
+
+As with the unit tests, use Cmake to compile the examples. Contrary to the unit
+tests, the examples expect that you have already installed the library.
+
+Description of examples
+=======================
+
+runtime_container_rank.cpp
+  Demonstrate how to create a container with dynamic dimensions.
