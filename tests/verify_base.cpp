@@ -22,3 +22,5 @@
 #include "bits/spatial_test_node.hpp"
 #include "bits/spatial_test_exceptions.hpp"
 #include "bits/spatial_test_function.hpp"
+#include "bits/spatial_test_relaxed_kdtree.hpp"
+//#include "bits/spatial_test_kdtree.hpp"

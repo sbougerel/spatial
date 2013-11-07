@@ -64,18 +64,18 @@ BOOST_AUTO_TEST_CASE( test_tight_balancing )
   }
 }
 
-BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_ctor )
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_ctor )
 {
   typedef details::Relaxed_kdtree
-    <details::Dynamic_rank, point2d, point2d, bracket_less<point2d>,
-     tight_balancing, std::allocator<point2d>, true> kdtree_type;
+    <details::Dynamic_rank, int2, int2, bracket_less<int2>,
+     tight_balancing, std::allocator<int2> > kdtree_type;
   kdtree_type instance_one;
   kdtree_type instance_two(details::Dynamic_rank(2));
-  kdtree_type instance_three(details::Dynamic_rank(2), bracket_less<point2d>());
-  kdtree_type instance_four(details::Dynamic_rank(2), bracket_less<point2d>(),
+  kdtree_type instance_three(details::Dynamic_rank(2), bracket_less<int2>());
+  kdtree_type instance_four(details::Dynamic_rank(2), bracket_less<int2>(),
                             tight_balancing());
-  kdtree_type instance_five(details::Dynamic_rank(2), bracket_less<point2d>(),
-                            tight_balancing(), std::allocator<point2d>());
+  kdtree_type instance_five(details::Dynamic_rank(2), bracket_less<int2>(),
+                            tight_balancing(), std::allocator<int2>());
   // Trees should be empty.
   BOOST_CHECK(instance_one.empty());
   BOOST_CHECK(instance_two.empty());
@@ -96,14 +96,11 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_ctor )
   BOOST_CHECK_EQUAL(instance_five.size(), 0);
 }
 
-BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_tight )
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_insert_tight )
 {
   typedef details::Relaxed_kdtree
-    <details::Static_rank<2>, point2d, point2d, bracket_less<point2d>,
-     tight_balancing, std::allocator<point2d>, false> kdtree_type;
-  typedef details::Relaxed_kdtree
-    <details::Static_rank<2>, point2d, point2d, bracket_less<point2d>,
-     tight_balancing, std::allocator<point2d>, true> const_kdtree_type;
+    <details::Static_rank<2>, int2, int2, bracket_less<int2>,
+     tight_balancing, std::allocator<int2> > kdtree_type;
   kdtree_type tree;
   kdtree_type::const_iterator it;
   BOOST_CHECK_NO_THROW(it = tree.insert(zeros));
@@ -116,14 +113,11 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_tight )
   BOOST_CHECK(tree.begin() == --tree.end());
 }
 
-BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_loose )
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_insert_loose )
 {
   typedef details::Relaxed_kdtree
-    <details::Static_rank<2>, point2d, point2d, bracket_less<point2d>,
-     loose_balancing, std::allocator<point2d>, false> kdtree_type;
-  typedef details::Relaxed_kdtree
-    <details::Static_rank<2>, point2d, point2d, bracket_less<point2d>,
-     loose_balancing, std::allocator<point2d>, true> const_kdtree_type;
+    <details::Static_rank<2>, int2, int2, bracket_less<int2>,
+     loose_balancing, std::allocator<int2> > kdtree_type;
   kdtree_type tree;
   kdtree_type::const_iterator it;
   BOOST_CHECK_NO_THROW(it = tree.insert(zeros));
@@ -136,65 +130,62 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_loose )
   BOOST_CHECK(tree.begin() == --tree.end());
 }
 
-BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_growing )
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_insert_growing )
 {
-  Grow_Relaxed_Kdtree_2D_fixture fix;
+  tight_pointset_fix<int2> fix(100, increase());
   // because the tree is ordered on all dimensions and nodes are all sequential
   // values, iteration should be ordered as well.
   int i = 0;
-  for (Grow_Relaxed_Kdtree_2D_fixture::kdtree_type::iterator it
-         = fix.kdtree.begin(); it != fix.kdtree.end(); ++it, ++i)
+  for (tight_pointset_fix<int2>::container_type::iterator it
+         = fix.container.begin(); it != fix.container.end(); ++it, ++i)
     {
       BOOST_CHECK_EQUAL((*it)[0], i);
       BOOST_CHECK_EQUAL((*it)[1], i);
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_reduce )
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_insert_reduce )
 {
-  Reduce_Relaxed_Kdtree_2D_fixture fix;
+  pointset_fix<int2> fix(100, decrease());
   // because the tree is ordered on all dimensions and nodes are all sequential
   // values, iteration should be ordered as well.
-  int i = 1; // Values inserted in [1:20], not [0:19]
-  for (Reduce_Relaxed_Kdtree_2D_fixture::kdtree_type::iterator it
-         = fix.kdtree.begin(); it != fix.kdtree.end(); ++it, ++i)
+  int i = 1;
+  for (pointset_fix<int2>::container_type::iterator it
+         = fix.container.begin(); it != fix.container.end(); ++it, ++i)
     {
       BOOST_CHECK_EQUAL((*it)[0], i);
       BOOST_CHECK_EQUAL((*it)[1], i);
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_insert_lots )
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_insert_lots )
 {
-  {
-    // build repeatitively a lot of them, should not fail.
-    // This tree has multiple similar node, by construction
-    for (int i=0; i<100; ++i)
-      {
-        Twenty_Relaxed_kdtree_2D_fixture fix;
-        int count = 0;
-        for (Twenty_Relaxed_kdtree_2D_fixture::kdtree_type
-               ::iterator it = fix.kdtree.begin(); it != fix.kdtree.end(); ++it)
-          {
-            BOOST_CHECK(std::find(fix.mem.begin(), fix.mem.end(), *it)
-                        != fix.mem.end());
-            ++count;
-          }
-        BOOST_CHECK_EQUAL(count, 20);
-      }
-  }
+  // build repeatitively a lot of them, should not fail.
+  // This tree has multiple similar node, by construction
+  for (int i=0; i<100; ++i)
+    {
+      pointset_fix<int2> fix(100, randomize(-4, 4));
+      int count = 0;
+      for (pointset_fix<int2>::container_type::iterator it
+             = fix.container.begin(); it != fix.container.end(); ++it)
+        {
+          if ((*it)[0] >= -4 && (*it)[0] < 4
+              && (*it)[1] >= -4 && (*it)[1] < 4) ++count;
+        }
+      BOOST_CHECK_EQUAL(count, 100);
+    }
 }
 
-BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_copy )
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_copy )
 {
-  // Copy an 3d kdtree and iterate over it. Both iterators should yield same
-  // results and exhibit same properties.
-  Twenty_Relaxed_kdtree_3D_fixture fix;
-  Twenty_Relaxed_kdtree_3D_fixture::kdtree_type copy(fix.kdtree);
-  BOOST_CHECK_EQUAL(fix.kdtree.size(), copy.size());
-  typedef Twenty_Relaxed_kdtree_3D_fixture::kdtree_type::iterator iterator_type;
-  iterator_type orig_begin = fix.kdtree.begin();
-  iterator_type orig_end = fix.kdtree.end();
+  // Copy a kdtree of quad and iterate over it. Both tree should have leaf nodes
+  // at the same location
+  runtime_pointset_fix<quad> fix(40, randomize(-10, 10));
+  runtime_pointset_fix<quad>::container_type copy(fix.container);
+  BOOST_CHECK_EQUAL(fix.container.size(), copy.size());
+  typedef runtime_pointset_fix<quad>::container_type::iterator iterator_type;
+  iterator_type orig_begin = fix.container.begin();
+  iterator_type orig_end = fix.container.end();
   iterator_type copy_begin = copy.begin();
   iterator_type copy_end = copy.end();
   for (; orig_begin != orig_end && copy_begin != copy_end;
@@ -206,18 +197,19 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_copy )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_assignment )
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_assignment )
 {
   // Copy an 3d kdtree and iterate over it. Both iterators should yield same
   // results and exhibit same properties.
-  Twenty_Relaxed_kdtree_3D_fixture fix;
-  Twenty_Relaxed_kdtree_3D_fixture fix_other;
-  fix_other.kdtree = fix.kdtree;
-  typedef Twenty_Relaxed_kdtree_3D_fixture::kdtree_type::iterator iterator_type;
-  iterator_type orig_begin = fix.kdtree.begin();
-  iterator_type orig_end = fix.kdtree.end();
-  iterator_type copy_begin = fix_other.kdtree.begin();
-  iterator_type copy_end = fix_other.kdtree.end();
+  runtime_pointset_fix<quad> fix(40, randomize(-10, 10));
+  runtime_pointset_fix<quad> copy(40, randomize(-10, 10));
+  BOOST_CHECK_EQUAL(fix.container.size(), copy.container.size());
+  copy.container = fix.container;
+  typedef runtime_pointset_fix<quad>::container_type::iterator iterator_type;
+  iterator_type orig_begin = fix.container.begin();
+  iterator_type orig_end = fix.container.end();
+  iterator_type copy_begin = copy.container.begin();
+  iterator_type copy_end = copy.container.end();
   for (; orig_begin != orig_end && copy_begin != copy_end;
        ++copy_begin, ++orig_begin)
     {
@@ -227,15 +219,15 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_assignment )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_bulk_insert )
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_bulk_insert )
 {
   // reuse test_kdtree_insert_100_iterate_forward
   typedef details::Relaxed_kdtree
-    <details::Static_rank<2>, point2d, point2d, bracket_less<point2d>,
-     loose_balancing, std::allocator<point2d>, false> kdtree_type;
+    <details::Static_rank<2>, int2, int2, bracket_less<int2>,
+     loose_balancing, std::allocator<int2> > kdtree_type;
   kdtree_type kdtree;
-  std::tr1::array<point2d, 100> points;
-  for(std::tr1::array<point2d, 100>::iterator i
+  std::tr1::array<int2, 100> points;
+  for(std::tr1::array<int2, 100>::iterator i
         = points.begin(); i != points.end(); ++i)
     {
       (*i)[0] = std::rand() % 20;
@@ -248,9 +240,9 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_bulk_insert )
   int count = 0;
   for(kdtree_type::iterator i = kdtree.begin(); i != kdtree.end(); ++i)
     {
-      std::tr1::array<point2d, 100>::iterator match;
+      std::tr1::array<int2, 100>::iterator match;
       BOOST_REQUIRE((match = std::find(points.begin(), points.end(), *i))
-                  != points.end());
+                    != points.end());
       (*match)[0] = -1; // Prevent the same point from being found twice.
       (*match)[1] = -1;
       BOOST_REQUIRE_LE(++count, 100);
@@ -258,56 +250,56 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_bulk_insert )
   BOOST_CHECK_EQUAL(count, 100);
 }
 
-BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_erase_key )
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_erase_key )
 {
   {
     // Erase on empty tree should return 0.
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    point2d some_value = { {0, 0} };
-    size_type count = fix.kdtree.erase(some_value);
+    pointset_fix<int2> fix;
+    int2 some_value(0, 0);
+    size_type count = fix.container.erase(some_value);
     BOOST_CHECK_EQUAL(count, 0);
-    BOOST_CHECK(fix.kdtree.end() == fix.kdtree.begin());
-    BOOST_CHECK(fix.kdtree.empty());
+    BOOST_CHECK(fix.container.end() == fix.container.begin());
+    BOOST_CHECK(fix.container.empty());
   }
   {
     // Erase one value of a tree should return 1 and leave an empty tree.
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    point2d some_value = { {0, 0} };
-    fix.kdtree.insert(some_value);
-    BOOST_CHECK(!fix.kdtree.empty());
-    size_type count = fix.kdtree.erase(some_value);
+    tight_pointset_fix<int2> fix;
+    int2 some_value(0, 0);
+    fix.container.insert(some_value);
+    BOOST_CHECK(!fix.container.empty());
+    size_type count = fix.container.erase(some_value);
     BOOST_CHECK_EQUAL(count, 1);
-    BOOST_CHECK(fix.kdtree.end() == fix.kdtree.begin());
-    BOOST_CHECK(fix.kdtree.empty());
+    BOOST_CHECK(fix.container.end() == fix.container.begin());
+    BOOST_CHECK(fix.container.empty());
   }
   {
     // Erase a value not in the tree should leave the tree untouched.
-    Empty_Relaxed_kdtree_2D_fixture fix;
-    point2d some_value = { {0, 0} };
-    point2d other_value = { {1, 1} };
-    fix.kdtree.insert(some_value);
-    Empty_Relaxed_kdtree_2D_fixture::kdtree_type::iterator
-      begin_before = fix.kdtree.begin();
-    Empty_Relaxed_kdtree_2D_fixture::kdtree_type::iterator
-      end_before = fix.kdtree.end();
-    size_type count  = fix.kdtree.erase(other_value);
+    runtime_pointset_fix<int2> fix;
+    int2 some_value(0, 0);
+    int2 other_value(1, 1);
+    fix.container.insert(some_value);
+    runtime_pointset_fix<int2>::container_type::iterator
+      begin_before = fix.container.begin();
+    runtime_pointset_fix<int2>::container_type::iterator
+      end_before = fix.container.end();
+    size_type count = fix.container.erase(other_value);
     BOOST_CHECK_EQUAL(count, 0);
-    BOOST_CHECK(!fix.kdtree.empty());
-    BOOST_CHECK(fix.kdtree.end() != fix.kdtree.begin());
-    BOOST_CHECK(fix.kdtree.end() == end_before);
-    BOOST_CHECK(fix.kdtree.begin() == begin_before);
+    BOOST_CHECK(!fix.container.empty());
+    BOOST_CHECK(fix.container.end() != fix.container.begin());
+    BOOST_CHECK(fix.container.end() == end_before);
+    BOOST_CHECK(fix.container.begin() == begin_before);
   }
   {
     // Should be able to erase multiple values
     typedef details::Relaxed_kdtree
-      <details::Dynamic_rank, point2d, point2d, bracket_less<point2d>,
-       tight_balancing, std::allocator<point2d>, false>
+      <details::Dynamic_rank, int2, int2, bracket_less<int2>,
+       tight_balancing, std::allocator<int2> >
       kdtree_type;
     // 1D tree where we store 2d objects...
     kdtree_type tree(details::Dynamic_rank(1));
-    point2d one   = { { 1, 0 } };
-    point2d two   = { { 2, 2 } };
-    point2d four  = { { 4, 0 } };
+    int2 one(1, 0);
+    int2 two(2, 2);
+    int2 four(4, 0);
     tree.insert(one);
     tree.insert(two);
     tree.insert(two);
@@ -329,111 +321,106 @@ BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_erase_key )
   }
 }
 
-BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_erase_iterator )
-{
-  // check that erase at edge preserve basic iterators
-  {
-    Twenty_Relaxed_kdtree_3D_fixture fix;
-    typedef Twenty_Relaxed_kdtree_3D_fixture::kdtree_type
-      ::iterator iter_type;
-    size_type track_size = fix.kdtree.size();
-    while (fix.kdtree.size() != 0)
-      {
-        iter_type iter = fix.kdtree.begin();
-        BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(iter));
-        BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
-        BOOST_CHECK(iter != fix.kdtree.begin());
-        int count = 0;
-        for(iter_type i = fix.kdtree.begin();
-            i != fix.kdtree.end(); ++i, ++count);
-        BOOST_CHECK_EQUAL(count, track_size);
-      }
-  }
-  {
-    Twenty_Relaxed_kdtree_3D_fixture fix;
-    typedef Twenty_Relaxed_kdtree_3D_fixture::kdtree_type
-      ::iterator iter_type;
-    typedef Twenty_Relaxed_kdtree_3D_fixture::kdtree_type
-      ::reverse_iterator riter_type;
-    size_type track_size = fix.kdtree.size();
-    while (fix.kdtree.size() != 0)
-      {
-        iter_type iter = --fix.kdtree.end();
-        BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(iter));
-        BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
-        BOOST_CHECK(iter != (--fix.kdtree.end()));
-        int count = 0;
-        for(riter_type i = fix.kdtree.rbegin();
-            i != fix.kdtree.rend(); ++i, ++count);
-        BOOST_CHECK_EQUAL(count, track_size);
-      }
-  }
-  // erase all and check that total ordering is preserved.
-  {
-    typedef Hundred_Relaxed_kdtree_5D_fixture::kdtree_type
-      ::iterator iterator;
-    typedef details::Const_Mapping_iterator
-      <Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::rank_type,
-      Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::key_type,
-      Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::value_type,
-      Hundred_Relaxed_kdtree_5D_fixture::kdtree_type::node_type,
-      bracket_less<point5d> > mapping_iterator;
-    Hundred_Relaxed_kdtree_5D_fixture fix;
-    size_type track_size = fix.kdtree.size();
-    while (fix.kdtree.size() != 0)
-      {
-        iterator eraser = fix.kdtree.begin();
-        std::advance(eraser, static_cast<size_type>(rand()) % fix.kdtree.size());
-        mapping_iterator begin_0;
-        BOOST_REQUIRE_NO_THROW(begin_0 = mapping_iterator::minimum
-                               (fix.kdtree.rank(), fix.kdtree.key_comp(), 0, 0,
-                                static_cast<Relaxed_kdtree_node<point5d>*>
-                                (fix.kdtree.end().node->parent)));
-        mapping_iterator end_0;
-        BOOST_REQUIRE_NO_THROW(end_0 = mapping_iterator
-                               (fix.kdtree.rank(), fix.kdtree.key_comp(), 0,
-                                details::decr_dim(fix.kdtree.rank(), 0),
-                                static_cast<Relaxed_kdtree_node<point5d>*>
-                                (fix.kdtree.end().node)));
-        mapping_iterator begin_1;
-        BOOST_REQUIRE_NO_THROW(begin_1 = mapping_iterator::minimum
-                               (fix.kdtree.rank(), fix.kdtree.key_comp(), 1, 0,
-                                static_cast<Relaxed_kdtree_node<point5d>*>
-                                (fix.kdtree.end().node->parent)));
-        mapping_iterator end_1;
-        BOOST_REQUIRE_NO_THROW(end_1 = mapping_iterator
-                               (fix.kdtree.rank(), fix.kdtree.key_comp(), 1,
-                                details::decr_dim(fix.kdtree.rank(), 0),
-                                static_cast<Relaxed_kdtree_node<point5d>*>
-                                (fix.kdtree.end().node)));
-        size_type count = 0;
-        for(mapping_iterator i = begin_0; i != end_0; ++i, ++count);
-        BOOST_CHECK_EQUAL(count, track_size);
-        if (count != track_size && count < 23) abort(); // for inspection of tree
-        count = 0;
-        for(mapping_iterator i = begin_1; i != end_1; ++i, ++count);
-        BOOST_CHECK_EQUAL(count, track_size);
-        if (count != track_size && count < 23) abort(); // for inspection of tree
-        count = 0;
-        for(mapping_iterator i = end_0; i != begin_0; --i, ++count);
-        BOOST_CHECK_EQUAL(count, track_size);
-        count = 0;
-        for(mapping_iterator i = end_1; i != begin_1; --i, ++count);
-        BOOST_CHECK_EQUAL(count, track_size);
-        BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(eraser));
-        BOOST_CHECK_EQUAL(fix.kdtree.size(), --track_size);
-      }
-  }
-}
+/// HERE --- BOUH
+// BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_erase_iterator )
+// {
+//   // check that erase at edge preserve basic iterators
+//   {
+//     point_multimap_fix<quad, std::string> fix(20, randomize(0, 1));
+//     typedef point_multimap_fix<quad, std::string>::container_type
+//       ::iterator iter_type;
+//     size_type track_size = fix.container.size();
+//     while (fix.container.size() != 0)
+//       {
+//         iter_type iter = fix.container.begin();
+//         BOOST_REQUIRE_NO_THROW(fix.container.erase(iter));
+//         BOOST_CHECK_EQUAL(fix.container.size(), --track_size);
+//         BOOST_CHECK(iter != fix.container.begin());
+//         int count = 0;
+//         for(iter_type i = fix.container.begin();
+//             i != fix.container.end(); ++i, ++count);
+//         BOOST_CHECK_EQUAL(count, track_size);
+//       }
+//   }
+//   {
+//     point_multimap_fix<quad, std::string> fix(20, randomize(0, 1));
+//     typedef point_multimap_fix<quad, std::string>::container_type
+//       ::iterator iter_type;
+//     typedef point_multimap_fix<quad, std::string>::container_type
+//       ::reverse_iterator riter_type;
+//     size_type track_size = fix.container.size();
+//     while (fix.container.size() != 0)
+//       {
+//         iter_type iter = --fix.container.end();
+//         BOOST_REQUIRE_NO_THROW(fix.container.erase(iter));
+//         BOOST_CHECK_EQUAL(fix.container.size(), --track_size);
+//         BOOST_CHECK(iter != (--fix.container.end()));
+//         int count = 0;
+//         for(riter_type i = fix.container.rbegin();
+//             i != fix.container.rend(); ++i, ++count);
+//         BOOST_CHECK_EQUAL(count, track_size);
+//       }
+//   }
+//   // erase all and check that total ordering is preserved.
+//   {
+//     typedef pointset_fix<double6>::container_type::iterator iterator;
+//     typedef mapping_iterator<pointset_fix<double6>::container_type>
+//       mapping_iterator;
+//     pointset_fix<double6> fix(100, randomize(0, 1);
+//     size_type track_size = fix.container.size();
+//     while (fix.container.size() != 0)
+//       {
+//         iterator eraser = fix.container.begin();
+//         std::advance(eraser, static_cast<size_type>(rand()) % fix.container.size());
+//         mapping_iterator begin_0;
+//         BOOST_REQUIRE_NO_THROW(begin_0 = details::minimum_mapping
+//                                (fix.container.rank(), fix.container.key_comp(), 0, 0,
+//                                 static_cast<Relaxed_kdtree_node<point5d>*>
+//                                 (fix.container.end().node->parent)));
+//         mapping_iterator end_0;
+//         BOOST_REQUIRE_NO_THROW(end_0 = mapping_iterator
+//                                (fix.container.rank(), fix.container.key_comp(), 0,
+//                                 details::decr_dim(fix.container.rank(), 0),
+//                                 static_cast<Relaxed_kdtree_node<point5d>*>
+//                                 (fix.container.end().node)));
+//         mapping_iterator begin_1;
+//         BOOST_REQUIRE_NO_THROW(begin_1 = mapping_iterator::minimum
+//                                (fix.container.rank(), fix.container.key_comp(), 1, 0,
+//                                 static_cast<Relaxed_kdtree_node<point5d>*>
+//                                 (fix.container.end().node->parent)));
+//         mapping_iterator end_1;
+//         BOOST_REQUIRE_NO_THROW(end_1 = mapping_iterator
+//                                (fix.container.rank(), fix.container.key_comp(), 1,
+//                                 details::decr_dim(fix.container.rank(), 0),
+//                                 static_cast<Relaxed_kdtree_node<point5d>*>
+//                                 (fix.container.end().node)));
+//         size_type count = 0;
+//         for(mapping_iterator i = begin_0; i != end_0; ++i, ++count);
+//         BOOST_CHECK_EQUAL(count, track_size);
+//         if (count != track_size && count < 23) abort(); // for inspection of tree
+//         count = 0;
+//         for(mapping_iterator i = begin_1; i != end_1; ++i, ++count);
+//         BOOST_CHECK_EQUAL(count, track_size);
+//         if (count != track_size && count < 23) abort(); // for inspection of tree
+//         count = 0;
+//         for(mapping_iterator i = end_0; i != begin_0; --i, ++count);
+//         BOOST_CHECK_EQUAL(count, track_size);
+//         count = 0;
+//         for(mapping_iterator i = end_1; i != begin_1; --i, ++count);
+//         BOOST_CHECK_EQUAL(count, track_size);
+//         BOOST_REQUIRE_NO_THROW(fix.container.erase(eraser));
+//         BOOST_CHECK_EQUAL(fix.container.size(), --track_size);
+//       }
+//   }
+// }
 
-BOOST_AUTO_TEST_CASE( test_Relaxed_kdtree_erase_bulk )
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_erase_bulk )
 {
-  Hundred_Relaxed_kdtree_5D_fixture fix;
-  std::vector<point5d> store;
-  store.reserve(100);
-  store.insert(store.end(), fix.kdtree.begin(), fix.kdtree.end());
-  BOOST_REQUIRE_NO_THROW(fix.kdtree.erase(store.begin(), store.end()));
-  BOOST_CHECK(fix.kdtree.empty() == true);
+  point_multimap_fix<double6, std::string> fix(100, randomize(0, 1));
+  BOOST_REQUIRE_NO_THROW(fix.container.erase
+                         (fix.container.begin(), fix.container.end()));
+  BOOST_CHECK_EQUAL(fix.container.empty(), true);
+  BOOST_CHECK_EQUAL(fix.container.size(), 0);
 }
 
 #endif // SPATIAL_TEST_RELAXED_KDTREE_HPP
