@@ -321,106 +321,84 @@ BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_erase_key )
   }
 }
 
-/// HERE --- BOUH
-// BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_erase_iterator )
-// {
-//   // check that erase at edge preserve basic iterators
-//   {
-//     point_multimap_fix<quad, std::string> fix(20, randomize(0, 1));
-//     typedef point_multimap_fix<quad, std::string>::container_type
-//       ::iterator iter_type;
-//     size_type track_size = fix.container.size();
-//     while (fix.container.size() != 0)
-//       {
-//         iter_type iter = fix.container.begin();
-//         BOOST_REQUIRE_NO_THROW(fix.container.erase(iter));
-//         BOOST_CHECK_EQUAL(fix.container.size(), --track_size);
-//         BOOST_CHECK(iter != fix.container.begin());
-//         int count = 0;
-//         for(iter_type i = fix.container.begin();
-//             i != fix.container.end(); ++i, ++count);
-//         BOOST_CHECK_EQUAL(count, track_size);
-//       }
-//   }
-//   {
-//     point_multimap_fix<quad, std::string> fix(20, randomize(0, 1));
-//     typedef point_multimap_fix<quad, std::string>::container_type
-//       ::iterator iter_type;
-//     typedef point_multimap_fix<quad, std::string>::container_type
-//       ::reverse_iterator riter_type;
-//     size_type track_size = fix.container.size();
-//     while (fix.container.size() != 0)
-//       {
-//         iter_type iter = --fix.container.end();
-//         BOOST_REQUIRE_NO_THROW(fix.container.erase(iter));
-//         BOOST_CHECK_EQUAL(fix.container.size(), --track_size);
-//         BOOST_CHECK(iter != (--fix.container.end()));
-//         int count = 0;
-//         for(riter_type i = fix.container.rbegin();
-//             i != fix.container.rend(); ++i, ++count);
-//         BOOST_CHECK_EQUAL(count, track_size);
-//       }
-//   }
-//   // erase all and check that total ordering is preserved.
-//   {
-//     typedef pointset_fix<double6>::container_type::iterator iterator;
-//     typedef mapping_iterator<pointset_fix<double6>::container_type>
-//       mapping_iterator;
-//     pointset_fix<double6> fix(100, randomize(0, 1);
-//     size_type track_size = fix.container.size();
-//     while (fix.container.size() != 0)
-//       {
-//         iterator eraser = fix.container.begin();
-//         std::advance(eraser, static_cast<size_type>(rand()) % fix.container.size());
-//         mapping_iterator begin_0;
-//         BOOST_REQUIRE_NO_THROW(begin_0 = details::minimum_mapping
-//                                (fix.container.rank(), fix.container.key_comp(), 0, 0,
-//                                 static_cast<Relaxed_kdtree_node<point5d>*>
-//                                 (fix.container.end().node->parent)));
-//         mapping_iterator end_0;
-//         BOOST_REQUIRE_NO_THROW(end_0 = mapping_iterator
-//                                (fix.container.rank(), fix.container.key_comp(), 0,
-//                                 details::decr_dim(fix.container.rank(), 0),
-//                                 static_cast<Relaxed_kdtree_node<point5d>*>
-//                                 (fix.container.end().node)));
-//         mapping_iterator begin_1;
-//         BOOST_REQUIRE_NO_THROW(begin_1 = mapping_iterator::minimum
-//                                (fix.container.rank(), fix.container.key_comp(), 1, 0,
-//                                 static_cast<Relaxed_kdtree_node<point5d>*>
-//                                 (fix.container.end().node->parent)));
-//         mapping_iterator end_1;
-//         BOOST_REQUIRE_NO_THROW(end_1 = mapping_iterator
-//                                (fix.container.rank(), fix.container.key_comp(), 1,
-//                                 details::decr_dim(fix.container.rank(), 0),
-//                                 static_cast<Relaxed_kdtree_node<point5d>*>
-//                                 (fix.container.end().node)));
-//         size_type count = 0;
-//         for(mapping_iterator i = begin_0; i != end_0; ++i, ++count);
-//         BOOST_CHECK_EQUAL(count, track_size);
-//         if (count != track_size && count < 23) abort(); // for inspection of tree
-//         count = 0;
-//         for(mapping_iterator i = begin_1; i != end_1; ++i, ++count);
-//         BOOST_CHECK_EQUAL(count, track_size);
-//         if (count != track_size && count < 23) abort(); // for inspection of tree
-//         count = 0;
-//         for(mapping_iterator i = end_0; i != begin_0; --i, ++count);
-//         BOOST_CHECK_EQUAL(count, track_size);
-//         count = 0;
-//         for(mapping_iterator i = end_1; i != begin_1; --i, ++count);
-//         BOOST_CHECK_EQUAL(count, track_size);
-//         BOOST_REQUIRE_NO_THROW(fix.container.erase(eraser));
-//         BOOST_CHECK_EQUAL(fix.container.size(), --track_size);
-//       }
-//   }
-// }
-
-BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_erase_bulk )
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_erase_iterator )
 {
-  point_multimap_fix<double6, std::string> fix(100, randomize(0, 1));
-  BOOST_REQUIRE_NO_THROW(fix.container.erase
-                         (fix.container.begin(), fix.container.end()));
-  BOOST_CHECK_EQUAL(fix.container.empty(), true);
-  BOOST_CHECK_EQUAL(fix.container.size(), 0);
+  // check that erase at edge preserve basic iterators
+  {
+    point_multimap_fix<quad, std::string> fix(20, randomize(0, 1));
+    typedef point_multimap_fix<quad, std::string>::container_type
+      ::iterator iter_type;
+    size_type track_size = fix.container.size();
+    while (fix.container.size() != 0)
+      {
+        iter_type iter = fix.container.begin();
+        BOOST_REQUIRE_NO_THROW(fix.container.erase(iter));
+        BOOST_CHECK_EQUAL(fix.container.size(), --track_size);
+        BOOST_CHECK(iter != fix.container.begin());
+        int count = 0;
+        for(iter_type i = fix.container.begin();
+            i != fix.container.end(); ++i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
+      }
+  }
+  {
+    point_multimap_fix<quad, std::string> fix(20, randomize(0, 1));
+    typedef point_multimap_fix<quad, std::string>::container_type
+      ::iterator iter_type;
+    typedef point_multimap_fix<quad, std::string>::container_type
+      ::reverse_iterator riter_type;
+    size_type track_size = fix.container.size();
+    while (fix.container.size() != 0)
+      {
+        iter_type iter = --fix.container.end();
+        BOOST_REQUIRE_NO_THROW(fix.container.erase(iter));
+        BOOST_CHECK_EQUAL(fix.container.size(), --track_size);
+        BOOST_CHECK(iter != (--fix.container.end()));
+        int count = 0;
+        for(riter_type i = fix.container.rbegin();
+            i != fix.container.rend(); ++i, ++count);
+        BOOST_CHECK_EQUAL(count, track_size);
+      }
+  }
+  // erase all and check that total ordering is preserved.
+  {
+    typedef pointset_fix<double6>::container_type::iterator iterator;
+    typedef mapping_iterator<pointset_fix<double6>::container_type>
+      mapping_iterator;
+    pointset_fix<double6> fix(100, randomize(0, 1));
+    size_type track_size = fix.container.size();
+    while (fix.container.size() != 0)
+      {
+        iterator eraser = fix.container.begin();
+        std::advance(eraser, static_cast<size_type>(rand()) % fix.container.size());
+        mapping_iterator begin_0(fix.container, 0, 0,
+                                 fix.container.end().node->parent);
+        mapping_iterator end_0(fix.container, 0,
+                               details::decr_dim(fix.container.rank(), 0),
+                               fix.container.end().node);
+        mapping_iterator begin_1(fix.container, 1, 0,
+                                 fix.container.end().node->parent);
+        mapping_iterator end_1(fix.container, 1,
+                               details::decr_dim(fix.container.rank(), 0),
+                               fix.container.end().node);
+        begin_0 = details::minimum_mapping(begin_0);
+        begin_1 = details::minimum_mapping(begin_1);
+        size_type count = 0;
+        for(mapping_iterator i = begin_0; i != end_0; ++i, ++count);
+        BOOST_REQUIRE_EQUAL(count, track_size);
+        count = 0;
+        for(mapping_iterator i = begin_1; i != end_1; ++i, ++count);
+        BOOST_REQUIRE_EQUAL(count, track_size);
+        count = 0;
+        for(mapping_iterator i = end_0; i != begin_0; --i, ++count);
+        BOOST_REQUIRE_EQUAL(count, track_size);
+        count = 0;
+        for(mapping_iterator i = end_1; i != begin_1; --i, ++count);
+        BOOST_REQUIRE_EQUAL(count, track_size);
+        BOOST_REQUIRE_NO_THROW(fix.container.erase(eraser));
+        BOOST_CHECK_EQUAL(fix.container.size(), --track_size);
+      }
+  }
 }
 
 #endif // SPATIAL_TEST_RELAXED_KDTREE_HPP
