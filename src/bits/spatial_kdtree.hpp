@@ -506,8 +506,7 @@ namespace spatial
       iterator
       insert(const value_type& value)
       {
-        link_ptr tmp = link(create_node(value)); // may throw
-        return insert_node(tmp);
+        return insert_node(create_node(value));
       }
 
       /**
@@ -539,26 +538,6 @@ namespace spatial
        */
       size_type
       erase(const key_type& value);
-
-      /**
-       *  Deletes the range of nodes pointed to by the tree's own iterators.
-       *
-       *  This function leverages on the fact that when nodes are erased in the
-       *  tree, the in-memory locations of other nodes do not change. Only the
-       *  position of the node relative to other nodes in the tree changes.
-       */
-      void
-      erase(const Bidirectional_iterator<mode_type, rank_type>& first,
-            const Bidirectional_iterator<mode_type, rank_type>& last)
-      {
-        while (first != last)
-          {
-            iterator tmp = first++;
-            erase(tmp); // this could be optimized to pass around node_dim;
-            // Since the tree might be rebalanced, node_dim must be updated...
-            first.node_dim = modulo(first.node, rank());
-          }
-      }
     };
 
     /**
@@ -750,7 +729,7 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(!other.empty());
       SPATIAL_ASSERT_CHECK(empty());
       const_node_ptr other_node = other.get_root();
-      node_ptr node = create_node(value(*other_node)); // may throw
+      node_ptr node = create_node(const_value(other_node)); // may throw
       node->parent = get_header();
       set_root(node);
       try
