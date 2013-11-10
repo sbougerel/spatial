@@ -661,6 +661,8 @@ namespace spatial
     (typename mode_type::node_ptr target_node)
     {
       SPATIAL_ASSERT_CHECK(target_node != 0);
+      SPATIAL_ASSERT_CHECK(target_node->right == 0);
+      SPATIAL_ASSERT_CHECK(target_node->left == 0);
       node_ptr node = get_root();
       dimension_type node_dim = 0;
       if (header(node))
@@ -843,15 +845,16 @@ namespace spatial
       typedef mapping_compare<Compare, node_ptr> less;
       do
         {
-          ptrdiff_t half = (last - first) >> 1;
-          std::nth_element(first, first + half, last, less(key_comp(), dim));
-          node_ptr node = *(first + half);
+          typename std::vector<node_ptr>::iterator
+            mid = first + (last - first) / 2;
+          std::partial_sort(first, mid, last, less(key_comp(), dim));
+          node_ptr node = *mid;
           node->right = node->left = 0;
           insert_node(node);
           dim = incr_dim(rank(), dim);
-          if (first + half + 1 != last)
-            { rebalance_node_insert(first + half + 1, last, dim); }
-          last = first + half;
+          if (mid + 1 != last)
+            { rebalance_node_insert(mid + 1, last, dim); }
+          last = mid;
         }
       while(first != last);
       SPATIAL_ASSERT_CHECK(!empty());

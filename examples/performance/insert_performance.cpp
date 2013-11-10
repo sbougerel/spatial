@@ -38,7 +38,11 @@ void compare_libraries_3
   std::vector<point3_type> data;
   data.reserve(data_size);
   for (int i = 0; i < data_size; ++i)
-    data.push_back(point3_type(distribution(), distribution(), distribution()));
+    {
+      double a = distribution(), b = distribution(), c = distribution();
+      std::cout << a << ", " << b << ", " << c << std::endl;
+      data.push_back(point3_type(distribution(), distribution(), distribution()));
+    }
   std::cout << "for 3 dimensions:" << std::endl;
 
   // Insert into a point_multiset
@@ -72,7 +76,7 @@ void compare_libraries_9
   std::cout << "for 9 dimensions:" << std::endl;
 
   // Insert into a point_multiset
-  spatial::point_multiset<9, point9_type> first;
+  spatial::point_multiset<8, point9_type> first;
   utils::time_point start = utils::process_timer_now();
   first.insert(data.begin(), data.end());
   utils::time_point stop = utils::process_timer_now();
@@ -80,7 +84,7 @@ void compare_libraries_9
             << (stop - start) << "sec" << std::endl;
 
   // Insert into an idle_point_multiset
-  spatial::idle_point_multiset<9, point9_type> second;
+  spatial::idle_point_multiset<8, point9_type> second;
   start = utils::process_timer_now();
   second.insert(data.begin(), data.end());
   second.rebalance();
