@@ -1,3 +1,8 @@
+2013-11-10  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * v2.1.1 Fixed a bug on the rebalance() function in the kdtrees. All the
+        unit tests on the tree where not taken into account, now they are.
+
 2013-07-28  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * v2.1.0 Added the new equal_iterator optimized for containers with

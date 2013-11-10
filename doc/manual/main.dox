@@ -66,6 +66,23 @@ A brief overview of \Spatial's features is provided below:
 analysis. Check out \ref tutorial "Quick Starting Guide" to get you started on
 using \Spatial.
 
+\section source Getting the Source
+
+ZIP packages are available at the \project_page.
+
+Packages on the \project_download include the entire content of the source.
+Documentation files are only included in the \c *_documented.zip packages.
+
+If you have a Git client and which to use this instead of the packages, you
+can clone the repository using the following command:
+
+\code
+git clone git://git.code.sf.net/p/spatial/code spatial
+\endcode
+
+The above will only give you readonly access. If you wish to become a full-time
+contributor, check out \ref contributing "Contributing".
+
 \section status Status of the Library
 
 \Spatial C++ Library's currently lacks of a proper documentation and set of
@@ -111,27 +128,18 @@ To access feedback facilities, such as bug or feature requests, please refer to
 the \project_page. If you wish to contribute to the library, check out \ref
 contributing "Contributing".
 
-\section source Getting the Source
-
-ZIP packages are available at the \project_download page.
-
-Packages on the \project_download include the entire content of the source.
-Documentation files are only included in the \c *_documented.zip packages.
-
-If you have a Git client and which to use this instead of the packages, you
-can clone the repository using the following command:
-
-\code
-git clone git://git.code.sf.net/p/spatial/code spatial
-\endcode
-
-The above will only give you readonly access. If you wish to become a full-time
-contributor, check out \ref contributing "Contributing".
 */
 
 /**
 \page changelog Change Log
 \tableofcontents
+
+\section ver211 Version 2.1.1
+
+- \idle_point_multiset, \idle_box_multiset and other non-rebalancing containers
+  where suffering from a bug on the \c rebalance() function that was only
+  discovered recently. The problem is now fixed. On older versions, this
+  function will not work properly.
 
 \section ver210 Version 2.1.0
 
@@ -327,11 +335,12 @@ There are a number of things that can be improved with the library:
 - Documentation is still scarce, any contribution in this regard, no matter how
   small (gramatical mistakes) makes the library better.
 
-- Examples are inexistant. Any contribution of example source, in particular for
-  something that is not very well documented in the library, is welcomed. The
-  source in question must be well written and the purpose of the example must be
-  stated clearly. It must compile and it is preferable if it is portable. It
-  should not be too large for a reader to understand in a matter of minutes.
+- Examples are barely there. Any contribution of example source, in particular
+  for something that is not very well documented in the library, is
+  welcomed. The source in question must be well written and the purpose of the
+  example must be stated clearly. It must compile and it is preferable if it is
+  portable. It should not be too large for a reader to understand in a matter of
+  minutes.
 
 - Support of additional languages: python, .Net, etc. Why not start a project
   based on one of the tagged version of \Spatial and provide support for
@@ -360,7 +369,20 @@ can use the following command to clone the repository:
 $ git clone ssh://your_username@git.code.sf.net/p/spatial/code spatial
 ~~~~~~
 
-\section contributing_5 Hey this library is cool!
+\section contributing_5 What guidelines to follow when contributing?
+
+Follow what the library already does:
+- Do not use CamelCase. Use snake_case. Capitalize the first word of template or
+  large, dominant objects.
+- Private members use _leading underscore. Function parameters may use trailing_
+  underscores, when functions are large.
+- Do not submit a "patch" if it breaks the unit tests.
+- If you are submitting a new feature, write a unit test for it. Do also provide
+  the related documentation or examples for it.
+- Within the library itself, refrain from add dependancies on non-standard
+  libraries, with the exception of Boost.
+
+\section contributing_6 Hey this library is cool!
 
 You're satisfied with what you got? Rate us or even write a review for us:
 http://sourceforge.net/projects/spatial/reviews/

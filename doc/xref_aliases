@@ -11,7 +11,6 @@ ALIASES += "kdtrees=<a href=\"http://en.wikipedia.org/wiki/Kd-tree\"><b><i>k</i>
 ALIASES += "rbtree=<a href=\"http://en.wikipedia.org/wiki/Red-black_tree\"><b>Red-black tree</b></a>"
 ALIASES += "rbtrees=<a href=\"http://en.wikipedia.org/wiki/Red-black_tree\"><b>Red-black trees</b></a>"
 ALIASES += "license=<a href=\"http://www.boost.org/LICENSE_1_0.txt\"><b>Boost license</b></a>"
-ALIASES += "project=<a href=\"http://projectpage.willsee\"><b>Project page</b></a>"
 ALIASES += "project_page=<a href=\"http://sourceforge.net/projects/spatial/\"><b>Project Page on Sourceforge</b></a>"
 ALIASES += "project_download=<a href=\"http://sourceforge.net/projects/spatial/files/\"><b>Project Download Page on Sourceforge</b></a>"
 ALIASES += "project_issue=<a href=\"http://sourceforge.net/projects/spatial/support\"><b>Project Issue Trackers on Sourceforge</b></a>"
