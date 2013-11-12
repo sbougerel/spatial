@@ -59,28 +59,36 @@ VERSION 2.1.0
 * Jul 13 Equal_iterator should stand on its own with its own
            optimizations for the static invarient in the kdree. DONE!
 
-* Sep 13 Final optimization: work on adding performance-based tests
+* Nov 13 Final optimization: work on adding performance-based tests
            and comparison with other libraries in the market. Wouldn't
            it be nice to see how it fares against ANN or libkdtree++?
 
-* Oct 13 Implementing containers that hold only unique keys, with
+* Jan 14 Implementing containers that hold only unique keys, with
            bracket operators just like std::map and std::set. They
            would be simply point_set, box_set, point_map and box_map.
 
-* Nov 13 Add a range erase function that operates on 2 basic tree
+* Mar 14 Add a range erase function that operates on 2 basic tree
            iterators. This is complicated to write because of the
            invarient.
 
 
 VERSION 2.2.0
 
-* Jan 14 Addition of intrusive containers for every existing ones. The
-           intrusive containers should have a rather limited inpact on
-           the existing code if possible, but should make a great
-           difference in terms of performance for those who need
-           them. Should take about 2 months. In progress...
+* Jul 14 Addition of algorithms. A few come to mind: approximative
+           nearest neighbor search, min/max depth, etc.
 
-* Mar 14 Implementation of a new near cache oblivious allocator solely
+* Sep 14 Addition of intrusive containers or flat container for every
+           existing ones (haven't decided wether intrusive or flat is
+           better) I suppose that since you are probably using the
+           tree for it's algorthims, flat container may present a good
+           alterative, while intrusive container may be slower in
+           practice, the value are located out of the tree in
+           memory. The containers should have a rather limited inpact
+           on the existing code if possible, but should make a great
+           difference in terms of performance for those who need
+           them. Should take about 2 months.
+
+* Dec 14 Implementation of a new near cache oblivious allocator solely
            dedicated to be used with the spatial library. This cache
            oblivious allocator is used to speed up the frequent
            walking operation within the tree. How does it work? First,
@@ -117,14 +125,14 @@ VERSION 2.2.0
 
 VERSION 2.3.0
 
-* Jun 14 Add new iterators such at ray_iterator, which travels along a
+* Mar 15 Add new iterators such at ray_iterator, which travels along a
            vector, in a given space. This iterator works only on
            boxset family of iterators? Some new functions for metric
            should appear and therefore, it would make defining a
            geometry quite a complex business, needing more
            documentation.
 
-* Aug 14 Porting Spatial to scripting/duck-typing languages or
+* Aug 15 Porting Spatial to scripting/duck-typing languages or
            frameworks? Python, Java, Lua, Ruby, .Net, others? Create a
            new project based on spatial in this case, using the
            version number in the spatial.hpp header.

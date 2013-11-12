@@ -11,6 +11,7 @@
 
 struct point3_type
 {
+  typedef double value_type;
   template <typename Distribution>
   point3_type(const Distribution& distrib)
   { values[0] = distrib(); values[1] = distrib(); values[2] = distrib(); }
@@ -20,6 +21,7 @@ struct point3_type
 
 struct point9_type
 {
+  typedef double value_type;
   template <typename Distribution>
   point9_type(const Distribution& distrib)
   {
@@ -39,25 +41,49 @@ void compare_libraries
   data.reserve(data_size);
   for (int i = 0; i < data_size; ++i)
     data.push_back(Point(distribution));
-
-  // Insert into a point_multiset
-  std::cout << "\t" << N << " dimensions\t"
-            << data_size << " objects\tpoint_multiset:\t" << std::flush;
-  spatial::point_multiset<N, Point> first;
-  utils::time_point start = utils::process_timer_now();
-  first.insert(data.begin(), data.end());
-  utils::time_point stop = utils::process_timer_now();
-  std::cout << (stop - start) << "sec" << std::endl;
-
-  // Insert into an idle_point_multiset
-  std::cout << "\t" << N << " dimensions\t"
-            << data_size << " objects\tidle_point_multiset:\t" << std::flush;
-  spatial::idle_point_multiset<N, Point> second;
-  start = utils::process_timer_now();
-  second.insert(data.begin(), data.end());
-  second.rebalance();
-  stop = utils::process_timer_now();
-  std::cout << (stop - start) << "sec" << std::endl;
+  {
+    // Insert into a point_multiset
+    std::cout << "\t" << N << " dimensions\t"
+              << data_size << " objects\tpoint_multiset:\t" << std::flush;
+    spatial::point_multiset<N, Point> cobaye;
+    utils::time_point start = utils::process_timer_now();
+    cobaye.insert(data.begin(), data.end());
+    utils::time_point stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << std::endl;
+  }
+  {
+    // Insert into an idle_point_multiset
+    std::cout << "\t" << N << " dimensions\t"
+              << data_size << " objects\tidle_point_multiset:\t" << std::flush;
+    spatial::idle_point_multiset<N, Point> cobaye;
+    utils::time_point start = utils::process_timer_now();
+    cobaye.insert(data.begin(), data.end());
+    cobaye.rebalance();
+    utils::time_point stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << std::endl;
+  }
+  {
+    // Insert into an idle_point_multiset
+    std::cout << "\t" << N << " dimensions\t"
+              << data_size << " objects\tKDtree (insert & optimize):\t" << std::flush;
+    KDTree::KDTree<N, Point> cobaye;
+    utils::time_point start = utils::process_timer_now();
+    cobaye.insert(data.begin(), data.end());
+    cobaye.optimize();
+    utils::time_point stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << std::endl;
+  }
+  {
+    // Insert into an idle_point_multiset
+    std::cout << "\t" << N << " dimensions\t"
+              << data_size << " objects\tKDtree (efficient_replace_and_optimize):\t" << std::flush;
+    KDTree::KDTree<N, Point> cobaye;
+    utils::time_point start = utils::process_timer_now();
+    // The vector will be modified by the call to this function!
+    cobaye.efficient_replace_and_optimise(data);
+    utils::time_point stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << std::endl;
+  }
 }
 
 int main (int argc, char **argv, char **env)

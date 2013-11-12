@@ -374,7 +374,7 @@ $ git clone ssh://your_username@git.code.sf.net/p/spatial/code spatial
 Follow what the library already does:
 - Do not use CamelCase. Use snake_case. Capitalize the first word of template or
   large, dominant objects.
-- Private members use _leading underscore. Function parameters may use trailing_
+- Private members use \_leading underscore. Function parameters may use trailing\_
   underscores, when functions are large.
 - Do not submit a "patch" if it breaks the unit tests.
 - If you are submitting a new feature, write a unit test for it. Do also provide
@@ -1042,7 +1042,7 @@ When dealing with objects in space that are scattered over the entire range of
 values permissible for their storage types (i.e. very large values for the type
 int, long, long long, etc) it could happen that distance calculations in
 \neighbor_iterator would overflow. If the results returned by this iterator do
-not match your expected resutls, try enabling this define, to make sure this is
+not match your expected results, try enabling this define, to make sure this is
 not due to an overflow.
 
 \code
@@ -1061,7 +1061,7 @@ This variable is simply a define and does not require any associated value.
 
 This is normally used by the library developers only, to catch programming error
 in the library itself. However, it may be useful to end-users too. For exemple,
-if your program crashes suddenly or loops infinitely by you can't find where you
+if your program crashes suddenly or loops infinitely but you can't find where you
 are mistakenly iterating past-the-end or deferencing the past-the-end iterator;
 enable this variable to trigger your program to exit with `abort()` and be able
 to analyse the backtrace.

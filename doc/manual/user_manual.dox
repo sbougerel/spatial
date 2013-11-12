@@ -1,25 +1,289 @@
 /**
 \page usermanual User Manual
+- \subpage usermanual_installation
+- \subpage usermanual_compiling
 - \subpage usermanual_struct
 - \subpage usermanual_concept
 - \subpage usermanual_performance
+- \subpage usermanual_comparison
 
 Chapters in this manual should provide you with in-depth knowledge of the
 library and it's usage.
 */
 
 /**
+\page usermanual_installation Installing the Library
+
+The installation details are presented in the \c INSTALL file that is provided
+in the top directory of the source packages.
+
+This library is a header-only library. That means no compilation is requried
+before you can use it. You just need to copy the content of the \c src/
+directory where you want, and you can use it straight-away.
+*/
+
+/**
+\page usermanual_compiling Compiling the Unit Tests and the Examples
+
+\section usermanual_compiling_unit_test The Unit Tests
+
+The unit tests base their sources on the library files contained in the
+directory \c src/ at the top of the source package. In other words, the unit
+tests are testing the library contents itself.
+
+To compile the unit tests, you will need CMake and and a dynamic library version
+of Boost.Test. Most Linux distributions will provide these tools within their
+standard repositories. On Windows, you will probably have to install the
+pre-build binaries of the Boost.Test library and download CMake from it's
+official website. Once you have the necessary tools, you can generally type
+(assuming that you are in the top directory of the distributed package):
+
+<pre>
+$ cd tests
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+</pre>
+
+The steps are mostly similar on Windows, except for the last one, if you are
+using Visual Studio C++, you should compile through the user interface.
+
+The last step may take a long time, depending on the performance of your
+machine. If you encounter some error or warning during the compilation of the
+unit test, please inform the maintainers immediately, via the mailing lists.
+
+Once compilation is over, run the unit tests with:
+
+<pre>
+$ ./verify
+</pre>
+
+That should run and return without errors. If you do encounter some errors,
+please inform the maintainers immediately, via the mailing lists.
+
+If you are a contributor to the library, running the unit tests is mandatory
+before submitting a patch. If your patch breaks the unit tests, it will be
+rejected.
+
+\section usermanual_compiling_examples The Examples
+
+Contrary to the unit tests, the examples assume that you have \ref
+usermanual_installation "already installed the library" in the default include
+path of your compiler and named \c spatial. They behave as close as possible to
+your own installation.
+
+The Examples require the following tools to compile:
+- CMake
+- libkdtree++
+- Boost.Geometry.Index
+
+Similarly you can generally execute:
+
+<pre>
+$ cd examples
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+</pre>
+
+The steps are mostly similar on Windows, except for the last one, if you are
+using Visual Studio C++, you should compile through the user interface.
+
+The examples are organized in different directory to help you navigate through
+their contents by topic.
+
+*/
+
+/**
 \page usermanual_struct Structure of the Library
 - \subpage usermanual_struct_container
+- \subpage usermanual_struct_iterator
+- \subpage usermanual_struct_functional
+
+\section usermanual_struct_overview Overview
 
 The library is composed of 3 different categories of components: containers,
-iterators and functionals.
+iterators and functionals. They have similar meaning as in the \STL:
+
+- Containers will organize inserted objects in memory for spatial queries
+
+- Iterators are used to realize the queries themselves. Many queries in the
+  libraries, such as orthogonal range search or nearest neighbor search can
+  return \e k elements. Iterators are abstraction concept used to realize these
+  queries.
+
+- Functionals are objects with minimal memory footprint presenting a limited
+  interface (generally \c operator()) and as such, appear to behave as
+  functions. They are used to accomplished various tasks, often as a parameter
+  to more complex algorithms. They support genericity. In this section, only a
+  limited amount of functional are presented, compared to those provided in the
+  library.
+
+\section usermanual_struct_namespace Namespace and Include files
+
+\Spatial provides all it's public elements into 1 single namespace \c
+::spatial. All implementation details are \e hidden into the namespace \c
+::spatial::details.
+
+Similarly, all include files that are publicly accessible are accessible
+directly under the installation directory, generally called \c "spatial/":
+
+\code
+#include <spatial/point_multiset>
+#include <spatial/box_multiset>
+#include <spatial/idle_box_multiset>
+\endcode
+
+Implementation details are \e hidden in headers under the installation directory
+\c "spatial/bits/".
+
+If you are a new library user and your are finding yourself requiering access to
+the implementation details, you are probably not doing the right thing.
+
 */
 
 /**
 \page usermanual_struct_container Containers
+\tableofcontents
 
-The most important structure of the library.
+\section usermanual_container_characteristic Container's Charateristics
+
+\Spatial provides 8 different containers, with the following characteristics:
+
+- \point_multiset containers will store objects in any given number of
+  dimensions, the value type \c value_type is also used as the key and it is
+  stricly equivalent to \c key_type. It is also immutable.
+
+- \point_multimap containers will store a pair of key and mapped types in any given
+  number of dimension, the key type \c key_type is immutable, while the \c
+  mapped_type can be mutated. \c value_type is made of \c std::pair<key_type,
+  \c mapped_type>.
+
+- \box_multiset and \box_multimap have similar differences as presented above,
+  additionally, the number of dimension used in this container have to be
+  even: 2, 4, 6, 8, etc.
+
+- \idle_point_multiset, \idle_box_multiset, \idle_point_multimap and
+  \idle_box_multimap have similar difference as presented above, however the are
+  not automatically rebalancing. To obtain a perfectly balanced tree, the user
+  of the library must call the function \c rebalance(), which is only found in
+  these containers.
+
+In addition to the differences above, all container share the same following
+properties:
+
+- They store \c value_types in memory, always.
+
+- They store arbitrary \c value_type, provided that \c value_compare can compare
+  2 distinct value types along the same dimension. See \ref
+  trivial_comparison_concept "Trivial Comparison Concept".
+
+- The only necessary requirements on \c key_type and \c value_type is that they
+  must be copy-constructible.
+
+- Currently, all the containers in the library are stable: once a \c value_type
+  has been inserted in the container, its location in memory will not change,
+  regardless of insertion or removal taking place the container. That means you
+  can retain an \c iterator on an element of the container for as long as the
+  container exists and as this element is not being removed from the
+  container. Example: \c std::vector is not a stable container, while \c
+  std::list is a stable container.
+
+- Not only are all containers stable, but so long as data are not modified in
+  the containers, the containers are re-entrant. This means you can create
+  multiple threads with thread-local iterators or algorithms working on the
+  containers.
+
+- Currently all containers closely mimic the \STL Standard Associative Container
+  in functionalities and performance, with insertion and removal complexity
+  close to \Ologn. Their iterators are bidirectional iterators and can be used
+  in general \STL algorithms. They are some notable differences: currently the
+  \Spatial containers do not provide a range erase function (and maybe, never
+  will).
+
+If you are wondering which containers to use for which situation, the \ref
+tutorial "Quick Starting Guide" provides an small guide to answer this question.
+
+\section usermanual_container_interface Container's Interface
+
+All containers in the library have the following generic interface:
+
+<table><tr>
+<th>Member Function</th><th>Description</th><th>Complexity</th>
+</tr><tr>
+<td><tt>iterator insert(const value_type& value)</tt></td>
+<td>Insert a \c value_type \c value into the container. The \c value will be
+copied to its final memory destination in the container.</td>
+<td>\Ologn</td>
+</tr><tr>
+<td><tt>template \<typename Iterator\>
+void insert(Iterator first, Iterator last)</tt></td>
+<td>Insert a sequence of value in the container. \c Iterator should be a forward
+iterator.</td>
+<td>\Ologn for each inserted elements</td>
+</tr><tr>
+<td><tt>
+iterator find(const value_type& value)<br>
+const_iterator find(const value_type& value) const
+</tt></td>
+<td>Returns an iterator pointing to
+the one of the values that compare equivalently to \c value. If no value
+compares equivalently to \c value, \c end() is returned.</td>
+<td>\Ologn</td>
+</tr><tr>
+<td><tt>
+iterator begin()<br>
+const_iterator begin() const<br>
+iterator end()<br>
+const_iterator end() const<br>
+</tt></td>
+<td>Returns an iterator pointing to the beginning of the container for \c
+begin() and past-the-end for \c end(). This iterator can be used to iterate
+through all elements in the container.</td>
+<td>\O1</td>
+</tr><tr>
+<td><tt>std::size_t erase(const value_type& value)</tt></td>
+<td>Erase all values in the container that compare equivalently to \c
+value. Returns the number of values that where erased.</td>
+<td>\Onfd for each erased element</td>
+</tr><tr>
+<td><tt>void std::size_t erase(iterator iter)</tt></td>
+<td>Erase the value pointed to by \c iter in the container.</td>
+<td>\Onfd</td>
+</tr>
+</table>
+
+\section usermanual_container_details Container's detailed interface
+
+See each individual container for a more details explanation of their detailed
+interface:
+
+- \point_multiset
+- \point_multimap
+- \box_multiset
+- \box_multimap
+- \idle_point_multiset
+- \idle_point_multimap
+- \idle_box_multiset
+- \idle_box_multimap
+
+*/
+
+/**
+\page usermanual_struct_iterator Iterators and Queries
+
+Iterators are used in \Spatial to perform all types of query in the container
+that can return a range of elements. They are different categories of iterators
+with some specializations.
+
+
+
+*/
+
+/**
+\page usermanual_struct_functional Functionals
 */
 
 /**
@@ -32,4 +296,70 @@ The most important structure of the library.
 
 Functional performance is noted for all functions when the function does not
 have \ref constant_complexity "constant running time".
+*/
+
+/**
+\page usermanual_comparison Comparison with other libraries
+- \subpage insert_performance
+
+The following libraries are being pitched in comparison with \Spatial.
+
+\section libkdtree libkdtree++
+
+\Spatial aims at being a descendant of \libkdtree, comparing the C++ API only it
+provide a superior amount of features. \libkdtree provides binding to other
+languages and it is older. \Spatial also aims at similar or better performance
+than \libkdtree for its algorithms.
+
+The sources used for the comparison are retrieved from
+
+<code>
+https://github.com/nvmd/libkdtree.git
+</code>
+
+\libkdtree is a header-only library, hence its source code is directly compiled
+in the benchmark programs.
+
+\section boost_geometry Boost.Geometry.Index
+
+The Boost.Geometry.Index is based on R-tree implementation. R-trees generally
+provide better insertion and removal performance than \kdtrees, however both
+R-tree and \kdtree indexing invariants are making them less efficient in higher
+dimensions.
+
+The sources used for the comparison are sources from the anonymous read-only SVN
+repository:
+
+<code>
+http://svn.boost.org/svn/boost/trunk/boost/geometry/index
+</code>
+
+Boost.Geometry.Index is a header-only library, hence its source code is directly
+compiled in the benchmark programs.
+
+\section flann Flann
+
+To be coming soon.
+
+This is a little bit like comparing Apples and Oranges, but Flann, which is
+expected to be the fastest of the 4 libraries to perform nearest neighbor search
+(even with an 100% accuracy requirement) will provide the benchmark for that
+particular algorithm.
+*/
+
+/**
+\page insert_performance Insertion Performance
+
+This test check the performance on insertion of each of the contending
+libraries. Several of the libraries have different containers varying
+performance on different dataset and several different container per libraries
+have been put to the test.
+
+The source code used to provide comparison results between each libraries are
+provided below:
+
+\include insert_performance.cpp
+
+The results of the comparison are the following:
+
 */
