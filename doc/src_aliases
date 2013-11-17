@@ -23,6 +23,11 @@ ALIASES += "equal_iterator=\ref spatial::equal_iterator"
 ALIASES += "equal_iterator_pair=\ref spatial::equal_iterator_pair"
 ALIASES += "overlap_region_iterator=\ref spatial::overlap_region_iterator"
 ALIASES += "enclosed_region_iterator=\ref spatial::enclosed_region_iterator"
+ALIASES += "closed_region_iterator=\ref spatial::closed_region_iterator"
+ALIASES += "open_region_iterator=\ref spatial::open_region_iterator"
+ALIASES += "euclidian_neighbor_iterator=\ref spatial::euclidian_neighbor_iterator"
+ALIASES += "quadrance_neighbor_iterator=\ref spatial::quadrance_neighbor_iterator"
+ALIASES += "manhattan_neighbor_iterator=\ref spatial::manhattan_neighbor_iterator"
 
 # Metrics
 #

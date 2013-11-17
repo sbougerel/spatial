@@ -4,7 +4,7 @@
 - \subpage usermanual_compiling
 - \subpage usermanual_struct
 - \subpage usermanual_concept
-- \subpage usermanual_performance
+- \subpage usermanual_complexity
 - \subpage usermanual_comparison
 
 Chapters in this manual should provide you with in-depth knowledge of the
@@ -273,12 +273,147 @@ interface:
 
 /**
 \page usermanual_struct_iterator Iterators and Queries
+\tableofcontents
 
 Iterators are used in \Spatial to perform all types of query in the container
 that can return a range of elements. They are different categories of iterators
-with some specializations.
+with some specializations. When you do a query with an iterator, you simply
+iterate from \c begin() to \c end(). You have the possibility to stop in the
+middle of the iteration: iterators give great control over the queries that can
+be performed in each containers.
 
+\section usermanual_iterator_overview Overview
 
+The table below provides an overview of all iterator types provided in the
+library. Containers are represented at the type \c T:
+
+<table>
+<tr><th>Iterator Type</th><th>Description</th></tr>
+<tr><td><tt>
+T::iterator<br>
+T::const_iterator
+</tt></td><td>
+The container's iterators, with \c T a container. They are used to list the
+contents of the container or identify an element in the container. The content
+of the container will be listed in no particular order: if 2 containers contain
+the same elements, iterating through both containers with this iterator is
+unlikely to return elements in the same sequence for both containers.</td></tr>
+</td></tr><tr><td><tt>
+\ordered_iterator\<T\><br>
+\ordered_iterator\<const T\>
+</tt></td><td>
+This iterator will list all element of the container in a definite, predictable
+order: if 2 containers contains the same elements, iterating both containers with
+this iterator will return elements in the same sequence for both containers.
+</td></tr><tr><td><tt>
+\equal_iterator\<T\><br>
+\equal_iterator\<const T\>
+</tt></td><td>
+When constructing this iterator, you need to specify a target value. This
+iterator will return all elements in the container that compare equally to the
+specified target value.
+</td></tr><tr><td><tt>
+\mapping_iterator\<T\><br>
+\mapping_iterator\<const T\>
+</tt></td><td>
+When constructing this iterator, you specify a dimension of iteration. This
+iterator will return all elements in the container ordered along the dimension
+being specified. This iterator effectively "maps" all elements in the container
+on a single dimension.
+</td></tr><tr><td><tt>
+\region_iterator\<T, P\><br>
+\region_iterator\<const T, P\>
+</tt></td><td>
+Here \c P represents a type that is a model of \region_predicate. This iterator
+is the tool that allows you to perform orthogonal range search: it returns all
+elements that are within the axis-aligned boundaries defined by \c P. Note that
+it does not return the elements in a particular order.
+</td></tr><tr><td><tt>
+\region_iterator\<T\><br>
+\region_iterator\<const T\>
+</tt></td><td>
+In this form, the iterator above requires 2 values when constructed called \c
+low and \c high. It will return all elements in the container that are greater
+or equal to \c low and stricly lower than \c high.
+</td></tr><tr><td><tt>
+\open_region_iterator\<T\><br>
+\open_region_iterator\<const T\>
+</tt></td><td>
+With this specialization, it will return all elements in the container that are
+strictly greater than \c low and stricly lower than \c high.
+</td></tr><tr><td><tt>
+\closed_region_iterator\<T\><br>
+\closed_region_iterator\<const T\>
+</tt></td><td>
+With this specialization, it will return all elements in the container that are
+greater or equal to \c low and lower or equal to \c high.
+</td></tr><tr><td><tt>
+\enclosed_region_iterator\<T\><br>
+\enclosed_region_iterator\<const T\>
+</tt></td><td>
+For this specialization, \c T's value_compare type must be a model of the
+\generalized_compare concept. If it does not meet these requirements, code
+needing this iterator will not compile. This iterator is best used on
+\box_multiset family of containers: it will return all boxes that are strictly
+enclosed into a user-defined box, specified when the iterator is constructed.
+</td></tr><tr><td><tt>
+\enclosed_region_iterator\<T\><br>
+\enclosed_region_iterator\<const T\>
+</tt></td><td>
+For this specialization, \c T's value_compare type must be also be a model of
+the \generalized_compare concept. If it does not meet these requirements, code
+needing this iterator will not compile. This iterator is best used on
+\box_multiset family of containers: it will return all boxes that are
+overlapping with a user-defined box, specified when the iterator is constructed.
+</td></tr><tr><td><tt>
+\neighbor_iterator\<T, M\><br>
+\neighbor_iterator\<const T, M\>
+</tt></td><td>
+\c M is a model of \metric. This iterator returns all elements in the container,
+in sequence from closest to furthest of a target value. This iterator performs a
+nearest neighbor search, and it is as precise as \c M allows it to be.
+</td></tr><tr><td><tt>
+\neighbor_iterator\<T\><br>
+\neighbor_iterator\<const T\>
+</tt></td><td>
+In this form, this iterator will assume that an nearest neighbor search is
+performed in an euclidian space and that distances are expressed with the type
+\c double.
+</td></tr><tr><td><tt>
+\euclidian_neighbor_iterator\<T, L, D\><br>
+\euclidian_neighbor_iterator\<const T, L, D\>
+</tt></td><td>
+In this specialization a nearest neighbor search is performed in euclidian
+space, with \c L being the type used to represent distances, and \c D begin a
+model of the \difference concept. \c D is optional if it can be deduced from the
+\c value_compare type from the container. Example: if the container is using
+\ref spatial::bracket_less as \c value_compare, then \c D will be guessed as
+\ref spatial::bracket_minus.
+</td></tr><tr><td><tt>
+\quadrance_neighbor_iterator\<T, L, D\><br>
+\quadrance_neighbor_iterator\<const T, L, D\>
+</tt></td><td>
+In this specialization a nearest neighbor search is performed in euclidian
+space, but with distances that are expressed as the square of their values: this
+is the quadrance. This iterator generally works faster than the previous one,
+because the square roots do not need to be computed. However it is more prone to
+overflow if the distances being computed are covering most of the type \c L
+range.
+</td></tr><tr><td><tt>
+\manhattan_neighbor_iterator\<T, L, D\><br>
+\manhattan_neighbor_iterator\<const T, L, D\>
+</tt></td><td>
+This specialization calculates metrics also in euclidian space, but using the
+manhattan (or taxicab) metric. This metric is a very fast metric, and can give a
+good (but coarse) approximation of the euclidian metric.
+</td></tr></table>
+
+\section usermanual_iterator_interface Common Iterators Interface
+
+\section usermanual_iterator_performance Performance of the Iterators
+
+When choosing between queries, it is necessary to understand the performance
+assumptions of each queries.
 
 */
 
@@ -287,22 +422,29 @@ with some specializations.
 */
 
 /**
-\page usermanual_performance Performance of the Library
+\page usermanual_complexity Complexity in the Library
 - \subpage constant_complexity
 - \subpage fractional_complexity
 - \subpage quasilinear_complexity
 - \subpage linear_complexity
 - \subpage logarithmic_complexity
 
-Functional performance is noted for all functions when the function does not
-have \ref constant_complexity "constant running time".
+Functional complexity is noted for all functions when the function does not
+have an obvious \ref constant_complexity "constant running time" or \ref
+linear_complexity "linear running time".
+
+The sections in this manual present the different forms of complexity that can
+be encountered in the library.
+
 */
 
 /**
-\page usermanual_comparison Comparison with other libraries
+\page usermanual_comparison Performance of the library
 - \subpage insert_performance
 
-The following libraries are being pitched in comparison with \Spatial.
+To better understand the performance of the library, it is best to look at some
+alternatives, since you are likely to choose among them, which one to use. The
+following libraries are being pitched in comparison with \Spatial.
 
 \section libkdtree libkdtree++
 
