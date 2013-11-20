@@ -22,17 +22,17 @@ BOOST_AUTO_TEST_CASE( test_loose_balancing )
   // A leaf node is always balanced!
   BOOST_CHECK_EQUAL(test(rank, 0, 0), false);
   // rebalance even if no right.
-  BOOST_CHECK_EQUAL(test(rank, 3, 0), true);
+  BOOST_CHECK_EQUAL(test(rank, 4, 0), true);
   // reblance even if no left.
-  BOOST_CHECK_EQUAL(test(rank, 0, 3), true);
+  BOOST_CHECK_EQUAL(test(rank, 0, 4), true);
   // should fail cause we are right under loose balancing conditions
-  BOOST_CHECK_EQUAL(test(rank, 4, 2), false);
+  BOOST_CHECK_EQUAL(test(rank, 7, 2), false);
   // should fail cause we are right under loose balancing conditions
-  BOOST_CHECK_EQUAL(test(rank, 6, 3), false);
+  BOOST_CHECK_EQUAL(test(rank, 9, 3), false);
   // should pass cause we are above loose balancing conditions
-  BOOST_CHECK_EQUAL(test(rank, 2, 6), true);
+  BOOST_CHECK_EQUAL(test(rank, 2, 8), true);
   // should pass cause we are above loose balancing conditions
-  BOOST_CHECK_EQUAL(test(rank, 6, 2), true);
+  BOOST_CHECK_EQUAL(test(rank, 8, 2), true);
 }
 
 BOOST_AUTO_TEST_CASE( test_tight_balancing )
@@ -61,6 +61,33 @@ BOOST_AUTO_TEST_CASE( test_tight_balancing )
     // high dimension prevent rebalance.
     BOOST_CHECK_EQUAL(test(rank, 1, 8), false);
     BOOST_CHECK_EQUAL(test(rank, 8, 1), false);
+  }
+}
+
+BOOST_AUTO_TEST_CASE( test_perfect_balancing )
+{
+  {
+    details::Dynamic_rank rank(2);
+    perfect_balancing test;
+    // A leaf node is always balanced!
+    BOOST_CHECK_EQUAL(test(rank, 0, 0), false);
+    // rebalance even if no right.
+    BOOST_CHECK_EQUAL(test(rank, 4, 1), true);
+    // rebalance even if no left.
+    BOOST_CHECK_EQUAL(test(rank, 2, 5), true);
+    // should fail cause we are right under perfect balancing conditions
+    BOOST_CHECK_EQUAL(test(rank, 2, 0), false);
+    // should fail cause we are right under perfect balancing conditions
+    BOOST_CHECK_EQUAL(test(rank, 0, 2), false);
+  }
+  {
+    details::Dynamic_rank rank(9);
+    perfect_balancing test;
+    // high dimension does not change balancing
+    BOOST_CHECK_EQUAL(test(rank, 0, 2), false);
+    BOOST_CHECK_EQUAL(test(rank, 2, 0), false);
+    BOOST_CHECK_EQUAL(test(rank, 0, 3), true);
+    BOOST_CHECK_EQUAL(test(rank, 3, 0), true);
   }
 }
 
@@ -113,6 +140,23 @@ BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_insert_tight )
   BOOST_CHECK(tree.begin() == --tree.end());
 }
 
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_insert_perfect )
+{
+  typedef details::Relaxed_kdtree
+    <details::Static_rank<2>, int2, int2, bracket_less<int2>,
+     perfect_balancing, std::allocator<int2> > kdtree_type;
+  kdtree_type tree;
+  kdtree_type::const_iterator it;
+  BOOST_CHECK_NO_THROW(it = tree.insert(zeros));
+  BOOST_CHECK(*it == zeros);
+  BOOST_CHECK(!tree.empty());
+  BOOST_CHECK(tree.begin() != tree.end());
+  BOOST_CHECK_EQUAL(tree.size(), 1);
+  BOOST_CHECK(zeros == *tree.begin());
+  BOOST_CHECK(++tree.begin() == tree.end());
+  BOOST_CHECK(tree.begin() == --tree.end());
+}
+
 BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_insert_loose )
 {
   typedef details::Relaxed_kdtree
@@ -137,6 +181,20 @@ BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_insert_growing )
   // values, iteration should be ordered as well.
   int i = 0;
   for (tight_pointset_fix<int2>::container_type::iterator it
+         = fix.container.begin(); it != fix.container.end(); ++it, ++i)
+    {
+      BOOST_CHECK_EQUAL((*it)[0], i);
+      BOOST_CHECK_EQUAL((*it)[1], i);
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_insert_same )
+{
+  perfect_pointset_fix<int2> fix(100, increase());
+  // because the tree is ordered on all dimensions and nodes are all sequential
+  // values, iteration should be ordered as well.
+  int i = 0;
+  for (perfect_pointset_fix<int2>::container_type::iterator it
          = fix.container.begin(); it != fix.container.end(); ++it, ++i)
     {
       BOOST_CHECK_EQUAL((*it)[0], i);

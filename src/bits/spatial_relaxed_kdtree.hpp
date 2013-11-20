@@ -70,9 +70,9 @@ namespace spatial
     operator()(const Rank&, weight_type left, weight_type right) const
     {
       if (left < right)
-        { return (left < (right >> 1)); }
+        { return ((left + 1) < (right >> 1)); }
       else
-        { return (right < (left >> 1)); }
+        { return ((right + 1) < (left >> 1)); }
     }
   };
 
@@ -98,10 +98,41 @@ namespace spatial
     operator()(const Rank& rank, weight_type left, weight_type right) const
     {
       weight_type weight = static_cast<weight_type>(rank());
+      if (weight < 2) weight = 2;
       if (left < right)
-        { return (right - left > weight); }
+        { return ((right - left) > weight); }
       else
-        { return (left - right > weight); }
+        { return ((left - right) > weight); }
+    }
+  };
+
+  /**
+   *  A policy that balances a node if the difference in weight
+   *  between left and right is higher than 2 (two).
+   *
+   *  The value of 2 (two) is chosen because it offers optimal balancing in a
+   *  \kdtree, this is useful when \point_multiset, \point_multimap,
+   *  \box_multiset or \box_multimap is used as a source of a
+   *  \idle_point_multiset, \idle_point_multimap \idle_box_multiset or
+   *  \idle_box_multimap, respectively.
+   */
+  struct perfect_balancing
+  {
+    /**
+     *  Rebalancing predicate.
+     *  \param rank  The current dimension function to use for examination.
+     *  \param left  The weight at the left
+     *  \param right The weight at the right
+     *  \return true Indicate that reblancing must occurs, otherwise false.
+     */
+    template <typename Rank>
+    bool
+    operator()(const Rank&, weight_type left, weight_type right) const
+    {
+      if (left < right)
+        { return ((right - left) > 2); }
+      else
+        { return ((left - right) > 2); }
     }
   };
 
@@ -866,19 +897,10 @@ namespace spatial
     {
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!header(node));
-      // I believe it is not necessary to balance node when it weighs less than
-      // the current dimension. This due to the k-d tree rotating invarient
-      // (each dimension is considered in turn). Therefore, it makes little
-      // difference for all algorithms to have balanced nodes if there are not
-      // enough nodes to start pruning along all dimensions.
-      //
-      // Note that while I can theorize this for several algorithms (simple
-      // iteration, mapping iteration, range iteration), I still have to perform
-      // experiments that reflect this hypothesis.
-      return (const_link(node)->weight > dimension() && balancing()
+      return balancing()
         (rank(),
          more_left + (node->left ? const_link(node->left)->weight : 0),
-         more_right + (node->right ? const_link(node->right)->weight : 0)));
+         more_right + (node->right ? const_link(node->right)->weight : 0));
     }
 
     template <typename Rank, typename Key, typename Value, typename Compare,

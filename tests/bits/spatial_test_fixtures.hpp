@@ -420,6 +420,24 @@ struct tight_pointset_fix
 };
 
 /**
+ *  Defines a pointset fixture that is perfectly balanced.
+ */
+template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
+struct perfect_pointset_fix
+  : basic_fixture<Tp, point_multiset<dimension_traits<Tp>::value, Tp, Compare,
+                                     perfect_balancing> >
+{
+  perfect_pointset_fix() { }
+  explicit perfect_pointset_fix(int n)
+    : basic_fixture<Tp, point_multiset<dimension_traits<Tp>::value, Tp, Compare,
+                                       perfect_balancing> >(n, pass()) { }
+  template<typename Manip>
+  perfect_pointset_fix(int n, const Manip& manip)
+    : basic_fixture<Tp, point_multiset<dimension_traits<Tp>::value, Tp, Compare,
+                                       perfect_balancing> >(n, manip) { }
+};
+
+/**
  *  Defines a boxset fixture that is tightly balanced.
  */
 template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
@@ -435,6 +453,24 @@ struct tight_boxset_fix
   tight_boxset_fix(int n, const Manip& manip)
     : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare,
                                      tight_balancing> >(n, manip) { }
+};
+
+/**
+ *  Defines a boxset fixture that is perfectly balanced.
+ */
+template<typename Tp, typename Compare = typename compare_traits<Tp>::type >
+struct perfect_boxset_fix
+  : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare,
+                             perfect_balancing> >
+{
+  perfect_boxset_fix() { }
+  explicit perfect_boxset_fix(int n)
+    : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare,
+                                     perfect_balancing> >(n, pass()) { }
+  template<typename Manip>
+  perfect_boxset_fix(int n, const Manip& manip)
+    : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare,
+                                     perfect_balancing> >(n, manip) { }
 };
 
 /**
@@ -460,6 +496,28 @@ struct tight_point_multimap_fix
 };
 
 /**
+ *  Defines a point_multimap fixture that is perfectly balanced.
+ */
+template<typename Tp, typename Mapped,
+         typename Compare = typename compare_traits<Tp>::type >
+struct perfect_point_multimap_fix
+  : basic_fixture<std::pair<Tp, Mapped>,
+                  point_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
+                           perfect_balancing> >
+{
+  perfect_point_multimap_fix() { }
+  explicit perfect_point_multimap_fix(int n)
+    : basic_fixture<std::pair<Tp, Mapped>,
+                    point_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
+                                   perfect_balancing> >(n, to_first<pass>()) { }
+  template<typename Manip>
+  perfect_point_multimap_fix(int n, const Manip& manip)
+    : basic_fixture<std::pair<Tp, Mapped>,
+                    point_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
+                                   perfect_balancing> >(n, to_first<Manip>(manip)) { }
+};
+
+/**
  *  Defines a boxmap fixture that is tightly balanced.
  */
 template<typename Tp, typename Mapped,
@@ -479,6 +537,28 @@ struct tight_boxmap_fix
     : basic_fixture<std::pair<Tp, Mapped>,
                     box_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
                                  tight_balancing> >(n, to_first<Manip>(manip)) { }
+};
+
+/**
+ *  Defines a boxmap fixture that is perfectly balanced.
+ */
+template<typename Tp, typename Mapped,
+         typename Compare = typename compare_traits<Tp>::type >
+struct perfect_boxmap_fix
+  : basic_fixture<std::pair<Tp, Mapped>,
+                  box_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
+                               perfect_balancing> >
+{
+  perfect_boxmap_fix() { }
+  explicit perfect_boxmap_fix(int n)
+    : basic_fixture<std::pair<Tp, Mapped>,
+                    box_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
+                                 perfect_balancing> >(n, to_first<pass>()) { }
+  template<typename Manip>
+  perfect_boxmap_fix(int n, const Manip& manip)
+    : basic_fixture<std::pair<Tp, Mapped>,
+                    box_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
+                                 perfect_balancing> >(n, to_first<Manip>(manip)) { }
 };
 
 /**
@@ -728,6 +808,7 @@ struct runtime_idle_boxmap_fix
 // Set lists
 typedef boost::mpl::list<pointset_fix<int2>,
                          tight_pointset_fix<int2>,
+                         perfect_pointset_fix<int2>,
                          idle_pointset_fix<int2>,
                          runtime_pointset_fix<int2>,
                          runtime_idle_pointset_fix<int2>,
@@ -740,6 +821,7 @@ int2_sets;
 
 typedef boost::mpl::list<pointset_fix<quad>,
                          tight_pointset_fix<quad>,
+                         perfect_pointset_fix<quad>,
                          idle_pointset_fix<quad>,
                          runtime_pointset_fix<quad>,
                          runtime_idle_pointset_fix<quad>,
@@ -752,6 +834,7 @@ quad_sets;
 
 typedef boost::mpl::list<pointset_fix<double6>,
                          tight_pointset_fix<double6>,
+                         perfect_pointset_fix<double6>,
                          idle_pointset_fix<double6>,
                          runtime_pointset_fix<double6>,
                          runtime_idle_pointset_fix<double6>,
@@ -765,6 +848,7 @@ double6_sets;
 // Map lists
 typedef boost::mpl::list<point_multimap_fix<int2, std::string>,
                          tight_point_multimap_fix<int2, std::string>,
+                         perfect_point_multimap_fix<int2, std::string>,
                          idle_point_multimap_fix<int2, std::string>,
                          runtime_point_multimap_fix<int2, std::string>,
                          runtime_idle_point_multimap_fix<int2, std::string>,
@@ -777,6 +861,7 @@ int2_maps;
 
 typedef boost::mpl::list<point_multimap_fix<quad, std::string>,
                          tight_point_multimap_fix<quad, std::string>,
+                         perfect_point_multimap_fix<quad, std::string>,
                          idle_point_multimap_fix<quad, std::string>,
                          runtime_point_multimap_fix<quad, std::string>,
                          runtime_idle_point_multimap_fix<quad, std::string>,
@@ -789,6 +874,7 @@ quad_maps;
 
 typedef boost::mpl::list<point_multimap_fix<double6, std::string>,
                          tight_point_multimap_fix<double6, std::string>,
+                         perfect_point_multimap_fix<double6, std::string>,
                          idle_point_multimap_fix<double6, std::string>,
                          runtime_point_multimap_fix<double6, std::string>,
                          runtime_idle_point_multimap_fix<double6, std::string>,
@@ -802,20 +888,20 @@ double6_maps;
 // Every quad
 typedef boost::mpl::list<pointset_fix<quad>,
                          tight_pointset_fix<quad>,
+                         perfect_pointset_fix<quad>,
                          idle_pointset_fix<quad>,
                          runtime_pointset_fix<quad>,
                          runtime_idle_pointset_fix<quad>,
-                         boxset_fix<quad>,
                          tight_boxset_fix<quad>,
                          idle_boxset_fix<quad>,
                          runtime_boxset_fix<quad>,
                          runtime_idle_boxset_fix<quad>,
                          point_multimap_fix<quad, std::string>,
                          tight_point_multimap_fix<quad, std::string>,
+                         perfect_point_multimap_fix<quad, std::string>,
                          idle_point_multimap_fix<quad, std::string>,
                          runtime_point_multimap_fix<quad, std::string>,
                          runtime_idle_point_multimap_fix<quad, std::string>,
-                         boxmap_fix<quad, std::string>,
                          tight_boxmap_fix<quad, std::string>,
                          idle_boxmap_fix<quad, std::string>,
                          runtime_boxmap_fix<quad, std::string>,
