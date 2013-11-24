@@ -645,120 +645,121 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(iter.mapping_dimension() < rank());
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       node_ptr best = 0; // not null when best has been found
-      node_ptr node = iter.node;
-      dimension_type node_dim = iter.node_dim;
       dimension_type best_dim = iter.node_dim;
-      if (node->left != 0)
-        {
-          do
-            {
-              node = node->left;
-              node_dim = incr_dim(rank, node_dim);
-            }
-          while (node->left != 0
-                 && (node_dim != iter.mapping_dimension()
-                     || !cmp(node_dim,
-                             const_key(node), const_key(iter.node))));
-        }
-      node_ptr ceiling = node->parent; // the upper limit of unvisited nodes
-      bool sibling_visited = false;    // at ceiling, sibling node is visited
-      if (less_by_ref(cmp, iter.mapping_dimension(),
-                      const_key(iter.node), const_key(node)))
-        { best = node; best_dim = node_dim; }
+      node_ptr r_node = iter.node;
+      dimension_type r_node_dim = iter.node_dim;
+      node_ptr l_node = iter.node;
+      dimension_type l_node_dim = iter.node_dim;
+      bool l_break = false;
+      bool r_break = false;
       do
         {
-          if (node->right != 0
-              && (node_dim != iter.mapping_dimension() || best == 0
-                  || !cmp(node_dim, const_key(best), const_key(node))))
+          if (!l_break) // One step left
             {
-              node = node->right;
-              node_dim = incr_dim(rank, node_dim);
-              while (node->left != 0
-                     && (node_dim != iter.mapping_dimension()
-                         || !cmp(node_dim,
-                                 const_key(node), const_key(iter.node))))
+              if (l_node->left != 0
+                  && (l_node_dim != iter.mapping_dimension()
+                      || !cmp(l_node_dim, const_key(l_node),
+                              const_key(iter.node))))
                 {
-                  node = node->left;
-                  node_dim = incr_dim(rank, node_dim);
-                }
-              if (less_by_ref(cmp, iter.mapping_dimension(),
-                              const_key(iter.node), const_key(node))
-                  && (best == 0
-                      || less_by_ref(cmp, iter.mapping_dimension(),
-                                     const_key(node), const_key(best))))
-                { best = node; best_dim = node_dim; }
-            }
-          else
-            {
-              node_ptr p = node->parent;
-              // go upward as long as we don't hit header or ceiling
-              while (!header(p)
-                     && ((p != ceiling)
-                         ? (p->right == node)
-                         // either sibling is visited or there is one child
-                         : (sibling_visited
-                            || (p->right == node && p->left == 0)
-                            || (p->left == node && p->right == 0))))
-                {
-                  node = p;
-                  node_dim = decr_dim(rank, node_dim);
-                  p = node->parent;
-                  if (node == ceiling)
+                  l_node = l_node->left;
+                  l_node_dim = incr_dim(rank, l_node_dim);
+                  while (l_node->right != 0
+                         && (l_node_dim != iter.mapping_dimension()
+                             || best == 0 || !cmp(l_node_dim, const_key(best),
+                                                  const_key(l_node))))
                     {
-                      if (less_by_ref(cmp, iter.mapping_dimension(),
-                                      const_key(iter.node), const_key(node))
-                          && (best == 0
-                              || less_by_ref(cmp, iter.mapping_dimension(),
-                                             const_key(node),
-                                             const_key(best))))
-                        { best = node; best_dim = node_dim; }
-                      sibling_visited = false;
-                      ceiling = p;
-                    }
-                }
-              if (!header(p) && p == ceiling)
-                {
-                  if (p->right == node) { node = p->left; }
-                  else { node = p->right; }
-                  sibling_visited = true;
-                  // go to full left in unvisited sibling
-                  while (node->left != 0
-                         && (node_dim != iter.mapping_dimension()
-                             || !cmp(node_dim, const_key(node),
-                                     const_key(iter.node))))
-                    {
-                      node = node->left;
-                      node_dim = incr_dim(rank, node_dim);
+                      l_node = l_node->right;
+                      l_node_dim = incr_dim(rank, l_node_dim);
                     }
                   if (less_by_ref(cmp, iter.mapping_dimension(),
-                                  const_key(iter.node), const_key(node))
+                                  const_key(iter.node), const_key(l_node))
                       && (best == 0
                           || less_by_ref(cmp, iter.mapping_dimension(),
-                                         const_key(node), const_key(best))))
-                    { best = node; best_dim = node_dim; }
+                                         const_key(l_node), const_key(best))))
+                    { best = l_node; best_dim = l_node_dim; }
                 }
               else
                 {
-                  node = p;
-                  node_dim = decr_dim(rank, node_dim);
-                  if (!header(node))
+                  node_ptr p = l_node->parent;
+                  while (!header(p) && p->left == l_node)
+                    {
+                      l_node = p;
+                      l_node_dim = decr_dim(rank, l_node_dim);
+                      p = p->parent;
+                    }
+                  l_node = p;
+                  l_node_dim = decr_dim(rank, l_node_dim);
+                  if (!header(l_node))
                     {
                       if (less_by_ref(cmp, iter.mapping_dimension(),
-                                      const_key(iter.node), const_key(node))
+                                      const_key(iter.node), const_key(l_node))
                           && (best == 0
                               || less_by_ref(cmp, iter.mapping_dimension(),
-                                             const_key(node),
+                                             const_key(l_node),
                                              const_key(best))))
-                        { best = node; best_dim = node_dim; }
+                        { best = l_node; best_dim = l_node_dim; }
                     }
+                  else
+                    { if (r_break) break; l_break = true; }
+                }
+            }
+          if (!r_break) // One step right
+            {
+              if (r_node->right != 0
+                  && (r_node_dim != iter.mapping_dimension()
+                      || best == 0 || !cmp(r_node_dim, const_key(best),
+                                           const_key(r_node))))
+                {
+                  r_node = r_node->right;
+                  r_node_dim = incr_dim(rank, r_node_dim);
+                  while (r_node->left != 0
+                         && (r_node_dim != iter.mapping_dimension()
+                             || !cmp(r_node_dim, const_key(r_node),
+                                     const_key(iter.node))))
+                    {
+                      r_node = r_node->left;
+                      r_node_dim = incr_dim(rank, r_node_dim);
+                    }
+                  if (less_by_ref(cmp, iter.mapping_dimension(),
+                                  const_key(iter.node), const_key(r_node))
+                      && (best == 0
+                          || less_by_ref(cmp, iter.mapping_dimension(),
+                                         const_key(r_node), const_key(best))))
+                    { best = r_node; best_dim = r_node_dim; }
+                }
+              else
+                {
+                  node_ptr p = r_node->parent;
+                  while (!header(p) && p->right == r_node)
+                    {
+                      r_node = p;
+                      r_node_dim = decr_dim(rank, r_node_dim);
+                      p = p->parent;
+                    }
+                  r_node = p;
+                  r_node_dim = decr_dim(rank, r_node_dim);
+                  if (!header(r_node))
+                    {
+                      if (less_by_ref(cmp, iter.mapping_dimension(),
+                                      const_key(iter.node), const_key(r_node))
+                          && (best == 0
+                              || less_by_ref(cmp, iter.mapping_dimension(),
+                                             const_key(r_node),
+                                             const_key(best))))
+                        { best = r_node; best_dim = r_node_dim; }
+                    }
+                  else
+                    { if (l_break) break; r_break = true; }
                 }
             }
         }
-      while (!header(node));
+      while (true);
       if (best != 0) { iter.node = best; iter.node_dim = best_dim; }
-      else { iter.node = node; iter.node_dim = node_dim; }
-      SPATIAL_ASSERT_CHECK(header(node));
-      SPATIAL_ASSERT_CHECK(node_dim == (rank() - 1));
+      else { iter.node = l_node; iter.node_dim = l_node_dim; }
+      SPATIAL_ASSERT_CHECK(header(r_node));
+      SPATIAL_ASSERT_CHECK(header(l_node));
+      SPATIAL_ASSERT_CHECK(r_node_dim == (rank() - 1));
+      SPATIAL_ASSERT_CHECK(l_node_dim == (rank() - 1));
       SPATIAL_ASSERT_CHECK(iter.mapping_dimension() < rank());
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
@@ -1052,8 +1053,9 @@ namespace spatial
          ::invariant_category());
     }
 
-    // The next largest key on the mapping dimension is likely to be found in the
-    // children of the current best, so, descend into the children of node first.
+    // The next largest key on the mapping dimension is likely to be found in
+    // the children of the current best, so, descend into the children of node
+    // first.
     template <typename Container>
     inline mapping_iterator<Container>&
     decrement_mapping(mapping_iterator<Container>& iter)

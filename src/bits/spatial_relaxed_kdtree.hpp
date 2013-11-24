@@ -388,15 +388,6 @@ namespace spatial
        */
       node_ptr balance_node(dimension_type dim, node_ptr node);
 
-      /**
-       *  Return true if the node is not balanced, false otherwise.
-       *  \param node       The node to check
-       *  \param more_left  Add \c more_left to the weight of the left nodes
-       *  \param more_right Add \c more_right to the weight of the right nodes
-       */
-      bool is_node_unbalanced(node_ptr node, weight_type more_left = 0,
-                              weight_type more_right = 0) const;
-
     public:
       // Iterators standard interface
       iterator begin()
@@ -890,21 +881,6 @@ namespace spatial
 
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Balancing, typename Alloc>
-    inline bool
-    Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>
-    ::is_node_unbalanced
-    (node_ptr node, weight_type more_left, weight_type more_right) const
-    {
-      SPATIAL_ASSERT_CHECK(node != 0);
-      SPATIAL_ASSERT_CHECK(!header(node));
-      return balancing()
-        (rank(),
-         more_left + (node->left ? const_link(node->left)->weight : 0),
-         more_right + (node->right ? const_link(node->right)->weight : 0));
-    }
-
-    template <typename Rank, typename Key, typename Value, typename Compare,
-              typename Balancing, typename Alloc>
     inline
     typename Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>::node_ptr
     Relaxed_kdtree<Rank, Key, Value, Compare, Balancing, Alloc>
@@ -958,7 +934,10 @@ namespace spatial
                 }
               else
                 {
-                  if(is_node_unbalanced(node, 1, 0))
+                  if(balancing()
+                     (rank(),
+                      1 + (node->left ? const_link(node->left)->weight : 0),
+                      (node->right ? const_link(node->right)->weight : 0)))
                     {
                       node = balance_node(node_dim, node); // recursive!
                     }
@@ -983,7 +962,10 @@ namespace spatial
                 }
               else
                 {
-                  if(is_node_unbalanced(node, 0, 1))
+                  if(balancing()
+                     (rank(),
+                      (node->left ? const_link(node->left)->weight : 0),
+                      1 + (node->right ? const_link(node->right)->weight : 0)))
                     {
                       node = balance_node(node_dim, node);  // recursive!
                     }
@@ -1017,6 +999,8 @@ namespace spatial
       typedef mapping_iterator<Self> mapping_iterator;
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!header(node));
+      // never ask to erase a single root node in this function
+      SPATIAL_ASSERT_CHECK(get_rightmost() != get_leftmost());
       node_ptr parent = node->parent;
       while (node->right != 0 || node->left != 0)
         {
@@ -1056,35 +1040,29 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(node->left == 0);
       SPATIAL_ASSERT_CHECK(node->parent != 0);
       node_ptr p = node->parent;
-      if (header(p))
+      if (p->left == node)
         {
-          set_root(get_header());
-          set_leftmost(get_header());
-          set_rightmost(get_header());
+          p->left = 0;
+          if (get_leftmost() == node) { set_leftmost(p); }
         }
       else
         {
-          if (p->left == node)
+          p->right = 0;
+          if (get_rightmost() == node) { set_rightmost(p); }
+        }
+      // decrease count and rebalance parents up to parent
+      while(node->parent != parent)
+        {
+          node = node->parent;
+          node_dim = decr_dim(rank(), node_dim);
+          SPATIAL_ASSERT_CHECK(const_link(node)->weight > 1);
+          --link(node)->weight;
+          if(balancing()
+             (rank(),
+              (node->left ? const_link(node->left)->weight : 0),
+              (node->right ? const_link(node->right)->weight : 0)))
             {
-              p->left = 0;
-              if (get_leftmost() == node) { set_leftmost(p); }
-            }
-          else
-            {
-              p->right = 0;
-              if (get_rightmost() == node) { set_rightmost(p); }
-            }
-          // decrease count and rebalance parents up to parent
-          while(node->parent != parent)
-            {
-              node = node->parent;
-              node_dim = decr_dim(rank(), node_dim);
-              SPATIAL_ASSERT_CHECK(const_link(node)->weight > 1);
-              --link(node)->weight;
-              if(is_node_unbalanced(node))
-                {
-                  node = balance_node(node_dim, node);  // recursive!
-                }
+              node = balance_node(node_dim, node);  // recursive!
             }
         }
       SPATIAL_ASSERT_CHECK(!header(node));
@@ -1101,17 +1079,31 @@ namespace spatial
     {
       SPATIAL_ASSERT_CHECK(!header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
-      node_ptr p = node->parent;
-      erase_node(node_dim, node);
-      node_dim = decr_dim(rank(), node_dim);
-      while(!header(p))
+      if (node == get_root()
+          && node->left == 0 && node->right == 0)
         {
-          SPATIAL_ASSERT_CHECK(const_link(p)->weight > 1);
-          --link(p)->weight;
-          if(is_node_unbalanced(p))
-            { p = balance_node(node_dim, p); } // balance node
-          p = p->parent;
+          // if it's a single root tree, erase root quickly
+          set_root(get_header());
+          set_leftmost(get_header());
+          set_rightmost(get_header());
+        }
+      else
+        {
+          node_ptr p = node->parent;
+          erase_node(node_dim, node);
           node_dim = decr_dim(rank(), node_dim);
+          while(!header(p))
+            {
+              SPATIAL_ASSERT_CHECK(const_link(p)->weight > 1);
+              --link(p)->weight;
+              if(balancing()
+                 (rank(),
+                  (node->left ? const_link(node->left)->weight : 0),
+                  (node->right ? const_link(node->right)->weight : 0)))
+                { p = balance_node(node_dim, p); } // balance node
+              p = p->parent;
+              node_dim = decr_dim(rank(), node_dim);
+            }
         }
     }
 
