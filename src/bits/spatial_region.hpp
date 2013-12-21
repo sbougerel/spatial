@@ -826,7 +826,7 @@ namespace spatial
       // Start algorithm.
       do
         {
-          if (match_all(rank, key(iter.node), pred) == true) { break; }
+          if (match_all(rank, const_key(iter.node), pred) == true) { break; }
           if (iter.node->left != 0
               && pred(iter.node_dim, rank(), const_key(iter.node)) != below)
             {

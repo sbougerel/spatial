@@ -427,12 +427,13 @@ BOOST_AUTO_TEST_CASE( test_kdtree_swap_empty )
 BOOST_AUTO_TEST_CASE( test_kdtree_rebalance )
 {
   typedef mapping_iterator
-    <idle_pointset_fix<double6>::container_type> mapping_iterator;
+    <idle_pointset_fix<int2>::container_type> mapping_iterator;
   // The performance gain of rebalance cannot be mesured now (see performance
   // executable) but we can make sure that total ordering as remained.
-  idle_pointset_fix<double6> fix(100, randomize(-10, 10));
+  // We purposely use a narrow range to force a lot of similar points.
+  idle_pointset_fix<int2> fix(100, randomize(-3, 3));
   size_type size = fix.container.size();
-  idle_pointset_fix<double6>::container_type copy(fix.container);
+  idle_pointset_fix<int2>::container_type copy(fix.container);
   BOOST_REQUIRE_NO_THROW(copy.rebalance());
   mapping_iterator orig_begin_0(fix.container, 0, 0,
                                 fix.container.end().node->parent);

@@ -61,7 +61,8 @@ VERSION 2.1.0
 
 * Nov 13 Final optimization: work on adding performance-based tests
            and comparison with other libraries in the market. Wouldn't
-           it be nice to see how it fares against ANN or libkdtree++?
+           it be nice to see how it fares against FLANN or libkdtree++?
+           In progress...
 
 * Jan 14 Implementing containers that hold only unique keys, with
            bracket operators just like std::map and std::set. They
@@ -69,13 +70,14 @@ VERSION 2.1.0
 
 * Mar 14 Add a range erase function that operates on 2 basic tree
            iterators. This is complicated to write because of the
-           invarient.
+           invariant.
 
 
 VERSION 2.2.0
 
 * Jul 14 Addition of algorithms. A few come to mind: approximative
            nearest neighbor search, min/max depth, etc.
+           In progress...
 
 * Sep 14 Addition of intrusive containers or flat container for every
            existing ones (haven't decided wether intrusive or flat is

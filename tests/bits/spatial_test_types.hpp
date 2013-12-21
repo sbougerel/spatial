@@ -294,4 +294,25 @@ struct closed_test_range
   }
 };
 
+// Prints the different types for the asserts
+inline std::ostream&
+operator << (std::ostream& o, const int2& x)
+{ o << "<int2>[" << x[0] << ", " << x[1] << "]"; return o; }
+
+inline std::ostream&
+operator << (std::ostream& o, const quad& x)
+{
+  o << "<quad>{" << x.x << ", " << x.y << ", " << x.z << ", " << x.w << "}";
+  return o;
+}
+
+inline std::ostream&
+operator << (std::ostream& o, const double6& x)
+{
+  o << "<double6>["
+    << x[0] << ", " << x[1] << ", " << x[2] << ", "
+    << x[3] << ", " << x[4] << ", " << x[5] << "]";
+  return o;
+}
+
 #endif // SPATIAL_TEST_TYPES_HPP

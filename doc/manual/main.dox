@@ -134,6 +134,17 @@ contributing "Contributing".
 \page changelog Change Log
 \tableofcontents
 
+\section ver212 Version 2.1.2
+
+- \idle_point_multiset, \idle_box_multiset and other non-rebalancing containers
+  have the performance of the \c rebalance() function improved by 5 to 10
+  times.
+
+- For rebalancing containers such as \point_multiset, \box_multiset, a new
+  rebalancing policy called \ref spatial::perfect_balancing
+  "perfect_balancing". As its name implies, it attempts to balance the tree near
+  perfectly.
+
 \section ver211 Version 2.1.1
 
 - \idle_point_multiset, \idle_box_multiset and other non-rebalancing containers
@@ -180,7 +191,7 @@ contributing "Contributing".
   - iterators have been vastly changed: their interface is now consistent, and
     the neighbor iterator works now correctly on MSVC9+. The design used for
     iterators resemble the design of Boost.Range, e.g: \mapping_iterator,
-    \region_iterator, etc
+    \region_iterator, etc.
 
   - views have simply been removed. They were clumsily written and presented
     maintenance burden while providing strictly no advantage over the bare

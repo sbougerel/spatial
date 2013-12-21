@@ -120,7 +120,6 @@ namespace spatial
   {
     /**
      *  Rebalancing predicate.
-     *  \param rank  The current dimension function to use for examination.
      *  \param left  The weight at the left
      *  \param right The weight at the right
      *  \return true Indicate that reblancing must occurs, otherwise false.
@@ -658,7 +657,11 @@ namespace spatial
             return iterator(target_node);
           }
         else
-          { return insert_node(0, node, target_node); }
+          {
+            iterator i = insert_node(0, node, target_node);
+            SPATIAL_ASSERT_INVARIANT(*this);
+            return i;
+          }
       }
 
       /**
@@ -1125,6 +1128,7 @@ namespace spatial
       except::check_iterator(node, get_header());
       erase_node_balance(node_dim, target.node);
       destroy_node(target.node);
+      SPATIAL_ASSERT_INVARIANT(*this);
     }
 
     template <typename Rank, typename Key, typename Value, typename Compare,
@@ -1147,6 +1151,7 @@ namespace spatial
           destroy_node(found.node);
           ++cnt;
         }
+      SPATIAL_ASSERT_INVARIANT(*this);
       return cnt;
     }
 

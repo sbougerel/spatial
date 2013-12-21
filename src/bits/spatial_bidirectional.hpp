@@ -169,11 +169,11 @@ namespace spatial
 
       //! Returns the reference to the value pointed to by the iterator.
       reference operator*()
-      { return value(node); }
+      { return const_value(node); }
 
       //! Returns a pointer to the value pointed to by the iterator.
       pointer operator->()
-      { return &value(node); }
+      { return &const_value(node); }
 
       /**
        *  A bidirectional iterator can be compared with a node iterator if they

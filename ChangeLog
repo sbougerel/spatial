@@ -1,3 +1,8 @@
+2013-12-21  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * v2.1.2 Added the perfect_balancing policy for Relaxed_kdtree, improved
+        documentation and improve the speed of the reblance() algorithm by 10x.
+
 2013-11-10  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * v2.1.1 Fixed a bug on the rebalance() function in the kdtrees. All the

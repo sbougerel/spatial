@@ -16,7 +16,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include "bits/spatial_test_fixtures.hpp"
-#include "bits/spatial_test_output.hpp"
 #include "bits/spatial_test_traits.hpp"
 #include "bits/spatial_test_details.hpp"
 #include "bits/spatial_test_node.hpp"

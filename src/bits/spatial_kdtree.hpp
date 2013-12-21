@@ -54,10 +54,10 @@ namespace spatial
       typedef Rank                                    rank_type;
       typedef typename mutate<Key>::type              key_type;
       typedef typename mutate<Value>::type            value_type;
-      typedef Kdtree_link<Key, Value>                 mode_type;
       typedef Compare                                 key_compare;
       typedef ValueCompare<value_type, key_compare>   value_compare;
       typedef Alloc                                   allocator_type;
+      typedef Kdtree_link<Key, Value>                 mode_type;
 
       // Container iterator related types
       typedef Value*                                  pointer;
@@ -100,16 +100,14 @@ namespace spatial
       {
         Implementation(const rank_type& rank, const key_compare& compare,
                        const Link_allocator& alloc)
-          : Rank(rank), _count(compare, 0),
-            _header(alloc, Node<mode_type>()) { initialize(); }
+          : Rank(rank), _count(compare, 0), _header(alloc) { initialize(); }
 
         Implementation(const Implementation& impl)
-          : Rank(impl), _count(impl._count.base(), impl._count()),
-            _header(impl._header.base(), impl._header()) { initialize(); }
+          : Rank(impl), _count(impl._count.base(), 0),
+            _header(impl._header.base()) { initialize(); }
 
         void initialize()
         {
-          _count() = 0;
           _header().parent = &_header();
           _header().left = &_header(); // the end marker, *must* not change!
           _header().right = &_header();
@@ -224,7 +222,18 @@ namespace spatial
        *  This function is semi-recursive. It iterates when walking down left
        *  nodes and recurse when walking down right nodes.
        */
-      void rebalance_node_insert
+      node_ptr rebalance_node_insert
+      (typename std::vector<node_ptr>::iterator first,
+       typename std::vector<node_ptr>::iterator last, dimension_type dim,
+       node_ptr header);
+
+      /**
+       *  This function finds the median node in a random iterator range. It
+       *  respects the invariant of the tree even when equal values are found in
+       *  the tree.
+       */
+      typename std::vector<node_ptr>::iterator
+      median
       (typename std::vector<node_ptr>::iterator first,
        typename std::vector<node_ptr>::iterator last, dimension_type dim);
 
@@ -337,7 +346,7 @@ namespace spatial
        *  Erase all elements in the K-d tree.
        */
       void clear()
-      { destroy_all_nodes(); _impl.initialize(); }
+      { destroy_all_nodes(); _impl.initialize(); _impl._count() = 0; }
 
       /**
        *  The maximum number of elements that can be allocated.
@@ -434,6 +443,7 @@ namespace spatial
               ::do_it(get_compare(), other.key_comp());
             _impl.initialize();
             if (!other.empty()) { copy_structure(other); }
+            else _impl._count() = 0;
           }
         return *this;
       }
@@ -719,6 +729,7 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(target_node->right == 0);
       SPATIAL_ASSERT_CHECK(target_node->left == 0);
       SPATIAL_ASSERT_CHECK(target_node->parent != 0);
+      SPATIAL_ASSERT_INVARIANT(*this);
       return iterator(target_node);
     }
 
@@ -788,6 +799,8 @@ namespace spatial
       set_rightmost(maximum(get_root()));
       _impl._count() = other.size();
       SPATIAL_ASSERT_CHECK(size() != 0);
+      SPATIAL_ASSERT_CHECK(size() == other.size());
+      SPATIAL_ASSERT_INVARIANT(*this);
     }
 
     template <typename Rank, typename Key, typename Value, typename Compare,
@@ -799,7 +812,7 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(empty());
       SPATIAL_ASSERT_CHECK(!other.empty());
       std::vector<node_ptr> ptr_store;
-      ptr_store.reserve(size()); // may throw
+      ptr_store.reserve(other.size()); // may throw
       try
         {
           for(const_iterator i = other.begin(); i != other.end(); ++i)
@@ -812,8 +825,43 @@ namespace spatial
             { destroy_node(*i); }
           throw;
         }
-      rebalance_node_insert(ptr_store.begin(), ptr_store.end(), 0);
+      typename std::vector<node_ptr>::iterator first = ptr_store.begin();
+      typename std::vector<node_ptr>::iterator last = ptr_store.end();
+      set_root(rebalance_node_insert(first, last, 0, get_header()));
+      node_ptr root = get_root();
+      while (root->left != 0) root = root->left;
+      set_leftmost(root);
+      root = get_root();
+      while (root->right != 0) root = root->right;
+      set_rightmost(root);
+      _impl._count() = other.size();
       SPATIAL_ASSERT_CHECK(!empty());
+      SPATIAL_ASSERT_CHECK(size() != 0);
+      SPATIAL_ASSERT_INVARIANT(*this);
+    }
+
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
+    inline void
+    Kdtree<Rank, Key, Value, Compare, Alloc>::rebalance()
+    {
+      if (empty()) return;
+      std::vector<node_ptr> ptr_store;
+      ptr_store.reserve(size()); // may throw
+      for(iterator i = begin(); i != end(); ++i)
+        { ptr_store.push_back(i.node); }
+      typename std::vector<node_ptr>::iterator first = ptr_store.begin();
+      typename std::vector<node_ptr>::iterator last = ptr_store.end();
+      set_root(rebalance_node_insert(first, last, 0, get_header()));
+      node_ptr node = get_root();
+      while (node->left != 0) node = node->left;
+      set_leftmost(node);
+      node = get_root();
+      while (node->right != 0) node = node->right;
+      set_rightmost(node);
+      SPATIAL_ASSERT_CHECK(!empty());
+      SPATIAL_ASSERT_CHECK(size() != 0);
+      SPATIAL_ASSERT_INVARIANT(*this);
     }
 
     template<typename Compare, typename Node_ptr>
@@ -828,53 +876,83 @@ namespace spatial
       bool
       operator() (const Node_ptr& x, const Node_ptr& y) const
       {
-        return compare(dimension, key(x), key(y));
+        return compare(dimension, const_key(x), const_key(y));
       }
     };
 
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Alloc>
-    inline void
-    Kdtree<Rank, Key, Value, Compare, Alloc>
-    ::rebalance_node_insert
+    inline typename
+    std::vector<typename Kdtree<Rank, Key, Value, Compare, Alloc>::node_ptr>
+    ::iterator
+    Kdtree<Rank, Key, Value, Compare, Alloc>::median
     (typename std::vector<node_ptr>::iterator first,
-     typename std::vector<node_ptr>::iterator last, dimension_type dim)
+     typename std::vector<node_ptr>::iterator last,
+     dimension_type dim)
     {
       SPATIAL_ASSERT_CHECK(first != last);
-      SPATIAL_ASSERT_CHECK(dim < dimension());
-      typedef mapping_compare<Compare, node_ptr> less;
+      mapping_compare<Compare, node_ptr> less(key_comp(), dim);
+      // Memory ordering varies between machines, so we use '/ 2' and not '>> 1'
+      if (first == (last - 1)) return first;
+      typename std::vector<node_ptr>::iterator mid = first + (last - first) / 2;
+      std::nth_element(first, mid, last, less);
+      typename std::vector<node_ptr>::iterator seek = mid;
+      typename std::vector<node_ptr>::iterator pivot = mid;
       do
         {
-          typename std::vector<node_ptr>::iterator
-            mid = first + (last - first) / 2;
-          std::partial_sort(first, mid, last, less(key_comp(), dim));
-          node_ptr node = *mid;
-          node->right = node->left = 0;
-          insert_node(node);
-          dim = incr_dim(rank(), dim);
-          if (mid + 1 != last)
-            { rebalance_node_insert(mid + 1, last, dim); }
-          last = mid;
+          --seek;
+          SPATIAL_ASSERT_CHECK(!less(*mid, *seek));
+          if (!less(*seek, *mid))
+            {
+              --pivot;
+              if (seek != pivot) { std::swap(*seek, *pivot); }
+              // pivot and mid are equal at this point:
+              SPATIAL_ASSERT_CHECK(!less(*pivot, *mid) && !less(*mid, *pivot));
+            }
         }
-      while(first != last);
-      SPATIAL_ASSERT_CHECK(!empty());
+      while (seek != first);
+      SPATIAL_ASSERT_CHECK(pivot != last);
+      return pivot;
     }
 
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Alloc>
-    inline void
-    Kdtree<Rank, Key, Value, Compare, Alloc>::rebalance()
+    inline typename Kdtree<Rank, Key, Value, Compare, Alloc>::node_ptr
+    Kdtree<Rank, Key, Value, Compare, Alloc>
+    ::rebalance_node_insert
+    (typename std::vector<node_ptr>::iterator first,
+     typename std::vector<node_ptr>::iterator last,
+     dimension_type dim, node_ptr parent)
     {
-      if (empty()) return;
-      std::vector<node_ptr> ptr_store;
-      ptr_store.reserve(size()); // may throw
-      for(iterator i = begin(); i != end(); ++i)
-        { ptr_store.push_back(i.node); }
-      _impl.initialize();
-      _impl._count() = 0;
-      rebalance_node_insert(ptr_store.begin(), ptr_store.end(), 0);
-      SPATIAL_ASSERT_CHECK(!empty());
-      SPATIAL_ASSERT_CHECK(size() != 0);
+      SPATIAL_ASSERT_CHECK(first != last);
+      SPATIAL_ASSERT_CHECK(dim < dimension());
+      typename std::vector<node_ptr>::iterator med
+        = median(first, last, dim);
+      node_ptr root = *med;
+      root->parent = parent;
+      dim = incr_dim(rank(), dim);
+      if (med + 1 != last)
+        { root->right = rebalance_node_insert(med + 1, last, dim, root); }
+      else root->right = 0;
+      last = med;
+      parent = root;
+      while(first != last)
+        {
+          med = median(first, last, dim);
+          node_ptr node = *med;
+          parent->left = node;
+          node->parent = parent;
+          dim = incr_dim(rank(), dim);
+          if (med + 1 != last)
+            { node->right = rebalance_node_insert(med + 1, last, dim, node); }
+          else node->right = 0;
+          last = med;
+          parent = node;
+        }
+      parent->left = 0;
+      SPATIAL_ASSERT_CHECK(parent->left == 0);
+      SPATIAL_ASSERT_CHECK(root->parent != root);
+      return root;
     }
 
     template <typename Rank, typename Key, typename Value, typename Compare,
@@ -952,6 +1030,7 @@ namespace spatial
       SPATIAL_ASSERT_CHECK((get_header() == get_root())
                            ? (_impl._count() == 0) : true);
       destroy_node(node);
+      SPATIAL_ASSERT_INVARIANT(*this);
     }
 
     template <typename Rank, typename Key, typename Value, typename Compare,

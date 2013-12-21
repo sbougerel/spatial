@@ -17,5 +17,4 @@
 
 #define  SPATIAL_SAFER_ARITHMETICS
 #include "bits/spatial_test_fixtures.hpp"
-#include "bits/spatial_test_output.hpp"
 #include "bits/spatial_test_neighbor_safer.hpp"

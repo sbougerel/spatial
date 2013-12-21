@@ -53,12 +53,12 @@ namespace spatial
      *
      *  \tparam Mode A model of \linkmode
      */
-    template <typename Mode>
+    template <typename Link>
     struct Node
     {
-      //! The mode type that indicate how to reach the key and/or the
-      //! value from the link.
-      typedef Mode              mode_type;
+      //! The link type that indicate how to reach the key and/or the
+      //! value from the node.
+      typedef Link              link_type;
 
       /**
        *  A pointer to the parent of the current node. When we are at head, the
@@ -86,27 +86,27 @@ namespace spatial
     /**
      *  Check if node is a header node.
      */
-    template <typename Mode>
-    inline bool header(const Node<Mode>* x)
+    template <typename Link>
+    inline bool header(const Node<Link>* x)
     { return (x->left == x); }
 
     /**
      *  Reach the left most node.
      *
      *  Should not be used on header nodes.
-     *  \tparam Mode a model of \linkmode.
+     *  \tparam Link a model of \linkmode.
      *  \param x a pointer to a node.
      */
     ///@{
-    template <typename Mode>
-    inline Node<Mode>* minimum(Node<Mode>* x)
+    template <typename Link>
+    inline Node<Link>* minimum(Node<Link>* x)
     {
       SPATIAL_ASSERT_CHECK(!header(x));
       while (x->left != 0) x = x->left; return x;
     }
 
-    template <typename Mode>
-    inline const Node<Mode>* minimum(const Node<Mode>* x)
+    template <typename Link>
+    inline const Node<Link>* minimum(const Node<Link>* x)
     {
       SPATIAL_ASSERT_CHECK(!header(x));
       while (x->left != 0) x = x->left; return x;
@@ -117,19 +117,19 @@ namespace spatial
      *  Reach the left most node.
      *
      *  Should not be used on header nodes.
-     *  \tparam Mode a model of \linkmode.
+     *  \tparam Link a model of \linkmode.
      *  \param x a pointer to a node.
      */
     ///@{
-    template <typename Mode>
-    inline Node<Mode>* maximum(Node<Mode>* x)
+    template <typename Link>
+    inline Node<Link>* maximum(Node<Link>* x)
     {
       SPATIAL_ASSERT_CHECK(!header(x));
       while (x->right != 0) x = x->right; return x;
     }
 
-    template <typename Mode>
-    inline const Node<Mode>* maximum(const Node<Mode>* x)
+    template <typename Link>
+    inline const Node<Link>* maximum(const Node<Link>* x)
     {
       SPATIAL_ASSERT_CHECK(!header(x));
       while (x->right != 0) x = x->right; return x;
@@ -140,17 +140,17 @@ namespace spatial
      *  Reach the next node in symetric transversal order.
      *
      *  Should not be used on header nodes.
-     *  \tparam Mode a model of \linkmode.
+     *  \tparam Link a model of \linkmode.
      *  \param x a pointer to a node.
      */
     ///@{
-    template <typename Mode> Node<Mode>*
-    increment(Node<Mode>* x);
+    template <typename Link> Node<Link>*
+    increment(Node<Link>* x);
 
-    template <typename Mode>
-    inline const Node<Mode>*
-    increment(const Node<Mode>* x)
-    { return increment(const_cast<Node<Mode>*>(x)); }
+    template <typename Link>
+    inline const Node<Link>*
+    increment(const Node<Link>* x)
+    { return increment(const_cast<Node<Link>*>(x)); }
     ///@}
 
     /**
@@ -158,18 +158,18 @@ namespace spatial
      *
      *  Should not be used on empty trees, but can be used on header nodes when
      *  the tree is not empty.
-     *  \tparam Mode a model of \linkmode.
+     *  \tparam Link a model of \linkmode.
      *  \param x a pointer to a node.
      */
     ///@{
-    template <typename Mode>
-    Node<Mode>*
-    decrement(Node<Mode>* x);
+    template <typename Link>
+    Node<Link>*
+    decrement(Node<Link>* x);
 
-    template <typename Mode>
-    inline const Node<Mode>*
-    decrement(const Node<Mode>* x)
-    { return decrement(const_cast<Node<Mode>*>(x)); }
+    template <typename Link>
+    inline const Node<Link>*
+    decrement(const Node<Link>* x)
+    { return decrement(const_cast<Node<Link>*>(x)); }
     ///@}
 
     /**
@@ -177,11 +177,11 @@ namespace spatial
      *
      *  Should not be used on empty trees or when the pointer to the node is a
      *  the head, which results in undefined behavior.
-     *  \tparam Mode a model of \linkmode.
+     *  \tparam Link a model of \linkmode.
      *  \param x a pointer to a node.
      */
-    template <typename Mode> const Node<Mode>*
-    preorder_increment(const Node<Mode>* x);
+    template <typename Link> const Node<Link>*
+    preorder_increment(const Node<Link>* x);
 
     /**
      *  Returns the modulo of a node's heigth by a container's rank. This, in
@@ -191,14 +191,14 @@ namespace spatial
      *  If \c x points to the header, by convention the highest dimension for a
      *  node invariant is returned.
      *
-     *  \tparam Mode A model of \linkmode.
+     *  \tparam Link A model of \linkmode.
      *  \tparam Rank Either \static_rank or \dynamic_rank.
      *  \param x A constant pointer to a node.
      *  \param r The rank used in the container.
      */
-    template <typename Mode, typename Rank>
+    template <typename Link, typename Rank>
     inline dimension_type
-    modulo(const Node<Mode>* x, const Rank& r)
+    modulo(const Node<Link>* x, const Rank& r)
     {
       dimension_type d = r() - 1;
       while(!header(x)) { d = incr_dim(r, d); x = x->parent; }
@@ -240,7 +240,7 @@ namespace spatial
     /**
      *  Define the link type for a Kdtree that contains the value member.
      *
-     *  This link also contains the linking information, so it is a model of the
+     *  This type also contains the linking information, so it is a model of the
      *  \linkmode concept.
      *
      *  \tparam Key The key type that is held by the Kdtree_link.
@@ -298,7 +298,7 @@ namespace spatial
     /**
      *  Define a weighted link type for the relaxed \kdtree.
      *
-     *  This link also contains the linking information, so it is a model of the
+     *  This type also contains the linking information, so it is a model of the
      *  \linkmode concept.
      *
      *  \tparam Key The key type that is held by the Kdtree_link.
@@ -374,13 +374,6 @@ namespace spatial
 
     template <typename Key, typename Value>
     inline const Kdtree_link<Key, Value>*
-    link(const Node<Kdtree_link<Key, Value> >* node)
-    {
-      return static_cast<const Kdtree_link<Key, Value>*>(node);
-    }
-
-    template <typename Key, typename Value>
-    inline const Kdtree_link<Key, Value>*
     const_link(const Node<Kdtree_link<Key, Value> >* node)
     {
       return static_cast<const Kdtree_link<Key, Value>*>(node);
@@ -389,65 +382,36 @@ namespace spatial
 
     /**
      *  This function converts a pointer on a node into a key for a \ref
-     *  Kdtree_link type.
+     *  Kdtree_link type. A key is always a constant type, hence only const_key
+     *  is declared.
      *
      *  This overload is used when both the key type and the value type of the
-     *  \ref Kdtree_link are similar.
+     *  \ref Relaxed_kdtree_link are of the same type, e.g. in set containers.
      *  \tparam Value the value type for the \ref Kdtree_link.
      *  \param node the node to convert to a key.
      */
-    ///@{
-    template <typename Value>
-    inline typename Kdtree_link<Value, Value>::key_type&
-    key(Node<Kdtree_link<Value, Value> >* node)
-    {
-      return static_cast<Kdtree_link<Value, Value>*>(node)->value;
-    }
-
-    template <typename Value>
-    inline const typename Kdtree_link<Value, Value>::key_type&
-    key(const Node<Kdtree_link<Value, Value> >* node)
-    {
-      return static_cast<const Kdtree_link<Value, Value>*>(node)->value;
-    }
-
     template <typename Value>
     inline const typename Kdtree_link<Value, Value>::key_type&
     const_key(const Node<Kdtree_link<Value, Value> >* node)
     {
       return static_cast<const Kdtree_link<Value, Value>*>(node)->value;
     }
-    ///@}
 
     /**
      *  This function converts a pointer on a node into a key for a \ref
-     *  Kdtree_link type.
+     *  Kdtree_link type. A key is always a constant type, hence only const_key
+     *  is declared.
+     *
      *  \tparam Key the key type for the \ref Kdtree_link.
      *  \tparam Value the value type for the \ref Kdtree_link.
      *  \param node the node to convert to a key.
      */
-    ///@{
-    template <typename Key, typename Value>
-    inline typename Kdtree_link<Key, Value>::key_type&
-    key(Node<Kdtree_link<Key, Value> >* node)
-    {
-      return static_cast<Kdtree_link<Key, Value>*>(node)->value.first;
-    }
-
-    template <typename Key, typename Value>
-    inline const typename Kdtree_link<Key, Value>::key_type&
-    key(const Node<Kdtree_link<Key, Value> >* node)
-    {
-      return static_cast<const Kdtree_link<Key, Value>*>(node)->value.first;
-    }
-
     template <typename Key, typename Value>
     inline const typename Kdtree_link<Key, Value>::key_type&
     const_key(const Node<Kdtree_link<Key, Value> >* node)
     {
       return static_cast<const Kdtree_link<Key, Value>*>(node)->value.first;
     }
-    ///@}
 
     /**
      *  This function converts a pointer on a node into a value for a \ref
@@ -462,13 +426,6 @@ namespace spatial
     value(Node<Kdtree_link<Key, Value> >* node)
     {
       return static_cast<Kdtree_link<Key, Value>*>(node)->value;
-    }
-
-    template <typename Key, typename Value>
-    inline const typename Kdtree_link<Key, Value>::value_type&
-    value(const Node<Kdtree_link<Key, Value> >* node)
-    {
-      return static_cast<const Kdtree_link<Key, Value>*>(node)->value;
     }
 
     template <typename Key, typename Value>
@@ -496,13 +453,6 @@ namespace spatial
 
     template <typename Key, typename Value>
     inline const Relaxed_kdtree_link<Key, Value>*
-    link(const Node<Relaxed_kdtree_link<Key, Value> >* node)
-    {
-      return static_cast<const Relaxed_kdtree_link<Key, Value>*>(node);
-    }
-
-    template <typename Key, typename Value>
-    inline const Relaxed_kdtree_link<Key, Value>*
     const_link(const Node<Relaxed_kdtree_link<Key, Value> >* node)
     {
       return static_cast<const Relaxed_kdtree_link<Key, Value>*>(node);
@@ -511,28 +461,14 @@ namespace spatial
 
     /**
      *  This function converts a pointer on a node into a key for a \ref
-     *  Relaxed_kdtree_link type.
+     *  Relaxed_kdtree_link type.  A key is always a constant type, hence only
+     *  const_key exists.
+     *
      *  This overload is used when both the key type and the value type of the
-     *  \ref Relaxed_kdtree_link are of the same type, e.g. in *-set containers.
+     *  \ref Relaxed_kdtree_link are of the same type, e.g. in set containers.
      *  \tparam Value the value type for the \ref Relaxed_kdtree_link.
      *  \param node the node to convert to a key.
      */
-    ///@{
-    template <typename Value>
-    inline typename Relaxed_kdtree_link<Value, Value>::key_type&
-    key(Node<Relaxed_kdtree_link<Value, Value> >* node)
-    {
-      return static_cast<Relaxed_kdtree_link<Value, Value>*>(node)->value;
-    }
-
-    template <typename Value>
-    inline const typename Relaxed_kdtree_link<Value, Value>::key_type&
-    key(const Node<Relaxed_kdtree_link<Value, Value> >* node)
-    {
-      return static_cast
-        <const Relaxed_kdtree_link<Value, Value>*>(node)->value;
-    }
-
     template <typename Value>
     inline const typename Relaxed_kdtree_link<Value, Value>::key_type&
     const_key(const Node<Relaxed_kdtree_link<Value, Value> >* node)
@@ -540,31 +476,16 @@ namespace spatial
       return static_cast
         <const Relaxed_kdtree_link<Value, Value>*>(node)->value;
     }
-    ///@}
 
     /**
      *  This function converts a pointer on a node into a key for a \ref
-     *  Relaxed_kdtree_link type.
+     *  Relaxed_kdtree_link type. A key is always a constant type, hence only
+     *  const_key exists.
+     *
      *  \tparam Key the key type for the \ref Relaxed_kdtree_link
      *  \tparam Value the value type for the \ref Relaxed_kdtree_link.
      *  \param node the node to convert to a key.
      */
-    ///@{
-    template <typename Key, typename Value>
-    inline typename Relaxed_kdtree_link<Key, Value>::key_type&
-    key(Node<Relaxed_kdtree_link<Key, Value> >* node)
-    {
-      return static_cast<Relaxed_kdtree_link<Key, Value>*>(node)->value.first;
-    }
-
-    template <typename Key, typename Value>
-    inline const typename Relaxed_kdtree_link<Key, Value>::key_type&
-    key(const Node<Relaxed_kdtree_link<Key, Value> >* node)
-    {
-      return static_cast<const Relaxed_kdtree_link<Key, Value>*>
-        (node)->value.first;
-    }
-
     template <typename Key, typename Value>
     inline const typename Relaxed_kdtree_link<Key, Value>::key_type&
     const_key(const Node<Relaxed_kdtree_link<Key, Value> >* node)
@@ -572,7 +493,6 @@ namespace spatial
       return static_cast<const Relaxed_kdtree_link<Key, Value>*>
         (node)->value.first;
     }
-    ///@}
 
     /**
      *  This function converts a pointer on a node into a value for a \ref
@@ -587,13 +507,6 @@ namespace spatial
     value(Node<Relaxed_kdtree_link<Key, Value> >* node)
     {
       return static_cast<Relaxed_kdtree_link<Key, Value>*>(node)->value;
-    }
-
-    template <typename Key, typename Value>
-    inline const typename Relaxed_kdtree_link<Key, Value>::value_type&
-    value(const Node<Relaxed_kdtree_link<Key, Value> >* node)
-    {
-      return static_cast<const Relaxed_kdtree_link<Key, Value>*>(node)->value;
     }
 
     template <typename Key, typename Value>
@@ -615,8 +528,8 @@ namespace spatial
      *  \see Relaxed_kdtree_link
      */
     ///@{
-    template <typename Mode>
-    void swap_node_aux(Node<Mode>* a, Node<Mode>* b);
+    template <typename Link>
+    void swap_node_aux(Node<Link>* a, Node<Link>* b);
 
     template<typename Key, typename Value>
     inline void swap_node(Node<Kdtree_link<Key, Value> >*& a,
@@ -638,20 +551,21 @@ namespace spatial
      *  inorder traversal. This iterator provides mutable access to the nodes in
      *  the tree.
      *
-     *  \tparam Node The node of the tree.
+     *  \tparam Link The linking mode for the node.
      */
-    template<typename Mode>
-    struct Node_iterator
+    template<typename Link>
+    class Node_iterator
     {
-      typedef typename mutate<typename Mode::value_type>::type value_type;
-      typedef typename Mode::value_type&         reference;
-      typedef typename Mode::value_type*         pointer;
+    public:
+      typedef typename mutate<typename Link::value_type>::type value_type;
+      typedef typename Link::value_type&         reference;
+      typedef typename Link::value_type*         pointer;
       typedef std::ptrdiff_t                     difference_type;
       typedef std::bidirectional_iterator_tag    iterator_category;
-      typedef typename Mode::node_ptr            node_ptr;
+      typedef typename Link::node_ptr            node_ptr;
 
     private:
-      typedef Node_iterator<Mode>                Self;
+      typedef Node_iterator<Link>                Self;
 
     public:
       //! Create an uninintialized iterator. This iterator should not be used
@@ -704,21 +618,22 @@ namespace spatial
      *  inorder traversal. This iterator provides constant access to the nodes
      *  in the tree.
      *
-     *  \tparam Node The node of the tree.
+     *  \tparam Link The linking mode for the node.
      */
-    template<typename Mode>
-    struct Const_node_iterator
+    template<typename Link>
+    class Const_node_iterator
     {
-      typedef typename mutate<typename Mode::value_type>::type value_type;
-      typedef const typename Mode::value_type&   reference;
-      typedef const typename Mode::value_type*   pointer;
+    public:
+      typedef typename mutate<typename Link::value_type>::type value_type;
+      typedef const typename Link::value_type&   reference;
+      typedef const typename Link::value_type*   pointer;
       typedef std::ptrdiff_t                     difference_type;
       typedef std::bidirectional_iterator_tag    iterator_category;
-      typedef typename Mode::const_node_ptr      node_ptr;
+      typedef typename Link::const_node_ptr      node_ptr;
 
     private:
-      typedef Const_node_iterator<Mode>          Self;
-      typedef Node_iterator<Mode>                iterator;
+      typedef Const_node_iterator<Link>          Self;
+      typedef Node_iterator<Link>                iterator;
 
     public:
       //! Create an uninintialized iterator. This iterator should not be used
@@ -775,20 +690,20 @@ namespace spatial
      *  preorder transversal. It provides constant access to the node. It is
      *  used to clone the tree.
      *
-     *  \tparam Node The type of Node in the tree.
+     *  \tparam Link The linking mode for the node.
      */
-    template<typename Mode>
+    template<typename Link>
     struct Preorder_node_iterator
     {
-      typedef typename mutate<typename Mode::value_type>::type value_type;
-      typedef const typename Mode::value_type&  reference;
-      typedef const typename Mode::value_type*  pointer;
+      typedef typename mutate<typename Link::value_type>::type value_type;
+      typedef const typename Link::value_type&  reference;
+      typedef const typename Link::value_type*  pointer;
       typedef std::ptrdiff_t                    difference_type;
       typedef std::forward_iterator_tag         iterator_category;
-      typedef typename Mode::const_node_ptr     node_ptr;
+      typedef typename Link::const_node_ptr     node_ptr;
 
     private:
-      typedef Preorder_node_iterator<Mode>      Self;
+      typedef Preorder_node_iterator<Link>      Self;
 
     public:
       //! Create an uninintialized iterator. This iterator should not be used
@@ -828,7 +743,7 @@ namespace spatial
       node_ptr node;
     };
 
-    template <typename Mode> inline Node<Mode>* increment(Node<Mode>* x)
+    template <typename Link> inline Node<Link>* increment(Node<Link>* x)
     {
       SPATIAL_ASSERT_CHECK(!header(x));
       if (x->right != 0)
@@ -838,7 +753,7 @@ namespace spatial
         }
       else
         {
-          Node<Mode>* p = x->parent;
+          Node<Link>* p = x->parent;
           while (!header(p) && x == p->right)
             { x = p; p = x->parent; }
           x = p;
@@ -846,20 +761,20 @@ namespace spatial
       return x;
     }
 
-    template <typename Mode> inline Node<Mode>* decrement(Node<Mode>* x)
+    template <typename Link> inline Node<Link>* decrement(Node<Link>* x)
     {
       SPATIAL_ASSERT_CHECK((!header(x) || x->parent != 0));
       if (header(x))
         { x = x->right; } // At header, 'right' points to the right-most node
       else if (x->left != 0)
         {
-          Node<Mode>* y = x->left;
+          Node<Link>* y = x->left;
           while (y->right != 0) { y = y->right; }
           x = y;
         }
       else
         {
-          Node<Mode>* p = x->parent;
+          Node<Link>* p = x->parent;
           while (!header(p) && x == p->left)
             { x = p; p = x->parent; }
           x = p;
@@ -867,11 +782,11 @@ namespace spatial
       return x;
     }
 
-    template <typename Mode>
+    template <typename Link>
     inline void swap_node_aux
-    (Node<Mode>* a, Node<Mode>* b)
+    (Node<Link>* a, Node<Link>* b)
     {
-      typedef Node<Mode>* node_ptr;
+      typedef Node<Link>* node_ptr;
       if (a == b) return;
       SPATIAL_ASSERT_CHECK(!header(a));
       SPATIAL_ASSERT_CHECK(!header(b));
@@ -961,14 +876,14 @@ namespace spatial
         }
     }
 
-    template <typename Mode> inline const Node<Mode>*
-    preorder_increment(const Node<Mode>* x)
+    template <typename Link> inline const Node<Link>*
+    preorder_increment(const Node<Link>* x)
     {
       if (x->left != 0) { x = x->left; }
       else if (x->right != 0) { x = x->right; }
       else
         {
-          const Node<Mode>* p = x->parent;
+          const Node<Link>* p = x->parent;
           while (!header(p) && (x == p->right || p->right == 0))
             { x = p; p = x->parent; }
           x = p;
