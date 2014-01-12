@@ -531,6 +531,18 @@ namespace spatial
       { for (; first != last; ++first) { insert(*first); } }
 
       /**
+       *  Insert a serie of values in the container at once and rebalance the
+       *  container after insertion. This method performs generally more
+       *  efficiently than calling insert() then reblance() independantly.
+       *
+       *  The parameter \c first and \c last only need to be a model of \c
+       *  InputIterator. Elements are inserted in a single pass.
+       */
+      template<typename InputIterator>
+      void
+      insert_rebalance(InputIterator first, InputIterator last);
+
+      /**
        *  Deletes the node pointed to by the iterator.
        *
        *  The iterator must be pointing to an existing node belonging to the
@@ -825,9 +837,8 @@ namespace spatial
             { destroy_node(*i); }
           throw;
         }
-      typename std::vector<node_ptr>::iterator first = ptr_store.begin();
-      typename std::vector<node_ptr>::iterator last = ptr_store.end();
-      set_root(rebalance_node_insert(first, last, 0, get_header()));
+      set_root(rebalance_node_insert(ptr_store.begin(), ptr_store.end(), 0,
+                                     get_header()));
       node_ptr root = get_root();
       while (root->left != 0) root = root->left;
       set_leftmost(root);
@@ -835,6 +846,60 @@ namespace spatial
       while (root->right != 0) root = root->right;
       set_rightmost(root);
       _impl._count() = other.size();
+      SPATIAL_ASSERT_CHECK(!empty());
+      SPATIAL_ASSERT_CHECK(size() != 0);
+      SPATIAL_ASSERT_INVARIANT(*this);
+    }
+
+    template <typename InputIterator>
+    inline std::ptrdiff_t
+    random_access_iterator_distance
+    (InputIterator first, InputIterator last, std::random_access_iterator_tag)
+    { return last - first; }
+
+    template <typename InputIterator>
+    inline std::ptrdiff_t
+    random_access_iterator_distance
+    (InputIterator first, InputIterator last, std::input_iterator_tag)
+    { return 0; }
+
+    template <typename Rank, typename Key, typename Value, typename Compare,
+              typename Alloc>
+    template <typename InputIterator>
+    inline void
+    Kdtree<Rank, Key, Value, Compare, Alloc>
+    ::insert_rebalance(InputIterator first, InputIterator last)
+    {
+      if (first == last && empty()) return;
+      std::vector<node_ptr> ptr_store;
+      ptr_store.reserve // may throw
+        (size()
+         + random_access_iterator_distance
+         (first, last,
+          typename std::iterator_traits<InputIterator>::iterator_category()));
+      try
+        {
+          for(InputIterator i = first; i != last; ++i)
+            { ptr_store.push_back(create_node(*i)); } // may throw
+        }
+      catch (...)
+        {
+          for(typename std::vector<node_ptr>::iterator i = ptr_store.begin();
+              i != ptr_store.end(); ++i)
+            { destroy_node(*i); }
+          throw;
+        }
+      for(iterator i = begin(); i != end(); ++i)
+        { ptr_store.push_back(i.node); }
+      set_root(rebalance_node_insert(ptr_store.begin(), ptr_store.end(), 0,
+                                     get_header()));
+      node_ptr root = get_root();
+      while (root->left != 0) root = root->left;
+      set_leftmost(root);
+      root = get_root();
+      while (root->right != 0) root = root->right;
+      set_rightmost(root);
+      _impl._count() = ptr_store.size();
       SPATIAL_ASSERT_CHECK(!empty());
       SPATIAL_ASSERT_CHECK(size() != 0);
       SPATIAL_ASSERT_INVARIANT(*this);
@@ -850,9 +915,8 @@ namespace spatial
       ptr_store.reserve(size()); // may throw
       for(iterator i = begin(); i != end(); ++i)
         { ptr_store.push_back(i.node); }
-      typename std::vector<node_ptr>::iterator first = ptr_store.begin();
-      typename std::vector<node_ptr>::iterator last = ptr_store.end();
-      set_root(rebalance_node_insert(first, last, 0, get_header()));
+      set_root(rebalance_node_insert(ptr_store.begin(), ptr_store.end(), 0,
+                                     get_header()));
       node_ptr node = get_root();
       while (node->left != 0) node = node->left;
       set_leftmost(node);

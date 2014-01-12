@@ -8,11 +8,6 @@
 - \subpage contributing
 - \subpage compileopts
 
-\quote
-Man's mind, once stretched by a new idea, never regains its original
-dimensions. <br> -- Oliver Wendell Holmes, Jr.
-\endquote
-
 \Spatial C++ Library is a generic header-only C++ library providing
 multi-dimensional in-memory containers, iterators and functionals. It is a
 general purpose library with good overall performance that makes it simple to
