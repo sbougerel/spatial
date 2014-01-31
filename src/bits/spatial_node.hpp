@@ -184,28 +184,6 @@ namespace spatial
     preorder_increment(const Node<Link>* x);
 
     /**
-     *  Returns the modulo of a node's heigth by a container's rank. This, in
-     *  effect, gives the current dimension along which the node's invarient is
-     *  evaluated.
-     *
-     *  If \c x points to the header, by convention the highest dimension for a
-     *  node invariant is returned.
-     *
-     *  \tparam Link A model of \linkmode.
-     *  \tparam Rank Either \static_rank or \dynamic_rank.
-     *  \param x A constant pointer to a node.
-     *  \param r The rank used in the container.
-     */
-    template <typename Link, typename Rank>
-    inline dimension_type
-    modulo(const Node<Link>* x, const Rank& r)
-    {
-      dimension_type d = r() - 1;
-      while(!header(x)) { d = incr_dim(r, d); x = x->parent; }
-      return d;
-    }
-
-    /**
      *  The category of invariants for a \kdtree node: strict or relaxed.
      *
      *  This tag is an indicator for one of the library's most central concepts:

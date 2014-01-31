@@ -7,7 +7,9 @@
 
 /**
  *  \file   spatial_assign.hpp
- *  Defines the \ref assign() function.
+ *  Defines the \ref spatial::details::assign() function, which is pretty much
+ *  the same thing as the C++11 std::tie() function. Hence when the library is
+ *  moved to C++11 this function should disappear in place of the standard.
  */
 
 #include <utility>
@@ -20,11 +22,11 @@ namespace spatial
   namespace details
   {
     template <typename Type1, typename Type2>
-    void
-    assign(Type1& first, Type2& second, std::pair<Type1, Type2> source)
+    inline void
+    assign(Type1& first, Type2& second, const std::pair<Type1, Type2>& pair)
     {
-      first = source.first;
-      second = source.second;
+      first = pair.first;
+      second = pair.second;
     }
   }
 }
