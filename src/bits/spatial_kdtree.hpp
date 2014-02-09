@@ -120,6 +120,16 @@ namespace spatial
       } _impl;
 
     private:
+      struct Maximum : key_compare
+      {
+        Maximum(const key_compare& key_comp, node_ptr node_)
+          : key_compare(key_comp), node(node_) { }
+        key_compare comp() const
+        { return static_cast<key_compare>(*this); }
+        node_ptr node;
+      };
+
+    private:
       // Internal accessors
       node_ptr get_header()
       { return static_cast<node_ptr>(&_impl._header()); }

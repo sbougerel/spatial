@@ -25,6 +25,97 @@
 
 namespace spatial
 {
+  namespace details
+  {
+    template <typename Container>
+    struct equal_key : Container::key_compare
+    {
+      equal_key() { }
+
+      equal_key(const typename Container::key_compare& cmp,
+                const typename Container::key_type& model_)
+        : Container::key_compare(cmp), model(model_) { }
+
+      typename Container::key_compare comp() const
+      { return static_cast<typename Container::key_compare>(*this); }
+
+      typename Container::key_type model;
+    };
+
+    template <typename Container>
+    inline bool
+    right_traversal(typename Container::mode_type::const_node_ptr node,
+                    dimension_type dim,
+                    typename Container::rank_type,
+                    const equal_key<Container>& equal)
+    {
+      return !equal.comp()(dim, equal.model, const_key(node));
+    }
+
+    /**
+     *  Return a boolean indicating whether all of \c x's coordinates are
+     *  equal to \c y's coordinates.
+     *
+     *  The key \c x and \c y are tested across all dimesions using the
+     *  comparator \c cmp provided by a container.
+     *  \tparam Rank Either \static_rank or \dynamic_rank.
+     *  \tparam Key A key type defined in the container as the \c Compare.
+     *  \tparam Compare A \trivial_compare type defined in the same
+     *  container as \c Key.
+     *  \param rank The magnitude of the rank.
+     *  \param cmp The comparator used to find equality between the \c x and \c
+     *  y coordinates.
+     *  \param x The key \c x.
+     *  \param y The key \c y.
+     */
+    template <typename Container>
+    inline bool
+    stop_traversal(typename Container::mode_type::const_node_ptr node,
+                    typename Container::rank_type rank,
+                    const equal_key<Container>& equal)
+    {
+      dimension_type i = 0;
+      for (; i < rank()
+             && !equal.comp()(i, const_key(node), equal.model)
+             && !equal.comp()(i, equal.model, const_key(node));
+           ++i) { }
+      return (i == rank());
+    }
+
+    template <typename Container>
+    inline bool
+    left_traversal(typename Container::mode_type::const_node_ptr node,
+                   dimension_type dim,
+                   const equal_key<Container>& equal,
+                   relaxed_invariant_tag)
+    {
+      return !equal.comp()(dim, const_key(node), equal.model);
+    }
+
+    template <typename Container>
+    inline bool
+    left_traversal(typename Container::mode_type::const_node_ptr node,
+                   dimension_type dim,
+                   const equal_key<Container>& equal,
+                   strict_invariant_tag)
+    {
+      return equal.comp()(dim, equal.model, const_key(node));
+    }
+
+    template <typename Container>
+    inline bool
+    left_traversal(typename Container::mode_type::const_node_ptr node,
+                   dimension_type dim,
+                   typename Container::rank_type,
+                   const equal_key<Container>& equal)
+    {
+      return left_traversal
+        (node, dim, equal,
+         typename Container::mode_type::invariant_category());
+    }
+
+  } // namespace details
+
   /**
    *  This type provides an iterator to iterate through all elements of a
    *  container that match a given key, passed as a parameter to the
@@ -74,7 +165,7 @@ namespace spatial
     equal_iterator(Container& container, const key_type& model_,
                    typename container_traits<Container>::iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        _model(container.key_comp(), model_) { }
+        _query(container.key_comp(), model_) { }
 
     /**
      *  Build an equal iterator from the node and current dimension of a
@@ -97,7 +188,7 @@ namespace spatial
     equal_iterator
     (Container& container, const key_type& model_, dimension_type dim,
      typename container_traits<Container>::mode_type::node_ptr ptr)
-      : Base(container.rank(), ptr, dim), _model(container.key_comp(), model_)
+      : Base(container.rank(), ptr, dim), _query(container.key_comp(), model_)
     { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
@@ -105,7 +196,7 @@ namespace spatial
     equal_iterator<Container>& operator++()
     {
       details::assign(node, node_dim,
-                      preorder_increment(node, node_dim, rank(), _model));
+                      preorder_increment(node, node_dim, rank(), _query));
       return *this;
     }
 
@@ -115,7 +206,7 @@ namespace spatial
     {
       equal_iterator<Container> x(*this);
       details::assign(node, node_dim,
-                      preorder_increment(node, node_dim, rank(), _model));
+                      preorder_increment(node, node_dim, rank(), _query));
       return x;
     }
 
@@ -124,7 +215,7 @@ namespace spatial
     equal_iterator<Container>& operator--()
     {
       details::assign(node, node_dim,
-                      preorder_decrement(node, node_dim, rank(), _model));
+                      preorder_decrement(node, node_dim, rank(), _query));
       return *this;
     }
 
@@ -134,20 +225,20 @@ namespace spatial
     {
       equal_iterator<Container> x(*this);
       details::assign(node, node_dim,
-                      preorder_decrement(node, node_dim, rank(), _model));
+                      preorder_decrement(node, node_dim, rank(), _query));
       return x;
     }
 
     //! Return the value of the model key used to find equal keys in the
     //! container.
-    key_type model() const { return _model(); }
+    key_type model() const { return _query.model; }
 
     //! Return the functor used to compare keys in this iterator.
-    key_compare key_comp() const { return _model.base(); }
+    key_compare key_comp() const { return _query.comp(); }
 
   private:
     //! The model key used to find equal keys in the container.
-    details::Compress<key_compare, key_type> _model;
+    details::equal_key<Container> _query;
   };
 
   /**
@@ -200,7 +291,7 @@ namespace spatial
     equal_iterator(const Container& container, const key_type& model_,
                    typename container_traits<Container>::const_iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        _model(container.key_comp(), model_) { }
+        _query(container.key_comp(), model_) { }
 
     /**
      *  Build an equal iterator from the node and current dimension of a
@@ -220,20 +311,20 @@ namespace spatial
     equal_iterator
     (const Container& container, const key_type& model_, dimension_type dim,
      typename container_traits<Container>::mode_type::const_node_ptr ptr)
-      : Base(container.rank(), ptr, dim), _model(container.key_comp(), model_)
+      : Base(container.rank(), ptr, dim), _query(container.key_comp(), model_)
     { }
 
     //! Convertion of an iterator into a const_iterator is permitted.
     equal_iterator(const equal_iterator<Container>& iter)
       : Base(iter.rank(), iter.node, iter.node_dim),
-        _model(iter.key_comp(), iter.model()) { }
+        _query(iter.key_comp(), iter.model()) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
     equal_iterator<const Container>& operator++()
     {
       details::assign(node, node_dim,
-                      preorder_increment(node, node_dim, rank(), _model));
+                      preorder_increment(node, node_dim, rank(), _query));
       return *this;
     }
 
@@ -243,7 +334,7 @@ namespace spatial
     {
       equal_iterator<const Container> x(*this);
       details::assign(node, node_dim,
-                      preorder_increment(node, node_dim, rank(), _model));
+                      preorder_increment(node, node_dim, rank(), _query));
       return x;
     }
 
@@ -252,7 +343,7 @@ namespace spatial
     equal_iterator<const Container>& operator--()
     {
       details::assign(node, node_dim,
-                      preorder_decrement(node, node_dim, rank(), _model));
+                      preorder_decrement(node, node_dim, rank(), _query));
       return *this;
     }
 
@@ -262,89 +353,21 @@ namespace spatial
     {
       equal_iterator<const Container> x(*this);
       details::assign(node, node_dim,
-                      preorder_decrement(node, node_dim, rank(), _model));
+                      preorder_decrement(node, node_dim, rank(), _query));
       return x;
     }
 
     //! Returns the value of the model key used to find equivalent keys in the
     //! container.
-    key_type model() const { return _model(); }
+    key_type model() const { return _query.model; }
 
     //! Returns the functor used to compare keys in this iterator.
-    key_compare key_comp() const { return _model.base(); }
+    key_compare key_comp() const { return _query.comp(); }
 
   private:
     //! The model key used to find equal keys in the container.
-    details::Compress<key_compare, key_type> _model;
+    details::equal_key<Container> _query;
   };
-
-  namespace details
-  {
-    template <typename NodePtr, typename Rank, typename Compare, typename KeyType>
-    inline bool
-    right_traversal(NodePtr node, dimension_type dim, Rank,
-                    const Compress<Compare, KeyType>& attrib)
-    {
-      return !attrib.base()(dim, attrib(), const_key(node));
-    }
-
-    /**
-     *  Return a boolean indicating whether all of \c x's coordinates are
-     *  equal to \c y's coordinates.
-     *
-     *  The key \c x and \c y are tested across all dimesions using the
-     *  comparator \c cmp provided by a container.
-     *  \tparam Rank Either \static_rank or \dynamic_rank.
-     *  \tparam Key A key type defined in the container as the \c Compare.
-     *  \tparam Compare A \trivial_compare type defined in the same
-     *  container as \c Key.
-     *  \param rank The magnitude of the rank.
-     *  \param cmp The comparator used to find equality between the \c x and \c
-     *  y coordinates.
-     *  \param x The key \c x.
-     *  \param y The key \c y.
-     */
-    template <typename NodePtr, typename Rank, typename Compare, typename KeyType>
-    inline bool
-    stop_traversal(NodePtr node, Rank rank,
-                   const Compress<Compare, KeyType>& attrib)
-    {
-      dimension_type i = 0;
-      for (; i < rank()
-             && !attrib.base()(i, const_key(node), attrib())
-             && !attrib.base()(i, attrib(), const_key(node));
-           ++i) { }
-      return (i == rank());
-    }
-
-    template <typename NodePtr, typename Compare, typename KeyType>
-    inline bool
-    left_traversal(NodePtr node, dimension_type dim,
-                   const Compress<Compare, KeyType>& attrib,
-                   relaxed_invariant_tag)
-    {
-      return !attrib.base()(dim, const_key(node), attrib());
-    }
-
-    template <typename NodePtr, typename Compare, typename KeyType>
-    inline bool
-    left_traversal(NodePtr node, dimension_type dim,
-                   const Compress<Compare, KeyType>& attrib,
-                   strict_invariant_tag)
-    {
-      return attrib.base()(dim, attrib(), const_key(node));
-    }
-
-    template <typename Node, typename Rank, typename Compare, typename KeyType>
-    inline bool
-    left_traversal(Node* node, dimension_type dim, Rank,
-                   const Compress<Compare, KeyType>& attrib)
-    {
-      return left_traversal
-        (node, dim, attrib, typename Node::link_type::invariant_category());
-    }
-
-  } // namespace details
 
   template <typename Container>
   inline equal_iterator<Container>
@@ -383,10 +406,8 @@ namespace spatial
     typename equal_iterator<Container>::node_ptr node;
     dimension_type dim;
     details::assign(node, dim,
-                    preorder_minimum(parent, 0,
-                                     container.rank(),
-                                     details::Compress<typename Container::key_compare,
-                                     typename Container::key_type>
+                    preorder_minimum(parent, 0, container.rank(),
+                                     details::equal_key<Container>
                                      (container.key_comp(), model)));
     return equal_iterator<Container>(container, model, dim, node);
   }
