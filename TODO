@@ -1,9 +1,11 @@
 Spatial TODO List
 =================
 
-(Also used as a detailed roadmap, and changes according to user
-expectations, interests or simply progress...)
+5. Speed check for mapping
+6. No more ref_compare, proceed in direction of walk, which prunes more - but check speed
 
+Spatial ROADMAP
+===============
 
 VERSION 2.0.0
 

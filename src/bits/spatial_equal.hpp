@@ -28,15 +28,15 @@ namespace spatial
   namespace details
   {
     template <typename Container>
-    struct equal_key : Container::key_compare
+    struct Equal : Container::key_compare
     {
-      equal_key() { }
+      Equal() { }
 
-      equal_key(const typename Container::key_compare& cmp,
+      Equal(const typename Container::key_compare& cmp,
                 const typename Container::key_type& model_)
         : Container::key_compare(cmp), model(model_) { }
 
-      typename Container::key_compare comp() const
+      typename Container::key_compare key_comp() const
       { return static_cast<typename Container::key_compare>(*this); }
 
       typename Container::key_type model;
@@ -46,10 +46,9 @@ namespace spatial
     inline bool
     right_traversal(typename Container::mode_type::const_node_ptr node,
                     dimension_type dim,
-                    typename Container::rank_type,
-                    const equal_key<Container>& equal)
+                    const Equal<Container>& equal)
     {
-      return !equal.comp()(dim, equal.model, const_key(node));
+      return !equal.key_comp()(dim, equal.model, const_key(node));
     }
 
     /**
@@ -72,12 +71,12 @@ namespace spatial
     inline bool
     stop_traversal(typename Container::mode_type::const_node_ptr node,
                     typename Container::rank_type rank,
-                    const equal_key<Container>& equal)
+                    const Equal<Container>& equal)
     {
       dimension_type i = 0;
       for (; i < rank()
-             && !equal.comp()(i, const_key(node), equal.model)
-             && !equal.comp()(i, equal.model, const_key(node));
+             && !equal.key_comp()(i, const_key(node), equal.model)
+             && !equal.key_comp()(i, equal.model, const_key(node));
            ++i) { }
       return (i == rank());
     }
@@ -86,28 +85,27 @@ namespace spatial
     inline bool
     left_traversal(typename Container::mode_type::const_node_ptr node,
                    dimension_type dim,
-                   const equal_key<Container>& equal,
+                   const Equal<Container>& equal,
                    relaxed_invariant_tag)
     {
-      return !equal.comp()(dim, const_key(node), equal.model);
+      return !equal.key_comp()(dim, const_key(node), equal.model);
     }
 
     template <typename Container>
     inline bool
     left_traversal(typename Container::mode_type::const_node_ptr node,
                    dimension_type dim,
-                   const equal_key<Container>& equal,
+                   const Equal<Container>& equal,
                    strict_invariant_tag)
     {
-      return equal.comp()(dim, equal.model, const_key(node));
+      return equal.key_comp()(dim, equal.model, const_key(node));
     }
 
     template <typename Container>
     inline bool
     left_traversal(typename Container::mode_type::const_node_ptr node,
                    dimension_type dim,
-                   typename Container::rank_type,
-                   const equal_key<Container>& equal)
+                   const Equal<Container>& equal)
     {
       return left_traversal
         (node, dim, equal,
@@ -238,7 +236,7 @@ namespace spatial
 
   private:
     //! The model key used to find equal keys in the container.
-    details::equal_key<Container> _query;
+    details::Equal<Container> _query;
   };
 
   /**
@@ -366,7 +364,7 @@ namespace spatial
 
   private:
     //! The model key used to find equal keys in the container.
-    details::equal_key<Container> _query;
+    details::Equal<Container> _query;
   };
 
   template <typename Container>
@@ -407,7 +405,7 @@ namespace spatial
     dimension_type dim;
     details::assign(node, dim,
                     preorder_minimum(parent, 0, container.rank(),
-                                     details::equal_key<Container>
+                                     details::Equal<Container>
                                      (container.key_comp(), model)));
     return equal_iterator<Container>(container, model, dim, node);
   }

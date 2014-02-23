@@ -364,33 +364,6 @@ namespace spatial
       size_type max_size() const
       { return _impl._header.base().max_size(); }
 
-      ///@{
-      /**
-       *  Find the first node that matches with \c key and returns an iterator
-       *  to it found, otherwise it returns an iterator to the element past the
-       *  end of the container.
-       *
-       *  Notice that this function returns an iterator only to one of the
-       *  elements with that key. To obtain the entire range of elements with a
-       *  given value, you can use \ref equal_range.
-       *
-       *  If this function is called on an empty container, returns an iterator
-       *  past the end of the container.
-       *
-       *  \fractime
-       *  \param key the value to be searched for.
-       *  \return An iterator to that value or an iterator to the element past
-       *  the end of the container.
-       */
-      iterator
-      find(const key_type& key)
-      { return equal_begin(*this, key); }
-
-      const_iterator
-      find(const key_type& key) const
-      { return equal_begin(*this, key); }
-      ///@}
-
     public:
       Kdtree()
         : _impl(rank_type(), key_compare(), allocator_type())
@@ -551,6 +524,44 @@ namespace spatial
       template<typename InputIterator>
       void
       insert_rebalance(InputIterator first, InputIterator last);
+
+      ///@{
+      /**
+       *  Find the first node that matches with \c key and returns an iterator
+       *  to it found, otherwise it returns an iterator to the element past the
+       *  end of the container.
+       *
+       *  Notice that this function returns an iterator only to one of the
+       *  elements with that key. To obtain the entire range of elements with a
+       *  given value, you can use \ref equal_range.
+       *
+       *  If this function is called on an empty container, returns an iterator
+       *  past the end of the container.
+       *
+       *  \fractime
+       *  \param key the value to be searched for.
+       *  \return An iterator to that value or an iterator to the element past
+       *  the end of the container.
+       */
+      iterator
+      find(const key_type& key)
+      {
+        if (empty()) return end();
+        return iterator(preorder_minimum(get_root(), 0, rank(),
+                                         details::Equal<Self>(key_comp(), key))
+                        .first);
+      }
+
+      const_iterator
+      find(const key_type& key) const
+      {
+        if (empty()) return end();
+        return const_iterator(preorder_minimum(get_root(), 0, rank(),
+                                               details::Equal<Self>
+                                               (key_comp(), key))
+                              .first);
+      }
+      ///@}
 
       /**
        *  Deletes the node pointed to by the iterator.
