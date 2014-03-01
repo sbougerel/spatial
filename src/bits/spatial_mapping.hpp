@@ -541,44 +541,78 @@ namespace spatial
   namespace details
   {
 
+    template <typename KeyCompare, typename NodeType>
+    inline bool
+    left_compare_mapping
+    (KeyCompare key_comp, dimension_type map, NodeType* x, NodeType* y)
+    {
+      return left_traversal_mapping
+        (key_comp, map, x, y,
+         typename NodeType::link_type::invariant_category());
+    }
+
+    template <typename KeyCompare, typename NodeType>
+    inline bool
+    left_compare_mapping
+    (KeyCompare key_comp, dimension_type map, NodeType* x, NodeType* y,
+     strict_invariant_tag)
+    {
+      return key_comp(map, const_key(x), const_key(y));
+    }
+
+    template <typename KeyCompare, typename NodeType>
+    inline bool
+    left_compare_mapping
+    (KeyCompare key_comp, dimension_type map, NodeType* x, NodeType* y,
+     relaxed_invariant_tag)
+    {
+      return !key_comp(map, const_key(y), const_key(x));
+    }
+
     /**
-     *  Move the pointer given in parameter to the next element in the ordered
-     *  iteration of values along the mapping dimension.
+     *  Move the iterator given in parameter to the minimum value along the
+     *  iterator's mapping dimension but only in the sub-tree composed of the
+     *  node pointed to by the iterator and its children.
+     *
+     *  The tree in the container will be iterated in in-order fashion. As soon
+     *  as the minimum is found, the first minimum is retained.
      *
      *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. You should use the
-     *  overload \c operator++ on the \mapping_iterator instead. This function
-     *  does not perform any sanity checks on the iterator given in parameter.
+     *  library, but not by the end users of the library. If you feel that you
+     *  must use this function, maybe you were actually looking for \ref
+     *  spatial::mapping_begin(). This function does not perform any sanity
+     *  checks on the iterator given in parameter.
      *
-     *  Since Container is based on \kdtree and \kdtree exhibit good locality of
-     *  reference (for arranging values in space, not for values location in
-     *  memory), the function will run with time complexity close to \Onlognk in
-     *  practice.
+     *  \tparam Container The type of container to iterate.
+     *  \param iter An iterator that points to the root node of the search.
+     *  \return The iterator given in parameter is moved to the value with the
+     *  smallest coordinate along \c iter's \c mapping_dim, and among the
+     *  children of the node pointed to by \c iter.
      *
      *  \fractime
      */
-    ///@(
-    template <typename NodePtr, typename Rank, typename KeyCompare,
-              typename KeyType>
+    template <typename NodePtr, typename Rank, typename KeyCompare>
     inline std::pair<NodePtr, dimension_type>
-    increment_mapping
-    (NodePtr node, dimension_type dim, Rank rank, dimension_type map,
-     KeyCompare key_comp, const KeyType& bound, relaxed_invariant_tag)
+    minimum_mapping(NodePtr node, dimension_type dim, Rank rank,
+                    dimension_type map, KeyCompare key_comp)
     {
-      NodePtr orig = node;
-      NodePtr best = 0;
-      dimension_type best_dim;
-      // Try to look in "front" first
+      SPATIAL_ASSERT_CHECK(map < rank());
+      SPATIAL_ASSERT_CHECK(node_dim < rank());
+      SPATIAL_ASSERT_CHECK(!header(node));
+      while (node->left != 0)
+        {
+          node = node->left;
+          dim = incr_dim(rank, dim);
+        }
+      NodePtr best = node;
+      dimension_type best_dim = dim;
       for (;;)
         {
-          if (node->right != 0
-              && (dim != map || best == 0))
+          if (node->right != 0 && dim != map)
             {
               node = node->right;
               dim = incr_dim(rank, dim);
-              while (node->left != 0
-                     && (dim != map // optimize for strict invariant
-                         || !key_comp(map, const_key(node), const_key(orig))))
+              while (node->left != 0)
                 {
                   node = node->left;
                   dim = incr_dim(rank, dim);
@@ -598,27 +632,134 @@ namespace spatial
                 }
               if (header(node)) break;
             }
-          if (!key_comp(map, const_key(node), const_key(orig))
-              && (best == 0 || key_comp(map, const_key(node), const_key(best))))
+          if (key_comp(map, const_key(node), const_key(best)))
             {
               best = node;
               best_dim = dim;
             }
         }
-      // But if we find nothing or if the next best is larger than expected
-      if (best == 0 || key_comp(map, const_key(orig), const_key(best)))
-        {
-          while (node->left != 0
-                 && (dim != map // optimize for strict invariant
-                     || !key_comp(map, const_key(node), const_key(orig))))
-            {
-              node = node->left;
-              dim = incr_dim(rank, dim);
-            }
-          ... HERE
-        }
+      SPATIAL_ASSERT_CHECK(best_dim < rank());
+      SPATIAL_ASSERT_CHECK(best != 0);
+      SPATIAL_ASSERT_CHECK(!header(best));
+      return std::make_pair(best, best_dim);
     }
-    ///@}
+
+    /**
+     *  Move the pointer given in parameter to the next element in the ordered
+     *  iteration of values along the mapping dimension.
+     *
+     *  \attention This function is meant to be used by other algorithms in the
+     *  library, but not by the end users of the library. You should use the
+     *  overload \c operator++ on the \mapping_iterator instead. This function
+     *  does not perform any sanity checks on the iterator given in parameter.
+     *
+     *  Since Container is based on \kdtree and \kdtree exhibit good locality of
+     *  reference (for arranging values in space, not for values location in
+     *  memory), the function will run with time complexity close to \Onlognk in
+     *  practice.
+     *
+     *  \fractime
+     */
+    template <typename NodePtr, typename Rank, typename KeyCompare,
+              typename KeyType>
+    inline std::pair<NodePtr, dimension_type>
+    increment_mapping
+    (NodePtr node, dimension_type dim, Rank rank, dimension_type map,
+     KeyCompare key_comp, const KeyType& bound, relaxed_invariant_tag)
+    {
+      SPATIAL_ASSERT_CHECK(dim < rank());
+      SPATIAL_ASSERT_CHECK(!header(node));
+      NodePtr orig = node;
+      NodePtr best = 0;
+      dimension_type best_dim;
+      // Try to look in "front" first for equal or greater next best
+      for (;;)
+        {
+          if (node->right != 0
+              && (dim != map || best == 0))
+            {
+              node = node->right; dim = incr_dim(rank, dim);
+              while (node->left != 0
+                     && (dim != map
+                         || left_compare_mapping(key_comp, map, orig, node)))
+                { node = node->left; dim = incr_dim(rank, dim); }
+            }
+          else
+            {
+              NodePtr prev_node = node;
+              node = node->parent; dim = decr_dim(rank, dim);
+              while (!header(node)
+                     && prev_node == node->right)
+                {
+                  prev_node = node;
+                  node = node->parent; dim = decr_dim(rank, dim);
+                }
+              if (header(node)) break;
+            }
+          if (key_comp(map, const_key(orig), const_key(node)))
+            {
+              if (best == 0 || key_comp(map, const_key(node), const_key(best)))
+                { best = node; best_dim = dim; }
+            }
+          else if (!key_comp(map, const_key(node), const_key(orig)))
+            {
+              SPATIAL_ASSERT_CHECK(dim < rank());
+              SPATIAL_ASSERT_CHECK(!header(node));
+              return std::make_pair(node, dim);
+            }
+        }
+      SPATIAL_ASSERT_CHECK(dim == rank() - 1);
+      SPATIAL_ASSERT_CHECK(header(node));
+      // Since we have not found an equal next best, start from beginning
+      NodePtr front_best = best;
+      node = node->parent; dim = 0;
+      while (node->left != 0
+             && (dim != map
+                 || key_comp(map, const_key(orig), const_key(node))))
+        { node = node->left; dim = incr_dim(rank, dim); }
+      if (key_comp(map, const_key(orig), const_key(node))
+          && (best == 0
+              || key_comp(map, const_key(node), const_key(best))
+              || (front_best == best
+                  && !key_comp(map, const_key(best), const_key(node)))))
+        { best = node; best_dim = dim; }
+      for (;;)
+        {
+          if (node->right != 0
+              && (dim != map || best == 0
+                  || key_comp(map, const_key(node), const_key(best))))
+            {
+              node = node->right; dim = incr_dim(rank, dim);
+              while (node->left != 0
+                     && (dim != map
+                         || key_comp(map, const_key(orig), const_key(node))))
+                { node = node->left; dim = incr_dim(rank, dim); }
+            }
+          else
+            {
+              NodePtr prev_node = node;
+              node = node->parent; dim = decr_dim(rank, dim);
+              while (!header(node)
+                     && prev_node == node->right)
+                {
+                  prev_node = node;
+                  node = node->parent; dim = decr_dim(rank, dim);
+                }
+              if (header(node)) break;
+            }
+          if (key_comp(map, const_key(orig), const_key(node))
+              && (best == 0
+                  || key_comp(map, const_key(node), const_key(best))
+                  || (front_best == best
+                      && !key_comp(map, const_key(best), const_key(node)))))
+            { best = node; best_dim = dim; }
+        }
+      if (best != 0)
+        { node = best; dim = best_dim; }
+      SPATIAL_ASSERT_CHECK(dim < rank());
+      SPATIAL_ASSERT_CHECK(!header(node));
+      return std::make_pair(node, dim);
+    }
 
     /**
      *  Move the iterator given in parameter to the maximum value along the
@@ -718,215 +859,98 @@ namespace spatial
     inline mapping_iterator<Container>&
     decrement_mapping(mapping_iterator<Container>& iter)
     {
-      typedef typename mapping_iterator<Container>::node_ptr node_ptr;
-      const typename container_traits<Container>::rank_type
-        rank(iter.rank());
-      const typename container_traits<Container>::key_compare
-        cmp(iter.key_comp());
-      SPATIAL_ASSERT_CHECK(iter.node != 0);
-      SPATIAL_ASSERT_CHECK(iter.mapping_dimension() < rank());
-      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
-      if (header(iter.node))
-        {
-          iter.node = iter.node->parent;
-          iter.node_dim = 0; // root is always compared on dimension 0
-          return maximum_mapping(iter);
-        }
-      node_ptr best = 0; // not null when best has been found
-      node_ptr node = iter.node;
-      dimension_type node_dim = iter.node_dim;
-      dimension_type best_dim = iter.node_dim;
-      if (node->right != 0)
-        {
-          do
-            {
-              node = node->right;
-              node_dim = incr_dim(rank, node_dim);
-            }
-          while (node->right != 0
-                 && (node_dim != iter.mapping_dimension()
-                     || !cmp(node_dim,
-                             const_key(iter.node), const_key(node))));
-        }
-      node_ptr ceiling = node->parent; // the upper limit of unvisited nodes
-      bool sibling_visited = false;    // at ceiling, sibling node is visited
-      if (less_by_ref(cmp, iter.mapping_dimension(),
-                      const_key(node), const_key(iter.node)))
-        { best = node; best_dim = node_dim; }
-      do
-        {
-          if (node->left != 0
-              && (node_dim != iter.mapping_dimension()
-                  || best == 0
-                  || !cmp(node_dim, const_key(node), const_key(best))))
-            {
-              node = node->left;
-              node_dim = incr_dim(rank, node_dim);
-              while (node->right != 0
-                     && (node_dim != iter.mapping_dimension()
-                         || !cmp(node_dim,
-                                 const_key(iter.node), const_key(node))))
-                {
-                  node = node->right;
-                  node_dim = incr_dim(rank, node_dim);
-                }
-              if (less_by_ref(cmp, iter.mapping_dimension(),
-                              const_key(node), const_key(iter.node))
-                  && (best == 0
-                      || less_by_ref(cmp, iter.mapping_dimension(),
-                                     const_key(best), const_key(node))))
-                { best = node; best_dim = node_dim; }
-            }
-          else
-            {
-              node_ptr p = node->parent;
-              // go upward as long as we don't hit header or ceiling
-              while (!header(p)
-                     && ((p != ceiling)
-                         ? (p->left == node)
-                         // either sibling is visited or there is one child
-                         : (sibling_visited
-                            || (p->right == node && p->left == 0)
-                            || (p->left == node && p->right == 0))))
-                {
-                  node = p;
-                  node_dim = decr_dim(rank, node_dim);
-                  p = node->parent;
-                  if (node == ceiling)
-                    {
-                      if (less_by_ref(cmp, iter.mapping_dimension(),
-                                      const_key(node), const_key(iter.node))
-                          && (best == 0
-                              || less_by_ref(cmp, iter.mapping_dimension(),
-                                             const_key(best),
-                                             const_key(node))))
-                        { best = node; best_dim = node_dim; }
-                      sibling_visited = false;
-                      ceiling = p;
-                    }
-                }
-              if (!header(p) && p == ceiling)
-                {
-                  if (p->right == node) { node = p->left; }
-                  else { node = p->right; }
-                  sibling_visited = true;
-                  // go to full right in unvisited sibling
-                  while (node->right != 0
-                         && (node_dim != iter.mapping_dimension()
-                             || !cmp(node_dim, const_key(iter.node),
-                                     const_key(node))))
-                    {
-                      node = node->right;
-                      node_dim = incr_dim(rank, node_dim);
-                    }
-                  if (less_by_ref(cmp, iter.mapping_dimension(),
-                                  const_key(node), const_key(iter.node))
-                      && (best == 0
-                          || less_by_ref(cmp, iter.mapping_dimension(),
-                                         const_key(best), const_key(node))))
-                    { best = node; best_dim = node_dim; }
-                }
-              else
-                {
-                  node = p;
-                  node_dim = decr_dim(rank, node_dim);
-                  if (!header(node))
-                    {
-                      if (less_by_ref(cmp, iter.mapping_dimension(),
-                                      const_key(node), const_key(iter.node))
-                          && (best == 0
-                              || less_by_ref(cmp, iter.mapping_dimension(),
-                                             const_key(best),
-                                             const_key(node))))
-                        { best = node; best_dim = node_dim; }
-                    }
-                }
-            }
-        }
-      while (!header(node));
-      if (best != 0) { iter.node = best; iter.node_dim = best_dim; }
-      else { iter.node = node; iter.node_dim = node_dim; }
-      SPATIAL_ASSERT_CHECK(header(node));
-      SPATIAL_ASSERT_CHECK(node_dim == (rank() - 1));
-      SPATIAL_ASSERT_CHECK(iter.mapping_dimension() < rank());
-      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
-      SPATIAL_ASSERT_CHECK(iter.node != 0);
-      return iter;
-    }
-
-    /**
-     *  Move the iterator given in parameter to the minimum value along the
-     *  iterator's mapping dimension but only in the sub-tree composed of the
-     *  node pointed to by the iterator and its children.
-     *
-     *  The tree in the container will be iterated in in-order fashion. As soon
-     *  as the minimum is found, the first minimum is retained.
-     *
-     *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking for \ref
-     *  spatial::mapping_begin(). This function does not perform any sanity
-     *  checks on the iterator given in parameter.
-     *
-     *  \tparam Container The type of container to iterate.
-     *  \param iter An iterator that points to the root node of the search.
-     *  \return The iterator given in parameter is moved to the value with the
-     *  smallest coordinate along \c iter's \c mapping_dim, and among the
-     *  children of the node pointed to by \c iter.
-     *
-     *  \fractime
-     */
-    template <typename NodePtr, typename Rank, typename KeyCompare>
-    inline std::pair<NodePtr, dimension_type>
-    minimum_mapping(NodePtr node, dimension_type dim, Rank rank,
-                    dimension_type map, KeyCompare key_comp)
-    {
-      SPATIAL_ASSERT_CHECK(map < rank());
-      SPATIAL_ASSERT_CHECK(node_dim < rank());
+      SPATIAL_ASSERT_CHECK(dim < rank());
       SPATIAL_ASSERT_CHECK(!header(node));
-      while (node->left != 0)
-        {
-          node = node->left;
-          dim = incr_dim(rank, dim);
-        }
-      NodePtr best = node;
-      dimension_type best_dim = dim;
+      NodePtr orig = node;
+      NodePtr best = 0;
+      dimension_type best_dim;
+      // Try to look in "front" first for equal or greater next best
       for (;;)
         {
-          if (node->right != 0 && dim != map)
+          if (node->left != 0
+              && (dim != map || best == 0))
             {
-              node = node->right;
-              dim = incr_dim(rank, dim);
-              while (node->left != 0)
-                {
-                  node = node->left;
-                  dim = incr_dim(rank, dim);
-                }
+              node = node->left; dim = incr_dim(rank, dim);
+              while (node->right != 0
+                     && (dim != map
+                         || !key_comp(map, const_key(orig), const_key(node))))
+                { node = node->right; dim = incr_dim(rank, dim); }
             }
           else
             {
               NodePtr prev_node = node;
-              node = node->parent;
-              dim = decr_dim(rank, dim);
+              node = node->parent; dim = decr_dim(rank, dim);
               while (!header(node)
-                     && prev_node == node->right)
+                     && prev_node == node->left)
                 {
                   prev_node = node;
-                  node = node->parent;
-                  dim = decr_dim(rank, dim);
+                  node = node->parent; dim = decr_dim(rank, dim);
                 }
               if (header(node)) break;
             }
-          if (key_comp(map, const_key(node), const_key(best)))
+          if (key_comp(map, const_key(node), const_key(orig)))
             {
-              best = node;
-              best_dim = dim;
+              if (best == 0 || key_comp(map, const_key(best), const_key(node)))
+                { best = node; best_dim = dim; }
+            }
+          else if (!key_comp(map, const_key(orig), const_key(node)))
+            {
+              SPATIAL_ASSERT_CHECK(dim < rank());
+              SPATIAL_ASSERT_CHECK(!header(node));
+              return std::make_pair(node, dim);
             }
         }
-      SPATIAL_ASSERT_CHECK(best_dim < rank());
-      SPATIAL_ASSERT_CHECK(best != 0);
-      SPATIAL_ASSERT_CHECK(!header(best));
-      return std::make_pair(best, best_dim);
+      SPATIAL_ASSERT_CHECK(dim == rank() - 1);
+      SPATIAL_ASSERT_CHECK(header(node));
+      // Since we have not found an equal next best, start from beginning
+      NodePtr front_best = best;
+      node = node->parent; dim = 0;
+      while (node->right != 0
+             && (dim != map
+                 || key_comp(map, const_key(node), const_key(orig))))
+        { node = node->right; dim = incr_dim(rank, dim); }
+      if (key_comp(map, const_key(node), const_key(orig))
+          && (best == 0
+              || key_comp(map, const_key(best), const_key(node))
+              || (front_best == best
+                  && !key_comp(map, const_key(node), const_key(best)))))
+        { best = node; best_dim = dim; }
+      for (;;)
+        {
+          if (node->left != 0
+              && (dim != map || best == 0
+                  || key_comp(map, const_key(best), const_key(node))))
+            {
+              node = node->left; dim = incr_dim(rank, dim);
+              while (node->right != 0
+                     && (dim != map
+                         || key_comp(map, const_key(node), const_key(orig))))
+                { node = node->right; dim = incr_dim(rank, dim); }
+            }
+          else
+            {
+              NodePtr prev_node = node;
+              node = node->parent; dim = decr_dim(rank, dim);
+              while (!header(node)
+                     && prev_node == node->left)
+                {
+                  prev_node = node;
+                  node = node->parent; dim = decr_dim(rank, dim);
+                }
+              if (header(node)) break;
+            }
+          if (key_comp(map, const_key(node), const_key(orig))
+              && (best == 0
+                  || key_comp(map, const_key(best), const_key(node))
+                  || (front_best == best
+                      && !key_comp(map, const_key(node), const_key(best)))))
+            { best = node; best_dim = dim; }
+        }
+      if (best != 0)
+        { node = best; dim = best_dim; }
+      SPATIAL_ASSERT_CHECK(dim < rank());
+      SPATIAL_ASSERT_CHECK(!header(node));
+      return std::make_pair(node, dim);
     }
   } // namespace details
 } // namespace spatial
