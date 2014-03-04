@@ -128,6 +128,7 @@ namespace spatial
       <typename container_traits<Container>::mode_type,
        typename container_traits<Container>::rank_type>
   {
+  private:
     //! The preorder iterator without its criterion
     typedef typename details::Bidirectional_iterator
     <typename container_traits<Container>::mode_type,
@@ -254,6 +255,7 @@ namespace spatial
       <typename container_traits<Container>::mode_type,
        typename container_traits<Container>::rank_type>
   {
+  private:
     //! The preorder iterator without its criterion.
     typedef details::Const_bidirectional_iterator
     <typename container_traits<Container>::mode_type,

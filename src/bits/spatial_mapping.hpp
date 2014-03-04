@@ -18,6 +18,7 @@
 #include "spatial_bidirectional.hpp"
 #include "spatial_rank.hpp"
 #include "spatial_except.hpp"
+#include "spatial_assign.hpp"
 
 namespace spatial
 {
@@ -98,6 +99,10 @@ namespace spatial
      typename container_traits<Ct>::rank_type> Base;
 
   public:
+    using Base::node;
+    using Base::node_dim;
+    using Base::rank;
+
     typedef typename container_traits<Ct>::key_compare key_compare;
 
     //! Uninitialized iterator.
@@ -235,6 +240,10 @@ namespace spatial
      typename container_traits<Ct>::rank_type> Base;
 
   public:
+    using Base::node;
+    using Base::node_dim;
+    using Base::rank;
+
     //! Alias for the key_compare type used by the iterator.
     typedef typename container_traits<Ct>::key_compare key_compare;
 
@@ -297,28 +306,42 @@ namespace spatial
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
     mapping_iterator<const Ct>& operator++()
-    { return increment_mapping(*this); }
+    {
+      details::assign(node, node_dim,
+                      increment_mapping(node, node_dim, rank(),
+                                        _data.mapping_dim, key_compare()));
+      return *this;
+    }
 
     //! Increments the iterator but returns the value of the iterator before
     //! the increment. Prefer to use the other form in \c for loops.
     mapping_iterator<const Ct> operator++(int)
     {
       mapping_iterator<const Ct> x(*this);
-      increment_mapping(*this);
+      details::assign(node, node_dim,
+                      increment_mapping(node, node_dim, rank(),
+                                        _data.mapping_dim, key_compare()));
       return x;
     }
 
     //! Decrements the iterator and returns the decremented value. Prefer to
     //! use this form in \c for loops.
     mapping_iterator<const Ct>& operator--()
-    { return decrement_mapping(*this); }
+    {
+      details::assign(node, node_dim,
+                      decrement_mapping(node, node_dim, rank(),
+                                        _data.mapping_dim, key_compare()));
+      return *this;
+    }
 
     //! Decrements the iterator but returns the value of the iterator before
     //! the decrement. Prefer to use the other form in \c for loops.
     mapping_iterator<const Ct> operator--(int)
     {
       mapping_iterator<const Ct> x(*this);
-      decrement_mapping(*this);
+      details::assign(node, node_dim,
+                      decrement_mapping(node, node_dim, rank(),
+                                        _data.mapping_dim, key_compare()));
       return x;
     }
 
@@ -377,39 +400,6 @@ namespace spatial
     it.mapping_dimension() = mapping_dim;
   }
 
-  namespace details
-  {
-    template <typename Container>
-    mapping_iterator<Container>&
-    increment_mapping(mapping_iterator<Container>& iter);
-
-    /**
-     *  Move the pointer given in parameter to the previous element in the
-     *  ordered iteration of values along the mapping dimension.
-     *
-     *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. You should use the
-     *  overload \c operator-- on the \mapping_iterator instead. This function
-     *  does not perform any sanity checks on the iterator given in parameter.
-     *
-     *  \tparam Container The type of container to iterate.
-     *  \param iter The reference iterator that points to the current node.
-     *  \return An iterator pointing to the value with the smallest coordinate
-     *  along \c iter's \c mapping_dim, and among the children of the node
-     *  pointed to by \c iter.
-     *
-     *  Since Container is based on \kdtree and \kdtree exhibit good locality of
-     *  reference (for arranging values in space, not for values location in
-     *  memory), the function will run with time complexity close to \Onlognk in
-     *  practice.
-     *
-     *  \fractime
-     */
-    template <typename Container>
-    mapping_iterator<Container>&
-    decrement_mapping(mapping_iterator<Container>& iter);
-  } // namespace details
-
   /**
    *  Finds the past-the-end position in \c container for this constant
    *  iterator.
@@ -432,39 +422,13 @@ namespace spatial
    *
    *  \consttime
    */
+  ///@{
   template <typename Container>
   inline mapping_iterator<Container>
   mapping_end(Container& container, dimension_type mapping_dim)
   {
     except::check_dimension(container.dimension(), mapping_dim);
     return mapping_iterator<Container>
-      (container, mapping_dim, container.dimension() - 1,
-       container.end().node); // At header (dim = rank - 1)
-  }
-
-  ///@{
-  /**
-   *  Finds the past-the-end position in \c container for this constant
-   *  iterator.
-   *
-   *  \tparam Container The type of container to iterate.
-   *  \param mapping_dim The dimension that is the reference for the iteration:
-   *  all iterated values will be ordered along this dimension, from smallest to
-   *  largest.
-   *  \param container The container to iterate.
-   *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the rank of the container.
-   *  \return An iterator pointing to the past-the-end position in the
-   *  container.
-   *
-   *  \consttime
-   */
-  template <typename Container>
-  inline mapping_iterator<const Container>
-  mapping_end(const Container& container, dimension_type mapping_dim)
-  {
-    except::check_dimension(container.dimension(), mapping_dim);
-    return mapping_iterator<const Container>
       (container, mapping_dim, container.dimension() - 1,
        container.end().node); // At header (dim = rank - 1)
   }
@@ -495,41 +459,20 @@ namespace spatial
    *
    *  \fractime
    */
+  ///@{
   template <typename Container>
   inline mapping_iterator<Container>
   mapping_begin(Container& container, dimension_type mapping_dim)
   {
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
-    mapping_iterator<Container> it(container, mapping_dim, 0,
-                                   container.end().node->parent);
-    return details::minimum_mapping(it);
-  }
-
-  ///@{
-  /**
-   *  Finds the value in \c container for which its key has the smallest
-   *  coordinate over the dimension \c mapping_dim.
-   *
-   *  \tparam Container The type of container to iterate.
-   *  \param mapping_dim The dimension that is the reference for the iteration:
-   *  all iterated values will be ordered along this dimension, from smallest to
-   *  largest.
-   *  \param container The container to iterate.
-   *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the rank of the container.
-   *
-   *  \fractime
-   */
-  template <typename Container>
-  inline mapping_iterator<const Container>
-  mapping_begin(const Container& container, dimension_type mapping_dim)
-  {
-    if (container.empty()) return mapping_end(container, mapping_dim);
-    except::check_dimension(container.dimension(), mapping_dim);
-    mapping_iterator<const Container>
-      it(container, mapping_dim, 0, container.end().node->parent);
-    return details::minimum_mapping(it);
+    dimension_type dim;
+    typename mapping_iterator<Container>::node_ptr node;
+    details::assign(node, dim,
+                    minimum_mapping(container.end().node->parent, 0,
+                                    container.rank(), mapping_dim,
+                                    container.key_comp()));
+    return mapping_iterator<Container>(container, mapping_dim, dim, node);
   }
 
   template <typename Container>
@@ -540,7 +483,6 @@ namespace spatial
 
   namespace details
   {
-
     template <typename KeyCompare, typename NodeType>
     inline bool
     left_compare_mapping
@@ -597,7 +539,7 @@ namespace spatial
                     dimension_type map, KeyCompare key_comp)
     {
       SPATIAL_ASSERT_CHECK(map < rank());
-      SPATIAL_ASSERT_CHECK(node_dim < rank());
+      SPATIAL_ASSERT_CHECK(dim < rank());
       SPATIAL_ASSERT_CHECK(!header(node));
       while (node->left != 0)
         {
@@ -665,7 +607,7 @@ namespace spatial
     inline std::pair<NodePtr, dimension_type>
     increment_mapping
     (NodePtr node, dimension_type dim, Rank rank, dimension_type map,
-     KeyCompare key_comp, const KeyType& bound, relaxed_invariant_tag)
+     KeyCompare key_comp)
     {
       SPATIAL_ASSERT_CHECK(dim < rank());
       SPATIAL_ASSERT_CHECK(!header(node));
@@ -786,7 +728,7 @@ namespace spatial
                     dimension_type map, KeyCompare key_comp)
     {
       SPATIAL_ASSERT_CHECK(map < rank());
-      SPATIAL_ASSERT_CHECK(node_dim < rank());
+      SPATIAL_ASSERT_CHECK(dim < rank());
       SPATIAL_ASSERT_CHECK(!header(node));
       while (node->right != 0)
         {
@@ -855,9 +797,12 @@ namespace spatial
      *
      *  \fractime
      */
-    template <typename Container>
-    inline mapping_iterator<Container>&
-    decrement_mapping(mapping_iterator<Container>& iter)
+    template <typename NodePtr, typename Rank, typename KeyCompare,
+              typename KeyType>
+    inline std::pair<NodePtr, dimension_type>
+    decrement_mapping
+    (NodePtr node, dimension_type dim, Rank rank, dimension_type map,
+     KeyCompare key_comp)
     {
       SPATIAL_ASSERT_CHECK(dim < rank());
       SPATIAL_ASSERT_CHECK(!header(node));

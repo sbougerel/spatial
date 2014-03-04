@@ -429,18 +429,10 @@ BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_erase_iterator )
       {
         iterator eraser = fix.container.begin();
         std::advance(eraser, static_cast<size_type>(rand()) % fix.container.size());
-        mapping_iterator begin_0(fix.container, 0, 0,
-                                 fix.container.end().node->parent);
-        mapping_iterator end_0(fix.container, 0,
-                               details::decr_dim(fix.container.rank(), 0),
-                               fix.container.end().node);
-        mapping_iterator begin_1(fix.container, 1, 0,
-                                 fix.container.end().node->parent);
-        mapping_iterator end_1(fix.container, 1,
-                               details::decr_dim(fix.container.rank(), 0),
-                               fix.container.end().node);
-        begin_0 = details::minimum_mapping(begin_0);
-        begin_1 = details::minimum_mapping(begin_1);
+        mapping_iterator begin_0 = mapping_begin(fix.container, 0);
+        mapping_iterator end_0 = mapping_end(fix.container, 0);
+        mapping_iterator begin_1 = mapping_begin(fix.container, 1);
+        mapping_iterator end_1 = mapping_end(fix.container, 1);
         size_type count = 0;
         for(mapping_iterator i = begin_0; i != end_0; ++i, ++count);
         BOOST_REQUIRE_EQUAL(count, track_size);

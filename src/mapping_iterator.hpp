@@ -194,6 +194,7 @@ namespace spatial
    *
    *  \fractime
    */
+  ///@{
   template <typename Container>
   inline mapping_iterator<Container>
   mapping_lower_bound(Container& container, dimension_type mapping_dim,
@@ -202,41 +203,13 @@ namespace spatial
   {
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
-    mapping_iterator<Container> it
-      (container, mapping_dim, 0, container.end().node->parent);
-    return details::lower_bound_mapping(it, bound);
-  }
-
-  ///@{
-  /**
-   *  Finds the value with the smallest coordinate along the mapping dimension
-   *  that is greater or equal to \c bound, and return a constant iterator to
-   *  this value.
-   *
-   *  \tparam Container The type of container to iterate.
-   *  \param mapping_dim The dimension that is the reference for the iteration:
-   *  all iterated values will be ordered along this dimension, from smallest to
-   *  largest.
-   *  \param bound The lowest bound to the iterator position.
-   *  \param container The container to iterate.
-   *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the rank of the container.
-   *  \return An iterator pointing to the value with the smallest coordinate
-   *  greater or equal to \c bound along \c mapping_dim.
-   *
-   *  \fractime
-   */
-  template <typename Container>
-  inline mapping_iterator<const Container>
-  mapping_lower_bound
-  (const Container& container, dimension_type mapping_dim,
-   const typename container_traits<Container>::key_type& bound)
-  {
-    if (container.empty()) return mapping_end(container, mapping_dim);
-    except::check_dimension(container.dimension(), mapping_dim);
-    mapping_iterator<const Container> it
-      (container, mapping_dim, 0, container.end().node->parent);
-    return details::lower_bound_mapping(it, bound);
+    dimension_type dim;
+    typename mapping_iterator<Container>::node_ptr node;
+    details::assign(dim, node,
+                    lower_bound_mapping(container.end().node->parent, 0,
+                                        container.rank(), mapping_dim,
+                                        container.key_comp(), bound));
+    return mapping_iterator<Container>(container, mapping_dim, dim, node);
   }
 
   template <typename Container>
@@ -271,6 +244,7 @@ namespace spatial
    *
    *  \fractime
    */
+  ///@{
   template <typename Container>
   inline mapping_iterator<Container>
   mapping_upper_bound
@@ -279,41 +253,13 @@ namespace spatial
   {
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
-    mapping_iterator<Container> it // At root (dim = 0)
-      (container, mapping_dim, 0, container.end().node->parent);
-    return details::upper_bound_mapping(it, bound);
-  }
-
-  ///@{
-  /**
-   *  Finds the value with the largest coordinate along the mapping dimension
-   *  that is stricly less than \c bound, and return an iterator pointing to
-   *  this value.
-   *
-   *  \tparam Container The type of container to iterate.
-   *  \param mapping_dim The dimension that is the reference for the iteration:
-   *  all iterated values will be ordered along this dimension, from smallest to
-   *  largest.
-   *  \param bound The lowest bound to the iterator position.
-   *  \param container The container to iterate.
-   *  \throw invalid_dimension If the dimension specified is larger than the
-   *  dimension from the rank of the container.
-   *  \return An iterator pointing to the value with the smallest coordinate
-   *  greater or equal to \c bound along \c mapping_dim.
-   *
-   *  \fractime
-   */
-  template <typename Container>
-  inline mapping_iterator<const Container>
-  mapping_upper_bound
-  (const Container& container, dimension_type mapping_dim,
-   const typename container_traits<Container>::key_type& bound)
-  {
-    if (container.empty()) return mapping_end(container, mapping_dim);
-    except::check_dimension(container.dimension(), mapping_dim);
-    mapping_iterator<const Container> it  // At root (dim = 0)
-      (container, mapping_dim, 0, container.end().node->parent);
-    return details::upper_bound_mapping(it, bound);
+    dimension_type dim;
+    typename mapping_iterator<Container>::node_ptr node;
+    details::assign(dim, node,
+                    upper_bound_mapping(container.end().node->parent, 0,
+                                        container.rank(), mapping_dim,
+                                        container.key_comp(), bound));
+    return mapping_iterator<Container>(container, mapping_dim, dim, node);
   }
 
   template <typename Container>

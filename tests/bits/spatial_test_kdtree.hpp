@@ -195,18 +195,10 @@ BOOST_AUTO_TEST_CASE( test_kdtree_erase_iter )
         iterator eraser = fix.container.begin();
         std::advance(eraser, static_cast<std::size_t>(rand())
                      % fix.container.size());
-        mapping_iterator begin_0(fix.container, 0, 0,
-                                 fix.container.end().node->parent);
-        mapping_iterator end_0(fix.container, 0,
-                               details::decr_dim(fix.container.rank(), 0),
-                               fix.container.end().node);
-        mapping_iterator begin_1(fix.container, 1, 0,
-                                 fix.container.end().node->parent);
-        mapping_iterator end_1(fix.container, 1,
-                               details::decr_dim(fix.container.rank(), 0),
-                               fix.container.end().node);
-        begin_0 = details::minimum_mapping(begin_0);
-        begin_1 = details::minimum_mapping(begin_1);
+        mapping_iterator begin_0 = mapping_begin(fix.container, 0);
+        mapping_iterator end_0 = mapping_end(fix.container, 0);
+        mapping_iterator begin_1 = mapping_begin(fix.container, 1);
+        mapping_iterator end_1 = mapping_end(fix.container, 1);
         std::size_t count = 0;
         for(mapping_iterator i = begin_0; i != end_0; ++i, ++count);
         BOOST_CHECK_EQUAL(count, track_size);
@@ -435,26 +427,14 @@ BOOST_AUTO_TEST_CASE( test_kdtree_rebalance )
   size_type size = fix.container.size();
   idle_pointset_fix<int2>::container_type copy(fix.container);
   BOOST_REQUIRE_NO_THROW(copy.rebalance());
-  mapping_iterator orig_begin_0(fix.container, 0, 0,
-                                fix.container.end().node->parent);
-  mapping_iterator orig_end_0(fix.container, 0,
-                              details::decr_dim(fix.container.rank(), 0),
-                              fix.container.end().node);
-  mapping_iterator orig_begin_1(fix.container, 1, 0,
-                                fix.container.end().node->parent);
-  mapping_iterator orig_end_1(fix.container, 1,
-                              details::decr_dim(fix.container.rank(), 0),
-                              fix.container.end().node);
-  orig_begin_0 = details::minimum_mapping(orig_begin_0);
-  orig_begin_1 = details::minimum_mapping(orig_begin_1);
-  mapping_iterator copy_begin_0(copy, 0, 0, copy.end().node->parent);
-  mapping_iterator copy_end_0(copy, 0, details::decr_dim(copy.rank(), 0),
-                              copy.end().node);
-  mapping_iterator copy_begin_1(copy, 1, 0, copy.end().node->parent);
-  mapping_iterator copy_end_1(copy, 1, details::decr_dim(copy.rank(), 0),
-                              copy.end().node);
-  copy_begin_0 = details::minimum_mapping(copy_begin_0);
-  copy_begin_1 = details::minimum_mapping(copy_begin_1);
+  mapping_iterator orig_begin_0 = mapping_begin(fix.container, 0);
+  mapping_iterator orig_end_0   = mapping_end(fix.container, 0);
+  mapping_iterator orig_begin_1 = mapping_begin(fix.container, 1);
+  mapping_iterator orig_end_1   = mapping_end(fix.container, 1);
+  mapping_iterator copy_begin_0 = mapping_begin(copy, 0);
+  mapping_iterator copy_end_0   = mapping_end(copy, 0);
+  mapping_iterator copy_begin_1 = mapping_begin(copy, 1);
+  mapping_iterator copy_end_1   = mapping_end(copy, 1);
   int count = 0;
   mapping_iterator i = orig_begin_0, j = copy_begin_0;
   for(; i != orig_end_0 && j != copy_end_0; ++i, ++j, ++count);
@@ -490,26 +470,14 @@ BOOST_AUTO_TEST_CASE( test_kdtree_copy_and_rebalance )
   idle_pointset_fix<double6> fix(100, randomize(-10, 10));
   size_type size = fix.container.size();
   idle_pointset_fix<double6>::container_type copy(fix.container, true);
-  mapping_iterator orig_begin_0(fix.container, 0, 0,
-                                fix.container.end().node->parent);
-  mapping_iterator orig_end_0(fix.container, 0,
-                              details::decr_dim(fix.container.rank(), 0),
-                              fix.container.end().node);
-  mapping_iterator orig_begin_1(fix.container, 1, 0,
-                                fix.container.end().node->parent);
-  mapping_iterator orig_end_1(fix.container, 1,
-                              details::decr_dim(fix.container.rank(), 0),
-                              fix.container.end().node);
-  orig_begin_0 = details::minimum_mapping(orig_begin_0);
-  orig_begin_1 = details::minimum_mapping(orig_begin_1);
-  mapping_iterator copy_begin_0(copy, 0, 0, copy.end().node->parent);
-  mapping_iterator copy_end_0(copy, 0, details::decr_dim(copy.rank(), 0),
-                              copy.end().node);
-  mapping_iterator copy_begin_1(copy, 1, 0, copy.end().node->parent);
-  mapping_iterator copy_end_1(copy, 1, details::decr_dim(copy.rank(), 0),
-                              copy.end().node);
-  copy_begin_0 = details::minimum_mapping(copy_begin_0);
-  copy_begin_1 = details::minimum_mapping(copy_begin_1);
+  mapping_iterator orig_begin_0 = mapping_begin(fix.container, 0);
+  mapping_iterator orig_end_0   = mapping_end(fix.container, 0);
+  mapping_iterator orig_begin_1 = mapping_begin(fix.container, 1);
+  mapping_iterator orig_end_1   = mapping_end(fix.container, 1);
+  mapping_iterator copy_begin_0 = mapping_begin(copy, 0);
+  mapping_iterator copy_end_0   = mapping_end(copy, 0);
+  mapping_iterator copy_begin_1 = mapping_begin(copy, 1);
+  mapping_iterator copy_end_1   = mapping_end(copy, 1);
   int count = 0;
   mapping_iterator i = orig_begin_0, j = copy_begin_0;
   for(; i != orig_end_0 && j != copy_end_0; ++i, ++j, ++count);
