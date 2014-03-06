@@ -205,7 +205,7 @@ namespace spatial
     except::check_dimension(container.dimension(), mapping_dim);
     dimension_type dim;
     typename mapping_iterator<Container>::node_ptr node;
-    details::assign(dim, node,
+    details::assign(node, dim,
                     lower_bound_mapping(container.end().node->parent, 0,
                                         container.rank(), mapping_dim,
                                         container.key_comp(), bound));
@@ -255,7 +255,7 @@ namespace spatial
     except::check_dimension(container.dimension(), mapping_dim);
     dimension_type dim;
     typename mapping_iterator<Container>::node_ptr node;
-    details::assign(dim, node,
+    details::assign(node, dim,
                     upper_bound_mapping(container.end().node->parent, 0,
                                         container.rank(), mapping_dim,
                                         container.key_comp(), bound));
@@ -294,90 +294,19 @@ namespace spatial
      *
      *  \fractime
      */
-    ///@{
     template <typename NodePtr, typename Rank, typename KeyCompare,
               typename KeyType>
     inline std::pair<NodePtr, dimension_type>
-    lower_bound_mapping(NodePtr node, dimension_type dim, Rank rank,
-                        dimension_type map, KeyCompare key_comp,
-                        const KeyType& bound, relaxed_invariant_tag)
+    lower_bound_mapping
+    (NodePtr node, dimension_type dim, Rank rank, dimension_type map,
+     KeyCompare key_comp, const KeyType& bound)
     {
       SPATIAL_ASSERT_CHECK(map < rank());
-      SPATIAL_ASSERT_CHECK(node_dim < rank());
-      SPATIAL_ASSERT_CHECK(!header(node));
-      while (node->left != 0
-             && (dim != map // optimize for strict invariant
-                 || !key_comp(map, const_key(node), const_key(bound))))
-        {
-          node = node->left;
-          dim = incr_dim(rank, dim);
-        }
-      NodePtr best = 0;
-      dimension_type best_dim;
-      if (!key_comp(map, const_key(node), const_key(bound)))
-        {
-          best = node;
-          best_dim = dim;
-        }
-      for (;;)
-        {
-          if (node->right != 0 && (dim != map || best == 0))
-            {
-              node = node->right;
-              dim = incr_dim(rank, dim);
-              while (node->left != 0
-                     && (dim != map // optimize for strict invariant
-                         || !key_comp(map, const_key(node), const_key(bound))))
-                {
-                  node = node->left;
-                  dim = incr_dim(rank, dim);
-                }
-            }
-          else
-            {
-              NodePtr prev_node = node;
-              node = node->parent;
-              dim = decr_dim(rank, dim);
-              while (!header(node)
-                     && prev_node == node->right)
-                {
-                  prev_node = node;
-                  node = node->parent;
-                  dim = decr_dim(rank, dim);
-                }
-              if (header(node)) break;
-            }
-          if (!key_comp(map, const_key(node), const_key(bound))
-              && (best == 0 || key_comp(map, const_key(node), const_key(best))))
-            {
-              best = node;
-              best_dim = dim;
-            }
-        }
-      SPATIAL_ASSERT_CHECK(node_dim == rank() - 1);
-      SPATIAL_ASSERT_CHECK(best != node);
-      SPATIAL_ASSERT_CHECK(header(node));
-      if (best == 0)
-        {
-          best = node;
-          best_dim = node_dim;
-        }
-      return std::make_pair(best, best_dim);
-    }
-
-    template <typename NodePtr, typename Rank, typename KeyCompare,
-              typename KeyType>
-    inline std::pair<NodePtr, dimension_type>
-    lower_bound_mapping(NodePtr node, dimension_type dim, Rank rank,
-                        dimension_type map, KeyCompare key_comp,
-                        const KeyType& bound, strict_invariant_tag)
-    {
-      SPATIAL_ASSERT_CHECK(map < rank());
-      SPATIAL_ASSERT_CHECK(node_dim < rank());
+      SPATIAL_ASSERT_CHECK(dim < rank());
       SPATIAL_ASSERT_CHECK(!header(node));
       while (node->left != 0
              && (dim != map
-                 || key_comp(map, const_key(bound), const_key(node))))
+                 || left_compare_mapping(key_comp, map, bound, node)))
         {
           node = node->left;
           dim = incr_dim(rank, dim);
@@ -397,7 +326,7 @@ namespace spatial
               dim = incr_dim(rank, dim);
               while (node->left != 0
                      && (dim != map
-                         || key_comp(map, const_key(bound), const_key(node))))
+                         || left_compare_mapping(key_comp, map, bound, node)))
                 {
                   node = node->left;
                   dim = incr_dim(rank, dim);
@@ -424,17 +353,16 @@ namespace spatial
               best_dim = dim;
             }
         }
-      SPATIAL_ASSERT_CHECK(node_dim == rank() - 1);
+      SPATIAL_ASSERT_CHECK(dim == rank() - 1);
       SPATIAL_ASSERT_CHECK(best != node);
       SPATIAL_ASSERT_CHECK(header(node));
       if (best == 0)
         {
           best = node;
-          best_dim = node_dim;
+          best_dim = dim;
         }
       return std::make_pair(best, best_dim);
     }
-    ///@}
 
     /**
      *  Move the iterator given in parameter to the value with the largest
@@ -466,7 +394,7 @@ namespace spatial
      KeyCompare key_comp, const KeyType& bound)
     {
       SPATIAL_ASSERT_CHECK(map < rank());
-      SPATIAL_ASSERT_CHECK(node_dim < rank());
+      SPATIAL_ASSERT_CHECK(dim < rank());
       SPATIAL_ASSERT_CHECK(!header(node));
       while (node->left != 0
              && (dim != map
@@ -517,13 +445,13 @@ namespace spatial
               best_dim = dim;
             }
         }
-      SPATIAL_ASSERT_CHECK(node_dim == rank() - 1);
+      SPATIAL_ASSERT_CHECK(dim == rank() - 1);
       SPATIAL_ASSERT_CHECK(best != node);
       SPATIAL_ASSERT_CHECK(header(node));
       if (best == 0)
         {
           best = node;
-          best_dim = node_dim;
+          best_dim = dim;
         }
       return std::make_pair(best, best_dim);
     }

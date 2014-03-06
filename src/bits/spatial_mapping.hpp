@@ -156,28 +156,42 @@ namespace spatial
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
     mapping_iterator<Ct>& operator++()
-    { return increment_mapping(*this); }
+    {
+      details::assign(node, node_dim,
+                      increment_mapping(node, node_dim, rank(),
+                                        _data.mapping_dim, key_comp()));
+      return *this;
+    }
 
     //! Increments the iterator but returns the value of the iterator before
     //! the increment. Prefer to use the other form in \c for loops.
     mapping_iterator<Ct> operator++(int)
     {
       mapping_iterator<Ct> x(*this);
-      increment_mapping(*this);
+      details::assign(node, node_dim,
+                      increment_mapping(node, node_dim, rank(),
+                                        _data.mapping_dim, key_comp()));
       return x;
     }
 
     //! Decrements the iterator and returns the decremented value. Prefer to
     //! use this form in \c for loops.
     mapping_iterator<Ct>& operator--()
-    { return decrement_mapping(*this); }
+    {
+      details::assign(node, node_dim,
+                      decrement_mapping(node, node_dim, rank(),
+                                        _data.mapping_dim, key_comp()));
+      return *this;
+    }
 
     //! Decrements the iterator but returns the value of the iterator before
     //! the decrement. Prefer to use the other form in \c for loops.
     mapping_iterator<Ct> operator--(int)
     {
       mapping_iterator<Ct> x(*this);
-      decrement_mapping(*this);
+      details::assign(node, node_dim,
+                      decrement_mapping(node, node_dim, rank(),
+                                        _data.mapping_dim, key_comp()));
       return x;
     }
 
@@ -309,7 +323,7 @@ namespace spatial
     {
       details::assign(node, node_dim,
                       increment_mapping(node, node_dim, rank(),
-                                        _data.mapping_dim, key_compare()));
+                                        _data.mapping_dim, key_comp()));
       return *this;
     }
 
@@ -320,7 +334,7 @@ namespace spatial
       mapping_iterator<const Ct> x(*this);
       details::assign(node, node_dim,
                       increment_mapping(node, node_dim, rank(),
-                                        _data.mapping_dim, key_compare()));
+                                        _data.mapping_dim, key_comp()));
       return x;
     }
 
@@ -330,7 +344,7 @@ namespace spatial
     {
       details::assign(node, node_dim,
                       decrement_mapping(node, node_dim, rank(),
-                                        _data.mapping_dim, key_compare()));
+                                        _data.mapping_dim, key_comp()));
       return *this;
     }
 
@@ -341,7 +355,7 @@ namespace spatial
       mapping_iterator<const Ct> x(*this);
       details::assign(node, node_dim,
                       decrement_mapping(node, node_dim, rank(),
-                                        _data.mapping_dim, key_compare()));
+                                        _data.mapping_dim, key_comp()));
       return x;
     }
 
@@ -488,7 +502,7 @@ namespace spatial
     left_compare_mapping
     (KeyCompare key_comp, dimension_type map, NodeType* x, NodeType* y)
     {
-      return left_traversal_mapping
+      return left_compare_mapping
         (key_comp, map, x, y,
          typename NodeType::link_type::invariant_category());
     }
@@ -602,8 +616,7 @@ namespace spatial
      *
      *  \fractime
      */
-    template <typename NodePtr, typename Rank, typename KeyCompare,
-              typename KeyType>
+    template <typename NodePtr, typename Rank, typename KeyCompare>
     inline std::pair<NodePtr, dimension_type>
     increment_mapping
     (NodePtr node, dimension_type dim, Rank rank, dimension_type map,
@@ -797,8 +810,7 @@ namespace spatial
      *
      *  \fractime
      */
-    template <typename NodePtr, typename Rank, typename KeyCompare,
-              typename KeyType>
+    template <typename NodePtr, typename Rank, typename KeyCompare>
     inline std::pair<NodePtr, dimension_type>
     decrement_mapping
     (NodePtr node, dimension_type dim, Rank rank, dimension_type map,

@@ -1048,7 +1048,6 @@ namespace spatial
     {
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!header(node));
-      mapping_iterator<Self> candidate(*this, 0, 0, 0);
       while (node->right != 0 || node->left != 0)
         {
           // If there is nothing on the right, to preserve the invariant, we
@@ -1077,17 +1076,16 @@ namespace spatial
                     }
                 }
             }
-          candidate.node = node->right;
-          candidate.node_dim = incr_dim(rank(), node_dim);
-          candidate.mapping_dimension() = node_dim;
-          candidate = minimum_mapping(candidate);
-          if (get_rightmost() == candidate.node)
+          std::pair<node_ptr, dimension_type> candidate
+            = minimum_mapping(node->right, incr_dim(rank(), node_dim),
+                              rank(), node_dim, key_comp());
+          if (get_rightmost() == candidate.first)
             { set_rightmost(node); }
           if (get_leftmost() == node)
-            { set_leftmost(candidate.node); }
-          swap_node(candidate.node, node);
-                  node = candidate.node;
-          node_dim = candidate.node_dim;
+            { set_leftmost(candidate.first); }
+          swap_node(candidate.first, node);
+          node = candidate.first;
+          node_dim = candidate.second;
         }
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(node->right == 0);
