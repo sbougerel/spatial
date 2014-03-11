@@ -1,3 +1,8 @@
+2014-03-12  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * ticket #1 including idle_point_multiset.hpp stops project from
+        compiling https://sourceforge.net/p/spatial/tickets/1/ has been fixed.
+
 2013-12-21  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * v2.1.2 Added the perfect_balancing policy for Relaxed_kdtree, improved

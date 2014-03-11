@@ -15,7 +15,7 @@
 #define SPATIAL_HPP
 
 /**
- *  Define version numbers for the spatial c++ library. This number can be used
+ *  Define version numbers for the spatial C++ library. This number can be used
  *  by libraries based on spatial, like binding to other languages, etc, that
  *  need to ensure compatibility within different version of the library.
  *
@@ -26,10 +26,10 @@
 ///@{
 #define SPATIAL_VERSION_MAJOR 2
 #define SPATIAL_VERSION_MINOR 1
-#define SPATIAL_VERSION_RELEASE 2
+#define SPATIAL_VERSION_RELEASE 3
 //! In general, this number will start by the major, then 2 digits for the
 //! minor, then 2 more for the revision.
-#define SPATIAL_VERSION 20102
+#define SPATIAL_VERSION 20103
 ///@}
 
 // For compatibility with older environments

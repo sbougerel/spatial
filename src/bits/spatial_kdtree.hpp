@@ -27,6 +27,8 @@
 #include "spatial_mapping.hpp"
 #include "spatial_equal.hpp"
 #include "spatial_compress.hpp"
+#include "spatial_value_compare.hpp"
+#include "spatial_template_member_swap.hpp"
 #include "spatial_assert.hpp"
 #include "spatial_except.hpp"
 
