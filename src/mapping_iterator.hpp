@@ -203,11 +203,11 @@ namespace spatial
   {
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
+    typename mapping_iterator<Container>::node_ptr node
+      = container.end().node->parent;
     dimension_type dim;
-    typename mapping_iterator<Container>::node_ptr node;
     details::assign(node, dim,
-                    lower_bound_mapping(container.end().node->parent, 0,
-                                        container.rank(), mapping_dim,
+                    lower_bound_mapping(node, 0, container.rank(), mapping_dim,
                                         container.key_comp(), bound));
     return mapping_iterator<Container>(container, mapping_dim, dim, node);
   }
@@ -253,11 +253,11 @@ namespace spatial
   {
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
+    typename mapping_iterator<Container>::node_ptr node
+      = container.end().node->parent;
     dimension_type dim;
-    typename mapping_iterator<Container>::node_ptr node;
     details::assign(node, dim,
-                    upper_bound_mapping(container.end().node->parent, 0,
-                                        container.rank(), mapping_dim,
+                    upper_bound_mapping(node, 0, container.rank(), mapping_dim,
                                         container.key_comp(), bound));
     return mapping_iterator<Container>(container, mapping_dim, dim, node);
   }
@@ -306,18 +306,13 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(!header(node));
       while (node->left != 0
              && (dim != map
-                 || left_compare_mapping(key_comp, map, bound, node)))
-        {
-          node = node->left;
-          dim = incr_dim(rank, dim);
-        }
+                 || left_compare_mapping(key_comp, map, bound, const_key(node),
+                                         invariant_category(node))))
+        { node = node->left; dim = incr_dim(rank, dim); }
       NodePtr best = 0;
       dimension_type best_dim;
-      if (!key_comp(map, const_key(node), const_key(bound)))
-        {
-          best = node;
-          best_dim = dim;
-        }
+      if (!key_comp(map, const_key(node), bound))
+        { best = node; best_dim = dim; }
       for (;;)
         {
           if (node->right != 0 && (dim != map || best == 0))
@@ -326,11 +321,10 @@ namespace spatial
               dim = incr_dim(rank, dim);
               while (node->left != 0
                      && (dim != map
-                         || left_compare_mapping(key_comp, map, bound, node)))
-                {
-                  node = node->left;
-                  dim = incr_dim(rank, dim);
-                }
+                         || left_compare_mapping(key_comp, map, bound,
+                                                 const_key(node),
+                                                 invariant_category(node))))
+                { node = node->left; dim = incr_dim(rank, dim); }
             }
           else
             {
@@ -341,26 +335,19 @@ namespace spatial
                      && prev_node == node->right)
                 {
                   prev_node = node;
-                  node = node->parent;
-                  dim = decr_dim(rank, dim);
+                  node = node->parent; dim = decr_dim(rank, dim);
                 }
               if (header(node)) break;
             }
-          if (!key_comp(map, const_key(node), const_key(bound))
+          if (!key_comp(map, const_key(node), bound)
               && (best == 0 || key_comp(map, const_key(node), const_key(best))))
-            {
-              best = node;
-              best_dim = dim;
-            }
+            { best = node; best_dim = dim; }
         }
       SPATIAL_ASSERT_CHECK(dim == rank() - 1);
       SPATIAL_ASSERT_CHECK(best != node);
       SPATIAL_ASSERT_CHECK(header(node));
       if (best == 0)
-        {
-          best = node;
-          best_dim = dim;
-        }
+        { best = node; best_dim = dim; }
       return std::make_pair(best, best_dim);
     }
 
@@ -398,18 +385,12 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(!header(node));
       while (node->left != 0
              && (dim != map
-                 || key_comp(map, const_key(bound), const_key(node))))
-        {
-          node = node->left;
-          dim = incr_dim(rank, dim);
-        }
+                 || key_comp(map, bound, const_key(node))))
+        { node = node->left; dim = incr_dim(rank, dim); }
       NodePtr best = 0;
       dimension_type best_dim;
-      if (key_comp(map, const_key(bound), const_key(node)))
-        {
-          best = node;
-          best_dim = dim;
-        }
+      if (key_comp(map, bound, const_key(node)))
+        { best = node; best_dim = dim; }
       for (;;)
         {
           if (node->right != 0 && (dim != map || best == 0))
@@ -418,11 +399,8 @@ namespace spatial
               dim = incr_dim(rank, dim);
               while (node->left != 0
                      && (dim != map
-                         || key_comp(map, const_key(bound), const_key(node))))
-                {
-                  node = node->left;
-                  dim = incr_dim(rank, dim);
-                }
+                         || key_comp(map, bound, const_key(node))))
+                { node = node->left; dim = incr_dim(rank, dim); }
             }
           else
             {
@@ -433,26 +411,19 @@ namespace spatial
                      && prev_node == node->right)
                 {
                   prev_node = node;
-                  node = node->parent;
-                  dim = decr_dim(rank, dim);
+                  node = node->parent; dim = decr_dim(rank, dim);
                 }
               if (header(node)) break;
             }
-          if (key_comp(map, const_key(bound), const_key(node))
+          if (key_comp(map, bound, const_key(node))
               && (best == 0 || key_comp(map, const_key(node), const_key(best))))
-            {
-              best = node;
-              best_dim = dim;
-            }
+            { best = node; best_dim = dim; }
         }
       SPATIAL_ASSERT_CHECK(dim == rank() - 1);
       SPATIAL_ASSERT_CHECK(best != node);
       SPATIAL_ASSERT_CHECK(header(node));
       if (best == 0)
-        {
-          best = node;
-          best_dim = dim;
-        }
+        { best = node; best_dim = dim; }
       return std::make_pair(best, best_dim);
     }
 

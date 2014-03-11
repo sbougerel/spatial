@@ -480,10 +480,11 @@ namespace spatial
   {
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
+    typename mapping_iterator<Container>::node_ptr node
+      = container.end().node->parent;
     dimension_type dim;
-    typename mapping_iterator<Container>::node_ptr node;
     details::assign(node, dim,
-                    minimum_mapping(container.end().node->parent, 0,
+                    minimum_mapping(node, 0,
                                     container.rank(), mapping_dim,
                                     container.key_comp()));
     return mapping_iterator<Container>(container, mapping_dim, dim, node);
@@ -497,33 +498,19 @@ namespace spatial
 
   namespace details
   {
-    template <typename KeyCompare, typename NodeType>
+    template <typename KeyCompare, typename Key>
     inline bool
     left_compare_mapping
-    (KeyCompare key_comp, dimension_type map, NodeType* x, NodeType* y)
-    {
-      return left_compare_mapping
-        (key_comp, map, x, y,
-         typename NodeType::link_type::invariant_category());
-    }
-
-    template <typename KeyCompare, typename NodeType>
-    inline bool
-    left_compare_mapping
-    (KeyCompare key_comp, dimension_type map, NodeType* x, NodeType* y,
+    (KeyCompare key_comp, dimension_type map, const Key& x, const Key& y,
      strict_invariant_tag)
-    {
-      return key_comp(map, const_key(x), const_key(y));
-    }
+    { return key_comp(map, x, y); }
 
-    template <typename KeyCompare, typename NodeType>
+    template <typename KeyCompare, typename Key>
     inline bool
     left_compare_mapping
-    (KeyCompare key_comp, dimension_type map, NodeType* x, NodeType* y,
+    (KeyCompare key_comp, dimension_type map, const Key& x, const Key& y,
      relaxed_invariant_tag)
-    {
-      return !key_comp(map, const_key(y), const_key(x));
-    }
+    { return !key_comp(map, y, x); }
 
     /**
      *  Move the iterator given in parameter to the minimum value along the
@@ -555,48 +542,37 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(map < rank());
       SPATIAL_ASSERT_CHECK(dim < rank());
       SPATIAL_ASSERT_CHECK(!header(node));
+      NodePtr end = node->parent;
       while (node->left != 0)
-        {
-          node = node->left;
-          dim = incr_dim(rank, dim);
-        }
+        { node = node->left; dim = incr_dim(rank, dim); }
       NodePtr best = node;
       dimension_type best_dim = dim;
       for (;;)
         {
           if (node->right != 0 && dim != map)
             {
-              node = node->right;
-              dim = incr_dim(rank, dim);
+              node = node->right; dim = incr_dim(rank, dim);
               while (node->left != 0)
-                {
-                  node = node->left;
-                  dim = incr_dim(rank, dim);
-                }
+                { node = node->left; dim = incr_dim(rank, dim); }
             }
           else
             {
               NodePtr prev_node = node;
-              node = node->parent;
-              dim = decr_dim(rank, dim);
-              while (!header(node)
+              node = node->parent; dim = decr_dim(rank, dim);
+              while (node != end
                      && prev_node == node->right)
                 {
                   prev_node = node;
-                  node = node->parent;
-                  dim = decr_dim(rank, dim);
+                  node = node->parent; dim = decr_dim(rank, dim);
                 }
-              if (header(node)) break;
+              if (node == end) break;
             }
           if (key_comp(map, const_key(node), const_key(best)))
-            {
-              best = node;
-              best_dim = dim;
-            }
+            { best = node; best_dim = dim; }
         }
       SPATIAL_ASSERT_CHECK(best_dim < rank());
       SPATIAL_ASSERT_CHECK(best != 0);
-      SPATIAL_ASSERT_CHECK(!header(best));
+      SPATIAL_ASSERT_CHECK(best != end);
       return std::make_pair(best, best_dim);
     }
 
@@ -636,7 +612,9 @@ namespace spatial
               node = node->right; dim = incr_dim(rank, dim);
               while (node->left != 0
                      && (dim != map
-                         || left_compare_mapping(key_comp, map, orig, node)))
+                         || left_compare_mapping
+                            (key_comp, map, const_key(orig), const_key(node),
+                             invariant_category(node))))
                 { node = node->left; dim = incr_dim(rank, dim); }
             }
           else
@@ -712,7 +690,8 @@ namespace spatial
       if (best != 0)
         { node = best; dim = best_dim; }
       SPATIAL_ASSERT_CHECK(dim < rank());
-      SPATIAL_ASSERT_CHECK(!header(node));
+      SPATIAL_ASSERT_CHECK((best == 0 && header(node))
+                           || (best != 0 && !header(node)));
       return std::make_pair(node, dim);
     }
 
@@ -743,48 +722,37 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(map < rank());
       SPATIAL_ASSERT_CHECK(dim < rank());
       SPATIAL_ASSERT_CHECK(!header(node));
+      NodePtr end = node->parent;
       while (node->right != 0)
-        {
-          node = node->right;
-          dim = incr_dim(rank, dim);
-        }
+        { node = node->right; dim = incr_dim(rank, dim); }
       NodePtr best = node;
       dimension_type best_dim = dim;
       for (;;)
         {
           if (node->left != 0 && dim != map)
             {
-              node = node->left;
-              dim = incr_dim(rank, dim);
+              node = node->left; dim = incr_dim(rank, dim);
               while (node->right != 0)
-                {
-                  node = node->right;
-                  dim = incr_dim(rank, dim);
-                }
+                { node = node->right; dim = incr_dim(rank, dim); }
             }
           else
             {
               NodePtr prev_node = node;
-              node = node->parent;
-              dim = decr_dim(rank, dim);
-              while (!header(node)
+              node = node->parent; dim = decr_dim(rank, dim);
+              while (node != end
                      && prev_node == node->left)
                 {
                   prev_node = node;
-                  node = node->parent;
-                  dim = decr_dim(rank, dim);
+                  node = node->parent; dim = decr_dim(rank, dim);
                 }
-              if (header(node)) break;
+              if (node == end) break;
             }
           if (key_comp(map, const_key(best), const_key(node)))
-            {
-              best = node;
-              best_dim = dim;
-            }
+            { best = node; best_dim = dim; }
         }
       SPATIAL_ASSERT_CHECK(best_dim < rank());
       SPATIAL_ASSERT_CHECK(best != 0);
-      SPATIAL_ASSERT_CHECK(!header(best));
+      SPATIAL_ASSERT_CHECK(best != end);
       return std::make_pair(best, best_dim);
     }
 
@@ -817,7 +785,8 @@ namespace spatial
      KeyCompare key_comp)
     {
       SPATIAL_ASSERT_CHECK(dim < rank());
-      SPATIAL_ASSERT_CHECK(!header(node));
+      if (header(node))
+        return maximum_mapping(node->parent, 0, rank, map, key_comp);
       NodePtr orig = node;
       NodePtr best = 0;
       dimension_type best_dim;
@@ -906,7 +875,8 @@ namespace spatial
       if (best != 0)
         { node = best; dim = best_dim; }
       SPATIAL_ASSERT_CHECK(dim < rank());
-      SPATIAL_ASSERT_CHECK(!header(node));
+      SPATIAL_ASSERT_CHECK((best == 0 && header(node))
+                           || (best != 0 && !header(node)));
       return std::make_pair(node, dim);
     }
   } // namespace details

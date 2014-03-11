@@ -233,7 +233,7 @@ namespace spatial
     key_type model() const { return _query.model; }
 
     //! Return the functor used to compare keys in this iterator.
-    key_compare key_comp() const { return _query.comp(); }
+    key_compare key_comp() const { return _query.key_comp(); }
 
   private:
     //! The model key used to find equal keys in the container.
@@ -362,7 +362,7 @@ namespace spatial
     key_type model() const { return _query.model; }
 
     //! Returns the functor used to compare keys in this iterator.
-    key_compare key_comp() const { return _query.comp(); }
+    key_compare key_comp() const { return _query.key_comp(); }
 
   private:
     //! The model key used to find equal keys in the container.

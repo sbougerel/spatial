@@ -70,8 +70,10 @@ namespace spatial
 
       /**
        *  A pointer to the left child node of the current node. If we are at the
-       *  head, this pointer points to the left most node in the tree. If there are
-       *  no node to the left, the pointer is null.
+       *  head, this pointer will always points to the head: this is an
+       *  important property of the nodes that is exploited by the header()
+       *  function used in nearly every algorithm to identify the header
+       *  node. If there are no node to the left, the pointer is null.
        */
       Node* left;
 
@@ -85,6 +87,10 @@ namespace spatial
 
     /**
      *  Check if node is a header node.
+     *
+     *  This is done by checking that the left node points to itself. Only at
+     *  the head, should this be the case. This important propriety is a
+     *  convention of the library to identify the header node.
      */
     template <typename Link>
     inline bool header(const Node<Link>* x)
@@ -214,6 +220,14 @@ namespace spatial
     struct relaxed_invariant_tag { };
     struct strict_invariant_tag { };
     ///@}
+
+    /**
+     *  For a given node, this function returns the invariant category of the node.
+     */
+    template <typename Link>
+    inline typename Link::invariant_category
+    invariant_category(const Node<Link>*)
+    { return typename Link::invariant_category(); }
 
     /**
      *  Define the link type for a Kdtree that contains the value member.
