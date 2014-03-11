@@ -33,7 +33,7 @@ namespace spatial
   namespace except
   {
     /**
-     *  Check that the distance given in \x has a positive value.
+     *  Check that the distance given \c x has a positive value.
      *  \throws negative_distance
      */
     template<typename Tp>
@@ -156,7 +156,7 @@ namespace spatial
      *  better, but it's hard to make it more portable.
      *
      *  In particular, if \c Tp is not a base type, the author of the type must
-     *  define the numeric limits \c ::std::numeric_limits<Tp>::max() for that
+     *  define the numeric limits \c std::numeric_limits<Tp>::max() for that
      *  type.
      */
     template <typename Tp>
