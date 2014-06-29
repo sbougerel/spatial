@@ -1,6 +1,12 @@
 cmake_minimum_required (VERSION 2.6)
 project (spatial_examples)
 
+if (DEFINED PROFILE AND CMAKE_COMPILER_IS_GNUCXX)
+     set (CMAKE_CXX_FLAGS "-O4")
+#     set (CMAKE_CXX_FLAGS "-O0 -pg")
+#     set (CMAKE_EXE_LINKER_FLAGS "-pg")
+endif()
+
 # Basic examples
 add_executable (runtime_container_rank basic/runtime_container_rank.cpp)
 

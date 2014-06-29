@@ -15,8 +15,8 @@ int main(int argc, char** argv)
   spatial::dimension_type dim;
   std::cin >> dim;
 
-  // If we are not interested in dealing with ranks larger than 10
-  if (dim >= 10) throw spatial::invalid_dimension("dim");
+  // If we are not interested in dealing with ranks larger than 20
+  if (dim >= 20) throw spatial::invalid_dimension("dim");
 
   runtime_container container(dim); // Note: if dim was equal to 0,
                                     // spatial::invalid_dimension would be

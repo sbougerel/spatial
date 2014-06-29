@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_minimum, Tp, double6_sets )
       {
         // Randomly pick one of the values in the tree and attempt to find it.
         typename Tp::container_type::iterator pick = fix.container.begin();
-        std::advance(pick, std::rand() % fix.container.size());
+        std::advance(pick, (size_type) std::rand() % fix.container.size());
         equal_iterator<typename Tp::container_type>
           it = equal_begin(fix.container, *pick);
         // It should always find it!
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_minimum, Tp, double6_sets )
       {
         // Randomly pick one of the values in the tree and attempt to find it.
         typename Tp::container_type::iterator pick = fix.container.begin();
-        std::advance(pick, std::rand() % fix.container.size());
+        std::advance(pick, (size_type) std::rand() % fix.container.size());
         equal_iterator<typename Tp::container_type>
           it = equal_begin(fix.container, *pick);
         // It should always find it!
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_minimum, Tp, double6_sets )
       {
         // Randomly pick one of the values in the tree and attempt to find it.
         typename Tp::container_type::iterator pick = fix.container.begin();
-        std::advance(pick, std::rand() % fix.container.size());
+        std::advance(pick, (size_type) std::rand() % fix.container.size());
         equal_iterator<typename Tp::container_type>
           it = equal_begin(fix.container, *pick);
         // It should always find it!
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_maximum, Tp, double6_sets )
       {
         // Randomly pick one of the values in the tree and attempt to find it.
         typename Tp::container_type::iterator pick = fix.container.begin();
-        std::advance(pick, std::rand() % fix.container.size());
+        std::advance(pick, (size_type) std::rand() % fix.container.size());
         equal_iterator<typename Tp::container_type>
           it = equal_end(fix.container, *pick);
         --it; // call maximum_equal
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_maximum, Tp, double6_sets )
       {
         // Randomly pick one of the values in the tree and attempt to find it.
         typename Tp::container_type::iterator pick = fix.container.begin();
-        std::advance(pick, std::rand() % fix.container.size());
+        std::advance(pick, (size_type) std::rand() % fix.container.size());
         equal_iterator<typename Tp::container_type>
           it = equal_end(fix.container, *pick);
         --it; // call maximum_equal
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_maximum, Tp, double6_sets )
       {
         // Randomly pick one of the values in the tree and attempt to find it.
         typename Tp::container_type::iterator pick = fix.container.begin();
-        std::advance(pick, std::rand() % fix.container.size());
+        std::advance(pick, (size_type) std::rand() % fix.container.size());
         equal_iterator<typename Tp::container_type>
           it = equal_end(fix.container, *pick);
         --it; // call maximum_equal
@@ -199,7 +199,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_increment, Tp, quad_sets )
         int count_it = 0, count_eq = 0;
         typename Tp::container_type::iterator it = fix.container.begin();
         typename Tp::container_type::iterator pick = it;
-        std::advance(pick, std::rand() % fix.container.size());
+        std::advance(pick, (size_type) std::rand() % fix.container.size());
         for (; it != fix.container.end(); ++it)
           {
             if (*it == *pick) ++count_it;
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_decrement, Tp, quad_sets )
         int count_it = 0, count_eq = 0;
         typename Tp::container_type::iterator it = fix.container.begin();
         typename Tp::container_type::iterator pick = it;
-        std::advance(pick, std::rand() % fix.container.size());
+        std::advance(pick, (size_type) std::rand() % fix.container.size());
         for (; it != fix.container.end(); ++it)
           {
             if (*it == *pick) ++count_it;
