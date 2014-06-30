@@ -706,6 +706,13 @@ namespace spatial
      *  spatial::mapping_end().  This function does not perform any sanity
      *  checks on the iterator given in parameter.
      *
+     *  The maximum element in the dimenion \c map is found by looking through
+     *  the tree in reversed pre-order fashion. That means we start from the
+     *  deepest, right-most element in the tree, and iterate all the way to the
+     *  root node. We never, however, visit a left sub-tree when the dimension
+     *  of the current node is equal to \c map: it's impossible to find a
+     *  greater element in the sub-tree in this case.
+     *
      *  \tparam Container The type of container to iterate.
      *  \param iter An iterator that points to the root node of the search.
      *  \return The iterator given in parameter is moved to the value with the

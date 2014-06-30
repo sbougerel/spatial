@@ -3,6 +3,13 @@ Spatial TODO List
 
 5. Speed check for mapping
 6. No more ref_compare, proceed in direction of walk, which prunes more - but check speed
+7. Keep on refactoring the algorithm: a new way of walking with partial recursivity might
+   prove even more efficient: the idea is to reduce the jump to ancesters by unwinding the
+   stack instead of iteratively go up and compute the dimension each time. This could prove
+   very beneficial.
+8. Need to compactify algorithms somehow.
+9. Need new algorithms for the rebalance which do not inspect deeply as the mapping_iterator
+   does. Deep inspection is not necessary, we can stop at the first guy found.
 
 Spatial ROADMAP
 ===============
