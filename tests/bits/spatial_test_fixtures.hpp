@@ -40,6 +40,7 @@
 #include "../../src/idle_point_multimap.hpp"
 #include "../../src/box_multimap.hpp"
 #include "../../src/idle_box_multimap.hpp"
+#include "../../src/mapping_iterator.hpp"
 
 using namespace spatial;
 

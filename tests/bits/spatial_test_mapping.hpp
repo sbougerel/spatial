@@ -203,11 +203,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
-( test_mapping_increment, Tp, double6_sets )
+( test_mapping_increment, Tp, int2_sets )
 {
   { // test the invarient of the increment
-    Tp fix(100, randomize(-1, 1));
-    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+    Tp fix(100, randomize(-3, 3));
+    for (dimension_type mapping_dim = 0; mapping_dim < 2;
          ++mapping_dim)
       {
         mapping_iterator<typename Tp::container_type>
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
   { // test at the limit: a tree where all elements are the same
     Tp fix(100, same());
-    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+    for (dimension_type mapping_dim = 0; mapping_dim < 2;
          ++mapping_dim)
       {
         mapping_iterator<typename Tp::container_type>
@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
   { // test at the limit: a tree with 2 elements
     Tp fix(2, same());
-    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+    for (dimension_type mapping_dim = 0; mapping_dim < 2;
          ++mapping_dim)
       {
         mapping_iterator<const typename Tp::container_type>
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
   { // test at the limit: a right-unbalanced tree (pre-increment)
     Tp fix(100, increase());
-    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+    for (dimension_type mapping_dim = 0; mapping_dim < 2;
          ++mapping_dim)
       {
         mapping_iterator<typename Tp::container_type>
@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
   { // test at the limit: a left-unbalanced tree (post-increment)
     Tp fix(100, decrease());
-    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+    for (dimension_type mapping_dim = 0; mapping_dim < 2;
          ++mapping_dim)
       {
         mapping_iterator<typename Tp::container_type>
@@ -299,11 +299,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
-( test_mapping_decrement, Tp, double6_maps )
+( test_mapping_decrement, Tp, int2_maps )
 {
   { // test the invarient of the increment
-    Tp fix(100, randomize(-1, 1));
-    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+    Tp fix(100, randomize(-3, 3));
+    for (dimension_type mapping_dim = 0; mapping_dim < 2;
          ++mapping_dim)
       {
         std::reverse_iterator
@@ -323,7 +323,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
   { // test at the limit: a tree where all elements are the same
     Tp fix(100, same());
-    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+    for (dimension_type mapping_dim = 0; mapping_dim < 2;
          ++mapping_dim)
       {
         std::reverse_iterator
@@ -341,7 +341,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
   { // test at the limit: a tree with 2 elements
     Tp fix(2, same());
-    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+    for (dimension_type mapping_dim = 0; mapping_dim < 2;
          ++mapping_dim)
       {
         mapping_iterator<const typename Tp::container_type>
@@ -358,7 +358,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
   { // test at the limit: a right-unbalanced tree (pre-increment)
     Tp fix(100, increase());
-    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+    for (dimension_type mapping_dim = 0; mapping_dim < 2;
          ++mapping_dim)
       {
         std::reverse_iterator
@@ -378,7 +378,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
   { // test at the limit: a left-unbalanced tree (post-increment)
     Tp fix(100, decrease());
-    for (dimension_type mapping_dim = 0; mapping_dim < 6;
+    for (dimension_type mapping_dim = 0; mapping_dim < 2;
          ++mapping_dim)
       {
         std::reverse_iterator

@@ -24,7 +24,7 @@
 #include <vector>
 
 #include "spatial_ordered.hpp"
-#include "spatial_mapping.hpp"
+#include "spatial_node_mapping.hpp"
 #include "spatial_equal.hpp"
 #include "spatial_compress.hpp"
 #include "spatial_assert.hpp"
@@ -547,8 +547,8 @@ namespace spatial
       find(const key_type& key)
       {
         if (empty()) return end();
-        return iterator(preorder_minimum(get_root(), 0, rank(),
-                                         details::Equal<Self>(key_comp(), key))
+        return iterator(preorder_first(get_root(), 0, rank(),
+                                       details::Equal<Self>(key_comp(), key))
                         .first);
       }
 
@@ -556,9 +556,9 @@ namespace spatial
       find(const key_type& key) const
       {
         if (empty()) return end();
-        return const_iterator(preorder_minimum(get_root(), 0, rank(),
-                                               details::Equal<Self>
-                                               (key_comp(), key))
+        return const_iterator(preorder_first(get_root(), 0, rank(),
+                                             details::Equal<Self>
+                                             (key_comp(), key))
                               .first);
       }
       ///@}

@@ -13,15 +13,20 @@
 #ifndef SPATIAL_PREORDER_HPP
 #define SPATIAL_PREORDER_HPP
 
+#include "../spatial.hpp"
+#include "spatial_assign.hpp"
+
 namespace spatial
 {
   namespace details
   {
     template <typename NodePtr, typename Rank, typename Query>
     inline std::pair<NodePtr, dimension_type>
-    preorder_minimum(NodePtr node, dimension_type dim, Rank rank,
-                     const Query& query)
+    preorder_first(NodePtr node, dimension_type dim, Rank rank,
+                   const Query& query)
     {
+      NodePtr init_node = node;
+      dimension_type init_dim = dim;
       SPATIAL_ASSERT_CHECK(!header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(dim < rank());
@@ -29,35 +34,19 @@ namespace spatial
         {
           if (node->left != 0 && left_traversal(node, dim, query))
             {
-              node = node->left;
-              dim = incr_dim(rank, dim);
+              NodePtr left = node->left;
+              assign(node, dim,
+                     preorder_first(left, incr_dim(rank, dim), rank, query));
+              if (left->parent != node) break; // We found the first
             }
-          else if (node->right != 0 && right_traversal(node, dim, query))
+          if (node->right != 0 && right_traversal(node, dim, query))
             {
               node = node->right;
               dim = incr_dim(rank, dim);
+              continue;
             }
-          else
-            {
-              NodePtr prev_node = node;
-              node = node->parent;
-              dim = decr_dim(rank, dim);
-              while (!header(node)
-                     && (prev_node == node->right
-                         || node->right == 0
-                         || !right_traversal(node, dim, query)))
-                {
-                  prev_node = node;
-                  node = node->parent;
-                  dim = decr_dim(rank, dim);
-                }
-              if (!header(node))
-                {
-                  node = node->right;
-                  dim = incr_dim(rank, dim);
-                }
-              else break;
-            }
+          return std::make_pair(init_node->parent,
+                                decr_dim(rank, init_dim));
         }
       SPATIAL_ASSERT_CHECK(dim < rank());
       SPATIAL_ASSERT_CHECK(node != 0);
@@ -66,8 +55,8 @@ namespace spatial
 
     template <typename NodePtr, typename Rank, typename Query>
     inline std::pair<NodePtr, dimension_type>
-    preorder_maximum(NodePtr node, dimension_type dim, Rank rank,
-                     const Query& query)
+    preorder_last(NodePtr node, dimension_type dim, Rank rank,
+                  const Query& query)
     {
       SPATIAL_ASSERT_CHECK(!header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
@@ -177,7 +166,7 @@ namespace spatial
           SPATIAL_ASSERT_CHECK(dim = rank() - 1);
           node = node->parent;
           dim = incr_dim(rank, dim);
-          return preorder_maximum(node, dim, rank, query);
+          return preorder_last(node, dim, rank, query);
         }
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(dim < rank());

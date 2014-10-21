@@ -34,7 +34,7 @@
                      // std::lexicographical_compare
 
 #include "spatial_ordered.hpp"
-#include "spatial_mapping.hpp"
+#include "spatial_node_mapping.hpp"
 #include "spatial_equal.hpp"
 #include "spatial_compress.hpp"
 #include "spatial_value_compare.hpp"
@@ -1023,7 +1023,8 @@ namespace spatial
           else
             {
               candidate
-                = minimum_mapping(node->right, incr_dim(rank(), node_dim),
+                = minimum_mapping(node->right,
+                                  incr_dim(rank(), node_dim),
                                   rank(), node_dim, key_comp());
               if (get_rightmost() == candidate.first)
                 { set_rightmost(node); }

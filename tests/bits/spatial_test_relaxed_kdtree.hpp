@@ -421,29 +421,21 @@ BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_erase_iterator )
   // erase all and check that total ordering is preserved.
   {
     typedef pointset_fix<double6>::container_type::iterator iterator;
-    typedef mapping_iterator<pointset_fix<double6>::container_type>
-      mapping_iterator;
+    typedef ordered_iterator<pointset_fix<double6>::container_type>
+      ordered_iterator;
     pointset_fix<double6> fix(100, randomize(0, 1));
     size_type track_size = fix.container.size();
     while (fix.container.size() != 0)
       {
         iterator eraser = fix.container.begin();
         std::advance(eraser, static_cast<size_type>(rand()) % fix.container.size());
-        mapping_iterator begin_0 = mapping_begin(fix.container, 0);
-        mapping_iterator end_0 = mapping_end(fix.container, 0);
-        mapping_iterator begin_1 = mapping_begin(fix.container, 1);
-        mapping_iterator end_1 = mapping_end(fix.container, 1);
+        ordered_iterator begin = ordered_begin(fix.container);
+        ordered_iterator end = ordered_end(fix.container);
         size_type count = 0;
-        for(mapping_iterator i = begin_0; i != end_0; ++i, ++count);
+        for(ordered_iterator i = begin; i != end; ++i, ++count);
         BOOST_REQUIRE_EQUAL(count, track_size);
         count = 0;
-        for(mapping_iterator i = begin_1; i != end_1; ++i, ++count);
-        BOOST_REQUIRE_EQUAL(count, track_size);
-        count = 0;
-        for(mapping_iterator i = end_0; i != begin_0; --i, ++count);
-        BOOST_REQUIRE_EQUAL(count, track_size);
-        count = 0;
-        for(mapping_iterator i = end_1; i != begin_1; --i, ++count);
+        for(ordered_iterator i = end; i != begin; --i, ++count);
         BOOST_REQUIRE_EQUAL(count, track_size);
         BOOST_REQUIRE_NO_THROW(fix.container.erase(eraser));
         BOOST_CHECK_EQUAL(fix.container.size(), --track_size);

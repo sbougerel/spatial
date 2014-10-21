@@ -20,7 +20,6 @@
 #include "spatial_rank.hpp"
 #include "spatial_except.hpp"
 #include "spatial_compress.hpp"
-#include "spatial_assign.hpp"
 #include "spatial_preorder.hpp"
 
 namespace spatial
@@ -401,14 +400,14 @@ namespace spatial
               const typename equal_iterator<Container>::key_type& model)
   {
     if (container.empty()) return equal_end(container, model);
-    typename equal_iterator<Container>::node_ptr parent
+    typename equal_iterator<Container>::node_ptr root
       = container.end().node->parent;
     typename equal_iterator<Container>::node_ptr node;
     dimension_type dim;
     details::assign(node, dim,
-                    preorder_minimum(parent, 0, container.rank(),
-                                     details::Equal<Container>
-                                     (container.key_comp(), model)));
+                    preorder_first(root, 0, container.rank(),
+                                   details::Equal<Container>
+                                   (container.key_comp(), model)));
     return equal_iterator<Container>(container, model, dim, node);
   }
 

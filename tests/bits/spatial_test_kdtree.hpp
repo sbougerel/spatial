@@ -186,8 +186,8 @@ BOOST_AUTO_TEST_CASE( test_kdtree_erase_iter )
   {
     typedef idle_pointset_fix<int2>::container_type
       ::iterator iterator;
-    typedef mapping_iterator
-      <const idle_pointset_fix<int2>::container_type> mapping_iterator;
+    typedef ordered_iterator
+      <const idle_pointset_fix<int2>::container_type> ordered_iterator;
     idle_pointset_fix<int2> fix(100, randomize(-10, 10));
     std::size_t track_size = fix.container.size();
     while (fix.container.size() != 0)
@@ -195,24 +195,14 @@ BOOST_AUTO_TEST_CASE( test_kdtree_erase_iter )
         iterator eraser = fix.container.begin();
         std::advance(eraser, static_cast<std::size_t>(rand())
                      % fix.container.size());
-        mapping_iterator begin_0 = mapping_begin(fix.container, 0);
-        mapping_iterator end_0 = mapping_end(fix.container, 0);
-        mapping_iterator begin_1 = mapping_begin(fix.container, 1);
-        mapping_iterator end_1 = mapping_end(fix.container, 1);
+        ordered_iterator begin = ordered_begin(fix.container);
+        ordered_iterator end = ordered_end(fix.container);
         std::size_t count = 0;
-        for(mapping_iterator i = begin_0; i != end_0; ++i, ++count);
-        BOOST_CHECK_EQUAL(count, track_size);
-        if (count != track_size && count < 12) abort();
+        for(ordered_iterator i = begin; i != end; ++i, ++count);
+        BOOST_REQUIRE_EQUAL(count, track_size);
         count = 0;
-        for(mapping_iterator i = begin_1; i != end_1; ++i, ++count);
-        BOOST_CHECK_EQUAL(count, track_size);
-        if (count != track_size && count < 12) abort();
-        count = 0;
-        for(mapping_iterator i = end_0; i != begin_0; --i, ++count);
-        BOOST_CHECK_EQUAL(count, track_size);
-        count = 0;
-        for(mapping_iterator i = end_1; i != begin_1; --i, ++count);
-        BOOST_CHECK_EQUAL(count, track_size);
+        for(ordered_iterator i = end; i != begin; --i, ++count);
+        BOOST_REQUIRE_EQUAL(count, track_size);
         BOOST_REQUIRE_NO_THROW(fix.container.erase(eraser));
         BOOST_CHECK_EQUAL(fix.container.size(), --track_size);
       }
@@ -265,40 +255,7 @@ BOOST_AUTO_TEST_CASE( test_kdtree_copy )
   idle_pointset_fix<int2>::container_type copy(fix.container);
   BOOST_CHECK_EQUAL(fix.container.size(), copy.size());
   BOOST_CHECK_EQUAL(fix.container.dimension(), copy.dimension());
-  typedef idle_pointset_fix<int2>::container_type::iterator iterator;
-  int count = 0;
-  iterator i = fix.container.begin(), j = copy.begin();
-  for(; i != fix.container.end() && j != copy.end(); ++i, ++j, ++count)
-    {
-      BOOST_CHECK_EQUAL((*i)[0], (*j)[0]);
-      BOOST_CHECK_EQUAL((*i)[1], (*j)[1]);
-    }
-  BOOST_CHECK_EQUAL(count, fix.container.size());
-  BOOST_CHECK(j == copy.end());
-}
-
-BOOST_AUTO_TEST_CASE( test_kdtree_copy_rebalance )
-{
-  // Simple copy (rebalancing) should result in a tree that has the same nodes,
-  // and mapping iteration in one dimension can prove it.
-  idle_pointset_fix<int2> fix;
-  idle_pointset_fix<int2>::container_type copy(fix.container, true);
-  BOOST_CHECK_EQUAL(fix.container.size(), copy.size());
-  BOOST_CHECK_EQUAL(fix.container.dimension(), copy.dimension());
-  int count = 0;
-  typedef mapping_iterator<idle_pointset_fix<int2>::container_type>
-    iterator;
-  iterator i = mapping_begin(fix.container, 0);
-  iterator j = mapping_begin(copy, 0);
-  iterator i_end = mapping_end(fix.container, 0);
-  iterator j_end = mapping_end(copy, 0);
-  for(; i != i_end && j != j_end; ++i, ++j, ++count)
-    {
-      BOOST_CHECK_EQUAL((*i)[0], (*j)[0]);
-    }
-  BOOST_CHECK_EQUAL(count, fix.container.size());
-  BOOST_CHECK(i == i_end);
-  BOOST_CHECK(j == j_end);
+  BOOST_CHECK(fix.container == copy);
 }
 
 BOOST_AUTO_TEST_CASE( test_kdtree_assign_empty_trees )
@@ -318,16 +275,7 @@ BOOST_AUTO_TEST_CASE( test_kdtree_assignment )
   fix2.container = fix1.container;
   BOOST_CHECK_EQUAL(fix1.container.size(), fix2.container.size());
   BOOST_CHECK_EQUAL(fix1.container.dimension(), fix2.container.dimension());
-  typedef idle_pointset_fix<int2>::container_type::iterator iterator;
-  int count = 0;
-  iterator i = fix1.container.begin(), j = fix2.container.begin();
-  for(; i != fix1.container.end() && j != fix2.container.end(); ++i, ++j, ++count)
-    {
-      BOOST_CHECK_EQUAL((*i)[0], (*j)[0]);
-      BOOST_CHECK_EQUAL((*i)[1], (*j)[1]);
-    }
-  BOOST_CHECK_EQUAL(count, fix1.container.size());
-  BOOST_CHECK(j == fix2.container.end());
+  BOOST_CHECK(fix1.container == fix2.container);
 }
 
 BOOST_AUTO_TEST_CASE( test_kdtree_swap )
@@ -416,99 +364,41 @@ BOOST_AUTO_TEST_CASE( test_kdtree_swap_empty )
   BOOST_CHECK_EQUAL(fix2.container.size(), 0);
 }
 
-BOOST_AUTO_TEST_CASE( test_kdtree_rebalance )
-{
-  typedef mapping_iterator
-    <idle_pointset_fix<int2>::container_type> mapping_iterator;
-  // The performance gain of rebalance cannot be mesured now (see performance
-  // executable) but we can make sure that total ordering as remained.
-  // We purposely use a narrow range to force a lot of similar points.
-  idle_pointset_fix<int2> fix(100, randomize(-3, 3));
-  size_type size = fix.container.size();
-  idle_pointset_fix<int2>::container_type copy(fix.container);
-  BOOST_REQUIRE_NO_THROW(copy.rebalance());
-  mapping_iterator orig_begin_0 = mapping_begin(fix.container, 0);
-  mapping_iterator orig_end_0   = mapping_end(fix.container, 0);
-  mapping_iterator orig_begin_1 = mapping_begin(fix.container, 1);
-  mapping_iterator orig_end_1   = mapping_end(fix.container, 1);
-  mapping_iterator copy_begin_0 = mapping_begin(copy, 0);
-  mapping_iterator copy_end_0   = mapping_end(copy, 0);
-  mapping_iterator copy_begin_1 = mapping_begin(copy, 1);
-  mapping_iterator copy_end_1   = mapping_end(copy, 1);
-  int count = 0;
-  mapping_iterator i = orig_begin_0, j = copy_begin_0;
-  for(; i != orig_end_0 && j != copy_end_0; ++i, ++j, ++count);
-  BOOST_CHECK_EQUAL(count, size);
-  BOOST_CHECK(i == orig_end_0);
-  BOOST_CHECK(j == copy_end_0);
-  count = 0;
-  i = orig_begin_1; j = copy_begin_1;
-  for(; i != orig_end_1 && j != copy_end_1; ++i, ++j, ++count);
-  BOOST_CHECK_EQUAL(count, size);
-  BOOST_CHECK(i == orig_end_1);
-  BOOST_CHECK(j == copy_end_1);
-  count = 0;
-  i = orig_end_0; j = copy_end_0;
-  for(; i != orig_begin_0 && j != copy_begin_0; --i, --j, ++count);
-  BOOST_CHECK_EQUAL(count, size);
-  BOOST_CHECK(i == orig_begin_0);
-  BOOST_CHECK(j == copy_begin_0);
-  count = 0;
-  i = orig_end_1; j = copy_end_1;
-  for(; i != orig_begin_1 && j != copy_begin_1; --i, --j, ++count);
-  BOOST_CHECK_EQUAL(count, size);
-  BOOST_CHECK(i == orig_begin_1);
-  BOOST_CHECK(j == copy_begin_1);
-}
-
-BOOST_AUTO_TEST_CASE( test_kdtree_copy_and_rebalance )
-{
-  typedef mapping_iterator
-    <idle_pointset_fix<double6>::container_type> mapping_iterator;
-  // The performance gain of rebalance cannot be mesured now (see performance
-  // executable) but we can make sure that total ordering as remained.
-  idle_pointset_fix<double6> fix(100, randomize(-10, 10));
-  size_type size = fix.container.size();
-  idle_pointset_fix<double6>::container_type copy(fix.container, true);
-  mapping_iterator orig_begin_0 = mapping_begin(fix.container, 0);
-  mapping_iterator orig_end_0   = mapping_end(fix.container, 0);
-  mapping_iterator orig_begin_1 = mapping_begin(fix.container, 1);
-  mapping_iterator orig_end_1   = mapping_end(fix.container, 1);
-  mapping_iterator copy_begin_0 = mapping_begin(copy, 0);
-  mapping_iterator copy_end_0   = mapping_end(copy, 0);
-  mapping_iterator copy_begin_1 = mapping_begin(copy, 1);
-  mapping_iterator copy_end_1   = mapping_end(copy, 1);
-  int count = 0;
-  mapping_iterator i = orig_begin_0, j = copy_begin_0;
-  for(; i != orig_end_0 && j != copy_end_0; ++i, ++j, ++count);
-  BOOST_CHECK_EQUAL(count, size);
-  BOOST_CHECK(i == orig_end_0);
-  BOOST_CHECK(j == copy_end_0);
-  count = 0;
-  i = orig_begin_1; j = copy_begin_1;
-  for(; i != orig_end_1 && j != copy_end_1; ++i, ++j, ++count);
-  BOOST_CHECK_EQUAL(count, size);
-  BOOST_CHECK(i == orig_end_1);
-  BOOST_CHECK(j == copy_end_1);
-  count = 0;
-  i = orig_end_0; j = copy_end_0;
-  for(; i != orig_begin_0 && j != copy_begin_0; --i, --j, ++count);
-  BOOST_CHECK_EQUAL(count, size);
-  BOOST_CHECK(i == orig_begin_0);
-  BOOST_CHECK(j == copy_begin_0);
-  count = 0;
-  i = orig_end_1; j = copy_end_1;
-  for(; i != orig_begin_1 && j != copy_begin_1; --i, --j, ++count);
-  BOOST_CHECK_EQUAL(count, size);
-  BOOST_CHECK(i == orig_begin_1);
-  BOOST_CHECK(j == copy_begin_1);
-}
-
 BOOST_AUTO_TEST_CASE( test_kdtree_rebalance_empty )
 {
   idle_pointset_fix<int2> fix;
   BOOST_REQUIRE_NO_THROW(fix.container.rebalance());
   BOOST_CHECK(fix.container.empty());
+}
+
+BOOST_AUTO_TEST_CASE( test_kdtree_rebalance_narrow )
+{
+  idle_pointset_fix<int2> fix(100, randomize(-5, 5));
+  idle_pointset_fix<int2>::container_type copy(fix.container);
+  BOOST_REQUIRE_NO_THROW(copy.rebalance());
+  BOOST_CHECK_EQUAL(fix.container.size(), copy.size());
+  BOOST_CHECK(copy == fix.container);
+}
+
+
+BOOST_AUTO_TEST_CASE( test_kdtree_copy_rebalance_uniform )
+{
+  // Simple copy (rebalancing) should result in a tree that has the same nodes
+  idle_pointset_fix<int2> fix(100, decrease());
+  idle_pointset_fix<int2>::container_type copy(fix.container, true);
+  BOOST_CHECK_EQUAL(fix.container.size(), copy.size());
+  BOOST_CHECK_EQUAL(fix.container.dimension(), copy.dimension());
+  BOOST_CHECK(fix.container == copy);
+}
+
+BOOST_AUTO_TEST_CASE( test_kdtree_copy_rebalance_wide )
+{
+  // The performance gain of rebalance cannot be mesured now (see performance
+  // executable) but we can make sure that total ordering has remained.
+  idle_pointset_fix<double6> fix(100, randomize(-10, 10));
+  idle_pointset_fix<double6>::container_type copy(fix.container, true);
+  BOOST_CHECK_EQUAL(fix.container.size(), copy.size());
+  BOOST_CHECK(copy == fix.container);
 }
 
 BOOST_AUTO_TEST_CASE( test_kdtree_find )
