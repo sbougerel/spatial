@@ -27,10 +27,11 @@
 #  endif
 #  include <array>
 #endif
-
 #include <boost/mpl/list.hpp>
 
 #define SPATIAL_ENABLE_ASSERT // detect interal issues that should not occur
+
+#include "spatial_test_types.hpp"
 
 #include "../../src/point_multiset.hpp"
 #include "../../src/idle_point_multiset.hpp"
@@ -40,13 +41,12 @@
 #include "../../src/idle_point_multimap.hpp"
 #include "../../src/box_multimap.hpp"
 #include "../../src/idle_box_multimap.hpp"
+#include "../../src/mapping_iterator.hpp"
 
 using namespace spatial;
 
 // Used to silence some warnings during the tests.
 template <typename T> void silence_unused(const T&) { }
-
-#include "spatial_test_types.hpp"
 
 /**
  *  Creates a random double between 0 and 1.

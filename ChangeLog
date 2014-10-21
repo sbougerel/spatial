@@ -1,3 +1,15 @@
+2014-10-22  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * The mapping iterator is now dissociated from the containers, its
+        header file and definition will not be pulled by default anymore when
+        the containers include file are specified. So its include file
+        "spatial/mapping_iterator" must be specified.
+
+        * Intermediary release of the developments on the feature_4 branch with
+        improvements on the performance of the mapping iterator and the erase
+        function for the idle_* family of containers. Performance improvements
+        between 5% and 50% faster.
+
 2014-03-12  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * ticket #1 including idle_point_multiset.hpp stops project from

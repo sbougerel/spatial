@@ -14,6 +14,8 @@
 #ifndef SPATIAL_TEST_TYPES_HPP
 #define SPATIAL_TEST_TYPES_HPP
 
+#include "../../src/spatial.hpp"
+
 /**
  *  The dimension_traits resolve a given type into a constant dimension value;
  *  that will be used by the fixtures.
@@ -69,6 +71,14 @@ struct check_is_same<Tp, Tp>
 };
 ///@}
 
+/**
+ *  Declaration of prototype coming from spatial functionals.
+ */
+namespace spatial
+{
+  template <typename T> struct bracket_less;
+}
+
 // Definitions of int2 below, a simple array of simple type
 
 /**
@@ -93,7 +103,7 @@ struct int2 : std::tr1::array<int, 2>
   { return int2::operator[](n); }
 };
 define_dimension(int2, 2);
-define_compare(int2, bracket_less<int2>);
+define_compare(int2, spatial::bracket_less<int2>);
 define_unit(int2, int);
 
 // int2 declaration for usual value
@@ -109,7 +119,7 @@ const int2 fives(5, 5);
 //! A type that contains an array of 6 doubles.
 typedef std::tr1::array<double, 6> double6;
 define_dimension(double6, 6);
-define_compare(double6, bracket_less<double6>);
+define_compare(double6, spatial::bracket_less<double6>);
 define_unit(double6, double);
 
 //! Quick initialization of double6
@@ -147,7 +157,7 @@ struct double6_ordered_less
 struct double6_diff
 {
   double
-  operator()(dimension_type dim, const double6& x, const double6& y) const
+  operator()(spatial::dimension_type dim, const double6& x, const double6& y) const
   {
     return x[dim] - y[dim];
   }
@@ -183,7 +193,7 @@ inline bool operator!= (const quad& a, const quad& b)
 struct quad_less
 {
   bool
-  operator()(dimension_type dim, const quad& a, const quad& b) const
+  operator()(spatial::dimension_type dim, const quad& a, const quad& b) const
   {
     switch(dim)
       {
@@ -195,7 +205,8 @@ struct quad_less
       }
   }
   bool operator()
-  (dimension_type a, const quad& x, dimension_type b, const quad& y) const
+  (spatial::dimension_type a, const quad& x,
+   spatial::dimension_type b, const quad& y) const
   {
     int e1; int e2;
     switch(a)
@@ -238,7 +249,7 @@ struct quad_ordered_less
 struct quad_diff
 {
   int
-  operator()(dimension_type dim, const quad& x, const quad& y) const
+  operator()(spatial::dimension_type dim, const quad& x, const quad& y) const
   {
     switch(dim)
       {
@@ -255,7 +266,7 @@ struct quad_diff
 struct quad_access
 {
   int
-  operator()(dimension_type dim, const quad& x) const
+  operator()(spatial::dimension_type dim, const quad& x) const
   {
     switch(dim)
       {
@@ -273,24 +284,24 @@ struct quad_access
 //! An accessor that retreives the elements of a type via the at() accessor.
 struct at_accessor
 {
-  int operator()(dimension_type dim, const int2& arg) const
+  int operator()(spatial::dimension_type dim, const int2& arg) const
   { return arg.at(dim); }
 };
 
 // Helps to test that details::match* family of functions are working properly
 struct closed_test_range
 {
-  relative_order
-  operator()(dimension_type dim, dimension_type rank, const int2& point)
+  spatial::relative_order
+  operator()(spatial::dimension_type dim, spatial::dimension_type rank, const int2& point)
     const
   {
     if (dim >= rank)
       throw std::out_of_range("argument 'dim' must be lower than 'rank'");
     return ((point[dim] < 0)
-            ? below
+            ? spatial::below
             : ((point[dim] > 1)
-               ? above
-               : matching));
+               ? spatial::above
+               : spatial::matching));
   }
 };
 
