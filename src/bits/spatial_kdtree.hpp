@@ -265,9 +265,10 @@ namespace spatial
 
       /**
        *  Erase the node located at \c node with current dimension
-       *  \c node_dim.
+       *  \c node_dim. The function returns the node that was used to replace
+       *  the previous one, or null if no replacement was needed.
        */
-      void erase_node(dimension_type node_dim, node_ptr node);
+      node_ptr erase_node(dimension_type node_dim, node_ptr node);
 
     public:
       // Iterators standard interface
@@ -1042,12 +1043,13 @@ namespace spatial
 
     template <typename Rank, typename Key, typename Value, typename Compare,
               typename Alloc>
-    inline void
+    inline typename Kdtree<Rank, Key, Value, Compare, Alloc>::node_ptr
     Kdtree<Rank, Key, Value, Compare, Alloc>::erase_node
     (dimension_type node_dim, node_ptr node)
     {
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!header(node));
+      node_ptr first_swap = 0;
       while (node->right != 0 || node->left != 0)
         {
           // If there is nothing on the right, to preserve the invariant, we
@@ -1083,6 +1085,8 @@ namespace spatial
             { set_rightmost(node); }
           if (get_leftmost() == node)
             { set_leftmost(candidate.first); }
+          if (first_swap == 0)
+            { first_swap = candidate.first; }
           swap_node(candidate.first, node);
           node = candidate.first;
           node_dim = candidate.second;
@@ -1114,6 +1118,7 @@ namespace spatial
                            ? (_impl._count() == 0) : true);
       destroy_node(node);
       SPATIAL_ASSERT_INVARIANT(*this);
+      return first_swap;
     }
 
     template <typename Rank, typename Key, typename Value, typename Compare,
@@ -1141,15 +1146,22 @@ namespace spatial
     Kdtree<Rank, Key, Value, Compare, Alloc>::erase
     (const key_type& key)
     {
+      if (empty()) return 0;
+      node_ptr node = get_root();
+      dimension_type dim;
+      details::Equal<Self> equal_query(key_comp(), key);
+      details::assign(node, dim,
+                      preorder_first(node, 0, rank(), equal_query));
+      if (header(node)) return 0;
       size_type cnt = 0;
-      while (true)
+      for (;;)
         {
-          if (empty()) break;
-          equal_iterator<Self> found = equal_begin(*this, key);
-          equal_iterator<Self> none = equal_end(*this, key);
-          if (found == none) break; // no node matching this key
-          erase_node(found.node_dim, found.node);
+          node_ptr tmp = erase_node(dim, node);
           ++cnt;
+          if (tmp == 0) break; // no further node to erase for sure!
+          details::assign(node, dim,
+                          preorder_first(tmp, dim, rank(), equal_query));
+          if (tmp->parent == node) break; // no more match
         }
       return cnt;
     }
