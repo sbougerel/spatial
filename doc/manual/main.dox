@@ -92,8 +92,8 @@ it's current source code, so it should behave as expected.
 \Spatial's unit test suite should compile without error or warning (even on
 highest warning levels) and execute without errors on the following compilers:
 
-- GCC G++ 4.5 and later (tested on x86_64 architectures only)
-- Clang C++ 3.0 and later (tested on x86_64 architectures only)
+- GCC G++ 4.9 and later (tested on x86_64 architectures only)
+- Clang C++ 3.5 and later (tested on x86_64 architectures only)
 - Microsoft Visual Studio 2010 (tested on both X64 and X86 architectures)
 
 \Spatial has not been tested on other compilers or other architectures. Any
@@ -128,6 +128,17 @@ contributing "Contributing".
 /**
 \page changelog Change Log
 \tableofcontents
+
+\section ver214 Version 2.1.4
+
+- The mapping iterator is now dissociated from the containers, its header file
+  and definition will not be pulled by default anymore when the containers
+  include file are specified. So its include file "spatial/mapping_iterator"
+  must be specified.
+
+- A minor update for the developments on the feature_4 branch with improvements
+  on the performance of the mapping iterator and the erase function for the
+  idle_* family of containers.
 
 \section ver213 Version 2.1.3
 
