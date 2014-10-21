@@ -33,7 +33,7 @@ namespace spatial
   namespace except
   {
     /**
-     *  Check that the distance given in \x has a positive value.
+     *  Check that the distance given in \c x has a positive value.
      *  \throws negative_distance
      */
     template<typename Tp>
@@ -149,14 +149,14 @@ namespace spatial
      *  This arithmetic check is only used when the macro
      *  SPATIAL_SAFER_ARITHMETICS is defined. Check that the multiplication of 2
      *  positive elements has not resulted into an arithmetic error such as
-     *  overflown.
+     *  an overflow.
      *
      *  This check will only work for 2 positive element x and y. This check is
      *  not the best check for arithmetic errors. There are ways to make it
      *  better, but it's hard to make it more portable.
      *
      *  In particular, if \c Tp is not a base type, the author of the type must
-     *  define the numeric limits \c ::std::numeric_limits<Tp>::max() for that
+     *  define the numeric limits \c std::numeric_limits<Tp>::max() for that
      *  type.
      */
     template <typename Tp>

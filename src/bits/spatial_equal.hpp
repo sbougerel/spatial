@@ -54,17 +54,15 @@ namespace spatial
      *  Return a boolean indicating whether all of \c x's coordinates are
      *  equal to \c y's coordinates.
      *
-     *  The key \c x and \c y are tested across all dimesions using the
-     *  comparator \c cmp provided by a container.
+     *  The key at \c node y are tested across all dimensions using the
+     *  comparator \c equal provided by a container.
      *  \tparam Rank Either \static_rank or \dynamic_rank.
      *  \tparam Key A key type defined in the container as the \c Compare.
      *  \tparam Compare A \trivial_compare type defined in the same
      *  container as \c Key.
      *  \param rank The magnitude of the rank.
-     *  \param cmp The comparator used to find equality between the \c x and \c
-     *  y coordinates.
-     *  \param x The key \c x.
-     *  \param y The key \c y.
+     *  \param node A pointer to the node being inspected.
+     *  \param equal A functor with all parameters for the query
      */
     template <typename Container>
     inline bool
@@ -144,7 +142,7 @@ namespace spatial
     //! The comparison functor used to compare keys.
     typedef typename container_traits<Container>::key_compare key_compare;
 
-    //! \defctor
+    //! \empty
     equal_iterator() { }
 
     /**
@@ -271,7 +269,7 @@ namespace spatial
     //! The comparison functor used to compare keys.
     typedef typename container_traits<Container>::key_compare key_compare;
 
-    //! \defctor
+    //! \empty
     equal_iterator() { }
 
     /**

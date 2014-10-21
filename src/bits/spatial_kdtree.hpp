@@ -24,7 +24,7 @@
 #include <vector>
 
 #include "spatial_ordered.hpp"
-#include "spatial_node_mapping.hpp"
+#include "spatial_mapping.hpp"
 #include "spatial_equal.hpp"
 #include "spatial_compress.hpp"
 #include "spatial_assert.hpp"

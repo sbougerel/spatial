@@ -5,6 +5,7 @@ ALIASES += "Boost=<a href=\"http://www.boost.org/\"><b>Boost</b></a>"
 ALIASES += "quote=<div style=\"text-align:right\"><i>"
 ALIASES += "endquote=</i></div>"
 ALIASES += "Spatial=\b Spatial"
+ALIASES += "spatial=\b Spatial"
 ALIASES += "STL=<a href=\"http://en.wikipedia.org/wiki/Standard_Template_Library\"><b>STL</b></a>"
 ALIASES += "kdtree=<a href=\"http://en.wikipedia.org/wiki/Kd-tree\"><b><i>k</i>-d tree</b></a>"
 ALIASES += "kdtrees=<a href=\"http://en.wikipedia.org/wiki/Kd-tree\"><b><i>k</i>-d trees</b></a>"
@@ -14,7 +15,7 @@ ALIASES += "license=<a href=\"http://www.boost.org/LICENSE_1_0.txt\"><b>Boost li
 ALIASES += "project_page=<a href=\"http://sourceforge.net/projects/spatial/\"><b>Project Page on Sourceforge</b></a>"
 ALIASES += "project_download=<a href=\"http://sourceforge.net/projects/spatial/files/\"><b>Project Download Page on Sourceforge</b></a>"
 ALIASES += "project_issue=<a href=\"http://sourceforge.net/projects/spatial/support\"><b>Project Issue Trackers on Sourceforge</b></a>"
-ALIASES += "empty=Construct an empty, uninitialized object."
+ALIASES += "empty=Constructs an empty, uninitialized object."
 
 # Complexity
 #
