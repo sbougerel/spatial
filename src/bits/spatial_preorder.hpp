@@ -163,10 +163,8 @@ namespace spatial
     {
       if (header(node))
         {
-          SPATIAL_ASSERT_CHECK(dim = rank() - 1);
           node = node->parent;
-          dim = incr_dim(rank, dim);
-          return preorder_last(node, dim, rank, query);
+          return preorder_last(node, 0, rank, query);
         }
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(dim < rank());

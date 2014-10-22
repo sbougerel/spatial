@@ -807,7 +807,7 @@ namespace spatial
       NodePtr orig = node;
       dimension_type orig_dim = dim;
       NodePtr best = 0;
-      dimension_type best_dim;
+      dimension_type best_dim = 0;
       // Look forward to find an equal or greater next best
       // If an equal next best is found, then no need to look further
       for (;;)
@@ -930,7 +930,7 @@ namespace spatial
       NodePtr orig = node;
       dimension_type orig_dim = dim;
       NodePtr best = 0;
-      dimension_type best_dim;
+      dimension_type best_dim = 0;
       // Look backward to find an equal or greater next best
       // If an equal next best is found, then no need to look further
       for (;;)

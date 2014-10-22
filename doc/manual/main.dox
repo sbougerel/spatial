@@ -129,11 +129,17 @@ contributing "Contributing".
 \page changelog Change Log
 \tableofcontents
 
+\section ver215 Version 2.1.5
+
+- v2.1.5 ticket #3 (https://sourceforge.net/p/spatial/tickets/3/) reported by
+  Michał Garapich has been solved. neighbor_iterator can now be used with const
+  containers, as expected. Thanks for reporting the issue.
+
 \section ver214 Version 2.1.4
 
 - The mapping iterator is now dissociated from the containers, its header file
   and definition will not be pulled by default anymore when the containers
-  include file are specified. So its include file "spatial/mapping_iterator"
+  include file are specified. So its include file "spatial/mapping_iterator.hpp"
   must be specified.
 
 - A minor update for the developments on the feature_4 branch with improvements

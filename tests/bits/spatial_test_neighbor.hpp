@@ -61,6 +61,74 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_neighbor_const, Tp, double6_sets )
+{
+  // Check that all these consts operations are working and compiling cleanly.
+  Tp fix(10);
+  neighbor_iterator<const typename Tp::container_type>
+    a = neighbor_cbegin(fix.container, make_double6(1.0));
+  a++;
+  a--;
+  a = neighbor_cend(fix.container, make_double6(1.0));
+  a = neighbor_clower_bound(fix.container, make_double6(1.0), 1.0);
+  a = neighbor_cupper_bound(fix.container, make_double6(1.0), 1.0);
+  neighbor_iterator_pair<const typename Tp::container_type>
+    p = neighbor_crange(fix.container, make_double6(1.0));
+  silence_unused(p);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_euclidian_neighbor_const, Tp, double6_sets )
+{
+  // Check that all these consts operations are working and compiling cleanly.
+  Tp fix(10);
+  euclidian_neighbor_iterator<const typename Tp::container_type, double>
+    a = euclidian_neighbor_cbegin(fix.container, make_double6(1.0));
+  a++;
+  a--;
+  a = euclidian_neighbor_cend(fix.container, make_double6(1.0));
+  a = euclidian_neighbor_clower_bound(fix.container, make_double6(1.0), 1.0);
+  a = euclidian_neighbor_cupper_bound(fix.container, make_double6(1.0), 1.0);
+  euclidian_neighbor_iterator_pair<const typename Tp::container_type, double>
+    p = euclidian_neighbor_crange(fix.container, make_double6(1.0));
+  silence_unused(p);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_quadrance_neighbor_const, Tp, double6_sets )
+{
+  // Check that all these consts operations are working and compiling cleanly.
+  Tp fix(10);
+  quadrance_neighbor_iterator<const typename Tp::container_type, double>
+    a = quadrance_neighbor_cbegin(fix.container, make_double6(1.0));
+  a++;
+  a--;
+  a = quadrance_neighbor_cend(fix.container, make_double6(1.0));
+  a = quadrance_neighbor_clower_bound(fix.container, make_double6(1.0), 1.0);
+  a = quadrance_neighbor_cupper_bound(fix.container, make_double6(1.0), 1.0);
+  quadrance_neighbor_iterator_pair<const typename Tp::container_type, double>
+    p = quadrance_neighbor_crange(fix.container, make_double6(1.0));
+  silence_unused(p);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_manhattan_neighbor_const, Tp, double6_sets )
+{
+  // Check that all these consts operations are working and compiling cleanly.
+  Tp fix(10);
+  manhattan_neighbor_iterator<const typename Tp::container_type, double>
+    a = manhattan_neighbor_cbegin(fix.container, make_double6(1.0));
+  a++;
+  a--;
+  a = manhattan_neighbor_cend(fix.container, make_double6(1.0));
+  a = manhattan_neighbor_clower_bound(fix.container, make_double6(1.0), 1.0);
+  a = manhattan_neighbor_cupper_bound(fix.container, make_double6(1.0), 1.0);
+  manhattan_neighbor_iterator_pair<const typename Tp::container_type, double>
+    p = manhattan_neighbor_crange(fix.container, make_double6(1.0));
+  silence_unused(p);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_neighbor_accessors, Tp, double6_maps )
 {
   Tp fix(0);
