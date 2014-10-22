@@ -131,8 +131,8 @@ contributing "Contributing".
 
 \section ver215 Version 2.1.5
 
-- v2.1.5 ticket #3 (https://sourceforge.net/p/spatial/tickets/3/) reported by
-  Michał Garapich has been solved. neighbor_iterator can now be used with const
+- Ticket #3 (https://sourceforge.net/p/spatial/tickets/3/) reported by Michał
+  Garapich has been solved. neighbor_iterator can now be used with const
   containers, as expected. Thanks for reporting the issue.
 
 \section ver214 Version 2.1.4
