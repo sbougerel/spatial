@@ -195,7 +195,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
       iter = ordered_begin(fix.container),
       end = ordered_end(fix.container);
     int count = 0;
-    double6 expected; expected.assign(100.0);
+    double6 expected; std::fill(expected.begin(), expected.end(), 100.0);
     for (; iter != end; ++iter)
       {
         BOOST_CHECK(*iter == expected);
@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
       iter(ordered_end(fix.container)),
       end(ordered_begin(fix.container));
     int count = 0;
-    double6 expected; expected.assign(100.0);
+    double6 expected; std::fill(expected.begin(), expected.end(), 100.0);
     for (; iter != end; ++iter)
       {
         BOOST_CHECK(*iter == expected);

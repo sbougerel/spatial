@@ -8,19 +8,17 @@
 - \subpage contributing
 - \subpage compileopts
 
-\Spatial C++ Library is a generic header-only C++ library providing
-multi-dimensional in-memory containers, iterators and functionals. It is a
-general purpose library with good overall performance that makes it simple to
-search for nearest neighors, orthogonal ranges, or perform ordering of objects
-in any number of dimensions.
+\Spatial is a generic header-only C++ library providing multi-dimensional
+in-memory containers, iterators and functionals. \Spatial is a general purpose
+library with good overall performance thanks to its self-balancing \kdtree
+containers. \Spatial makes it easy to search for nearest neighbors, orthogonal
+ranges, or perform ordering of objects in any number of dimensions.
 
 \Spatial's design borrows heavily from the \STL, and strives to follow it's
 elegant interface; therefore \Spatial's containers, iterators and functionals
-integrate well with the \STL. Additionally, \Spatial implements self-balancing
-\kdtree-based containers, capable of object insertion in logarithmic amortized
-time and removal in fractional amortized time. Given that the tree is always
-mostly balanced, this prevents worst-case computational time on most spatial
-operation.
+integrate well with the \STL. Additionally, \Spatial's self-balancing
+\kdtree-based containers, capable of object insertion and removal in fractional
+amortized time, prevent worst-case computational time on most operations.
 
 \Spatial was created with tracking analysis and real-time positioning in mind,
 but its good overall performance and its set of algorithms should make it as

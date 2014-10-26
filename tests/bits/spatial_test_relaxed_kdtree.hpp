@@ -284,8 +284,8 @@ BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_bulk_insert )
     <details::Static_rank<2>, int2, int2, bracket_less<int2>,
      loose_balancing, std::allocator<int2> > kdtree_type;
   kdtree_type kdtree;
-  std::tr1::array<int2, 100> points;
-  for(std::tr1::array<int2, 100>::iterator i
+  spatial::import::array<int2, 100> points;
+  for(spatial::import::array<int2, 100>::iterator i
         = points.begin(); i != points.end(); ++i)
     {
       (*i)[0] = std::rand() % 20;
@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_bulk_insert )
   int count = 0;
   for(kdtree_type::iterator i = kdtree.begin(); i != kdtree.end(); ++i)
     {
-      std::tr1::array<int2, 100>::iterator match;
+      spatial::import::array<int2, 100>::iterator match;
       BOOST_REQUIRE((match = std::find(points.begin(), points.end(), *i))
                     != points.end());
       (*match)[0] = -1; // Prevent the same point from being found twice.
@@ -428,7 +428,8 @@ BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_erase_iterator )
     while (fix.container.size() != 0)
       {
         iterator eraser = fix.container.begin();
-        std::advance(eraser, static_cast<size_type>(rand()) % fix.container.size());
+        std::advance(eraser, static_cast<ptrdiff_t>
+                     (static_cast<size_t>(rand()) % fix.container.size()));
         ordered_iterator begin = ordered_begin(fix.container);
         ordered_iterator end = ordered_end(fix.container);
         size_type count = 0;

@@ -193,8 +193,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   {
     Tp fix(100, same());
     neighbor_iterator<typename Tp::container_type> iter;
-    typename neighbor_iterator<typename Tp::container_type>::metric_type
-      metric(iter.metric());
     double6 target;
     while (!fix.container.empty())
       {
@@ -322,8 +320,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   {
     Tp fix(100, same());
     neighbor_iterator<typename Tp::container_type> iter;
-    typename neighbor_iterator<typename Tp::container_type>::metric_type
-      metric(iter.metric());
     double6 target;
     while (!fix.container.empty())
       {
@@ -427,8 +423,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   {
     Tp fix(100, randomize(-20, 20));
     neighbor_iterator<typename Tp::container_type> iter;
-    typename neighbor_iterator<typename Tp::container_type>::metric_type
-      metric(iter.metric());
     double6 target;
     typedef typename neighbor_iterator<typename Tp::container_type>
       ::distance_type distance_type;
@@ -454,8 +448,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   {
     Tp fix(40, increase());
     neighbor_iterator<typename Tp::container_type> iter;
-    typename neighbor_iterator<typename Tp::container_type>::metric_type
-      metric(iter.metric());
     double6 target;
     typedef typename neighbor_iterator<typename Tp::container_type>
       ::distance_type distance_type;
@@ -481,8 +473,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   {
     Tp fix(40, decrease());
     neighbor_iterator<typename Tp::container_type> iter;
-    typename neighbor_iterator<typename Tp::container_type>::metric_type
-      metric(iter.metric());
     double6 target;
     typedef typename neighbor_iterator<typename Tp::container_type>
       ::distance_type distance_type;

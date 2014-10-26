@@ -88,8 +88,8 @@ BOOST_AUTO_TEST_CASE( test_empty_kdtree )
 BOOST_AUTO_TEST_CASE( test_kdtree_insert_iterate_forward )
 {
   idle_pointset_fix<int2> fix;
-  std::tr1::array<int2, 100> points;
-  for(std::tr1::array<int2, 100>::iterator i
+  spatial::import::array<int2, 100> points;
+  for(spatial::import::array<int2, 100>::iterator i
         = points.begin(); i != points.end(); ++i)
     {
       (*i)[0] = std::rand() % 20; // to increase chances of collisions
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE( test_kdtree_insert_iterate_forward )
   for(idle_pointset_fix<int2>::container_type::iterator i
         = fix.container.begin(); i != fix.container.end(); ++i)
     {
-      std::tr1::array<int2, 100>::iterator match;
+      spatial::import::array<int2, 100>::iterator match;
       BOOST_REQUIRE((match = std::find(points.begin(), points.end(), *i))
                     != points.end());
       (*match)[0] = -1; // Prevent the same point from being found twice.
@@ -117,8 +117,8 @@ BOOST_AUTO_TEST_CASE( test_kdtree_insert_iterate_forward )
 BOOST_AUTO_TEST_CASE( test_Kdtree_insert_100_iterate_backward )
 {
   idle_pointset_fix<int2> fix;
-  std::tr1::array<int2, 100> points;
-  for(std::tr1::array<int2, 100>::iterator i
+  spatial::import::array<int2, 100> points;
+  for(spatial::import::array<int2, 100>::iterator i
         = points.begin(); i != points.end(); ++i)
     {
       (*i)[0] = std::rand() % 20; // to increase chances of collisions
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE( test_Kdtree_insert_100_iterate_backward )
   for(idle_pointset_fix<int2>::container_type::reverse_iterator i
         = fix.container.rbegin(); i != fix.container.rend(); ++i)
     {
-      std::tr1::array<int2, 100>::iterator match;
+      spatial::import::array<int2, 100>::iterator match;
       BOOST_REQUIRE((match = std::find(points.begin(), points.end(), *i))
                   != points.end());
       (*match)[0] = -1; // Prevent the same point from being found twice.
@@ -193,8 +193,8 @@ BOOST_AUTO_TEST_CASE( test_kdtree_erase_iter )
     while (fix.container.size() != 0)
       {
         iterator eraser = fix.container.begin();
-        std::advance(eraser, static_cast<std::size_t>(rand())
-                     % fix.container.size());
+        std::advance(eraser, static_cast<ptrdiff_t>
+                     (static_cast<size_t>(rand()) % fix.container.size()));
         ordered_iterator begin = ordered_begin(fix.container);
         ordered_iterator end = ordered_end(fix.container);
         std::size_t count = 0;
@@ -213,8 +213,8 @@ BOOST_AUTO_TEST_CASE( test_kdtree_bulk_insert )
 {
   // reuse test_kdtree_insert_100_iterate_forward
   runtime_idle_pointset_fix<int2> fix;
-  std::tr1::array<int2, 100> points;
-  for(std::tr1::array<int2, 100>::iterator i
+  spatial::import::array<int2, 100> points;
+  for(spatial::import::array<int2, 100>::iterator i
         = points.begin(); i != points.end(); ++i)
     {
       (*i)[0] = std::rand() % 20;
@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE( test_kdtree_bulk_insert )
   for(runtime_idle_pointset_fix<int2>::container_type::iterator i
         = fix.container.begin(); i != fix.container.end(); ++i)
     {
-      std::tr1::array<int2, 100>::iterator match;
+      spatial::import::array<int2, 100>::iterator match;
       BOOST_REQUIRE((match = std::find(points.begin(), points.end(), *i))
                   != points.end());
       (*match)[0] = -1; // Prevent the same point from being found twice.

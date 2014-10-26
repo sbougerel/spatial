@@ -366,8 +366,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_basics, Tp, every_quad )
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_deference, Tp, double6_maps )
 {
   Tp fix(1, same());
-  double6 l; l.assign(0.0);
-  double6 h; h.assign(1.0);
+  double6 l; std::fill(l.begin(), l.end(), 0.0);
+  double6 h; std::fill(h.begin(), h.end(), 1.0);
   region_iterator<typename Tp::container_type>
     a(fix.container, make_bounds(fix.container, l, h), fix.container.begin());
   region_iterator<const typename Tp::container_type>
@@ -387,8 +387,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
   {
     Tp fix(100, randomize(-1, 1));
     // Prove that you can find the min value with N nodes, down to 1 nodes
-    double6 l; l.assign(-0.8); // leave a few out...
-    double6 h; h.assign(0.8);
+    double6 l; std::fill(l.begin(), l.end(), -0.8); // leave a few out...
+    double6 h; std::fill(h.begin(), h.end(), 0.8);
     while (!fix.container.empty())
       {
         region_iterator<typename Tp::container_type>
@@ -402,7 +402,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
   }
   { // A tree where all elements are the same (= 100.0)!
     Tp fix(100, same());
-    double6 k; k.assign(100.0); // leave none out...
+    double6 k; std::fill(k.begin(), k.end(), 100.0); // leave none out...
     while (!fix.container.empty())
       {
         closed_region_iterator<typename Tp::container_type>
@@ -413,7 +413,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
   }
   { // test at the limit: a tree with 1 element
     Tp fix(1, same());
-    double6 k; k.assign(1.0);
+    double6 k; std::fill(k.begin(), k.end(), 1.0);
     closed_region_iterator<const typename Tp::container_type>
       it = closed_region_cbegin(fix.container, k, k);
     BOOST_CHECK(it != closed_region_end(fix.container, k, k));
@@ -421,8 +421,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
     Tp fix(100, increase());
     // Prove that you can find the min value with N nodes, down to 1 nodes
-    double6 l; l.assign(20.0); // leave a few out...
-    double6 h; h.assign(80.0);
+    double6 l; std::fill(l.begin(), l.end(), 20.0); // leave a few out...
+    double6 h; std::fill(h.begin(), h.end(), 80.0);
     while (!fix.container.empty())
       {
         open_region_iterator<typename Tp::container_type>
@@ -437,8 +437,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
     Tp fix(100, decrease());
     // Prove that you can find the min value with N nodes, down to 1 nodes
-    double6 l; l.assign(20.0); // leave a few out...
-    double6 h; h.assign(80.0);
+    double6 l; std::fill(l.begin(), l.end(), 20.0); // leave a few out...
+    double6 h; std::fill(h.begin(), h.end(), 80.0);
     while (!fix.container.empty())
       {
         closed_region_iterator<typename Tp::container_type>
@@ -457,8 +457,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_maximum, Tp, double6_sets )
   {
     Tp fix(100, randomize(-1, 1));
     // Prove that you can find the max value with N nodes, down to 1 nodes
-    double6 l; l.assign(-0.8); // leave a few out...
-    double6 h; h.assign(0.8);
+    double6 l; std::fill(l.begin(), l.end(), -0.8); // leave a few out...
+    double6 h; std::fill(h.begin(), h.end(), 0.8);
     while (!fix.container.empty())
       {
         region_iterator<typename Tp::container_type>
@@ -476,7 +476,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_maximum, Tp, double6_sets )
   }
   { // A tree where all elements are the same (= 100.0)!
     Tp fix(100, same());
-    double6 k; k.assign(100.0); // leave none out...
+    double6 k; std::fill(k.begin(), k.end(), 100.0); // leave none out...
     while (!fix.container.empty())
       {
         closed_region_iterator<typename Tp::container_type>
@@ -492,7 +492,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_maximum, Tp, double6_sets )
   }
   { // test at the limit: a tree with 1 element
     Tp fix(1, same());
-    double6 k; k.assign(1.0);
+    double6 k; std::fill(k.begin(), k.end(), 1.0);
     closed_region_iterator<typename Tp::container_type>
       it = closed_region_end(fix.container, k, k);
     --it;
@@ -501,8 +501,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_maximum, Tp, double6_sets )
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
     Tp fix(100, increase());
     // Prove that you can find the min value with N nodes, down to 1 nodes
-    double6 l; l.assign(20.0); // leave a few out...
-    double6 h; h.assign(80.0);
+    double6 l; std::fill(l.begin(), l.end(), 20.0); // leave a few out...
+    double6 h; std::fill(h.begin(), h.end(), 80.0);
     while (!fix.container.empty())
       {
         open_region_iterator<typename Tp::container_type>
@@ -521,8 +521,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_maximum, Tp, double6_sets )
   { // test at the limit: an unbalanced tree (i.e. insertions in order)!
     Tp fix(100, decrease());
     // Prove that you can find the min value with N nodes, down to 1 nodes
-    double6 l; l.assign(20.0); // leave a few out...
-    double6 h; h.assign(80.0);
+    double6 l; std::fill(l.begin(), l.end(), 20.0); // leave a few out...
+    double6 h; std::fill(h.begin(), h.end(), 80.0);
     while (!fix.container.empty())
       {
         closed_region_iterator<typename Tp::container_type>

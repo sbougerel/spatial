@@ -100,17 +100,17 @@ BOOST_AUTO_TEST_CASE(test_euclid_distance_to_key)
 {
   {
     // distance between 2 points at the same position should be null.
-    double6 x; x.assign(.0);
+    double6 x; std::fill(x.begin(), x.end(), .0);
     double r = math::euclid_distance_to_key
       <double6, bracket_minus<double6, double>, double>
       (6, x, x, bracket_minus<double6, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
-    x.assign(-1.);
+    std::fill(x.begin(), x.end(), -1.);
     r = math::euclid_distance_to_key
       <double6, bracket_minus<double6, double>, double>
       (6, x, x, bracket_minus<double6, double>());
     BOOST_CHECK_CLOSE(r, .0, .000000000001);
-    x.assign(1.);
+    std::fill(x.begin(), x.end(), 1.);
     r = math::euclid_distance_to_key
       <double6, bracket_minus<double6, double>, double>
       (6, x, x, bracket_minus<double6, double>());

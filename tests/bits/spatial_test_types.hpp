@@ -15,6 +15,7 @@
 #define SPATIAL_TEST_TYPES_HPP
 
 #include "../../src/spatial.hpp"
+#include "spatial_import_array.hpp"
 
 /**
  *  The dimension_traits resolve a given type into a constant dimension value;
@@ -86,19 +87,19 @@ namespace spatial
  *
  *  In int2, elements of the array can be accessed either via at(), [], or ().
  */
-struct int2 : std::tr1::array<int, 2>
+struct int2 : spatial::import::array<int, 2>
 {
   int2 () { }
   int2 (int first, int second)
   {
-    std::tr1::array<int, 2>::operator[](0) = first;
-    std::tr1::array<int, 2>::operator[](1) = second;
+    spatial::import::array<int, 2>::operator[](0) = first;
+    spatial::import::array<int, 2>::operator[](1) = second;
   }
-  std::tr1::array<int, 2>::reference
+  spatial::import::array<int, 2>::reference
   operator()(size_type n)
   { return int2::operator[](n); }
 
-  std::tr1::array<int, 2>::const_reference
+  spatial::import::array<int, 2>::const_reference
   operator()(size_type n) const
   { return int2::operator[](n); }
 };
@@ -117,14 +118,15 @@ const int2 fives(5, 5);
 // Definition of double6 below, a larger array of double type
 
 //! A type that contains an array of 6 doubles.
-typedef std::tr1::array<double, 6> double6;
+typedef spatial::import::array<double, 6> double6;
 define_dimension(double6, 6);
 define_compare(double6, spatial::bracket_less<double6>);
 define_unit(double6, double);
 
 //! Quick initialization of double6
 inline double6
-make_double6(double a) { double6 x; x.assign(a); return x; }
+make_double6(double a)
+{ double6 x; std::fill(x.begin(), x.end(), a); return x; }
 inline double6
 make_double6(double a, double b, double c, double d, double e, double f)
 {

@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_equal_basics, Tp, every_quad)
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_deference, Tp, double6_maps )
 {
   Tp fix(1, same()); // insert 1 key containing (1.0, 1.0, 1.0...)
-  double6 model; model.assign(1.0);
+  double6 model; std::fill(model.begin(), model.end(), 1.0);
   equal_iterator<typename Tp::container_type>
     a(fix.container, model, fix.container.begin());
   equal_iterator<const typename Tp::container_type>
@@ -58,7 +58,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_minimum, Tp, double6_sets )
       {
         // Randomly pick one of the values in the tree and attempt to find it.
         typename Tp::container_type::iterator pick = fix.container.begin();
-        std::advance(pick, (size_type) std::rand() % fix.container.size());
+        std::advance(pick, (ptrdiff_t)
+                     ((size_type) std::rand() % fix.container.size()));
         equal_iterator<typename Tp::container_type>
           it = equal_begin(fix.container, *pick);
         // It should always find it!
@@ -69,7 +70,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_minimum, Tp, double6_sets )
   }
   { // A tree where all elements are the same (= 100.0)!
     Tp fix(100, same());
-    double6 k; k.assign(100.0); // leave none out...
+    double6 k; std::fill(k.begin(), k.end(), 100.0); // leave none out...
     while (!fix.container.empty())
       {
         equal_iterator<typename Tp::container_type>
@@ -80,7 +81,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_minimum, Tp, double6_sets )
   }
   { // test at the limit: a tree with 1 element
     Tp fix(1, same());
-    double6 k; k.assign(1.0);
+    double6 k; std::fill(k.begin(), k.end(), 1.0);
     equal_iterator<typename Tp::container_type>
       it = equal_begin(fix.container, k);
     BOOST_CHECK(it != equal_end(fix.container, k));
@@ -91,7 +92,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_minimum, Tp, double6_sets )
       {
         // Randomly pick one of the values in the tree and attempt to find it.
         typename Tp::container_type::iterator pick = fix.container.begin();
-        std::advance(pick, (size_type) std::rand() % fix.container.size());
+        std::advance(pick, (ptrdiff_t)
+                     ((size_type) std::rand() % fix.container.size()));
         equal_iterator<typename Tp::container_type>
           it = equal_begin(fix.container, *pick);
         // It should always find it!
@@ -106,7 +108,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_minimum, Tp, double6_sets )
       {
         // Randomly pick one of the values in the tree and attempt to find it.
         typename Tp::container_type::iterator pick = fix.container.begin();
-        std::advance(pick, (size_type) std::rand() % fix.container.size());
+        std::advance(pick, (ptrdiff_t)
+                     ((size_type) std::rand() % fix.container.size()));
         equal_iterator<typename Tp::container_type>
           it = equal_begin(fix.container, *pick);
         // It should always find it!
@@ -125,7 +128,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_maximum, Tp, double6_sets )
       {
         // Randomly pick one of the values in the tree and attempt to find it.
         typename Tp::container_type::iterator pick = fix.container.begin();
-        std::advance(pick, (size_type) std::rand() % fix.container.size());
+        std::advance(pick, (ptrdiff_t)
+                     ((size_type) std::rand() % fix.container.size()));
         equal_iterator<typename Tp::container_type>
           it = equal_end(fix.container, *pick);
         --it; // call maximum_equal
@@ -137,7 +141,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_maximum, Tp, double6_sets )
   }
   { // A tree where all elements are the same (= 100.0)!
     Tp fix(100, same());
-    double6 k; k.assign(100.0); // leave none out...
+    double6 k; std::fill(k.begin(), k.end(), 100.0); // leave none out...
     while (!fix.container.empty())
       {
         equal_iterator<typename Tp::container_type>
@@ -149,7 +153,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_maximum, Tp, double6_sets )
   }
   { // test at the limit: a tree with 1 element
     Tp fix(1, same());
-    double6 k; k.assign(1.0);
+    double6 k; std::fill(k.begin(), k.end(), 1.0);
     equal_iterator<typename Tp::container_type>
       it = equal_end(fix.container, k);
     --it; // call maximum_equal
@@ -161,7 +165,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_maximum, Tp, double6_sets )
       {
         // Randomly pick one of the values in the tree and attempt to find it.
         typename Tp::container_type::iterator pick = fix.container.begin();
-        std::advance(pick, (size_type) std::rand() % fix.container.size());
+        std::advance(pick, (ptrdiff_t)
+                     ((size_type) std::rand() % fix.container.size()));
         equal_iterator<typename Tp::container_type>
           it = equal_end(fix.container, *pick);
         --it; // call maximum_equal
@@ -177,7 +182,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_maximum, Tp, double6_sets )
       {
         // Randomly pick one of the values in the tree and attempt to find it.
         typename Tp::container_type::iterator pick = fix.container.begin();
-        std::advance(pick, (size_type) std::rand() % fix.container.size());
+        std::advance(pick, (ptrdiff_t)
+                     ((size_type) std::rand() % fix.container.size()));
         equal_iterator<typename Tp::container_type>
           it = equal_end(fix.container, *pick);
         --it; // call maximum_equal
@@ -199,7 +205,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_increment, Tp, quad_sets )
         int count_it = 0, count_eq = 0;
         typename Tp::container_type::iterator it = fix.container.begin();
         typename Tp::container_type::iterator pick = it;
-        std::advance(pick, (size_type) std::rand() % fix.container.size());
+        std::advance(pick, (ptrdiff_t)
+                     ((size_type) std::rand() % fix.container.size()));
         for (; it != fix.container.end(); ++it)
           {
             if (*it == *pick) ++count_it;
@@ -250,7 +257,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_decrement, Tp, quad_sets )
         int count_it = 0, count_eq = 0;
         typename Tp::container_type::iterator it = fix.container.begin();
         typename Tp::container_type::iterator pick = it;
-        std::advance(pick, (size_type) std::rand() % fix.container.size());
+        std::advance(pick, (ptrdiff_t)
+                     ((size_type) std::rand() % fix.container.size()));
         for (; it != fix.container.end(); ++it)
           {
             if (*it == *pick) ++count_it;

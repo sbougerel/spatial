@@ -23,8 +23,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   // Prove that you can iterate N nodes, down to 1 node
   {
     Tp fix(100, randomize(-20, 20));
-    typename neighbor_iterator<typename Tp::container_type>::metric_type
-      metric(neighbor_iterator<typename Tp::container_type>().metric());
     int2 target;
     typedef typename neighbor_iterator<typename Tp::container_type>
       ::distance_type distance_type;
@@ -50,8 +48,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   // Prove that you can iterate a very unbalanced tree
   {
     Tp fix(40, increase());
-    typename neighbor_iterator<typename Tp::container_type>::metric_type
-      metric(neighbor_iterator<typename Tp::container_type>().metric());
     int2 target;
     typedef typename neighbor_iterator<typename Tp::container_type>
       ::distance_type distance_type;
@@ -77,8 +73,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   // Prove that you can iterate an opposite unbalanced tree
   {
     Tp fix(40, decrease());
-    typename neighbor_iterator<typename Tp::container_type>::metric_type
-      metric(neighbor_iterator<typename Tp::container_type>().metric());
     int2 target;
     typedef typename neighbor_iterator<typename Tp::container_type>
       ::distance_type distance_type;
