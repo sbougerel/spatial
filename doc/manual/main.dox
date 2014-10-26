@@ -84,15 +84,18 @@ currently no foreseen development in plan that should cause it to change. Work
 is in progress to put the documentation on par with the source.
 
 \Spatial C++ Library is estimated by its author to be production-ready. The
-library is consistently unit tested, with unit tests covering more than 90% of
-it's current source code, so it should behave as expected.
+library is unit tested with each release, with unit tests covering more than 90% of
+it's current source code.
 
 \Spatial's unit test suite should compile without error or warning (even on
-highest warning levels) and execute without errors on the following compilers:
+high warning levels) and execute without errors on the following compilers:
 
-- GCC G++ 4.9 and later (tested on x86_64 architectures only)
-- Clang C++ 3.5 and later (tested on x86_64 architectures only)
-- Microsoft Visual Studio 2010 (tested on both X64 and X86 architectures)
+- GCC G++ 4.9 on x86_64 architectures only
+- GCC G++ 4.9 on x86_64 architectures only with C++11 support (new!)
+- Clang C++ 3.5 with libstdc++ on x86_64 architectures only
+- Clang C++ 3.5 with libstdc++ on x86_64 architectures only with C++11 support (new!)
+- Clang C++ 3.5 with libc++ on x86_64 architectures only (new!)
+- Microsoft Visual Studio 2010 on X64 architectures only
 
 \Spatial has not been tested on other compilers or other architectures. Any
 feedback in this regard is greatly appreciated.
@@ -126,6 +129,16 @@ contributing "Contributing".
 /**
 \page changelog Change Log
 \tableofcontents
+
+\section ver216 Version 2.1.6
+
+- Ticket #2 (https://sourceforge.net/p/spatial/tickets/2/) reported by Ed
+  Baskerville has been solved. To solve it, C++11 support for compilation has
+  been added to the library for Clang++ and G++. Additionally support for libc++
+  and Clang++ has also been added. Note that C++11 support only means it
+  compiles when the compiler is set to be compliant with C++11. The library's
+  API has yet so support new semantics such as rvalues, initialization lists,
+  etc.
 
 \section ver215 Version 2.1.5
 
