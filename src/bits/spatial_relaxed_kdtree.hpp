@@ -1138,15 +1138,17 @@ namespace spatial
     ::erase
     (const key_type& key)
     {
+      details::Equal<Self> equal_query(key_comp(), key);
       size_type cnt = 0;
-      while (true)
+      while (!empty())
         {
-          if (empty()) break;
-          equal_iterator<Self> found = equal_begin(*this, key);
-          equal_iterator<Self> none = equal_end(*this, key);
-          if (found == none) break; // no node matching this key
-          erase_node_balance(found.node_dim, found.node);
-          destroy_node(found.node);
+          node_ptr node;
+          dimension_type dim;
+          details::assign(node, dim,
+                          preorder_first(get_root(), 0, rank(), equal_query));
+          if (node == get_header()) break;
+          erase_node_balance(dim, node);
+          destroy_node(node);
           ++cnt;
         }
       SPATIAL_ASSERT_INVARIANT(*this);
