@@ -1,14 +1,13 @@
 cmake_minimum_required (VERSION 2.6)
 project (spatial_examples)
 
-if (DEFINED PROFILE AND CMAKE_COMPILER_IS_GNUCXX)
-  set (CMAKE_CXX_FLAGS "-O4")
-# For GPROF profiling
-#  set (CMAKE_CXX_FLAGS "-O2 -g -pg")
-#  set (CMAKE_EXE_LINKER_FLAGS "-g -pg")
-# For GCOV coverage
-#  set (CMAKE_CXX_FLAGS "-O0 -g -fprofile-arcs -ftest-coverage")
-#  set (CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
+if (CMAKE_COMPILER_IS_GNUCXX)
+  set (CMAKE_CXX_FLAGS_RELEASE "-O4")
+  set (CMAKE_EXE_LINKER_FLAGS_RELEASE "-O4")
+  set (CMAKE_CXX_FLAGS_PROFILE "-O2 -g -pg")
+  set (CMAKE_EXE_LINKER_FLAGS_PROFILE "-g -pg")
+  set (CMAKE_CXX_FLAGS_COVER "-O0 -g -fprofile-arcs -ftest-coverage")
+  set (CMAKE_EXE_LINKER_COVER "-fprofile-arcs -ftest-coverage")
 endif()
 
 # Basic examples

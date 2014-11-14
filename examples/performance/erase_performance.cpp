@@ -10,6 +10,37 @@
 #include "../include/random.hpp"
 #include "../include/point_type.hpp"
 
+/**
+ *  \file erase_performance.cpp Compare the different libraries on erasing
+ *  points by value; \point_multiset, \idle_point_multiset and KDTree containers
+ *  from libkdtree++.
+ *
+ *  It is expected here that \idle_point_multiset is the best performer while
+ *  \point_multiset is the worst performer. KDTree containers should be in
+ *  between.
+ *
+ *  \point_multiset should perform worse than both \idle_point_multiset and
+ *  KDTree. Firstly, both are optimized (ideally balanced) before all points are
+ *  being erased one by one, which should naturally reduce the amount of tree
+ *  walking necessary to find the next node to erase, at the
+ *  beginning. Additionally, on every erase, \point_multiset will attempt to
+ *  re-balance itself while the other 2 containers won't. Here we use the
+ *  default rebalancing strategy (\ref spatial::loose_balancing) for the
+ *  comparison.
+ *
+ *  \idle_point_multiset is expected to perform better. It is a better
+ *  performer than the other 2 containers to locate a node by value, which is
+ *  the largest task when erasing; unless you also need to rebalance.
+ *
+ *  Finally, on this test, KDTree is at a slight advantage than the 2 other
+ *  containers. Both \idle_point_multiset and \point_multiset attempt to erase
+ *  \em all elements matching the value given; similarly to
+ *  <tt>std::multiset</tt>. On the contrary, KDTree will erase \em any first
+ *  element it finds matching the key. This constraint means
+ *  \idle_point_multiset and \point_multiset must do a little more work at each
+ *  call of erase, trying to find if there is another match in the tree.
+ */
+
 template <spatial::dimension_type N, typename Point, typename Distribution>
 void compare_libraries
 (std::size_t data_size, const Distribution& distribution)
