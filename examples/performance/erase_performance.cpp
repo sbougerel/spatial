@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <algorithm>
 
 #include <spatial/point_multiset.hpp>
 #include <spatial/idle_point_multiset.hpp>
@@ -41,6 +42,8 @@
  *  call of erase, trying to find if there is another match in the tree.
  */
 
+int random_integer (int i) { return std::rand()%i;}
+
 template <spatial::dimension_type N, typename Point, typename Distribution>
 void compare_libraries
 (std::size_t data_size, const Distribution& distribution)
@@ -55,6 +58,7 @@ void compare_libraries
     std::cout << "\t\tpoint_multiset:\t" << std::flush;
     spatial::point_multiset<N, Point> cobaye;
     cobaye.insert(data.begin(), data.end());
+    std::random_shuffle(data.begin(), data.end(), random_integer);
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator i = data.begin();
          i != data.end(); ++i)
@@ -67,6 +71,7 @@ void compare_libraries
     std::cout << "\t\tidle_point_multiset:\t" << std::flush;
     spatial::idle_point_multiset<N, Point> cobaye;
     cobaye.insert_rebalance(data.begin(), data.end());
+    std::random_shuffle(data.begin(), data.end(), random_integer);
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator i = data.begin();
          i != data.end(); ++i)
@@ -80,6 +85,7 @@ void compare_libraries
     KDTree::KDTree<N, Point> cobaye;
     cobaye.insert(data.begin(), data.end());
     cobaye.optimise();
+    std::random_shuffle(data.begin(), data.end(), random_integer);
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator i = data.begin();
          i != data.end(); ++i)
