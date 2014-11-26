@@ -513,11 +513,20 @@ namespace spatial
        */
       iterator
       find(const key_type& key)
-      { return equal_begin(*this, key); }
+      {
+        if (empty()) return end();
+        return iterator(first_equal(get_root(), 0, rank(), key_comp(), key)
+                        .first);
+      }
 
       const_iterator
       find(const key_type& key) const
-      { return equal_begin(*this, key); }
+      {
+        if (empty()) return end();
+        return const_iterator(first_equal(get_root(), 0, rank(), key_comp(),
+                                          key)
+                              .first);
+      }
       ///@}
 
     public:
@@ -1145,7 +1154,7 @@ namespace spatial
           node_ptr node;
           dimension_type dim;
           details::assign(node, dim,
-                          preorder_first(get_root(), 0, rank(), equal_query));
+                          first_equal(get_root(), 0, rank(), key_comp(), key));
           if (node == get_header()) break;
           erase_node_balance(dim, node);
           destroy_node(node);

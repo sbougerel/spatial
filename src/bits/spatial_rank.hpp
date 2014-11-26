@@ -98,8 +98,8 @@ namespace spatial
     modulo(const Node<Link>* x, Rank r)
     {
       dimension_type d = r() - 1;
-      while(!header(x)) { d = incr_dim(r, d); x = x->parent; }
-      return d;
+      while(!header(x)) { ++d; x = x->parent; }
+      return d % r();
     }
   }
 }

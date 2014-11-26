@@ -20,24 +20,6 @@ void compare_libraries
   for (int i = 0; i < data_size; ++i)
     data.push_back(Point(distribution));
   {
-    // Mapping begin into a point_multiset
-    std::cout << "\t\tpoint_multiset:\t" << std::flush;
-    spatial::point_multiset<N, Point> cobaye;
-    cobaye.insert(data.begin(), data.end());
-    utils::time_point start = utils::process_timer_now();
-    for (spatial::mapping_iterator<spatial::point_multiset<N, Point> >
-           i = mapping_begin(cobaye, 0); i != mapping_end(cobaye, 0); ++i);
-    utils::time_point stop = utils::process_timer_now();
-    std::cout << (stop - start) << "sec" << std::endl;
-    std::cout << "\t\tpoint_multiset (reverse):\t" << std::flush;
-    start = utils::process_timer_now();
-    spatial::mapping_iterator<spatial::point_multiset<N, Point> >
-      i = mapping_end(cobaye, 0), end = mapping_begin(cobaye, 0);
-    for (; i != end; --i);
-    stop = utils::process_timer_now();
-    std::cout << (stop - start) << "sec" << std::endl;
-  }
-  {
     // Mapping begin into an idle_point_multiset
     std::cout << "\t\tidle_point_multiset:\t" << std::flush;
     spatial::idle_point_multiset<N, Point> cobaye;
@@ -50,6 +32,24 @@ void compare_libraries
     std::cout << "\t\tidle_point_multiset (reverse):\t" << std::flush;
     start = utils::process_timer_now();
     spatial::mapping_iterator<spatial::idle_point_multiset<N, Point> >
+      i = mapping_end(cobaye, 0), end = mapping_begin(cobaye, 0);
+    for (; i != end; --i);
+    stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << std::endl;
+  }
+  {
+    // Mapping begin into a point_multiset
+    std::cout << "\t\tpoint_multiset:\t" << std::flush;
+    spatial::point_multiset<N, Point> cobaye;
+    cobaye.insert(data.begin(), data.end());
+    utils::time_point start = utils::process_timer_now();
+    for (spatial::mapping_iterator<spatial::point_multiset<N, Point> >
+           i = mapping_begin(cobaye, 0); i != mapping_end(cobaye, 0); ++i);
+    utils::time_point stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << std::endl;
+    std::cout << "\t\tpoint_multiset (reverse):\t" << std::flush;
+    start = utils::process_timer_now();
+    spatial::mapping_iterator<spatial::point_multiset<N, Point> >
       i = mapping_end(cobaye, 0), end = mapping_begin(cobaye, 0);
     for (; i != end; --i);
     stop = utils::process_timer_now();
