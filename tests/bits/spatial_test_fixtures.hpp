@@ -91,15 +91,6 @@ struct to_first
 };
 
 /**
- *  Defines a manipulator that does nothing.
- */
-struct pass
-{
-  template<typename Tp>
-  Tp& operator()(Tp& p, int, int) const { return p; }
-};
-
-/**
  *  Defines a manipulator that initializes all the elements of the objects to
  *  the value of \c n.
  */
@@ -285,7 +276,7 @@ struct basic_fixture
   std::vector<Tp> record;
   basic_fixture() : container(), record() { }
   template<typename Manip>
-  basic_fixture(int n, const Manip& manip = pass()) : container(), record()
+  basic_fixture(int n, const Manip& manip = same()) : container(), record()
   {
     for (int i = 0; i < n; ++i)
       {
@@ -313,7 +304,7 @@ struct runtime_fixture
   std::vector<Tp> record;
   runtime_fixture() : container(Dim), record() { }
   template<typename Manip>
-  runtime_fixture(int n, const Manip& manip = pass())
+  runtime_fixture(int n, const Manip& manip = same())
     : container(Dim), record()
   {
     for (int i = 0; i < n; ++i)
@@ -337,7 +328,7 @@ struct pointset_fix
   pointset_fix() { }
   explicit pointset_fix(int n)
     : basic_fixture<Tp, point_multiset<dimension_traits<Tp>::value, Tp, Compare> >
-      (n, pass()) { }
+      (n, same()) { }
   template<typename Manip> pointset_fix(int n, const Manip& manip)
     : basic_fixture<Tp, point_multiset<dimension_traits<Tp>::value, Tp, Compare> >
       (n, manip) { }
@@ -353,7 +344,7 @@ struct boxset_fix
   boxset_fix() { }
   explicit boxset_fix(int n)
     : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare> >
-      (n, pass()) { }
+      (n, same()) { }
   template<typename Manip> boxset_fix(int n, const Manip& manip)
     : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare> >
       (n, manip) { }
@@ -372,7 +363,7 @@ struct point_multimap_fix
   explicit point_multimap_fix(int n)
     : basic_fixture<std::pair<Tp, Mapped>,
                     point_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare> >
-      (n, to_first<pass>()) { }
+      (n, to_first<same>()) { }
   template<typename Manip>
   point_multimap_fix(int n, const Manip& manip)
     : basic_fixture<std::pair<Tp, Mapped>,
@@ -393,7 +384,7 @@ struct boxmap_fix
   explicit boxmap_fix(int n)
     : basic_fixture<std::pair<Tp, Mapped>,
                     box_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare> >
-      (n, to_first<pass>()) { }
+      (n, to_first<same>()) { }
   template<typename Manip>
   boxmap_fix(int n, const Manip& manip)
     : basic_fixture<std::pair<Tp, Mapped>,
@@ -412,7 +403,7 @@ struct tight_pointset_fix
   tight_pointset_fix() { }
   explicit tight_pointset_fix(int n)
     : basic_fixture<Tp, point_multiset<dimension_traits<Tp>::value, Tp, Compare,
-                                       tight_balancing> >(n, pass()) { }
+                                       tight_balancing> >(n, same()) { }
   template<typename Manip>
   tight_pointset_fix(int n, const Manip& manip)
     : basic_fixture<Tp, point_multiset<dimension_traits<Tp>::value, Tp, Compare,
@@ -430,7 +421,7 @@ struct perfect_pointset_fix
   perfect_pointset_fix() { }
   explicit perfect_pointset_fix(int n)
     : basic_fixture<Tp, point_multiset<dimension_traits<Tp>::value, Tp, Compare,
-                                       perfect_balancing> >(n, pass()) { }
+                                       perfect_balancing> >(n, same()) { }
   template<typename Manip>
   perfect_pointset_fix(int n, const Manip& manip)
     : basic_fixture<Tp, point_multiset<dimension_traits<Tp>::value, Tp, Compare,
@@ -448,7 +439,7 @@ struct tight_boxset_fix
   tight_boxset_fix() { }
   explicit tight_boxset_fix(int n)
     : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare,
-                                     tight_balancing> >(n, pass()) { }
+                                     tight_balancing> >(n, same()) { }
   template<typename Manip>
   tight_boxset_fix(int n, const Manip& manip)
     : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare,
@@ -466,7 +457,7 @@ struct perfect_boxset_fix
   perfect_boxset_fix() { }
   explicit perfect_boxset_fix(int n)
     : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare,
-                                     perfect_balancing> >(n, pass()) { }
+                                     perfect_balancing> >(n, same()) { }
   template<typename Manip>
   perfect_boxset_fix(int n, const Manip& manip)
     : basic_fixture<Tp, box_multiset<dimension_traits<Tp>::value, Tp, Compare,
@@ -487,7 +478,7 @@ struct tight_point_multimap_fix
   explicit tight_point_multimap_fix(int n)
     : basic_fixture<std::pair<Tp, Mapped>,
                     point_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
-                                   tight_balancing> >(n, to_first<pass>()) { }
+                                   tight_balancing> >(n, to_first<same>()) { }
   template<typename Manip>
   tight_point_multimap_fix(int n, const Manip& manip)
     : basic_fixture<std::pair<Tp, Mapped>,
@@ -509,7 +500,7 @@ struct perfect_point_multimap_fix
   explicit perfect_point_multimap_fix(int n)
     : basic_fixture<std::pair<Tp, Mapped>,
                     point_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
-                                   perfect_balancing> >(n, to_first<pass>()) { }
+                                   perfect_balancing> >(n, to_first<same>()) { }
   template<typename Manip>
   perfect_point_multimap_fix(int n, const Manip& manip)
     : basic_fixture<std::pair<Tp, Mapped>,
@@ -531,7 +522,7 @@ struct tight_boxmap_fix
   explicit tight_boxmap_fix(int n)
     : basic_fixture<std::pair<Tp, Mapped>,
                     box_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
-                                 tight_balancing> >(n, to_first<pass>()) { }
+                                 tight_balancing> >(n, to_first<same>()) { }
   template<typename Manip>
   tight_boxmap_fix(int n, const Manip& manip)
     : basic_fixture<std::pair<Tp, Mapped>,
@@ -553,7 +544,7 @@ struct perfect_boxmap_fix
   explicit perfect_boxmap_fix(int n)
     : basic_fixture<std::pair<Tp, Mapped>,
                     box_multimap<dimension_traits<Tp>::value, Tp, Mapped, Compare,
-                                 perfect_balancing> >(n, to_first<pass>()) { }
+                                 perfect_balancing> >(n, to_first<same>()) { }
   template<typename Manip>
   perfect_boxmap_fix(int n, const Manip& manip)
     : basic_fixture<std::pair<Tp, Mapped>,
@@ -572,7 +563,7 @@ struct runtime_pointset_fix
   runtime_pointset_fix() { }
   explicit runtime_pointset_fix(int n)
     : runtime_fixture<Tp, dimension_traits<Tp>::value,
-                      point_multiset<0, Tp, Compare> >(n, pass()) { }
+                      point_multiset<0, Tp, Compare> >(n, same()) { }
   template<typename Manip>
   runtime_pointset_fix(int n, const Manip& manip)
     : runtime_fixture<Tp, dimension_traits<Tp>::value,
@@ -590,7 +581,7 @@ struct runtime_boxset_fix
   runtime_boxset_fix() { }
   explicit runtime_boxset_fix(int n)
     : runtime_fixture<Tp, dimension_traits<Tp>::value,
-                      box_multiset<0, Tp, Compare> >(n, pass()) { }
+                      box_multiset<0, Tp, Compare> >(n, same()) { }
   template<typename Manip>
   runtime_boxset_fix(int n, const Manip& manip)
     : runtime_fixture<Tp, dimension_traits<Tp>::value,
@@ -611,7 +602,7 @@ struct runtime_point_multimap_fix
   explicit runtime_point_multimap_fix(int n)
     : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
                       point_multimap<0, Tp, Mapped, Compare> >
-      (n, to_first<pass>()) { }
+      (n, to_first<same>()) { }
 
   template<typename Manip>
   runtime_point_multimap_fix(int n, const Manip& manip)
@@ -634,7 +625,7 @@ struct runtime_boxmap_fix
   explicit runtime_boxmap_fix(int n)
     : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
                       box_multimap<0, Tp, Mapped, Compare> >
-      (n, to_first<pass>()) { }
+      (n, to_first<same>()) { }
 
   template<typename Manip>
   runtime_boxmap_fix(int n, const Manip& manip)
@@ -654,7 +645,7 @@ struct idle_pointset_fix
   idle_pointset_fix() { }
   explicit idle_pointset_fix(int n)
     : basic_fixture<Tp, idle_point_multiset<dimension_traits<Tp>::value, Tp,
-                                            Compare> >(n, pass()) { }
+                                            Compare> >(n, same()) { }
   template<typename Manip>
   idle_pointset_fix(int n, const Manip& manip)
     : basic_fixture<Tp, idle_point_multiset<dimension_traits<Tp>::value, Tp,
@@ -672,7 +663,7 @@ struct idle_boxset_fix
   idle_boxset_fix() { }
   explicit idle_boxset_fix(int n)
     : basic_fixture<Tp, idle_box_multiset<dimension_traits<Tp>::value, Tp,
-                                          Compare> >(n, pass()) { }
+                                          Compare> >(n, same()) { }
   template<typename Manip>
   idle_boxset_fix(int n, const Manip& manip)
     : basic_fixture<Tp, idle_box_multiset<dimension_traits<Tp>::value, Tp,
@@ -694,7 +685,7 @@ struct idle_point_multimap_fix
     : basic_fixture<std::pair<Tp, Mapped>,
                     idle_point_multimap<dimension_traits<Tp>::value, Tp,
                                         Mapped, Compare> >
-      (n, to_first<pass>()) { }
+      (n, to_first<same>()) { }
   template<typename Manip>
   idle_point_multimap_fix(int n, const Manip& manip)
     : basic_fixture<std::pair<Tp, Mapped>,
@@ -718,7 +709,7 @@ struct idle_boxmap_fix
     : basic_fixture<std::pair<Tp, Mapped>,
                     idle_box_multimap<dimension_traits<Tp>::value, Tp,
                                       Mapped, Compare> >
-      (n, to_first<pass>()) { }
+      (n, to_first<same>()) { }
   template<typename Manip>
   idle_boxmap_fix(int n, const Manip& manip)
     : basic_fixture<std::pair<Tp, Mapped>,
@@ -738,7 +729,7 @@ struct runtime_idle_pointset_fix
   runtime_idle_pointset_fix() { }
   explicit runtime_idle_pointset_fix(int n)
     : runtime_fixture<Tp, dimension_traits<Tp>::value,
-                      idle_point_multiset<0, Tp, Compare> >(n, pass()) { }
+                      idle_point_multiset<0, Tp, Compare> >(n, same()) { }
   template<typename Manip>
   runtime_idle_pointset_fix(int n, const Manip& manip)
     : runtime_fixture<Tp, dimension_traits<Tp>::value,
@@ -756,7 +747,7 @@ struct runtime_idle_boxset_fix
   runtime_idle_boxset_fix() { }
   explicit runtime_idle_boxset_fix(int n)
     : runtime_fixture<Tp, dimension_traits<Tp>::value,
-                      idle_box_multiset<0, Tp, Compare> >(n, pass()) { }
+                      idle_box_multiset<0, Tp, Compare> >(n, same()) { }
   template<typename Manip>
   runtime_idle_boxset_fix(int n, const Manip& manip)
     : runtime_fixture<Tp, dimension_traits<Tp>::value,
@@ -776,7 +767,7 @@ struct runtime_idle_point_multimap_fix
   explicit runtime_idle_point_multimap_fix(int n)
     : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
                       idle_point_multimap<0, Tp, Mapped, Compare> >
-      (n, to_first<pass>()) { }
+      (n, to_first<same>()) { }
   template<typename Manip>
   runtime_idle_point_multimap_fix(int n, const Manip& manip)
     : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
@@ -797,7 +788,7 @@ struct runtime_idle_boxmap_fix
   explicit runtime_idle_boxmap_fix(int n)
     : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,
                       idle_box_multimap<0, Tp, Mapped, Compare> >
-      (n, to_first<pass>()) { }
+      (n, to_first<same>()) { }
   template<typename Manip>
   runtime_idle_boxmap_fix(int n, const Manip& manip)
     : runtime_fixture<std::pair<Tp, Mapped>, dimension_traits<Tp>::value,

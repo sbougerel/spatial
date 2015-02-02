@@ -21,7 +21,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_mapping_basics, Tp, every_quad )
 {
   Tp fix(0);
-  mapping_iterator<typename Tp::container_type> a, b(a);
+  mapping_iterator<typename Tp::container_type> z;
+  mapping_iterator<typename Tp::container_type>
+    a(fix.container, 0, fix.container.end());
+  mapping_iterator<typename Tp::container_type> b(a);
   mapping_iterator<const typename Tp::container_type> c;
   c = a;
   mapping_iterator_pair<typename Tp::container_type> p, q(a, b);

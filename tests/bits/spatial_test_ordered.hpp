@@ -21,7 +21,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_ordered_basics, Tp, every_quad )
 {
   Tp fix(0);
-  ordered_iterator<typename Tp::container_type> a, b(a);
+  ordered_iterator<typename Tp::container_type> a;
+  a.node = fix.container.end().node;
+  ordered_iterator<typename Tp::container_type> b(a);
   ordered_iterator<const typename Tp::container_type> c;
   c = a;
   ordered_iterator_pair<typename Tp::container_type> p, q(a, b);

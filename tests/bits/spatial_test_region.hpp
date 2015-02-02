@@ -301,8 +301,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_enclosed_bounds, Tp, every_quad )
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_basics, Tp, every_quad )
 {
   Tp fix(0);
+  quad l(0, 0, 0, 0);
+  quad h(1, 1, 1, 1);
   {
-    region_iterator<typename Tp::container_type> a, b(a);
+    region_iterator<typename Tp::container_type> a;
+    a.node = fix.container.end().node;
+    region_iterator<typename Tp::container_type> b(a);
     region_iterator<const typename Tp::container_type> c;
     c = a;
     region_iterator_pair<typename Tp::container_type> p, q(a, b);
@@ -314,7 +318,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_basics, Tp, every_quad )
     BOOST_CHECK(i == a);
   }
   {
-    open_region_iterator<typename Tp::container_type> a, b(a);
+    open_region_iterator<typename Tp::container_type> a;
+    a.node = fix.container.end().node;
+    open_region_iterator<typename Tp::container_type> b(a);
     open_region_iterator<const typename Tp::container_type> c;
     c = a;
     open_region_iterator_pair<typename Tp::container_type> p, q(a, b);
@@ -326,7 +332,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_basics, Tp, every_quad )
     BOOST_CHECK(i == a);
   }
   {
-    closed_region_iterator<typename Tp::container_type> a, b(a);
+    closed_region_iterator<typename Tp::container_type> a;
+    a.node = fix.container.end().node;
+    closed_region_iterator<typename Tp::container_type> b(a);
     closed_region_iterator<const typename Tp::container_type> c;
     c = a;
     closed_region_iterator_pair<typename Tp::container_type> p, q(a, b);
@@ -338,7 +346,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_basics, Tp, every_quad )
     BOOST_CHECK(i == a);
   }
   {
-    overlap_region_iterator<typename Tp::container_type> a, b(a);
+    overlap_region_iterator<typename Tp::container_type> a;
+    a.node = fix.container.end().node;
+    overlap_region_iterator<typename Tp::container_type> b(a);
     overlap_region_iterator<const typename Tp::container_type> c;
     c = a;
     overlap_region_iterator_pair<typename Tp::container_type> p, q(a, b);
@@ -350,7 +360,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_basics, Tp, every_quad )
     BOOST_CHECK(i == a);
   }
   {
-    enclosed_region_iterator<typename Tp::container_type> a, b(a);
+    enclosed_region_iterator<typename Tp::container_type> a;
+    a.node = fix.container.end().node;
+    enclosed_region_iterator<typename Tp::container_type> b(a);
     enclosed_region_iterator<const typename Tp::container_type> c;
     c = a;
     enclosed_region_iterator_pair<typename Tp::container_type> p, q(a, b);

@@ -23,7 +23,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     <typename Tp::container_type,
      euclidian<typename Tp::container_type, double,
                accessor_minus<quad_access, quad, double> > >
-    a, b(a);
+    a;
+  a.node = fix.container.end().node;
+  neighbor_iterator
+    <typename Tp::container_type,
+     euclidian<typename Tp::container_type, double,
+               accessor_minus<quad_access, quad, double> > >
+    b(a);
   neighbor_iterator
     <const typename Tp::container_type,
      euclidian<typename Tp::container_type, double,
@@ -49,7 +55,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_neighbor_compact, Tp, double6_maps )
 {
   Tp fix(0);
-  neighbor_iterator<typename Tp::container_type> a, b(a);
+  neighbor_iterator<typename Tp::container_type> a;
+  a.node = fix.container.end().node;
+  neighbor_iterator<typename Tp::container_type> b(a);
   neighbor_iterator<const typename Tp::container_type> c;
   c = a;
   neighbor_iterator_pair<typename Tp::container_type> p, q(a, b);
@@ -64,7 +72,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_neighbor_const, Tp, double6_sets )
 {
   // Check that all these consts operations are working and compiling cleanly.
-  Tp fix(10);
+  Tp fix(1, same());
   neighbor_iterator<const typename Tp::container_type>
     a = neighbor_cbegin(fix.container, make_double6(1.0));
   a++;
@@ -81,7 +89,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_euclidian_neighbor_const, Tp, double6_sets )
 {
   // Check that all these consts operations are working and compiling cleanly.
-  Tp fix(10);
+  Tp fix(1, same());
   euclidian_neighbor_iterator<const typename Tp::container_type, double>
     a = euclidian_neighbor_cbegin(fix.container, make_double6(1.0));
   a++;
@@ -98,7 +106,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_quadrance_neighbor_const, Tp, double6_sets )
 {
   // Check that all these consts operations are working and compiling cleanly.
-  Tp fix(10);
+  Tp fix(1, same());
   quadrance_neighbor_iterator<const typename Tp::container_type, double>
     a = quadrance_neighbor_cbegin(fix.container, make_double6(1.0));
   a++;
@@ -115,7 +123,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_manhattan_neighbor_const, Tp, double6_sets )
 {
   // Check that all these consts operations are working and compiling cleanly.
-  Tp fix(10);
+  Tp fix(1, same());
   manhattan_neighbor_iterator<const typename Tp::container_type, double>
     a = manhattan_neighbor_cbegin(fix.container, make_double6(1.0));
   a++;
@@ -131,7 +139,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_neighbor_accessors, Tp, double6_maps )
 {
-  Tp fix(0);
+  Tp fix(1, same());
   neighbor_iterator<typename Tp::container_type>
     a(fix.container, typename neighbor_iterator<typename Tp::container_type>
       ::metric_type(), make_double6(0., 1., 2., 3., 4., 5.),
@@ -146,7 +154,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_neighbor_deference, Tp, double6_maps )
 {
-  Tp fix(2);
+  Tp fix(2, same());
   neighbor_iterator<typename Tp::container_type>
     a(fix.container, typename neighbor_iterator<typename Tp::container_type>
       ::metric_type(), make_double6(0., 1., 2., 3., 4., 5.),

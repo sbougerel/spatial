@@ -20,7 +20,9 @@
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_equal_basics, Tp, every_quad)
 {
   Tp fix(0);
-  equal_iterator<typename Tp::container_type> a, b(a);
+  equal_iterator<typename Tp::container_type> a;
+  a.node = fix.container.end().node;
+  equal_iterator<typename Tp::container_type> b(a);
   equal_iterator<const typename Tp::container_type> c;
   c = a;
   equal_iterator_pair<typename Tp::container_type> p, q(a, b);

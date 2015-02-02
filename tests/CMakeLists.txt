@@ -62,10 +62,15 @@ endif ()
 
 include_directories(${Boost_INCLUDE_DIRS})
 
-add_executable (verify verify.cpp verify_base.cpp
-                verify_mapping.cpp verify_region.cpp
-                verify_neighbor.cpp verify_neighbor_safer.cpp
-                verify_ordered.cpp verify_equal.cpp)
+add_executable (verify verify.cpp
+                verify_base.cpp
+                verify_mapping.cpp
+                verify_region.cpp
+                verify_neighbor.cpp
+                verify_neighbor_safer.cpp
+                verify_ordered.cpp
+                verify_equal.cpp
+                )
 
 if (MSVC)
   set_target_properties (verify PROPERTIES COMPILE_FLAGS "/EHa")
