@@ -4,7 +4,7 @@
 
 // Using a rank of 0 for the container, allows you to determine the dimension at
 // runtime, as a parameter of the constructor of the conatiner.
-int main(int argc, char** argv)
+int main(int, char**)
 {
   // Dimension of 0: This container's rank (or dimension) will be determined at
   // runtime

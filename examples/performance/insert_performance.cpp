@@ -17,7 +17,7 @@ void compare_libraries
   std::cout << "\t" << N << " dimensions, " << data_size << " objects:" << std::endl;
   std::vector<Point> data;
   data.reserve(data_size);
-  for (int i = 0; i < data_size; ++i)
+  for (std::size_t i = 0; i < data_size; ++i)
     data.push_back(Point(distribution));
   {
     // Insert into a point_multiset
@@ -69,7 +69,7 @@ void compare_libraries
   }
 }
 
-int main (int argc, char **argv, char **env)
+int main (int argc, char **argv)
 {
   if (argc != 2)
     {
