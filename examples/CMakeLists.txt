@@ -8,8 +8,8 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   set (CMAKE_EXE_LINKER_FLAGS_RELEASE "-O4")
   set (CMAKE_CXX_FLAGS_PROFILE "-O2 -g -pg")
   set (CMAKE_EXE_LINKER_FLAGS_PROFILE "-g -pg")
-  set (CMAKE_CXX_FLAGS_COVER "-O0 -g -fprofile-arcs -ftest-coverage")
-  set (CMAKE_EXE_LINKER_COVER "-fprofile-arcs -ftest-coverage")
+  set (CMAKE_CXX_FLAGS_COVER "-O0 -g --coverage")
+  set (CMAKE_EXE_LINKER_COVER "--coverage")
 endif()
 
 # Basic examples
