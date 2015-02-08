@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 2.8.4)
 project (spatial_examples)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
@@ -21,3 +21,4 @@ add_executable (erase_performance performance/erase_performance.cpp)
 add_executable (find_performance performance/find_performance.cpp)
 add_executable (mapping_performance performance/mapping_performance.cpp)
 add_executable (iterate_performance performance/iterate_performance.cpp)
+add_executable (region_performance performance/region_performance.cpp)
