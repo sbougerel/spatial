@@ -4,6 +4,7 @@
 
 #include <spatial/point_multiset.hpp>
 #include <spatial/idle_point_multiset.hpp>
+#include <spatial/neighbor_iterator.hpp>
 #include <kdtree++/kdtree.hpp>
 
 #include "../include/chrono.hpp"
@@ -20,39 +21,42 @@ void compare_libraries
   for (std::size_t i = 0; i < data_size; ++i)
     data.push_back(Point(distribution));
   {
-    // Find into a point_multiset
-    std::cout << "\t\tpoint_multiset:\t" << std::flush;
-    spatial::point_multiset<N, Point> cobaye;
-    cobaye.insert(data.begin(), data.end());
-    utils::time_point start = utils::process_timer_now();
-    for (typename std::vector<Point>::const_iterator i = data.begin();
-         i != data.end(); ++i)
-      cobaye.find(*i);
-    utils::time_point stop = utils::process_timer_now();
-    std::cout << (stop - start) << "sec" << std::endl;
-  }
-  {
-    // Find into an idle_point_multiset
+    // Nearest neighbor begin into an idle_point_multiset
     std::cout << "\t\tidle_point_multiset:\t" << std::flush;
     spatial::idle_point_multiset<N, Point> cobaye;
     cobaye.insert_rebalance(data.begin(), data.end());
     utils::time_point start = utils::process_timer_now();
-    for (typename std::vector<Point>::const_iterator i = data.begin();
-         i != data.end(); ++i)
-      cobaye.find(*i);
+    for (typename std::vector<Point>::const_iterator
+           i = data.begin(); i != data.end(); ++i)
+      if (distance(neighbor_begin(cobaye, *i)) > 0.0)
+        std::cout << "not nearest" << std::endl;
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
   }
   {
-    // Find into an KDtree
+    // Nearest neighbor begin into an idle_point_multiset
+    std::cout << "\t\tpoint_multiset:\t" << std::flush;
+    spatial::point_multiset<N, Point> cobaye;
+    cobaye.insert(data.begin(), data.end());
+    utils::time_point start = utils::process_timer_now();
+    for (typename std::vector<Point>::const_iterator
+           i = data.begin(); i != data.end(); ++i)
+      if (distance(neighbor_begin(cobaye, *i)) > 0.0)
+        std::cout << "not nearest" << std::endl;
+    utils::time_point stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << std::endl;
+  }
+  {
+    // Nearest neighbor into an KDtree
     std::cout << "\t\tKDtree:\t" << std::flush;
     KDTree::KDTree<N, Point> cobaye;
     cobaye.insert(data.begin(), data.end());
     cobaye.optimise();
     utils::time_point start = utils::process_timer_now();
-    for (typename std::vector<Point>::const_iterator i = data.begin();
-         i != data.end(); ++i)
-      cobaye.find(*i);
+    for (typename std::vector<Point>::const_iterator
+           i = data.begin(); i != data.end(); ++i)
+      if (cobaye.find_nearest(*i).second > 0.0)
+        std::cout << "not nearest" << std::endl;
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
   }

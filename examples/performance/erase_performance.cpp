@@ -80,7 +80,7 @@ void compare_libraries
     std::cout << (stop - start) << "sec" << std::endl;
   }
   {
-    // Insert into an idle_point_multiset
+    // Insert into a KDtree
     std::cout << "\t\tKDtree:\t" << std::flush;
     KDTree::KDTree<N, Point> cobaye;
     cobaye.insert(data.begin(), data.end());
