@@ -146,18 +146,18 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         distance_type avg_dist = (min_dist + max_dist) / 2;
         // use this knowledge to test the upper bound
         neighbor_iterator_type i
-          = neighbor_upper_bound(fix.container, metric, target, min_dist - 1);
-        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target));
-        BOOST_CHECK_EQUAL(min_dist, distance(i));
+          = neighbor_upper_bound(fix.container, metric, target, min_dist);
+        BOOST_CHECK(i != neighbor_begin(fix.container, metric, target));
+        if (i != neighbor_end(fix.container, metric, target))
+          { BOOST_CHECK_LT(min_dist, distance(i)); }
+        BOOST_CHECK_EQUAL(min_dist, distance(--i));
         i = neighbor_upper_bound(fix.container, metric, target, max_dist);
         BOOST_CHECK(i == neighbor_end(fix.container, metric, target));
         i = neighbor_upper_bound(fix.container, metric, target, avg_dist);
         if (i != neighbor_end(fix.container, metric, target))
-          {
-            BOOST_CHECK_GT(distance(i), avg_dist);
-          }
-        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target)
-                    || distance(--i) <= avg_dist);
+          { BOOST_CHECK_GT(distance(i), avg_dist); }
+        if (i == neighbor_end(fix.container, metric, target))
+          { BOOST_CHECK_LE(distance(--i), avg_dist); }
         fix.container.erase(i);
       }
   }
@@ -203,18 +203,18 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         distance_type avg_dist = (min_dist + max_dist) / 2;
         // Use this knowledge to test the upper bound
         neighbor_iterator_type i
-          = neighbor_upper_bound(fix.container, metric, target, min_dist - 1);
-        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target));
-        BOOST_CHECK_EQUAL(min_dist, distance(i));
+          = neighbor_upper_bound(fix.container, metric, target, min_dist);
+        BOOST_CHECK(i != neighbor_begin(fix.container, metric, target));
+        if (i != neighbor_end(fix.container, metric, target))
+          { BOOST_CHECK_LT(min_dist, distance(i)); }
+        BOOST_CHECK_EQUAL(min_dist, distance(--i));
         i = neighbor_upper_bound(fix.container, metric, target, max_dist);
         BOOST_CHECK(i == neighbor_end(fix.container, metric, target));
         i = neighbor_upper_bound(fix.container, metric, target, avg_dist);
         if (i != neighbor_end(fix.container, metric, target))
-          {
-            BOOST_CHECK_GT(distance(i), avg_dist);
-          }
-        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target)
-                    || distance(--i) <= avg_dist);
+          { BOOST_CHECK_GT(distance(i), avg_dist); }
+        if (i == neighbor_end(fix.container, metric, target))
+          { BOOST_CHECK_LE(distance(--i), avg_dist); }
         fix.container.erase(i);
       }
   }
@@ -243,20 +243,18 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
         distance_type avg_dist = (min_dist + max_dist) / 2;
         // Use this knowledge to test the upper bound
         neighbor_iterator_type i
-          = neighbor_upper_bound(fix.container, metric, target, 0);
-        BOOST_CHECK(i == neighbor_begin(fix.container, metric, target));
-        BOOST_CHECK_EQUAL(min_dist, distance(i));
+          = neighbor_upper_bound(fix.container, metric, target, min_dist);
+        BOOST_CHECK(i != neighbor_begin(fix.container, metric, target));
+        if (i != neighbor_end(fix.container, metric, target))
+          { BOOST_CHECK_LT(min_dist, distance(i)); }
+        BOOST_CHECK_EQUAL(min_dist, distance(--i));
         i = neighbor_upper_bound(fix.container, metric, target, max_dist);
         BOOST_CHECK(i == neighbor_end(fix.container, metric, target));
         i = neighbor_upper_bound(fix.container, metric, target, avg_dist);
         if (i != neighbor_end(fix.container, metric, target))
-          {
-            BOOST_CHECK_GT(distance(i), avg_dist);
-          }
-        if (i != neighbor_begin(fix.container, metric, target))
-          {
-            BOOST_CHECK_GE(avg_dist, distance(--i));
-          }
+          { BOOST_CHECK_GT(distance(i), avg_dist); }
+        if (i == neighbor_end(fix.container, metric, target))
+          { BOOST_CHECK_LE(distance(--i), avg_dist); }
         fix.container.erase(i);
       }
   }
@@ -278,6 +276,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
       m = manhattan_neighbor_upper_bound(fix.container, target, 0.0);
     i = j;
     BOOST_CHECK(i == j);
+    BOOST_CHECK_EQUAL(distance(i), distance(j));
     BOOST_CHECK(j != k);
     BOOST_CHECK(i == l);
     BOOST_CHECK(m == l);
@@ -295,6 +294,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
                                           target, 0.0);
     i = j;
     BOOST_CHECK(i == j);
+    BOOST_CHECK_EQUAL(distance(i), distance(j));
     BOOST_CHECK(j != k);
     BOOST_CHECK(i == l);
     BOOST_CHECK(m == l);
@@ -306,6 +306,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
       j = manhattan_neighbor_range(fix.container, target);
     i = j;
     BOOST_CHECK(i == j);
+    BOOST_CHECK_EQUAL(distance(i.first), distance(j.first));
   }
   {
     // With custom diff and const
@@ -315,6 +316,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
       j = manhattan_neighbor_crange(fix.container, double6_diff(), target);
     i = j;
     BOOST_CHECK(i == j);
+    BOOST_CHECK_EQUAL(distance(i.first), distance(j.first));
   }
   // Need to test the pair
 }

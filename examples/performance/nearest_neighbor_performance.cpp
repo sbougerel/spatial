@@ -17,9 +17,14 @@ void compare_libraries
 {
   std::cout << "\t" << N << " dimensions, " << data_size << " objects:" << std::endl;
   std::vector<Point> data;
+  std::vector<Point> targets;
   data.reserve(data_size);
+  targets.reserve(data_size);
   for (std::size_t i = 0; i < data_size; ++i)
-    data.push_back(Point(distribution));
+    {
+      data.push_back(Point(distribution));
+      targets.push_back(Point(distribution));
+    }
   {
     // Nearest neighbor begin into an idle_point_multiset
     std::cout << "\t\tidle_point_multiset:\t" << std::flush;
@@ -27,9 +32,8 @@ void compare_libraries
     cobaye.insert_rebalance(data.begin(), data.end());
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator
-           i = data.begin(); i != data.end(); ++i)
-      if (distance(neighbor_begin(cobaye, *i)) > 0.0)
-        std::cout << "not nearest" << std::endl;
+           i = targets.begin(); i != targets.end(); ++i)
+      neighbor_begin(cobaye, *i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
   }
@@ -40,9 +44,8 @@ void compare_libraries
     cobaye.insert(data.begin(), data.end());
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator
-           i = data.begin(); i != data.end(); ++i)
-      if (distance(neighbor_begin(cobaye, *i)) > 0.0)
-        std::cout << "not nearest" << std::endl;
+           i = targets.begin(); i != targets.end(); ++i)
+      neighbor_begin(cobaye, *i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
   }
@@ -54,9 +57,8 @@ void compare_libraries
     cobaye.optimise();
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator
-           i = data.begin(); i != data.end(); ++i)
-      if (cobaye.find_nearest(*i).second > 0.0)
-        std::cout << "not nearest" << std::endl;
+           i = targets.begin(); i != targets.end(); ++i)
+      cobaye.find_nearest(*i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
   }
