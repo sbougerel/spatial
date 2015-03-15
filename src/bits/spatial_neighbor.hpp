@@ -1228,12 +1228,7 @@ namespace spatial
         {
           typename Metric::distance_type plane_dist
             = met.distance_to_plane(rank(), dim, target, const_key(node));
-          bool traverse_plane = (plane_dist <= best_dist);
-          NodePtr first, second;
-          import::tie(first, second) = key_comp(dim, const_key(node), target)
-            ? import::make_tuple(node->right, node->left)
-            : import::make_tuple(node->left, node->right);
-          if (traverse_plane)
+          if (plane_dist <= best_dist)
             {
               typename Metric::distance_type node_dist
                 = met.distance_to_key(rank(), target, const_key(node));
@@ -1246,7 +1241,11 @@ namespace spatial
                   flag = 0u; // reset
                 }
             }
-          if (second != 0 && traverse_plane)
+          NodePtr first, second;
+          import::tie(first, second) = key_comp(dim, const_key(node), target)
+            ? import::make_tuple(node->right, node->left)
+            : import::make_tuple(node->left, node->right);
+          if (second != 0 && plane_dist <= best_dist)
             {
               dimension_type child_dim = incr_dim(rank, dim);
               if (first != 0)
@@ -1261,11 +1260,11 @@ namespace spatial
                   if (import::get<0>(triplet) != node)
                     {
                       import::tie(best, best_dim, best_dist) = triplet;
-                      traverse_plane = (plane_dist <= best_dist);
                       flag = 1u;
                     }
                 }
-              if (traverse_plane) // re-check in case it changed!
+              if (plane_dist < best_dist
+                  || (plane_dist == best_dist && second == node->left))
                 {
                   if (flag == 1u && second == node->left) flag = 2u;
                   node = second; dim = child_dim;
@@ -1301,14 +1300,13 @@ namespace spatial
         = met.distance_to_key(rank(), target, const_key(node));
       typename Metric::distance_type plane_dist
         = met.distance_to_plane(rank(), dim, target, const_key(node));
-      bool traverse_plane = (plane_dist <= best_dist);
-      NodePtr first, second;
-      import::tie(first, second) = key_comp(dim, const_key(node), target)
-        ? import::make_tuple(node->right, node->left)
-        : import::make_tuple(node->left, node->right);
       for (;;)
         {
-          if (second != 0 && traverse_plane)
+          NodePtr first, second;
+          import::tie(first, second) = key_comp(dim, const_key(node), target)
+            ? import::make_tuple(node->right, node->left)
+            : import::make_tuple(node->left, node->right);
+          if (second != 0 && plane_dist <= best_dist)
             {
               dimension_type child_dim = incr_dim(rank, dim);
               if (first != 0)
@@ -1323,11 +1321,11 @@ namespace spatial
                   if (import::get<0>(triplet) != node)
                     {
                       import::tie(best, best_dim, best_dist) = triplet;
-                      traverse_plane = (plane_dist <= best_dist);
                       flag = 1u;
                     }
                 }
-              if (traverse_plane) // re-check in case it changed!
+              if (plane_dist < best_dist
+                  || (plane_dist == best_dist && second == node->left))
                 {
                   if (flag == 1u && second == node->left) flag = 2u;
                   node = second; dim = child_dim;
@@ -1344,11 +1342,7 @@ namespace spatial
             { return import::make_tuple(best, best_dim, best_dist); }
           plane_dist
             = met.distance_to_plane(rank(), dim, target, const_key(node));
-          traverse_plane = (plane_dist <= best_dist);
-          import::tie(first, second) = key_comp(dim, const_key(node), target)
-            ? import::make_tuple(node->right, node->left)
-            : import::make_tuple(node->left, node->right);
-          if (traverse_plane)
+          if (plane_dist <= best_dist)
             {
               typename Metric::distance_type node_dist
                 = met.distance_to_key(rank(), target, const_key(node));
