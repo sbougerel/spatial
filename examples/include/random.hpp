@@ -113,6 +113,39 @@ namespace utils
     /// The upper bound
     double _radius;
   };
+
+  template<N, Tp>
+  class uniform_sphere_point
+  {
+  public:
+    /// \defctor
+    uniform_sphere_point
+    (random_engine = random_engine(), double scaling_factor = 1.0)
+      : _scale(scaling_factor) { }
+
+    /// Generate the next pick using Marsaglia (1972) method which I found on
+    /// mathworld.wolfram
+    double operator() () const
+    {
+      Tp value; // must have bracket operator...
+      double x1;
+      double x2;
+      do
+        {
+          x1 = detail::randomize(-1, 1);
+          x2 = detail::randomize(-1, 1);
+        }
+      while (x1 * x1 + x2 * x2 >= 1);
+      value[0] = 2 * x1 * std::sqrt(1 - x1 * x1 - x2 * x2);
+      value[1] = 2 * x2 * std::sqrt(1 - x1 * x1 - x2 * x2);
+      value[2] = 1 - 2 * (x1 * x1 + x2 * x2);
+      return value;
+    }
+
+  private:
+    /// The scaling factor
+    double _scale;
+  };
 }
 
 #endif // SPATIAL_EXAMPLE_UTILS_RANDOM_HPP
