@@ -81,6 +81,30 @@ VERSION 2.1.0
            iterators. This is complicated to write because of the
            invariant.
 
+* 15     In relaxed kdtree, when inserting a point, during
+           rebalancing, if the node to insert is in the interval of
+           the imbalanced node and the candidate found, then the node
+           to insert itself should become the new root. Then only
+           insert the imbalanced node.
+
+* 16     Inserting too many identical values in a Kdtree crashes the
+           Kdtree. One needs to go around 1000+ values, to reach the
+           crash point, depending on memory (it will result in stack
+           overflow due to some recursion).
+
+* 17     Probably need to redesign the derivative iterator
+           definition. Something like neighbor_iterator<container,
+           euclidian, float> would result in less code than
+           euclidian_neighbor_iterator<container, float> because we do
+           not need to redefine a whole class. We need to use template
+           specialization for it, and the fact that types can be
+           deduced in a function. Indeed, it is possible to have:
+           neighbor_begin<float>(container, euclid) with the last
+           parameter begin a deduced float() of the type
+           specified. This would solve warning currently occuring
+           because of forced conversion from double->float in
+           euclidian metrics when using the less verbose declarations.
+
 
 VERSION 2.2.0
 

@@ -22,8 +22,8 @@ void compare_libraries
   targets.reserve(data_size);
   for (std::size_t i = 0; i < data_size; ++i)
     {
-      data.push_back(Point(distribution));
-      targets.push_back(Point(distribution));
+      data.push_back(distribution());
+      targets.push_back(distribution(0.01));
     }
   {
     // Nearest neighbor begin into an idle_point_multiset
@@ -80,23 +80,7 @@ int main (int argc, char **argv)
   utils::random_engine engine;
 
   std::cout << "Uniform distribution:" << std::endl;
-  utils::uniform_double_distribution uniform(engine, -1.0, 1.0);
-  compare_libraries<3, point3_type, utils::uniform_double_distribution>
+  utils::uniform_sphere_distribution<point3_type> uniform(engine);
+  compare_libraries<3, point3_type, utils::uniform_sphere_distribution<point3_type> >
     (data_size, uniform);
-  compare_libraries<9, point9_type, utils::uniform_double_distribution>
-    (data_size, uniform);
-
-  std::cout << "Normal distribution:" << std::endl;
-  utils::normal_double_distribution normal(engine, -1.0, 1.0);
-  compare_libraries<3, point3_type, utils::normal_double_distribution>
-    (data_size, normal);
-  compare_libraries<9, point9_type, utils::normal_double_distribution>
-    (data_size, normal);
-
-  std::cout << "Narrow normal distribution:" << std::endl;
-  utils::narrow_double_distribution narrow(engine, -1.0, 1.0);
-  compare_libraries<3, point3_type, utils::narrow_double_distribution>
-    (data_size, narrow);
-  compare_libraries<9, point9_type, utils::narrow_double_distribution>
-    (data_size, narrow);
 }

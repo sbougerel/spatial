@@ -114,31 +114,30 @@ namespace utils
     double _radius;
   };
 
-  template<N, Tp>
-  class uniform_sphere_point
+  template<typename Tp>
+  class uniform_sphere_distribution
   {
   public:
     /// \defctor
-    uniform_sphere_point
-    (random_engine = random_engine(), double scaling_factor = 1.0)
-      : _scale(scaling_factor) { }
+    uniform_sphere_distribution
+    (random_engine = random_engine()) { }
 
     /// Generate the next pick using Marsaglia (1972) method which I found on
     /// mathworld.wolfram
-    double operator() () const
+    Tp operator() (double scale = 1.0) const
     {
       Tp value; // must have bracket operator...
       double x1;
       double x2;
       do
         {
-          x1 = detail::randomize(-1, 1);
-          x2 = detail::randomize(-1, 1);
+          x1 = details::randomize(-1.0, 1.0);
+          x2 = details::randomize(-1.0, 1.0);
         }
       while (x1 * x1 + x2 * x2 >= 1);
-      value[0] = 2 * x1 * std::sqrt(1 - x1 * x1 - x2 * x2);
-      value[1] = 2 * x2 * std::sqrt(1 - x1 * x1 - x2 * x2);
-      value[2] = 1 - 2 * (x1 * x1 + x2 * x2);
+      value[0] = (2 * x1 * std::sqrt(1 - x1 * x1 - x2 * x2)) * scale;
+      value[1] = (2 * x2 * std::sqrt(1 - x1 * x1 - x2 * x2)) * scale;
+      value[2] = (1 - 2 * (x1 * x1 + x2 * x2)) * scale;
       return value;
     }
 
