@@ -287,11 +287,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
-( test_neighbor_minimum_apart, Tp, int2_sets )
+( test_neighbor_lower_pick_apart, Tp, int2_sets )
 {
   // This test ensures that if 2 equal minimums are on the left and right of
-  // the tree, it will find the one on the left inspite of exploring right
-  // first.
+  // the tree, both nearest and lower bound = 0 will pick the same node
   Tp fix(0);
   int2 target(1, 1);
   fix.container.insert(int2(0, -2)); // start at root (at sqrt(10))
@@ -299,7 +298,27 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   fix.container.insert(int2(1, -1)); // will go right (at sqrt(4))
   neighbor_iterator<typename Tp::container_type> i
     = neighbor_begin(fix.container, target);
-  BOOST_CHECK_EQUAL(i.node, fix.container.end().node->parent->left);
+  neighbor_iterator<typename Tp::container_type> j
+    = neighbor_lower_bound(fix.container, target, 0.f);
+  BOOST_CHECK(i == j);
+  BOOST_CHECK_EQUAL(distance(i), std::sqrt(4));
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+( test_neighbor_upper_pick_apart, Tp, int2_sets )
+{
+  // This test ensures that if 2 equal minimums are on the left and right of
+  // the tree, both nearest and upper bound = 0 will pick the same node
+  Tp fix(0);
+  int2 target(1, 1);
+  fix.container.insert(int2(0, -2)); // start at root (at sqrt(10))
+  fix.container.insert(int2(-1, 1)); // will go left (at sqrt(4))
+  fix.container.insert(int2(1, -1)); // will go right (at sqrt(4))
+  neighbor_iterator<typename Tp::container_type> i
+    = neighbor_begin(fix.container, target);
+  neighbor_iterator<typename Tp::container_type> j
+    = neighbor_upper_bound(fix.container, target, 0.f);
+  BOOST_CHECK(i == j);
   BOOST_CHECK_EQUAL(distance(i), std::sqrt(4));
 }
 

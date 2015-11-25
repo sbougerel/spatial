@@ -13,6 +13,8 @@
 #ifndef SPATIAL_NEIGHBOR_HPP
 #define SPATIAL_NEIGHBOR_HPP
 
+#include <limits>
+
 #include "spatial_import_tuple.hpp"
 #include "../metric.hpp"
 #include "../traits.hpp"
@@ -1220,54 +1222,48 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(dim < rank());
       SPATIAL_ASSERT_CHECK(node != 0);
       SPATIAL_ASSERT_CHECK(!header(node));
-      // Finds the nearest in left-pre-order fashion. Uses semi-recursiveness.
+      // Finds the nearest in near-pre-order fashion. Uses semi-recursiveness.
       NodePtr best = node->parent;
       dimension_type best_dim = decr_dim(rank, dim);
       for (;;)
         {
-          typename Metric::distance_type plane_dist
-            = met.distance_to_plane(rank(), dim, target, const_key(node));
-          if (plane_dist <= best_dist)
+          typename Metric::distance_type node_dist
+            = met.distance_to_key(rank(), target, const_key(node));
+          if (node_dist < best_dist)
             {
-              typename Metric::distance_type node_dist
-                = met.distance_to_key(rank(), target, const_key(node));
-              if (node_dist < best_dist)
-                {
-                  best = node;
-                  best_dim = dim;
-                  best_dist = node_dist;
-                }
+              best = node;
+              best_dim = dim;
+              best_dist = node_dist;
             }
-          if (node->right != 0
-              && (plane_dist < best_dist
-                  || key_comp(dim, const_key(node), target)))
+          NodePtr near, far;
+          import::tie(near, far) = key_comp(dim, const_key(node), target)
+            ? import::make_tuple(node->right, node->left)
+            : import::make_tuple(node->left, node->right);
+          if (far != 0 && (met.distance_to_plane
+                           (rank(), dim, target, const_key(node)) < best_dist))
             {
               dimension_type child_dim = incr_dim(rank, dim);
-              if (node->left != 0
-                  && (plane_dist < best_dist
-                      || key_comp(dim, target, const_key(node))))
+              if (near != 0)
                 {
-                  NodePtr child = node->left;
                   import::tuple<NodePtr, dimension_type,
                                 typename Metric::distance_type>
-                    triplet = first_neighbor_sub(child, child_dim, rank,
+                    triplet = first_neighbor_sub(near, child_dim, rank,
                                                  key_comp, met, target,
                                                  best_dist);
                   if (import::get<0>(triplet) != node)
                     {
-                      import::tie(best, best_dim, best_dist) = triplet;
                       // If I can't go right after exploring left, I'm done
-                      if (!(plane_dist < best_dist
-                            || key_comp(dim, const_key(node), target)))
-                        { return import::make_tuple(best, best_dim, best_dist); }
+                      if (!(met.distance_to_plane
+                            (rank(), dim, target, const_key(node))
+                            < import::get<2>(triplet)))
+                        { return triplet; }
+                      import::tie(best, best_dim, best_dist) = triplet;
                     }
                 }
-              node = node->right; dim = child_dim;
+              node = far; dim = child_dim;
             }
-          else if (node->left != 0
-                   && (plane_dist < best_dist
-                       || key_comp(dim, target, const_key(node))))
-            { node = node->left; dim = incr_dim(rank, dim); }
+          else if (near != 0)
+            { node = near; dim = incr_dim(rank, dim); }
           else
             { return import::make_tuple(best, best_dim, best_dist); }
         }
@@ -1280,64 +1276,9 @@ namespace spatial
     first_neighbor(NodePtr node, dimension_type dim, Rank rank,
                    const KeyCompare& key_comp, const Metric& met, const Key& target)
     {
-      SPATIAL_ASSERT_CHECK(dim < rank());
-      SPATIAL_ASSERT_CHECK(node != 0);
-      SPATIAL_ASSERT_CHECK(!header(node));
-      // Finds the nearest in left-pre-order fashion. Uses semi-recursiveness.
-      NodePtr best = node;
-      dimension_type best_dim = dim;
-      typename Metric::distance_type best_dist
-        = met.distance_to_key(rank(), target, const_key(node));
-      typename Metric::distance_type plane_dist
-        = met.distance_to_plane(rank(), dim, target, const_key(node));
-      for (;;)
-        {
-          if (node->right != 0
-              && (plane_dist < best_dist
-                  || key_comp(dim, const_key(node), target)))
-            {
-              dimension_type child_dim = incr_dim(rank, dim);
-              if (node->left != 0
-                  && (plane_dist < best_dist
-                      || key_comp(dim, target, const_key(node))))
-                {
-                  NodePtr child = node->left;
-                  import::tuple<NodePtr, dimension_type,
-                                typename Metric::distance_type>
-                    triplet = first_neighbor_sub(child, child_dim, rank,
-                                                 key_comp, met, target,
-                                                 best_dist);
-                  if (import::get<0>(triplet) != node)
-                    {
-                      import::tie(best, best_dim, best_dist) = triplet;
-                      // If I can't go right after exploring left, I'm done
-                      if (!(plane_dist < best_dist
-                            || key_comp(dim, const_key(node), target)))
-                        { return import::make_tuple(best, best_dim, best_dist); }
-                    }
-                }
-              node = node->right; dim = child_dim;
-            }
-          else if (node->left != 0
-                   && (plane_dist < best_dist
-                       || key_comp(dim, target, const_key(node))))
-            { node = node->left; dim = incr_dim(rank, dim); }
-          else
-            { return import::make_tuple(best, best_dim, best_dist); }
-          plane_dist
-            = met.distance_to_plane(rank(), dim, target, const_key(node));
-          if (plane_dist <= best_dist)
-            {
-              typename Metric::distance_type node_dist
-                = met.distance_to_key(rank(), target, const_key(node));
-              if (node_dist < best_dist)
-                {
-                  best = node;
-                  best_dim = dim;
-                  best_dist = node_dist;
-                }
-            }
-        }
+      return first_neighbor_sub
+        (node, dim, rank, key_comp, met, target,
+         (std::numeric_limits<typename Metric::distance_type>::max)());
     }
 
     template <typename NodePtr, typename Rank, typename KeyCompare,
@@ -1356,15 +1297,13 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(!header(node));
       NodePtr best = node->parent;
       dimension_type best_dim = decr_dim(rank, dim);
-      typename Metric::distance_type zero_dist
-        = typename Metric::distance_type();
       for (;;)
         {
           typename Metric::distance_type node_dist
             = met.distance_to_key(rank(), target, const_key(node));
           if (node_dist > bound)
             {
-              if (node_dist < best_dist || best_dist == zero_dist)
+              if (node_dist < best_dist)
                 {
                   best = node;
                   best_dim = dim;
@@ -1373,42 +1312,36 @@ namespace spatial
             }
           else if (node_dist == bound)
             { return import::make_tuple(node, dim, node_dist); }
-          if (node->right != 0
-              && (best_dist == zero_dist
-                  || key_comp(dim, const_key(node), target)
-                  || (met.distance_to_plane(rank(), dim, target,
-                                            const_key(node))
-                      < best_dist)))
+          NodePtr near, far;
+          import::tie(near, far) = key_comp(dim, const_key(node), target)
+            ? import::make_tuple(node->right, node->left)
+            : import::make_tuple(node->left, node->right);
+          if (far != 0 && (met.distance_to_plane
+                           (rank(), dim, target, const_key(node)) < best_dist))
             {
               dimension_type child_dim = incr_dim(rank, dim);
-              if (node->left != 0
-                  && (best_dist == zero_dist
-                      || key_comp(dim, target, const_key(node))
-                      || (met.distance_to_plane(rank(), dim, target,
-                                                const_key(node))
-                          < best_dist)))
+              if (near != 0)
                 {
-                  NodePtr child = node->left;
                   import::tuple<NodePtr, dimension_type,
                                 typename Metric::distance_type>
-                    triplet = lower_bound_neighbor_sub(child, child_dim, rank,
+                    triplet = lower_bound_neighbor_sub(near, child_dim, rank,
                                                        key_comp, met, target,
                                                        bound, best_dist);
                   if (import::get<0>(triplet) != node)
                     {
-                      if (import::get<2>(triplet) == bound) { return triplet; }
+                      if (import::get<2>(triplet) == bound
+                          // If I can't go right after exploring left, I'm done
+                          || !(met.distance_to_plane
+                               (rank(), dim, target, const_key(node))
+                               < import::get<2>(triplet)))
+                        { return triplet; }
                       import::tie(best, best_dim, best_dist) = triplet;
                     }
                 }
-              node = node->right; dim = child_dim;
+              node = far; dim = child_dim;
             }
-          else if (node->left != 0
-                   && (best_dist == zero_dist
-                       || key_comp(dim, target, const_key(node))
-                       || (met.distance_to_plane(rank(), dim, target,
-                                                 const_key(node))
-                           < best_dist)))
-            { node = node->left; dim = incr_dim(rank, dim); }
+          else if (near != 0)
+            { node = near; dim = incr_dim(rank, dim); }
           else
             { return import::make_tuple(best, best_dim, best_dist); }
         }
@@ -1423,8 +1356,9 @@ namespace spatial
                          const Key& target,
                          typename Metric::distance_type bound)
     {
-      return lower_bound_neighbor_sub(node, dim, rank, key_comp, met, target,
-                                      bound, typename Metric::distance_type());
+      return lower_bound_neighbor_sub
+        (node, dim, rank, key_comp, met, target, bound,
+         (std::numeric_limits<typename Metric::distance_type>::max)());
     }
 
     template <typename NodePtr, typename Rank, typename KeyCompare,
@@ -1442,52 +1376,45 @@ namespace spatial
       // Finds upper bound in left-pre-order fashion. Uses semi-recursiveness.
       NodePtr best = node->parent;
       dimension_type best_dim = decr_dim(rank, dim);
-      typename Metric::distance_type zero_dist
-        = typename Metric::distance_type();
       for (;;)
         {
           typename Metric::distance_type node_dist
             = met.distance_to_key(rank(), target, const_key(node));
-          if (node_dist > bound
-              && (node_dist < best_dist || best_dist == zero_dist))
+          if (node_dist > bound && node_dist < best_dist)
             {
               best = node;
               best_dim = dim;
               best_dist = node_dist;
             }
-          if (node->right != 0
-              && (best_dist == zero_dist
-                  || key_comp(dim, const_key(node), target)
-                  || (met.distance_to_plane(rank(), dim, target,
-                                            const_key(node))
-                      < best_dist)))
+          NodePtr near, far;
+          import::tie(near, far) = key_comp(dim, const_key(node), target)
+            ? import::make_tuple(node->right, node->left)
+            : import::make_tuple(node->left, node->right);
+          if (far != 0 && (met.distance_to_plane
+                           (rank(), dim, target, const_key(node)) < best_dist))
             {
               dimension_type child_dim = incr_dim(rank, dim);
-              if (node->left != 0
-                  && (best_dist == zero_dist
-                      || key_comp(dim, target, const_key(node))
-                      || (met.distance_to_plane(rank(), dim, target,
-                                                const_key(node))
-                          < best_dist)))
+              if (near != 0)
                 {
-                  NodePtr child = node->left;
                   import::tuple<NodePtr, dimension_type,
                                 typename Metric::distance_type>
-                    triplet = upper_bound_neighbor_sub(child, child_dim, rank,
+                    triplet = upper_bound_neighbor_sub(near, child_dim, rank,
                                                        key_comp, met, target,
                                                        bound, best_dist);
                   if (import::get<0>(triplet) != node)
-                    { import::tie(best, best_dim, best_dist) = triplet; }
+                    {
+                      // If I can't go right after exploring left, I'm done
+                      if (!(met.distance_to_plane
+                            (rank(), dim, target, const_key(node))
+                            < import::get<2>(triplet)))
+                        { return triplet; }
+                      import::tie(best, best_dim, best_dist) = triplet;
+                    }
                 }
-              node = node->right; dim = child_dim;
+              node = far; dim = child_dim;
             }
-          else if (node->left != 0
-                   && (best_dist == zero_dist
-                       || key_comp(dim, target, const_key(node))
-                       || (met.distance_to_plane(rank(), dim, target,
-                                                 const_key(node))
-                           < best_dist)))
-            { node = node->left; dim = incr_dim(rank, dim); }
+          else if (near != 0)
+            { node = near; dim = incr_dim(rank, dim); }
           else
             { return import::make_tuple(best, best_dim, best_dist); }
         }
@@ -1502,8 +1429,9 @@ namespace spatial
                          const Key& target,
                          typename Metric::distance_type bound)
     {
-      return upper_bound_neighbor_sub(node, dim, rank, key_comp, met, target,
-                                      bound, typename Metric::distance_type());
+      return upper_bound_neighbor_sub
+        (node, dim, rank, key_comp, met, target, bound,
+         (std::numeric_limits<typename Metric::distance_type>::max)());
     }
 
     template <typename NodePtr, typename Rank, typename KeyCompare,
@@ -1523,47 +1451,41 @@ namespace spatial
       NodePtr best = 0;
       dimension_type best_dim;
       typename Metric::distance_type best_dist;
-      // This algorithm makes 2 iterations. First it finds the next candidate in
-      // the nodes in front. If the candidate is at a distance that is equal to
-      // the current candidate, then the search stops. Otherwise, it tries to
-      // find a better candidate in the nodes at the back.
-      //
-      // "In front" and "at the back" refer to positions of the node in
-      // left-pre-order.
+      // Looks forward to find an equal or greater next best. If an equal next
+      // best is found, then no need to look further. 'Forward' and 'backward'
+      // refer to tree walking in near-pre-order.
       for(;;)
         {
-          if (node->left != 0
-              && (best == 0
-                  || key_comp(dim, target, const_key(node))
-                  || (met.distance_to_plane(rank(), dim, target,
-                                            const_key(node))
-                      < best_dist)))
+          NodePtr near, far;
+          import::tie(near, far) = key_comp(dim, const_key(node), target)
+            ? import::make_tuple(node->right, node->left)
+            : import::make_tuple(node->left, node->right);
+          if (near != 0)
             { node = node->left; dim = incr_dim(rank, dim); }
-          else if (node->right != 0
+          else if (far != 0
                    && (best == 0
-                       || key_comp(dim, const_key(node), target)
-                       || (met.distance_to_plane(rank(), dim, target,
-                                                 const_key(node))
-                           < best_dist)))
-            { node = node->right; dim = incr_dim(rank, dim); }
+                       || met.distance_to_plane
+                       (rank(), dim, target, const_key(node)) < best_dist))
+            { node = far; dim = incr_dim(rank, dim); }
           else
             {
               NodePtr prev_node = node;
               node = node->parent; dim = decr_dim(rank, dim);
               while (!header(node)
-                     && (prev_node == node->right
-                         || node->right == 0
+                     && (prev_node
+                         == (far = key_comp(dim, const_key(node), target)
+                             ? node->left : node->right)
+                         || far == 0
                          || !(best == 0
-                              || key_comp(dim, const_key(node), target)
-                              || (met.distance_to_plane(rank(), dim, target,
-                                                        const_key(node))
+                              || (met.distance_to_plane
+                                  (rank(), dim, target, const_key(node))
                                   < best_dist))))
                 {
                   prev_node = node;
                   node = node->parent; dim = decr_dim(rank, dim);
                 }
               if (!header(node))
-                { node = node->right; dim = incr_dim(rank, dim); }
+                { node = far; dim = incr_dim(rank, dim); }
               else break;
             }
           // Test node here and stops as soon as it finds an equal
@@ -1583,7 +1505,7 @@ namespace spatial
               best_dist = test_dist;
             }
         }
-      // Here, current best_dist < node_dist or best == 0, maybe there is a
+      // Here, current best_dist > node_dist or best == 0, maybe there is a
       // better best at the back (iterate backwards to header)
       NodePtr copy_node = orig;
       dimension_type copy_dim = orig_dim;
@@ -1591,32 +1513,27 @@ namespace spatial
       dim = decr_dim(rank, orig_dim);
       while(!header(node))
         {
-          if (node->right == copy_node
-              && node->left != 0
-              && (best == 0
-                  || key_comp(dim, target, const_key(node))
-                  || (met.distance_to_plane(rank(), dim, target,
-                                            const_key(node))
-                      < best_dist)))
+          NodePtr near, far;
+          import::tie(near, far) = key_comp(dim, const_key(node), target)
+            ? import::make_tuple(node->right, node->left)
+            : import::make_tuple(node->left, node->right);
+          if (far == copy_node && near != 0)
             {
-              node = node->left;
+              node = near;
               dim = copy_dim;
               for (;;)
                 {
-                  if (node->right != 0
+                  import::tie(near, far) = key_comp(dim, const_key(node), target)
+                    ? import::make_tuple(node->right, node->left)
+                    : import::make_tuple(node->left, node->right);
+                  if (far != 0
                       && (best == 0
-                          || key_comp(dim, const_key(node), target)
                           || (met.distance_to_plane(rank(), dim, target,
                                                     const_key(node))
                               < best_dist)))
-                    { node = node->right; dim = incr_dim(rank, dim); }
-                  else if (node->left != 0
-                           && (best == 0
-                               || key_comp(dim, target, const_key(node))
-                               || (met.distance_to_plane(rank(), dim, target,
-                                                         const_key(node))
-                                   < best_dist)))
-                    { node = node->left; dim = incr_dim(rank, dim); }
+                    { node = far; dim = incr_dim(rank, dim); }
+                  else if (near != 0)
+                    { node = near; dim = incr_dim(rank, dim); }
                   else break;
                 }
             }
@@ -1658,42 +1575,35 @@ namespace spatial
       NodePtr best = 0;
       dimension_type best_dim;
       typename Metric::distance_type best_dist;
-      // This algorithm makes 2 iterations. First it finds the next candidate in
-      // the nodes at the back. If the candidate is at a distance that is equal
-      // to the current candidate, then the search stops. Otherwise, it tries to
-      // find a better candidate in the nodes in front.
-      //
-      // "In front" and "at the back" refer to positions of the node in
-      // left-pre-order.
-      NodePtr copy_node = node;
-      dimension_type copy_dim = dim;
+      // Looks backaward to find an equal or lower next best. If an equal next
+      // best is found, then no need to look further. 'Forward' and 'backward'
+      // refer to tree walking in near-pre-order.
+      NodePtr prev_node = node;
+      dimension_type prev_dim = dim;
       node = node->parent;
       dim = decr_dim(rank, dim);
       while (!header(node))
         {
-          if (node->right == copy_node
-              && node->left != 0
-              && (key_comp(dim, target, const_key(node))
-                  || (met.distance_to_plane(rank(), dim, target,
-                                            const_key(node))
-                      <= node_dist)))
+          NodePtr near, far;
+          import::tie(near, far) = key_comp(dim, const_key(node), target)
+            ? import::make_tuple(node->right, node->left)
+            : import::make_tuple(node->left, node->right);
+          if (prev_node == far && near != 0)
             {
-              node = node->left;
-              dim = copy_dim;
+              node = near;
+              dim = prev_dim;
               for (;;)
                 {
-                  if (node->right != 0
-                      && (key_comp(dim, const_key(node), target)
-                          || (met.distance_to_plane(rank(), dim, target,
-                                                    const_key(node))
-                              <= node_dist)))
-                    { node = node->right; dim = incr_dim(rank, dim); }
-                  else if (node->left != 0
-                           && (key_comp(dim, target, const_key(node))
-                               || (met.distance_to_plane(rank(), dim, target,
-                                                         const_key(node))
-                                   <= node_dist)))
-                    { node = node->left; dim = incr_dim(rank, dim); }
+                  import::tie(near, far) = key_comp(dim, const_key(node), target)
+                    ? import::make_tuple(node->right, node->left)
+                    : import::make_tuple(node->left, node->right);
+                  if (far != 0
+                      && (met.distance_to_plane(rank(), dim, target,
+                                                const_key(node))
+                          <= node_dist))
+                    { node = far; dim = incr_dim(rank, dim); }
+                  else if (near != 0)
+                    { node = near; dim = incr_dim(rank, dim); }
                   else break;
                 }
             }
@@ -1713,8 +1623,8 @@ namespace spatial
               best_dim = dim;
               best_dist = test_dist;
             }
-          copy_node = node;
-          copy_dim = dim;
+          prev_node = node;
+          prev_dim = dim;
           node = node->parent;
           dim = decr_dim(rank, dim);
         }
@@ -1724,35 +1634,35 @@ namespace spatial
       dim = orig_dim;
       for(;;)
         {
-          if (node->left != 0
-              && (key_comp(dim, target, const_key(node))
-                  || (met.distance_to_plane(rank(), dim, target,
-                                            const_key(node))
-                      < node_dist)))
+          NodePtr near, far;
+          import::tie(near, far) = key_comp(dim, const_key(node), target)
+            ? import::make_tuple(node->right, node->left)
+            : import::make_tuple(node->left, node->right);
+          if (near != 0)
             { node = node->left; dim = incr_dim(rank, dim); }
-          else if (node->right != 0
-                   && (key_comp(dim, const_key(node), target)
-                       || (met.distance_to_plane(rank(), dim, target,
-                                                 const_key(node))
-                           < node_dist)))
-            { node = node->right; dim = incr_dim(rank, dim); }
+          else if (far != 0
+                   && (met.distance_to_plane(rank(), dim, target,
+                                             const_key(node))
+                       < node_dist))
+            { node = far; dim = incr_dim(rank, dim); }
           else
             {
               NodePtr prev_node = node;
               node = node->parent; dim = decr_dim(rank, dim);
               while (!header(node)
-                     && (prev_node == node->right
-                         || node->right == 0
-                         || !(key_comp(dim, const_key(node), target)
-                              || (met.distance_to_plane(rank(), dim, target,
-                                                        const_key(node))
-                                  < node_dist))))
+                     && (prev_node
+                         == (far = key_comp(dim, const_key(node), target)
+                             ? node->left : node->right)
+                         || far == 0
+                         || !(met.distance_to_plane(rank(), dim, target,
+                                                    const_key(node))
+                                  < node_dist)))
                 {
                   prev_node = node;
                   node = node->parent; dim = decr_dim(rank, dim);
                 }
               if (!header(node))
-                { node = node->right; dim = incr_dim(rank, dim); }
+                { node = far; dim = incr_dim(rank, dim); }
               else break;
             }
           typename Metric::distance_type test_dist
