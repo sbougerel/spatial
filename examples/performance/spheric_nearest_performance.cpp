@@ -27,9 +27,9 @@ void compare_libraries
     }
   {
     // Nearest neighbor begin into an idle_point_multiset
-    std::cout << "\t\tidle_point_multiset:\t" << std::flush;
     spatial::idle_point_multiset<N, Point> cobaye;
     cobaye.insert_rebalance(data.begin(), data.end());
+    std::cout << "\t\tidle_point_multiset:\t" << std::flush;
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator
            i = targets.begin(); i != targets.end(); ++i)
@@ -39,9 +39,9 @@ void compare_libraries
   }
   {
     // Nearest neighbor begin into an idle_point_multiset
-    std::cout << "\t\tpoint_multiset:\t" << std::flush;
     spatial::point_multiset<N, Point> cobaye;
     cobaye.insert(data.begin(), data.end());
+    std::cout << "\t\tpoint_multiset:\t" << std::flush;
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator
            i = targets.begin(); i != targets.end(); ++i)
@@ -51,10 +51,10 @@ void compare_libraries
   }
   {
     // Nearest neighbor into an KDtree
-    std::cout << "\t\tKDtree:\t" << std::flush;
     KDTree::KDTree<N, Point> cobaye;
     cobaye.insert(data.begin(), data.end());
     cobaye.optimise();
+    std::cout << "\t\tKDtree:\t" << std::flush;
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator
            i = targets.begin(); i != targets.end(); ++i)
@@ -79,7 +79,7 @@ int main (int argc, char **argv)
   argbuf >> data_size;
   utils::random_engine engine;
 
-  std::cout << "Uniform distribution:" << std::endl;
+  std::cout << "Uniform sphere distribution:" << std::endl;
   utils::uniform_sphere_distribution<point3_type> uniform(engine);
   compare_libraries<3, point3_type, utils::uniform_sphere_distribution<point3_type> >
     (data_size, uniform);

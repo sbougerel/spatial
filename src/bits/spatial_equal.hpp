@@ -32,13 +32,13 @@ namespace spatial
       Equal() { }
 
       Equal(const typename Container::key_compare& cmp,
-                const typename Container::key_type& model_)
-        : Container::key_compare(cmp), model(model_) { }
+                const typename Container::key_type& value_)
+        : Container::key_compare(cmp), value(value_) { }
 
       typename Container::key_compare key_comp() const
       { return static_cast<typename Container::key_compare>(*this); }
 
-      typename Container::key_type model;
+      typename Container::key_type value;
     };
 
     template <typename Container>
@@ -47,7 +47,7 @@ namespace spatial
                     dimension_type dim,
                     const Equal<Container>& equal)
     {
-      return !equal.key_comp()(dim, equal.model, const_key(node));
+      return !equal.key_comp()(dim, equal.value, const_key(node));
     }
 
     /**
@@ -72,8 +72,8 @@ namespace spatial
     {
       dimension_type i = 0;
       for (; i < rank()
-             && !equal.key_comp()(i, const_key(node), equal.model)
-             && !equal.key_comp()(i, equal.model, const_key(node));
+             && !equal.key_comp()(i, const_key(node), equal.value)
+             && !equal.key_comp()(i, equal.value, const_key(node));
            ++i) { }
       return (i == rank());
     }
@@ -85,7 +85,7 @@ namespace spatial
                    const Equal<Container>& equal,
                    relaxed_invariant_tag)
     {
-      return !equal.key_comp()(dim, const_key(node), equal.model);
+      return !equal.key_comp()(dim, const_key(node), equal.value);
     }
 
     template <typename Container>
@@ -95,7 +95,7 @@ namespace spatial
                    const Equal<Container>& equal,
                    strict_invariant_tag)
     {
-      return equal.key_comp()(dim, equal.model, const_key(node));
+      return equal.key_comp()(dim, equal.value, const_key(node));
     }
 
     template <typename Container>
@@ -158,10 +158,10 @@ namespace spatial
      *  \param model_ The key to look for.
      *  \param iter An iterator on the type Ct.
      */
-    equal_iterator(Container& container, const key_type& model_,
+    equal_iterator(Container& container, const key_type& value_,
                    typename container_traits<Container>::iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        _query(container.key_comp(), model_) { }
+        _query(container.key_comp(), value_) { }
 
     /**
      *  Build an equal iterator from the node and current dimension of a
@@ -182,9 +182,9 @@ namespace spatial
      *  \param container The container being iterated.
      */
     equal_iterator
-    (Container& container, const key_type& model_, dimension_type dim,
+    (Container& container, const key_type& value_, dimension_type dim,
      typename container_traits<Container>::mode_type::node_ptr ptr)
-      : Base(container.rank(), ptr, dim), _query(container.key_comp(), model_)
+      : Base(container.rank(), ptr, dim), _query(container.key_comp(), value_)
     { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
@@ -225,9 +225,8 @@ namespace spatial
       return x;
     }
 
-    //! Return the value of the model key used to find equal keys in the
-    //! container.
-    key_type model() const { return _query.model; }
+    //! Return the value of key used to find equal keys in the container.
+    key_type value() const { return _query.value; }
 
     //! Return the functor used to compare keys in this iterator.
     key_compare key_comp() const { return _query.key_comp(); }
@@ -285,10 +284,10 @@ namespace spatial
      *  \param model_ The key to look for.
      *  \param iter An iterator from the container.
      */
-    equal_iterator(const Container& container, const key_type& model_,
+    equal_iterator(const Container& container, const key_type& value_,
                    typename container_traits<Container>::const_iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        _query(container.key_comp(), model_) { }
+        _query(container.key_comp(), value_) { }
 
     /**
      *  Build an equal iterator from the node and current dimension of a
@@ -306,15 +305,15 @@ namespace spatial
      *  \param ptr A pointer to a node belonging to \c container.
      */
     equal_iterator
-    (const Container& container, const key_type& model_, dimension_type dim,
+    (const Container& container, const key_type& value_, dimension_type dim,
      typename container_traits<Container>::mode_type::const_node_ptr ptr)
-      : Base(container.rank(), ptr, dim), _query(container.key_comp(), model_)
+      : Base(container.rank(), ptr, dim), _query(container.key_comp(), value_)
     { }
 
     //! Convertion of an iterator into a const_iterator is permitted.
     equal_iterator(const equal_iterator<Container>& iter)
       : Base(iter.rank(), iter.node, iter.node_dim),
-        _query(iter.key_comp(), iter.model()) { }
+        _query(iter.key_comp(), iter.value()) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
@@ -354,9 +353,8 @@ namespace spatial
       return x;
     }
 
-    //! Returns the value of the model key used to find equivalent keys in the
-    //! container.
-    key_type model() const { return _query.model; }
+    //! Returns the value used to find equivalent keys in the container.
+    key_type value() const { return _query.value; }
 
     //! Returns the functor used to compare keys in this iterator.
     key_compare key_comp() const { return _query.key_comp(); }
@@ -369,18 +367,18 @@ namespace spatial
   template <typename Container>
   inline equal_iterator<Container>
   equal_end(Container& container,
-            const typename equal_iterator<Container>::key_type& model)
+            const typename equal_iterator<Container>::key_type& value)
   {
     return equal_iterator<Container>
-      (container, model, container.dimension() - 1,
+      (container, value, container.dimension() - 1,
        container.end().node); // At header, dim = rank - 1
   }
 
   template <typename Container>
   inline equal_iterator<const Container>
   equal_cend(const Container& container,
-             const typename equal_iterator<Container>::key_type& model)
-  { return equal_end(container, model); }
+             const typename equal_iterator<Container>::key_type& value)
+  { return equal_end(container, value); }
 
   /**
    *  Find the first element in \c container that compares equally to \c model,
@@ -395,23 +393,23 @@ namespace spatial
   template <typename Container>
   inline equal_iterator<Container>
   equal_begin(Container& container,
-              const typename equal_iterator<Container>::key_type& model)
+              const typename equal_iterator<Container>::key_type& value)
   {
-    if (container.empty()) return equal_end(container, model);
+    if (container.empty()) return equal_end(container, value);
     typename equal_iterator<Container>::node_ptr node
       = container.end().node->parent;
     dimension_type dim;
     details::assign(node, dim,
                     first_equal(node, 0, container.rank(),
-                                container.key_comp(), model));
-    return equal_iterator<Container>(container, model, dim, node);
+                                container.key_comp(), value));
+    return equal_iterator<Container>(container, value, dim, node);
   }
 
   template <typename Container>
   inline equal_iterator<const Container>
   equal_cbegin(const Container& container,
-               const typename equal_iterator<Container>::key_type& model)
-  { return equal_begin(container, model); }
+               const typename equal_iterator<Container>::key_type& value)
+  { return equal_begin(container, value); }
   ///@}
 
   namespace details

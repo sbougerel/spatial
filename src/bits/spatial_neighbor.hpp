@@ -1465,7 +1465,7 @@ namespace spatial
               return import::make_tuple(node, dim, test_dist);
             }
           else if (test_dist > node_dist
-                   && (test_dist < best_dist || best == 0))
+                   && (best == 0 || test_dist < best_dist))
             {
               best = node;
               best_dim = dim;
@@ -1507,7 +1507,7 @@ namespace spatial
           // Test node here for new best
           typename Metric::distance_type test_dist
             = met.distance_to_key(rank(), target, const_key(node));
-          if (test_dist > node_dist && (test_dist <= best_dist || best == 0))
+          if (test_dist > node_dist && (best == 0 || test_dist <= best_dist))
             {
               best = node;
               best_dim = dim;
@@ -1584,7 +1584,7 @@ namespace spatial
               return import::make_tuple(node, dim, test_dist);
             }
           else if (test_dist < node_dist
-                   && (test_dist > best_dist || best == 0))
+                   && (best == 0 || test_dist > best_dist))
             {
               best = node;
               best_dim = dim;
@@ -1634,7 +1634,7 @@ namespace spatial
             }
           typename Metric::distance_type test_dist
             = met.distance_to_key(rank(), target, const_key(node));
-          if (test_dist < node_dist && (test_dist >= best_dist || best == 0))
+          if (test_dist < node_dist && (best == 0 || test_dist >= best_dist))
             {
               best = node;
               best_dim = dim;

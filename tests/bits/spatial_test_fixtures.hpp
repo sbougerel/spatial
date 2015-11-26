@@ -19,20 +19,11 @@
 #ifndef SPATIAL_TEST_FIXTURES_HPP
 #define SPATIAL_TEST_FIXTURES_HPP
 
-#ifdef __GLIBCXX__
-#  include <tr1/array>
-#else
-#  ifdef __IBMCPP__
-#    define __IBMCPP_TR1__
-#  endif
-#  include <array>
-#endif
 #include <boost/mpl/list.hpp>
 
 #define SPATIAL_ENABLE_ASSERT // detect interal issues that should not occur
 
 #include "spatial_test_types.hpp"
-
 #include "../../src/point_multiset.hpp"
 #include "../../src/idle_point_multiset.hpp"
 #include "../../src/box_multiset.hpp"
@@ -85,7 +76,7 @@ struct to_first
   std::pair<Tp1, Tp2>& operator()
     (std::pair<Tp1, Tp2>& p, int i, int n) const
   {
-    p.first = Manip()(p.first, i, n);
+    Manip()(p.first, i, n);
     return p;
   }
 };
