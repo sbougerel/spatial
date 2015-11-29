@@ -155,7 +155,7 @@ namespace spatial
      *  bounded by \Olog when the container is perfectly balanced.
      *
      *  \param container The container being iterated.
-     *  \param model_ The key to look for.
+     *  \param value_ The key to look for.
      *  \param iter An iterator on the type Ct.
      */
     equal_iterator(Container& container, const key_type& value_,
@@ -176,7 +176,7 @@ namespace spatial
      *  performance of your application in any major way.
      *
      *  \param container The container being iterated.
-     *  \param model_ The key to look for.
+     *  \param value_ The key to look for.
      *  \param ptr An iterator on the type Ct.
      *  \param dim The node's dimension for the node pointed to by node.
      *  \param container The container being iterated.
@@ -281,7 +281,7 @@ namespace spatial
      *  bounded by \Olog when the container is perfectly balanced.
      *
      *  \param container The container being iterated.
-     *  \param model_ The key to look for.
+     *  \param value_ The key to look for.
      *  \param iter An iterator from the container.
      */
     equal_iterator(const Container& container, const key_type& value_,
@@ -299,7 +299,7 @@ namespace spatial
      *  dimension does not have to be calculated.
      *
      *  \param container The container being iterated.
-     *  \param model_ The key to look for.
+     *  \param value_ The key to look for.
      *  \param dim The dimension associated with \c ptr when checking the
      *  invariant in \c container.
      *  \param ptr A pointer to a node belonging to \c container.
@@ -381,12 +381,12 @@ namespace spatial
   { return equal_end(container, value); }
 
   /**
-   *  Find the first element in \c container that compares equally to \c model,
+   *  Find the first element in \c container that compares equally to \c value,
    *  using \c container's \c key_compare comparator.
    *
    *  \tparam Container The container type being iterated.
    *  \param container The container being iterated.
-   *  \param model A model to find matches among other keys stored in the
+   *  \param value A value to find matches among other keys stored in the
    *  container.
    */
   ///@{

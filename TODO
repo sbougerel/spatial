@@ -1,181 +1,77 @@
 Spatial TODO List
 =================
 
-5. Speed check for mapping
-6. No more ref_compare, proceed in direction of walk, which prunes more - but check speed
-7. Keep on refactoring the algorithm: a new way of walking with partial recursivity might
-   prove even more efficient: the idea is to reduce the jump to ancesters by unwinding the
-   stack instead of iteratively go up and compute the dimension each time. This could prove
-   very beneficial.
-8. Need to compactify algorithms somehow.
-9. Need new algorithms for the rebalance which do not inspect deeply as the mapping_iterator
-   does. Deep inspection is not necessary, we can stop at the first guy found.
+Minor version updates
+--------------------
 
-Spatial ROADMAP
-===============
+1. Some test cases now require lots of RAM to compile, therefore we
+   need to break things up.
 
-VERSION 2.0.0
+2. Performance tests should go into tests and not examples, where they
+   serve no reason.
 
-* Mar 11 Finish the implementation of the self-balancing containers,
-           and create the new family of containers, frozen_pointset,
-           in order to store points without rebalancing. By default,
-           *_pointset will be self-blancing containers. This involves
-           a heavy unit-testing and thus, it should take a good 3
-           months. DONE!
+3. Support for C++11 initializer lists
 
-* Jun 11 Some documentation and unit test missing on the first
-           release, so we just need to add them. Just a few are
-           missing, only. Additionaly, check that the library is
-           compiling fine on Visual Studio.
-           DONE!
+4. Support C++11 for loops will require a redesign of iterator
+   interface.
 
-* Jul 11 Add interator_cast() operators to cast a view interator into
-           a container iterator, to facilitate erasing a node from a
-           container, for example. Cause it currently involves quite a
-           messy use of iterator constructor. DONE! (Iterator casting
-           is supported in the iterator themselves)
+Major version update
+--------------------
 
-* Dec 11 Implementation of pointmap containers. Need to add quite a
-           bit of unit testing, cause they differ from pointset in the
-           sense that their iterator are not always constant. It
-           should also take about 2 months. DONE!
+6. Prompting the user to use Comparator in point_multiset<>,
+   point_multimap<> and other container creates a need to rebind a
+   difference for euclidian, quadrance and manathan metrics. If the
+   user was simply asked for an assessor right from the start, this
+   need would not exists. This will require a redesign and break of
+   interface for the metrics. Metric can then be abbrievated with:
+           neighbor_begin<euclidian<float> >(container, target);
+   Instead of:
+           euclidian_neighbor_begin(container, target);
+   Which does not allow the user to customize the type used to express
+   distance.
+   This would also deprecate all metric specialization of
+   neighbor_begin(), neighbor_lower_bound(), etc. Ultimately, this
+   will resolve into less code and thus simplify support.
 
-* Feb 12 Work on boxset containers, add a new type of iterator:
-           contain_iterator and intersect_iterator which walk through
-           all the boxes that are contained in a range or that are
-           intersecting a range, respectively. With unit tests, that
-           should take a good 3 months. DONE!
+7. Modify the interface for box_multiset and box_multimap which does
+   not allow for flexibility with enclosed_region and
+   overlapping_region. This would require a redesign of the
+   box_multiset and box_multimap, to store a pair<key_type> for each
+   box. Defining box_multiset would then be put into
+   question. Ultimately this would result into less code as well.
 
-* May 12 Add the boxmap family of iterators. DONE!
+8. Create the cache-oblivious point_index and box_index once the above
+   is done. Which would be a real achievement at this point. Index are
+   flat array representation of the tree which maintain perfect
+   balancing. It is also more economical in memory since only 1
+   pointer per node need to be defined (pointer to parent). Finally,
+   it is cache oblivious because for any cache size, there should
+   exist a sub-set of the array that contains a sub-tree that fits
+   entirely in the cache. This container would replace idle_* family
+   of containers.
 
-* Oct 12 Add a new type of iterator known as ordered_iterator. This
-           iterator always walks through the nodes of the tree in the
-           same order. This iterator is absolutely necessary to
-           properly implement some elementary functions such as "=="
-           between containers. DONE!
-
-
-VERSION 2.1.0
-
-* May 13 Complete General doxygen documention with details on
-           container and views, elaboration of how to write geometry,
-           etc. This documentation should serve as a complete user
-           manual, it should be accompanied by a bit of library
-           polishing. Should take about 2 months. It would mark the
-           milestone 2.0 release, and the end of the beta period, if
-           enough people have used it. In progress...
-
-* Jul 13 Equal_iterator should stand on its own with its own
-           optimizations for the static invarient in the kdree. DONE!
-
-* Nov 13 Final optimization: work on adding performance-based tests
-           and comparison with other libraries in the market. Wouldn't
-           it be nice to see how it fares against FLANN or libkdtree++?
-           In progress...
-
-* Jan 14 Implementing containers that hold only unique keys, with
-           bracket operators just like std::map and std::set. They
-           would be simply point_set, box_set, point_map and box_map.
-
-* Mar 14 Add a range erase function that operates on 2 basic tree
-           iterators. This is complicated to write because of the
-           invariant.
-
-* 15     In relaxed kdtree, when inserting a point, during
-           rebalancing, if the node to insert is in the interval of
-           the imbalanced node and the candidate found, then the node
-           to insert itself should become the new root. Then only
-           insert the imbalanced node.
-
-* 16     Inserting too many identical values in a Kdtree crashes the
-           Kdtree. One needs to go around 1000+ values, to reach the
-           crash point, depending on memory (it will result in stack
-           overflow due to some recursion).
-
-* 17     Probably need to redesign the derivative iterator
-           definition. Something like neighbor_iterator<container,
-           euclidian, float> would result in less code than
-           euclidian_neighbor_iterator<container, float> because we do
-           not need to redefine a whole class. We need to use template
-           specialization for it, and the fact that types can be
-           deduced in a function. Indeed, it is possible to have:
-           neighbor_begin<float>(container, euclid) with the last
-           parameter begin a deduced float() of the type
-           specified. This would solve warning currently occuring
-           because of forced conversion from double->float in
-           euclidian metrics when using the less verbose declarations.
+9. Adding iterator_cast() operators to ensure that iterator conversion
+   is not done unknowingly as it is the case today.
 
 
-VERSION 2.2.0
+Spatial Miscellanelous
+======================
 
-* Jul 14 Addition of algorithms. A few come to mind: approximative
-           nearest neighbor search, min/max depth, etc.
-           In progress...
+* Move the repository to Github which is more social and dynamic.
 
-* Sep 14 Addition of intrusive containers or flat container for every
-           existing ones (haven't decided wether intrusive or flat is
-           better) I suppose that since you are probably using the
-           tree for it's algorthims, flat container may present a good
-           alterative, while intrusive container may be slower in
-           practice, the value are located out of the tree in
-           memory. The containers should have a rather limited inpact
-           on the existing code if possible, but should make a great
-           difference in terms of performance for those who need
-           them. Should take about 2 months.
+* Complete General doxygen documention with details on container and
+  views, elaboration of how to write geometry, etc.
 
-* Dec 14 Implementation of a new near cache oblivious allocator solely
-           dedicated to be used with the spatial library. This cache
-           oblivious allocator is used to speed up the frequent
-           walking operation within the tree. How does it work? First,
-           it does not use locking, and creates new allocation per
-           container. That means it is thread-local by design and
-           fast. Secondly, it uses extensive knownledge of how the
-           library uses it's node and so, it is only suitable for use
-           with the library itself, and can't be used anywhere else!
-           This allocator create storage for a specific number of node
-           in power of 2, minus 1. Within the same memory region, or
-           block it will represent a sub-tree. The root of the subtree
-           is always the first node. One of the child node sits next
-           the root, while the other child node sits in the middle of
-           the remaining space, recursively. Due to this recursion,
-           regardless of block size, cache size or other parameters,
-           there is always an entire subtree that will fit in the
-           cache. To locate the nodes within the block, the hint
-           pointer is used. The hint pointer given is always the
-           parent of the node to be allocated. It uses the information
-           of available buckets in the block and of the pointer in the
-           parent node to find the suitable new bucket position. This
-           allocator is also memory efficient: if the node dealloacted
-           was the root node of the sub-tree in the block, and was a
-           leaf node, the block can safely be deallocated as well.
-           Therefore this allocator is fast and needs no extra info on
-           top of the information in the tree itself. This allocator
-           is therefore optimal for the library, and should speed up
-           tree walking a lot... if we never re-balanced containers.
-           However we do re-balance containers in this library, hence
-           this allocator will be specific to idle_* containers which
-           do not reblance. Another allocator, probably not cache
-           oblivious, but at least cache-aware (with a user-defined
-           bucket size will need to be written)
+* Work on adding performance-based tests and comparison with other
+  libraries in the market, not just libkdtree++. Wouldn't it be nice
+  to see how it fares against FLANN or Boost.Rtree?
 
-VERSION 2.3.0
+* In relaxed kdtree, when inserting a point, during rebalancing, if
+  the node to insert is in the interval of the imbalanced node and the
+  candidate found, then the node to insert itself should become the
+  new root. Then only insert the imbalanced node.
 
-* Mar 15 Add new iterators such at ray_iterator, which travels along a
-           vector, in a given space. This iterator works only on
-           boxset family of iterators? Some new functions for metric
-           should appear and therefore, it would make defining a
-           geometry quite a complex business, needing more
-           documentation.
+* Addition of algorithms. A few come to mind: approximative nearest
+  neighbor search, min/max depth, etc.
 
-* Aug 15 Porting Spatial to scripting/duck-typing languages or
-           frameworks? Python, Java, Lua, Ruby, .Net, others? Create a
-           new project based on spatial in this case, using the
-           version number in the spatial.hpp header.
-
-
-VERSION 3.0.0
-
-* ??? ?? Version 3.0.0 marks the new major release, breaking backward
-           compatibility. What would the future hold for the spatial
-           library? Vantage-Point tree support for faster nearest and
-           furthest neighbor search?
+* Creating by-project to wrap spatial in python, java, ruby, etc?

@@ -240,10 +240,10 @@ namespace spatial
     /**
      *  Computes the euclidian distance between 2 points.
      *
-     *  When compiled without \ref SPATIAL_SAFER_ARITHMETICS, it uses the naive
+     *  When compiled without SPATIAL_SAFER_ARITHMETICS, it uses the naive
      *  approach, which may overflow or underflow, but is much faster.
      *
-     *  When compiled with \ref SPATIAL_SAFER_ARITHMETICS the calculation uses
+     *  When compiled without SPATIAL_SAFER_ARITHMETICS the calculation uses
      *  the hypot() algorithm in order to compute the distance: minimize
      *  possibilities of overflow or underflow at the expense of speed.
      *

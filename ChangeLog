@@ -1,3 +1,13 @@
+2015-11-29  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * v2.1.7 Greatly improves performance of nearest neighbor search and
+        iteration on nearest neighbors; between 5 to 100 times. Moderate
+        improvement on finding equals or simply find() in containers. Minor
+        improvements to mapping iterators too, which improve insertion/removal
+        times in the kd-tree. The improvements were felt significant enough to
+        warrant a specific release of the library, even though no other feature
+        or bug has been fixed in this version.
+
 2014-10-27  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * v2.1.6 Ticket #2 (https://sourceforge.net/p/spatial/tickets/2/)

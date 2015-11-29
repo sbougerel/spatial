@@ -268,7 +268,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   double6 target; same()(target, 0, 2);
   {
     // With default diff with float
-    manhattan_neighbor_iterator<typename Tp::container_type, float>
+    manhattan_neighbor_iterator<typename Tp::container_type, double>
       i,
       j = manhattan_neighbor_begin(fix.container, target),
       k = manhattan_neighbor_end(fix.container, target),
@@ -284,7 +284,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   {
     // With custom diff and const
     manhattan_neighbor_iterator<const typename Tp::container_type,
-                                float, double6_diff>
+                                double, double6_diff>
       i,
       j = manhattan_neighbor_cbegin(fix.container, double6_diff(), target),
       k = manhattan_neighbor_cend(fix.container, double6_diff(), target),
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
   {
     // With default diff with float and a pair
-    manhattan_neighbor_iterator_pair<typename Tp::container_type, long>
+    manhattan_neighbor_iterator_pair<typename Tp::container_type, double>
       i,
       j = manhattan_neighbor_range(fix.container, target);
     i = j;
@@ -311,7 +311,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   {
     // With custom diff and const
     manhattan_neighbor_iterator_pair<const typename Tp::container_type,
-                                     long, double6_diff>
+                                     double, double6_diff>
       i,
       j = manhattan_neighbor_crange(fix.container, double6_diff(), target);
     i = j;

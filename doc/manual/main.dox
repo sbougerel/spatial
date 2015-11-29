@@ -130,6 +130,16 @@ contributing "Contributing".
 \page changelog Change Log
 \tableofcontents
 
+\section ver216 Version 2.1.7
+
+- Greatly improves performance of nearest neighbor search and
+  iteration on nearest neighbors; between 5 to 100 times. Major
+  improvements to mapping iterators too, which improve
+  insertion/removal times in the kd-tree. Major improvement on finding
+  equals or simply find() in containers.  The improvements were felt
+  significant enough to warrant a specific release of the library,
+  even though no other feature or bug has been fixed in this version.
+
 \section ver216 Version 2.1.6
 
 - Ticket #2 (https://sourceforge.net/p/spatial/tickets/2/) reported by Ed

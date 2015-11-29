@@ -34,10 +34,11 @@ namespace spatial
    *  \attention \c This metric works on floating types only. It will fail
    *  to compile if given non-floating types as a parameter for the distance.
    *
-   *  \ref euclidian attempts to compute distances while limitting loss of
-   *  precision due to overflow during the computation. \ref euclidian could
-   *  be more precise than \ref quadrance in some cases, but it will be
-   *  slower in all cases.
+   *  \ref euclidian uses square root calculation in the distance. It will
+   *  return proper distances therefore but will be slower than \ref
+   *  quadrance. When defining SPATIAL_SAFER_ARITHMETICS however, \ref euclidian
+   *  uses the hypot algorithm which has much less chance to overflow or
+   *  underflow than \ref quadrance. However is it also much slower.
    */
   template<typename Ct, typename DistanceType, typename Diff>
   class euclidian : Diff

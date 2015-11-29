@@ -720,7 +720,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   double6 target; same()(target, 0, 2);
   {
     // With default diff with float
-    euclidian_neighbor_iterator<typename Tp::container_type, float>
+    euclidian_neighbor_iterator<typename Tp::container_type, double>
       i,
       j = euclidian_neighbor_begin(fix.container, target),
       k = euclidian_neighbor_end(fix.container, target),
@@ -736,7 +736,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   {
     // With custom diff and const
     euclidian_neighbor_iterator<const typename Tp::container_type,
-                                float, double6_diff>
+                                double, double6_diff>
       i,
       j = euclidian_neighbor_cbegin(fix.container, double6_diff(), target),
       k = euclidian_neighbor_cend(fix.container, double6_diff(), target),
@@ -753,7 +753,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
   {
     // With default diff with float and a pair
-    euclidian_neighbor_iterator_pair<typename Tp::container_type, float>
+    euclidian_neighbor_iterator_pair<typename Tp::container_type, double>
       i,
       j = euclidian_neighbor_range(fix.container, target);
     i = j;
@@ -763,7 +763,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   {
     // With custom diff and const
     euclidian_neighbor_iterator_pair<const typename Tp::container_type,
-                                     float, double6_diff>
+                                     double, double6_diff>
       i,
       j = euclidian_neighbor_crange(fix.container, double6_diff(), target);
     i = j;
@@ -780,7 +780,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   double6 target; same()(target, 0, 2);
   {
     // With default diff with float
-    quadrance_neighbor_iterator<typename Tp::container_type, float>
+    quadrance_neighbor_iterator<typename Tp::container_type, double>
       i,
       j = quadrance_neighbor_begin(fix.container, target),
       k = quadrance_neighbor_end(fix.container, target),
@@ -796,7 +796,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   {
     // With custom diff and const
     quadrance_neighbor_iterator<const typename Tp::container_type,
-                                float, double6_diff>
+                                double, double6_diff>
       i,
       j = quadrance_neighbor_cbegin(fix.container, double6_diff(), target),
       k = quadrance_neighbor_cend(fix.container, double6_diff(), target),
@@ -813,7 +813,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   }
   {
     // With default diff with float and a pair
-    quadrance_neighbor_iterator_pair<typename Tp::container_type, long>
+    quadrance_neighbor_iterator_pair<typename Tp::container_type, double>
       i,
       j = quadrance_neighbor_range(fix.container, target);
     i = j;
@@ -823,7 +823,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   {
     // With custom diff and const
     quadrance_neighbor_iterator_pair<const typename Tp::container_type,
-                                     long, double6_diff>
+                                     double, double6_diff>
       i,
       j = quadrance_neighbor_crange(fix.container, double6_diff(), target);
     i = j;

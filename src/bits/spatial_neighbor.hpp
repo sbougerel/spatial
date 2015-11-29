@@ -51,6 +51,8 @@ namespace spatial
        *  \param container The container being iterated.
        *  \param metric The metric to apply during iteration
        *  \param key The key representing the iteration target.
+       *  \param distance Cached distance value from the last iterator's
+       *  distance computation.
        */
       Neighbor_data
       (const typename container_traits<Ct>::key_compare& container,
@@ -148,6 +150,8 @@ namespace spatial
      *  \param metric_ The \metric applied during the iteration.
      *  \param target_ The target of the neighbor iteration.
      *  \param iter_ An iterator on container.
+     *  \param distance_ The distance at which the node pointed by iterator is
+     *  from target.
      */
     neighbor_iterator
     (Ct& container_, const Metric& metric_,
@@ -169,6 +173,8 @@ namespace spatial
      *  \param node_dim_ The dimension of the node pointed to by iterator.
      *  \param node_ Use the value of node as the start point for the
      *  iteration.
+     *  \param distance_ The distance between \c node_ and \c target_ according
+     *  to \c metric_.
      *
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
@@ -210,6 +216,8 @@ namespace spatial
      *  \param node_dim_ The dimension of the node pointed to by iterator.
      *  \param node_ Use the value of node as the start point for the
      *  iteration.
+     *  \param distance_ The distance between \c node_ and \c target_ according
+     *  to \c metric_.
      */
     neighbor_iterator
     (const typename container_traits<Ct>::rank_type& rank_,
@@ -367,6 +375,8 @@ namespace spatial
      *  \param metric_ The metric applied during the iteration.
      *  \param target_ The target of the neighbor iteration.
      *  \param iter_ An iterator on \c container.
+     *  \param distance_ The distance between the node pointed to by \c iter_
+     *  and \c target_ according to \c metric_.
      */
     neighbor_iterator
     (const Ct& container_, const Metric& metric_,
@@ -388,6 +398,8 @@ namespace spatial
      *  \param node_dim_ The dimension of the node pointed to by iterator.
      *  \param node_ Use the value of node as the start point for the
      *  iteration.
+     *  \param distance_ The distance between \c node_ and \c target_ according
+     *  to \c metric_.
      *
      *  In order to iterate through nodes in the \kdtree built in the
      *  container, the algorithm must know at each node which dimension is
@@ -420,11 +432,8 @@ namespace spatial
      *  \param node_dim_ The dimension of the node pointed to by iterator.
      *  \param node_ Use the value of node as the start point for the
      *  iteration.
-     *
-     *  In order to iterate through nodes in the \kdtree built in the
-     *  container, the algorithm must know at each node which dimension is
-     *  used to partition the space. Some algorithms will provide this
-     *  dimension, such as the function \ref spatial::details::modulo().
+     *  \param distance_ The distance between \c node_ and \c target_ according
+     *  to \c metric_.
      *
      *  \attention Specifying the incorrect dimension value for the node will
      *  result in unknown behavior. It is recommended that you do not use this
@@ -442,7 +451,7 @@ namespace spatial
       : Base(rank_, node_, node_dim_),
         _data(key_comp_, metric_, target_, distance_) { }
 
-    //! Covertion of mutable iterator into a constant iterator is permitted.
+    //! Convertion of mutable iterator into a constant iterator.
     neighbor_iterator(const neighbor_iterator<Ct, Metric>& iter)
       : Base(iter.rank(), iter.node, iter.node_dim),
         _data(iter.key_comp(), iter.metric(),
