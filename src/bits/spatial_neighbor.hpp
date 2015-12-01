@@ -1138,7 +1138,7 @@ namespace spatial
       //
       // Seeks the last node in near-pre-order.
       NodePtr best = node->parent;
-      dimension_type best_dim;
+      dimension_type best_dim = 0;
       for (;;)
         {
           typename Metric::distance_type test_dist
@@ -1200,7 +1200,7 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(!header(node));
       // Finds the nearest in near-pre-order fashion. Uses semi-recursiveness.
       NodePtr best = node->parent;
-      dimension_type best_dim;
+      dimension_type best_dim = 0;
       for (;;)
         {
           typename Metric::distance_type test_dist
@@ -1425,8 +1425,8 @@ namespace spatial
       NodePtr orig = node;
       dimension_type orig_dim = dim;
       NodePtr best = 0;
-      dimension_type best_dim;
-      typename Metric::distance_type best_dist;
+      dimension_type best_dim = dim;
+      typename Metric::distance_type best_dist = node_dist;
       // Looks forward to find an equal or greater next best. If an equal next
       // best is found, then no need to look further. 'Forward' and 'backward'
       // refer to tree walking in near-pre-order.
@@ -1549,8 +1549,8 @@ namespace spatial
       NodePtr orig = node;
       dimension_type orig_dim = dim;
       NodePtr best = 0;
-      dimension_type best_dim;
-      typename Metric::distance_type best_dist;
+      dimension_type best_dim = dim;
+      typename Metric::distance_type best_dist = node_dist;
       // Looks backaward to find an equal or lower next best. If an equal next
       // best is found, then no need to look further. 'Forward' and 'backward'
       // refer to tree walking in near-pre-order.

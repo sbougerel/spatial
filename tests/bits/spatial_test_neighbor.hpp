@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   neighbor_iterator<typename Tp::container_type> j
     = neighbor_lower_bound(fix.container, target, 0.f);
   BOOST_CHECK(i == j);
-  BOOST_CHECK_EQUAL(distance(i), std::sqrt(4));
+  BOOST_CHECK_EQUAL(distance(i), std::sqrt(4.0));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
@@ -319,7 +319,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
   neighbor_iterator<typename Tp::container_type> j
     = neighbor_upper_bound(fix.container, target, 0.f);
   BOOST_CHECK(i == j);
-  BOOST_CHECK_EQUAL(distance(i), std::sqrt(4));
+  BOOST_CHECK_EQUAL(distance(i), std::sqrt(4.0));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
