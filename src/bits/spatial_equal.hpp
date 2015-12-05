@@ -36,7 +36,7 @@ namespace spatial
         : Container::key_compare(cmp), value(value_) { }
 
       typename Container::key_compare key_comp() const
-      { return static_cast<typename Container::key_compare>(*this); }
+      { return *static_cast<const typename Container::key_compare*>(this); }
 
       typename Container::key_type value;
     };
