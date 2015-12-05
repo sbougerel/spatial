@@ -16,10 +16,8 @@
 #ifndef SPATIAL_METRIC_HPP
 #define SPATIAL_METRIC_HPP
 
-#ifndef SPATIAL_HPP
-#  error "Do not include this file directly in your project."
-#endif
-
+#include "function.hpp"
+#include "traits.hpp"
 #include "bits/spatial_math.hpp"
 #include "bits/spatial_builtin.hpp"
 

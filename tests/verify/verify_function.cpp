@@ -5,15 +5,12 @@
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-/**
- *  \file   spatial_test_function.hpp
- *  All tests for the elements defined in spatial_function.hpp are
- *  located in this file.
- *  \see spatial_function.hpp
- */
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
+#include "../../src/function.hpp"
+#include "spatial_test_types.hpp"
 
-#ifndef SPATIAL_TEST_FUNCTION_HPP
-#define SPATIAL_TEST_FUNCTION_HPP
+using namespace spatial;
 
 BOOST_AUTO_TEST_CASE( test_access_minus )
 {
@@ -138,5 +135,3 @@ BOOST_AUTO_TEST_CASE( test_paren_less )
   BOOST_CHECK(compare(0, x, 1, x));
   BOOST_CHECK(!compare(0, x, 1, y));
 }
-
-#endif // SPATIAL_TEST_FUNCTION_HPP

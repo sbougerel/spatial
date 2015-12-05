@@ -15,6 +15,7 @@
 #define SPATIAL_COMPARE_BUILTIN_HPP
 
 #include "spatial_import_type_traits.hpp"
+#include "spatial_check_concept.hpp"
 
 namespace spatial
 {

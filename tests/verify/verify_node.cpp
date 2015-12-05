@@ -5,15 +5,12 @@
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-/**
- *  \file   spatial_test_node.hpp
- *  All tests for the elements defined in spatial_node.hpp are located
- *  in this file.
- *  \see spatial_node.hpp
- */
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
+#include "../../src/bits/spatial_node.hpp"
+#include "spatial_test_types.hpp"
 
-#ifndef SPATIAL_TEST_NODE_HPP
-#define SPATIAL_TEST_NODE_HPP
+using namespace spatial;
 
 struct header_fixture
 {
@@ -696,5 +693,3 @@ BOOST_AUTO_TEST_CASE( test_Preorder_node_iterator )
     BOOST_CHECK(a == b);
   }
 }
-
-#endif // SPATIAL_TEST_NODE_HPP

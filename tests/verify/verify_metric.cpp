@@ -5,17 +5,11 @@
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-/**
- *  \file   spatial_test_metric.hpp
- *  All tests for the elements defined in spatial_metric.hpp are
- *  located in this file.
- *  \see spatial_metric.hpp
- */
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
 
-#ifndef SPATIAL_TEST_METRIC_HPP
-#define SPATIAL_TEST_METRIC_HPP
-
-#include "../../src/neighbor_iterator.hpp"
+#include "../../src/metric.hpp"
+#include "spatial_test_fixtures.hpp"
 
 BOOST_AUTO_TEST_CASE(test_metric_trait)
 {
@@ -225,5 +219,3 @@ BOOST_AUTO_TEST_CASE( test_manhattan_distance_to_key )
       }
   }
 }
-
-#endif // SPATIAL_TEST_METRIC_HPP

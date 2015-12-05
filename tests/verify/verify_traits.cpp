@@ -5,13 +5,13 @@
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-/**
- *  \file   spatial_test_traits.hpp
- *  All tests for the elements defined in traits.hpp are located in this file.
- */
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
+#include "../../src/point_multiset.hpp"
+#include "../../src/idle_point_multiset.hpp"
+#include "spatial_test_types.hpp"
 
-#ifndef SPATIAL_TEST_TRAITS_HPP
-#define SPATIAL_TEST_TRAITS_HPP
+using namespace spatial;
 
 /**
  *  Test that \c mode_traits returns the expected mode for 2 specific node
@@ -55,5 +55,3 @@ BOOST_AUTO_TEST_CASE(test_container_traits)
   SPATIAL_TRAIT_CHECK(const_iterator);
 # undef SPATIAL_TRAIT_CHECK
 }
-
-#endif // SPATIAL_TEST_TRAITS_HPP

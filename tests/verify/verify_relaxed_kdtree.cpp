@@ -5,15 +5,9 @@
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-/**
- *  \file   spatial_test_relaxed_kdtree.hpp
- *  All tests for the elements defined in spatial_relaxed_kdtree.hpp are
- *  located in this file.
- *  \see spatial_relaxed_kdtree.hpp
- */
-
-#ifndef SPATIAL_TEST_RELAXED_KDTREE_HPP
-#define SPATIAL_TEST_RELAXED_KDTREE_HPP
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
+#include "spatial_test_fixtures.hpp"
 
 BOOST_AUTO_TEST_CASE( test_loose_balancing )
 {
@@ -443,5 +437,3 @@ BOOST_AUTO_TEST_CASE( test_relaxed_kdtree_erase_iterator )
       }
   }
 }
-
-#endif // SPATIAL_TEST_RELAXED_KDTREE_HPP

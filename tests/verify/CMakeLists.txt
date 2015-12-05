@@ -65,13 +65,22 @@ include_directories(${Boost_INCLUDE_DIRS})
 #
 # The verify exectuables checks correctness
 add_executable (verify verify.cpp
-                verify_base.cpp
+                verify_traits.cpp
+                verify_details.cpp
+                verify_node.cpp
+                verify_exception.cpp
+                verify_function.cpp
+                verify_kdtree.cpp
+                verify_relaxed_kdtree.cpp
                 verify_mapping.cpp
                 verify_region.cpp
+                verify_metric.cpp
                 verify_neighbor.cpp
                 verify_neighbor_safer.cpp
                 verify_ordered.cpp
                 verify_equal.cpp
+                verify_point_multiset.cpp
+                verify_idle_point_multiset.cpp
                 )
 
 if (MSVC)

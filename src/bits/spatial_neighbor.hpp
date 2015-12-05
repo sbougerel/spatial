@@ -13,7 +13,7 @@
 #ifndef SPATIAL_NEIGHBOR_HPP
 #define SPATIAL_NEIGHBOR_HPP
 
-#include <limits>
+#include <limits> // numeric_limits min() and max()
 
 #include "spatial_import_tuple.hpp"
 #include "../metric.hpp"

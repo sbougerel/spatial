@@ -5,16 +5,9 @@
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-/**
- *  \file   spatial_test_kdtree.hpp
- *  All tests for the elements defined in spatial_kdtree.hpp are located in this
- *  file.
- *
- *  \see spatial_kdtree.hpp
- */
-
-#ifndef SPATIAL_TEST_KDTREE_HPP
-#define SPATIAL_TEST_KDTREE_HPP
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
+#include "spatial_test_fixtures.hpp"
 
 BOOST_AUTO_TEST_CASE( test_empty_kdtree_basic )
 {
@@ -595,5 +588,3 @@ BOOST_AUTO_TEST_CASE ( test_kdtree_erase_key )
     BOOST_REQUIRE(iter == tree.end());
   }
 }
-
-#endif // SPATIAL_TEST_KDTREE_HPP

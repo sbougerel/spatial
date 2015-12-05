@@ -6,10 +6,6 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   verify.cpp
- *  @brief  Executes the series of test one by one and display simple messages
- *  for the outcome of the test.
- *
  *  Uses Boost.Test; needs to be compiled with -lboost_unit_test_framework and
  *  to run it you must have compiled the Boost unit test framework as a shared
  *  library (DLL - for Windows developers). If you do not have the shared

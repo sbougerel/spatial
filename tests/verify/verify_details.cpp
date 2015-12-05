@@ -5,17 +5,14 @@
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-/**
- *  \file   spatial_test_details.hpp
- *  All tests for the elements defined in spatial_details.hpp are located
- *  in this file.
- *  \see spatial_details.hpp
- */
-
-#ifndef SPATIAL_TEST_DETAILS_HPP
-#define SPATIAL_TEST_DETAILS_HPP
-
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
 #include "../../src/bits/spatial_condition.hpp"
+#include "../../src/bits/spatial_rank.hpp"
+#include "../../src/bits/spatial_template_member_swap.hpp"
+#include "spatial_test_types.hpp"
+
+using namespace spatial;
 
 /**
  *  Test the \c condition meta type to make sure it works.
@@ -78,5 +75,3 @@ BOOST_AUTO_TEST_CASE( test_details_match )
   BOOST_CHECK(closed_test_range()(0, 2, _x) == below);
   BOOST_CHECK(closed_test_range()(1, 2, x_) == above);
 }
-
-#endif // SPATIAL_TEST_DETAILS_HPP

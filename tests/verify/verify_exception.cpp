@@ -5,17 +5,11 @@
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-/**
- *  \file   spatial_test_exceptions.hpp
- *  All tests for the elements defined in spatial_exceptions.hpp are
- *  located in this file.
- *  \see spatial_exceptions.hpp
- */
-
-#ifndef SPATIAL_TEST_EXCEPTIONS_HPP
-#define SPATIAL_TEST_EXCEPTIONS_HPP
-
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
+#include "spatial_test_fixtures.hpp"
 #include "../../src/bits/spatial_math.hpp"
+#include "../../src/exception.hpp"
 
 BOOST_AUTO_TEST_CASE( text_except_check_dimension )
 {
@@ -35,9 +29,9 @@ BOOST_AUTO_TEST_CASE( text_except_check_node )
                       invalid_node);
   }
   {
-    int2_node_fixture fix;
-    BOOST_CHECK_NO_THROW(except::check_node(&fix.node_root));
-    BOOST_CHECK_THROW(except::check_node(&fix.header),
+    pointset_fix<quad> fix(1);
+    BOOST_CHECK_NO_THROW(except::check_node(fix.container.begin().node));
+    BOOST_CHECK_THROW(except::check_node(fix.container.end().node),
                       invalid_node);
   }
 }
@@ -50,11 +44,11 @@ BOOST_AUTO_TEST_CASE( text_except_check_iterator )
                       invalid_iterator);
   }
   {
-    int2_node_fixture fix;
-    details::Node_iterator<details::Kdtree_link<int2, int2> >
-      i(&fix.node_root);
-    details::Node_iterator<details::Kdtree_link<int2, int2> >
-      j(&fix.header);
+    idle_pointset_fix<int2> fix(1);
+    details::Node_iterator<details::Kdtree_link<const int2, const int2> >
+      i(fix.container.begin().node);
+    details::Node_iterator<details::Kdtree_link<const int2, const int2> >
+      j(fix.container.end().node);
     BOOST_CHECK_NO_THROW(except::check_node_iterator(i.node));
     BOOST_CHECK_THROW(except::check_node_iterator(j.node),
                       invalid_iterator);
@@ -145,5 +139,3 @@ BOOST_AUTO_TEST_CASE( text_except_check_math )
                     (std::numeric_limits<int>::max(), 2),
                     arithmetic_error);
 }
-
-#endif // SPATIAL_TEST_EXCEPTIONS_HPP

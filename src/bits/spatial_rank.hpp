@@ -14,7 +14,7 @@
 #ifndef SPATIAL_RANK_HPP
 #define SPATIAL_RANK_HPP
 
-#include "../spatial.hpp"
+#include "spatial_node.hpp" // for modulo()
 
 namespace spatial
 {
@@ -78,7 +78,6 @@ namespace spatial
     inline dimension_type
     decr_dim(Rank rank, dimension_type node_dim)
     { return (rank() + node_dim - 1) % rank(); }
-
 
     /**
      *  Returns the modulo of a node's heigth by a container's rank. This, in

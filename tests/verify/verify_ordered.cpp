@@ -5,13 +5,6 @@
 // (See accompanying file COPYING or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-/**
- *  \file   spatial_test_ordered.hpp
- *  All tests for the elements defined in spatial_ordered.hpp are
- *  located in this file.
- *  \see spatial_ordered.hpp
- */
-
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
