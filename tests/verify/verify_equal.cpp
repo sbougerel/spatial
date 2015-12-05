@@ -6,12 +6,13 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  @file   verify_mapping.cpp
- *  @brief  Test all functions associated to the 'mapping' family of iterators.
+ *  \file   verify_equal.cpp
+ *
+ *  \brief  Test all functions associated to the 'region' family of iterators.
  */
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include "bits/spatial_test_fixtures.hpp"
-#include "bits/spatial_test_mapping.hpp"
+#include "spatial_test_fixtures.hpp"
+#include "spatial_test_equal.hpp"

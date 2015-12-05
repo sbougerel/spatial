@@ -16,5 +16,5 @@
 #include <boost/test/unit_test.hpp>
 
 #define  SPATIAL_SAFER_ARITHMETICS
-#include "bits/spatial_test_fixtures.hpp"
-#include "bits/spatial_test_neighbor_safer.hpp"
+#include "spatial_test_fixtures.hpp"
+#include "spatial_test_neighbor_safer.hpp"

@@ -2,13 +2,13 @@
 #include <vector>
 #include <sstream>
 
-#include <spatial/point_multiset.hpp>
-#include <spatial/idle_point_multiset.hpp>
-#include <spatial/neighbor_iterator.hpp>
+#include "../../src/point_multiset.hpp"
+#include "../../src/idle_point_multiset.hpp"
+#include "../../src/neighbor_iterator.hpp"
 
-#include "../include/chrono.hpp"
-#include "../include/random.hpp"
-#include "../include/point_type.hpp"
+#include "chrono.hpp"
+#include "random.hpp"
+#include "point_type.hpp"
 
 template <spatial::dimension_type N, typename Point, typename Distribution>
 void compare_libraries

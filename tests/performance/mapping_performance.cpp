@@ -2,13 +2,13 @@
 #include <vector>
 #include <sstream>
 
-#include <spatial/point_multiset.hpp>
-#include <spatial/idle_point_multiset.hpp>
-#include <kdtree++/kdtree.hpp>
+#include "../../src/point_multiset.hpp"
+#include "../../src/idle_point_multiset.hpp"
+#include "../../src/mapping_iterator.hpp"
 
-#include "../include/chrono.hpp"
-#include "../include/random.hpp"
-#include "../include/point_type.hpp"
+#include "chrono.hpp"
+#include "random.hpp"
+#include "point_type.hpp"
 
 template <spatial::dimension_type N, typename Point, typename Distribution>
 void compare_libraries
@@ -20,41 +20,40 @@ void compare_libraries
   for (std::size_t i = 0; i < data_size; ++i)
     data.push_back(Point(distribution));
   {
-    // Find into a point_multiset
-    std::cout << "\t\tpoint_multiset:\t" << std::flush;
-    spatial::point_multiset<N, Point> cobaye;
-    cobaye.insert(data.begin(), data.end());
-    int count = 0;
-    utils::time_point start = utils::process_timer_now();
-    for (typename spatial::point_multiset<N, Point>::const_iterator
-           i = cobaye.begin(); i != cobaye.end(); ++i, ++count);
-    utils::time_point stop = utils::process_timer_now();
-    std::cout << (stop - start) << "sec" << ", counted: " << count << std::endl;
-  }
-  {
-    // Find into an idle_point_multiset
+    // Mapping begin into an idle_point_multiset
     std::cout << "\t\tidle_point_multiset:\t" << std::flush;
     spatial::idle_point_multiset<N, Point> cobaye;
     cobaye.insert_rebalance(data.begin(), data.end());
-    int count = 0;
     utils::time_point start = utils::process_timer_now();
-    for (typename spatial::idle_point_multiset<N, Point>::const_iterator
-           i = cobaye.begin(); i != cobaye.end(); ++i, ++count);
+    for (spatial::mapping_iterator<spatial::idle_point_multiset<N, Point> >
+           i = mapping_begin(cobaye, 0); i != mapping_end(cobaye, 0); ++i);
     utils::time_point stop = utils::process_timer_now();
-    std::cout << (stop - start) << "sec" << ", counted: " << count << std::endl;
+    std::cout << (stop - start) << "sec" << std::endl;
+    std::cout << "\t\tidle_point_multiset (reverse):\t" << std::flush;
+    start = utils::process_timer_now();
+    spatial::mapping_iterator<spatial::idle_point_multiset<N, Point> >
+      i = mapping_end(cobaye, 0), end = mapping_begin(cobaye, 0);
+    for (; i != end; --i);
+    stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << std::endl;
   }
   {
-    // Find into an idle_point_multiset
-    std::cout << "\t\tKDtree:\t" << std::flush;
-    KDTree::KDTree<N, Point> cobaye;
+    // Mapping begin into a point_multiset
+    std::cout << "\t\tpoint_multiset:\t" << std::flush;
+    spatial::point_multiset<N, Point> cobaye;
     cobaye.insert(data.begin(), data.end());
-    cobaye.optimise();
-    int count = 0;
     utils::time_point start = utils::process_timer_now();
-    for (typename KDTree::KDTree<N, Point>::const_iterator
-           i = cobaye.begin(); i != cobaye.end(); ++i, ++count);
+    for (spatial::mapping_iterator<spatial::point_multiset<N, Point> >
+           i = mapping_begin(cobaye, 0); i != mapping_end(cobaye, 0); ++i);
     utils::time_point stop = utils::process_timer_now();
-    std::cout << (stop - start) << "sec" << ", counted: " << count << std::endl;
+    std::cout << (stop - start) << "sec" << std::endl;
+    std::cout << "\t\tpoint_multiset (reverse):\t" << std::flush;
+    start = utils::process_timer_now();
+    spatial::mapping_iterator<spatial::point_multiset<N, Point> >
+      i = mapping_end(cobaye, 0), end = mapping_begin(cobaye, 0);
+    for (; i != end; --i);
+    stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << std::endl;
   }
 }
 

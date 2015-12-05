@@ -2,13 +2,13 @@
 #include <vector>
 #include <sstream>
 
-#include <spatial/point_multiset.hpp>
-#include <spatial/idle_point_multiset.hpp>
-#include <spatial/region_iterator.hpp>
+#include "../../src/point_multiset.hpp"
+#include "../../src/idle_point_multiset.hpp"
+#include <kdtree++/kdtree.hpp>
 
-#include "../include/chrono.hpp"
-#include "../include/random.hpp"
-#include "../include/point_type.hpp"
+#include "chrono.hpp"
+#include "random.hpp"
+#include "point_type.hpp"
 
 template <spatial::dimension_type N, typename Point, typename Distribution>
 void compare_libraries
@@ -17,42 +17,44 @@ void compare_libraries
   std::cout << "\t" << N << " dimensions, " << data_size << " objects:" << std::endl;
   std::vector<Point> data;
   data.reserve(data_size);
-  Point p0(-1.0), p1(1.0);
   for (std::size_t i = 0; i < data_size; ++i)
     data.push_back(Point(distribution));
   {
-    std::cout << "\t\tidle_point_multiset:\t" << std::flush;
-    spatial::idle_point_multiset<N, Point> cobaye;
-    cobaye.insert_rebalance(data.begin(), data.end());
-    utils::time_point start = utils::process_timer_now();
-    for (spatial::region_iterator<spatial::idle_point_multiset<N, Point> >
-           i = region_begin(cobaye, p0, p1); i != region_end(cobaye, p0, p1); ++i);
-    utils::time_point stop = utils::process_timer_now();
-    std::cout << (stop - start) << "sec" << std::endl;
-    std::cout << "\t\tidle_point_multiset (reverse):\t" << std::flush;
-    start = utils::process_timer_now();
-    spatial::region_iterator<spatial::idle_point_multiset<N, Point> >
-      i = region_end(cobaye, p0, p1), end = region_begin(cobaye, p0, p1);
-    for (; i != end; --i);
-    stop = utils::process_timer_now();
-    std::cout << (stop - start) << "sec" << std::endl;
-  }
-  {
+    // Find into a point_multiset
     std::cout << "\t\tpoint_multiset:\t" << std::flush;
     spatial::point_multiset<N, Point> cobaye;
     cobaye.insert(data.begin(), data.end());
+    int count = 0;
     utils::time_point start = utils::process_timer_now();
-    for (spatial::region_iterator<spatial::point_multiset<N, Point> >
-           i = region_begin(cobaye, p0, p1); i != region_end(cobaye, p0, p1); ++i);
+    for (typename spatial::point_multiset<N, Point>::const_iterator
+           i = cobaye.begin(); i != cobaye.end(); ++i, ++count);
     utils::time_point stop = utils::process_timer_now();
-    std::cout << (stop - start) << "sec" << std::endl;
-    std::cout << "\t\tpoint_multiset (reverse):\t" << std::flush;
-    start = utils::process_timer_now();
-    spatial::region_iterator<spatial::point_multiset<N, Point> >
-      i = region_end(cobaye, p0, p1), end = region_begin(cobaye, p0, p1);
-    for (; i != end; --i);
-    stop = utils::process_timer_now();
-    std::cout << (stop - start) << "sec" << std::endl;
+    std::cout << (stop - start) << "sec" << ", counted: " << count << std::endl;
+  }
+  {
+    // Find into an idle_point_multiset
+    std::cout << "\t\tidle_point_multiset:\t" << std::flush;
+    spatial::idle_point_multiset<N, Point> cobaye;
+    cobaye.insert_rebalance(data.begin(), data.end());
+    int count = 0;
+    utils::time_point start = utils::process_timer_now();
+    for (typename spatial::idle_point_multiset<N, Point>::const_iterator
+           i = cobaye.begin(); i != cobaye.end(); ++i, ++count);
+    utils::time_point stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << ", counted: " << count << std::endl;
+  }
+  {
+    // Find into an idle_point_multiset
+    std::cout << "\t\tKDtree:\t" << std::flush;
+    KDTree::KDTree<N, Point> cobaye;
+    cobaye.insert(data.begin(), data.end());
+    cobaye.optimise();
+    int count = 0;
+    utils::time_point start = utils::process_timer_now();
+    for (typename KDTree::KDTree<N, Point>::const_iterator
+           i = cobaye.begin(); i != cobaye.end(); ++i, ++count);
+    utils::time_point stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << ", counted: " << count << std::endl;
   }
 }
 
@@ -65,6 +67,7 @@ int main (int argc, char **argv)
       return 1;
     }
 
+  // Build initialization memory
   std::istringstream argbuf(argv[1]);
   std::size_t data_size;
   argbuf >> data_size;

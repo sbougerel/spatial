@@ -6,13 +6,15 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- *  \file   verify_region.cpp
+ *  @file   verify_neighbor.cpp
  *
- *  \brief  Test all functions associated to the 'region' family of iterators.
+ *  @brief  Test all functions associated to the 'neighbor' family of iterators
+ *  including the associated geometry classes.
  */
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include "bits/spatial_test_fixtures.hpp"
-#include "bits/spatial_test_region.hpp"
+#include "spatial_test_fixtures.hpp"
+#include "spatial_test_metric.hpp"
+#include "spatial_test_neighbor.hpp"

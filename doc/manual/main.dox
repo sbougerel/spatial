@@ -91,10 +91,10 @@ it's current source code.
 high warning levels) and execute without errors on the following compilers:
 
 - GCC G++ 4.9 on x86_64 architectures only
-- GCC G++ 4.9 on x86_64 architectures only with C++11 support (new!)
+- GCC G++ 4.9 on x86_64 architectures only with C++11 support
 - Clang C++ 3.5 with libstdc++ on x86_64 architectures only
-- Clang C++ 3.5 with libstdc++ on x86_64 architectures only with C++11 support (new!)
-- Clang C++ 3.5 with libc++ on x86_64 architectures only (new!)
+- Clang C++ 3.5 with libstdc++ on x86_64 architectures only with C++11 support
+- Clang C++ 3.5 with libc++ on x86_64 architectures only
 - Microsoft Visual Studio 2010 on X64 architectures only
 
 \Spatial has not been tested on other compilers or other architectures. Any
@@ -130,15 +130,15 @@ contributing "Contributing".
 \page changelog Change Log
 \tableofcontents
 
-\section ver216 Version 2.1.7
+\section ver217 Version 2.1.7
 
 - Greatly improves performance of nearest neighbor search and
   iteration on nearest neighbors; between 5 to 100 times. Major
   improvements to mapping iterators too, which improve
   insertion/removal times in the kd-tree. Major improvement on finding
-  equals or simply find() in containers.  The improvements were felt
-  significant enough to warrant a specific release of the library,
-  even though no other feature or bug has been fixed in this version.
+  equals or simply find() in containers. Note: euclidian metric now
+  uses a naive (but faster) computation instead of the hypot algorithm
+  by default. Use SPATIAL_SAFE_ARITHMETICS to use the hypot algorithm.
 
 \section ver216 Version 2.1.6
 
@@ -585,7 +585,7 @@ int main()
   container.insert(p2);
 
   std::cout << "There are " << container.size()
-            << "elements in space." << std::end;
+            << "elements in space." << std::endl;
   return 0;
 }
 \endcode

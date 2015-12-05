@@ -12,9 +12,10 @@
  *  \see spatial_ordered.hpp
  */
 
-#ifndef SPATIAL_TEST_ORDERED_HPP
-#define SPATIAL_TEST_ORDERED_HPP
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
 
+#include "spatial_test_fixtures.hpp"
 #include "../../src/ordered_iterator.hpp"
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
@@ -507,5 +508,3 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     BOOST_CHECK(pair2.second == ordered_cend(fix.container));
   }
 }
-
-#endif // SPATIAL_TEST_ORDERED_HPP

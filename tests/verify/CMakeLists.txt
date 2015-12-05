@@ -62,6 +62,8 @@ endif ()
 
 include_directories(${Boost_INCLUDE_DIRS})
 
+#
+# The verify exectuables checks correctness
 add_executable (verify verify.cpp
                 verify_base.cpp
                 verify_mapping.cpp

@@ -15,11 +15,11 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include "bits/spatial_test_fixtures.hpp"
-#include "bits/spatial_test_traits.hpp"
-#include "bits/spatial_test_details.hpp"
-#include "bits/spatial_test_node.hpp"
-#include "bits/spatial_test_exceptions.hpp"
-#include "bits/spatial_test_function.hpp"
-#include "bits/spatial_test_relaxed_kdtree.hpp"
-#include "bits/spatial_test_kdtree.hpp"
+#include "spatial_test_fixtures.hpp"
+#include "spatial_test_traits.hpp"
+#include "spatial_test_details.hpp"
+#include "spatial_test_node.hpp"
+#include "spatial_test_exceptions.hpp"
+#include "spatial_test_function.hpp"
+#include "spatial_test_relaxed_kdtree.hpp"
+#include "spatial_test_kdtree.hpp"

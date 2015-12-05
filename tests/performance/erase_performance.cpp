@@ -1,14 +1,48 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <algorithm>
 
-#include <spatial/point_multiset.hpp>
-#include <spatial/idle_point_multiset.hpp>
+#include "../../src/point_multiset.hpp"
+#include "../../src/idle_point_multiset.hpp"
 #include <kdtree++/kdtree.hpp>
 
-#include "../include/chrono.hpp"
-#include "../include/random.hpp"
-#include "../include/point_type.hpp"
+#include "chrono.hpp"
+#include "random.hpp"
+#include "point_type.hpp"
+
+/**
+ *  \file erase_performance.cpp Compare the different libraries on erasing
+ *  points by value; \point_multiset, \idle_point_multiset and KDTree containers
+ *  from libkdtree++.
+ *
+ *  It is expected here that \idle_point_multiset is the best performer while
+ *  \point_multiset is the worst performer. KDTree containers should be in
+ *  between.
+ *
+ *  \point_multiset should perform worse than both \idle_point_multiset and
+ *  KDTree. Firstly, both are optimized (ideally balanced) before all points are
+ *  being erased one by one, which should naturally reduce the amount of tree
+ *  walking necessary to find the next node to erase, at the
+ *  beginning. Additionally, on every erase, \point_multiset will attempt to
+ *  re-balance itself while the other 2 containers won't. Here we use the
+ *  default rebalancing strategy (\ref spatial::loose_balancing) for the
+ *  comparison.
+ *
+ *  \idle_point_multiset is expected to perform better. It is a better
+ *  performer than the other 2 containers to locate a node by value, which is
+ *  the largest task when erasing; unless you also need to rebalance.
+ *
+ *  Finally, on this test, KDTree is at a slight advantage than the 2 other
+ *  containers. Both \idle_point_multiset and \point_multiset attempt to erase
+ *  \em all elements matching the value given; similarly to
+ *  <tt>std::multiset</tt>. On the contrary, KDTree will erase \em any first
+ *  element it finds matching the key. This constraint means
+ *  \idle_point_multiset and \point_multiset must do a little more work at each
+ *  call of erase, trying to find if there is another match in the tree.
+ */
+
+int random_integer (int i) { return std::rand()%i;}
 
 template <spatial::dimension_type N, typename Point, typename Distribution>
 void compare_libraries
@@ -17,42 +51,45 @@ void compare_libraries
   std::cout << "\t" << N << " dimensions, " << data_size << " objects:" << std::endl;
   std::vector<Point> data;
   data.reserve(data_size);
-  for (std::size_t i = 0; i < data_size; ++i)
+  for (size_t i = 0; i < data_size; ++i)
     data.push_back(Point(distribution));
   {
-    // Find into a point_multiset
+    // Erase into a point_multiset
     std::cout << "\t\tpoint_multiset:\t" << std::flush;
     spatial::point_multiset<N, Point> cobaye;
     cobaye.insert(data.begin(), data.end());
+    std::random_shuffle(data.begin(), data.end(), random_integer);
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator i = data.begin();
          i != data.end(); ++i)
-      cobaye.find(*i);
+      cobaye.erase(*i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
   }
   {
-    // Find into an idle_point_multiset
+    // Erase into an idle_point_multiset
     std::cout << "\t\tidle_point_multiset:\t" << std::flush;
     spatial::idle_point_multiset<N, Point> cobaye;
     cobaye.insert_rebalance(data.begin(), data.end());
+    std::random_shuffle(data.begin(), data.end(), random_integer);
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator i = data.begin();
          i != data.end(); ++i)
-      cobaye.find(*i);
+      cobaye.erase(*i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
   }
   {
-    // Find into an KDtree
+    // Insert into a KDtree
     std::cout << "\t\tKDtree:\t" << std::flush;
     KDTree::KDTree<N, Point> cobaye;
     cobaye.insert(data.begin(), data.end());
     cobaye.optimise();
+    std::random_shuffle(data.begin(), data.end(), random_integer);
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator i = data.begin();
          i != data.end(); ++i)
-      cobaye.find(*i);
+      cobaye.erase(*i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
   }

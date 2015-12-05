@@ -2,13 +2,13 @@
 #include <vector>
 #include <sstream>
 
-#include <spatial/point_multiset.hpp>
-#include <spatial/idle_point_multiset.hpp>
-#include <spatial/neighbor_iterator.hpp>
+#include "../../src/point_multiset.hpp"
+#include "../../src/idle_point_multiset.hpp"
+#include <kdtree++/kdtree.hpp>
 
-#include "../include/chrono.hpp"
-#include "../include/random.hpp"
-#include "../include/point_type.hpp"
+#include "chrono.hpp"
+#include "random.hpp"
+#include "point_type.hpp"
 
 template <spatial::dimension_type N, typename Point, typename Distribution>
 void compare_libraries
@@ -16,35 +16,43 @@ void compare_libraries
 {
   std::cout << "\t" << N << " dimensions, " << data_size << " objects:" << std::endl;
   std::vector<Point> data;
-  std::vector<Point> targets;
   data.reserve(data_size);
-  targets.reserve(data_size);
   for (std::size_t i = 0; i < data_size; ++i)
-    {
-      data.push_back(Point(distribution));
-      targets.push_back(Point(distribution));
-    }
+    data.push_back(Point(distribution));
   {
-    // Nearest neighbor begin into an idle_point_multiset
-    std::cout << "\t\tidle_point_multiset:\t" << std::flush;
-    spatial::idle_point_multiset<N, Point> cobaye;
-    cobaye.insert_rebalance(data.begin(), data.end());
-    utils::time_point start = utils::process_timer_now();
-    for (typename std::vector<Point>::const_iterator
-           i = targets.begin(); i != targets.end(); ++i)
-      neighbor_upper_bound(cobaye, *i, (*i)[0]);
-    utils::time_point stop = utils::process_timer_now();
-    std::cout << (stop - start) << "sec" << std::endl;
-  }
-  {
-    // Nearest neighbor begin into an idle_point_multiset
+    // Find into a point_multiset
     std::cout << "\t\tpoint_multiset:\t" << std::flush;
     spatial::point_multiset<N, Point> cobaye;
     cobaye.insert(data.begin(), data.end());
     utils::time_point start = utils::process_timer_now();
-    for (typename std::vector<Point>::const_iterator
-           i = targets.begin(); i != targets.end(); ++i)
-      neighbor_upper_bound(cobaye, *i, (*i)[0]);
+    for (typename std::vector<Point>::const_iterator i = data.begin();
+         i != data.end(); ++i)
+      cobaye.find(*i);
+    utils::time_point stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << std::endl;
+  }
+  {
+    // Find into an idle_point_multiset
+    std::cout << "\t\tidle_point_multiset:\t" << std::flush;
+    spatial::idle_point_multiset<N, Point> cobaye;
+    cobaye.insert_rebalance(data.begin(), data.end());
+    utils::time_point start = utils::process_timer_now();
+    for (typename std::vector<Point>::const_iterator i = data.begin();
+         i != data.end(); ++i)
+      cobaye.find(*i);
+    utils::time_point stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << std::endl;
+  }
+  {
+    // Find into an KDtree
+    std::cout << "\t\tKDtree:\t" << std::flush;
+    KDTree::KDTree<N, Point> cobaye;
+    cobaye.insert(data.begin(), data.end());
+    cobaye.optimise();
+    utils::time_point start = utils::process_timer_now();
+    for (typename std::vector<Point>::const_iterator i = data.begin();
+         i != data.end(); ++i)
+      cobaye.find(*i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
   }
