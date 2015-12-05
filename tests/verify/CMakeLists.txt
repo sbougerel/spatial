@@ -81,6 +81,12 @@ add_executable (verify verify.cpp
                 verify_equal.cpp
                 verify_point_multiset.cpp
                 verify_idle_point_multiset.cpp
+                verify_point_multimap.cpp
+                verify_idle_point_multimap.cpp
+                verify_box_multiset.cpp
+                verify_idle_box_multiset.cpp
+                verify_box_multimap.cpp
+                verify_idle_box_multimap.cpp
                 )
 
 if (MSVC)

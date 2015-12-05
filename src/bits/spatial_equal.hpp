@@ -27,12 +27,12 @@ namespace spatial
   namespace details
   {
     template <typename Container>
-    struct Equal : Container::key_compare
+    struct Equal : private Container::key_compare // empty member optimization
     {
       Equal() { }
 
       Equal(const typename Container::key_compare& cmp,
-                const typename Container::key_type& value_)
+            const typename Container::key_type& value_)
         : Container::key_compare(cmp), value(value_) { }
 
       typename Container::key_compare key_comp() const

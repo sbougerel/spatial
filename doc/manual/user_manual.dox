@@ -481,7 +481,7 @@ compiled in the benchmark programs.
 
 \section flann Flann
 
-To be coming soon.
+To be completed.
 
 This is a little bit like comparing Apples and Oranges, but Flann, which is
 expected to be the fastest of the 4 libraries to perform nearest neighbor search
@@ -492,16 +492,11 @@ particular algorithm.
 /**
 \page insert_performance Insertion Performance
 
+To be completed.
+
 This test check the performance on insertion of each of the contending
 libraries. Several of the libraries have different containers varying
 performance on different dataset and several different container per libraries
 have been put to the test.
-
-The source code used to provide comparison results between each libraries are
-provided below:
-
-\include insert_performance.cpp
-
-The results of the comparison are the following:
 
 */
