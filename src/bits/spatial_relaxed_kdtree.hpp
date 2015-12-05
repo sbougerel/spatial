@@ -740,7 +740,7 @@ namespace spatial
                <Rank, Key, Value, Compare, Balancing, Alloc>& lhs,
                const Relaxed_kdtree
                <Rank, Key, Value, Compare, Balancing, Alloc>& rhs)
-    { return !(lhs.size() == rhs.size()); }
+    { return !(lhs == rhs); }
     ///@}
 
     /**

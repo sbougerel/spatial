@@ -90,11 +90,11 @@ it's current source code.
 \Spatial's unit test suite should compile without error or warning (even on
 high warning levels) and execute without errors on the following compilers:
 
-- GCC G++ 4.9 on x86_64 architectures only
-- GCC G++ 4.9 on x86_64 architectures only with C++11 support
-- Clang C++ 3.5 with libstdc++ on x86_64 architectures only
-- Clang C++ 3.5 with libstdc++ on x86_64 architectures only with C++11 support
-- Clang C++ 3.5 with libc++ on x86_64 architectures only
+- GCC G++ 5.2 on x86_64 architectures only
+- GCC G++ 5.2 on x86_64 architectures only with C++11 support
+- Clang C++ 3.7 with libstdc++ on x86_64 architectures only
+- Clang C++ 3.7 with libstdc++ on x86_64 architectures only with C++11 support
+- Clang C++ 3.7 with libc++ on x86_64 architectures only
 - Microsoft Visual Studio 2010 on X64 architectures only
 
 \Spatial has not been tested on other compilers or other architectures. Any
@@ -129,6 +129,11 @@ contributing "Contributing".
 /**
 \page changelog Change Log
 \tableofcontents
+
+\section ver218 Version 2.1.8
+
+- Fixed Ticket #5 and Ticket #4 raised by Michał Garapich. Thanks for
+  supporting the library by contributing bugs.
 
 \section ver217 Version 2.1.7
 

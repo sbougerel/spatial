@@ -1,3 +1,8 @@
+2015-12-06  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
+
+        * v2.1.8 Fixed Ticket #5 and Ticket #4 raised by Michał Garapich. Thanks
+        for supporting the library by contributing bugs.
+
 2015-11-29  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
         * v2.1.7 Greatly improves performance of nearest neighbor search and

@@ -621,7 +621,7 @@ namespace spatial
     inline bool
     operator!=(const Kdtree<Rank, Key, Value, Compare, Alloc>& lhs,
                const Kdtree<Rank, Key, Value, Compare, Alloc>& rhs)
-    { return !(lhs.size() == rhs.size()); }
+    { return !(lhs == rhs); }
     ///@}
 
     /**
