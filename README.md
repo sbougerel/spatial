@@ -1,3 +1,4 @@
+![Logo of Spatial](https://github.com/sbougerel/spatial/blob/master/doc/images/spatial_96.png)
 # Spatial C++ Library
 
 Generic multi-dimensional containers for C++, with iterators
