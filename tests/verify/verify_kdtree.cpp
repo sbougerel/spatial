@@ -588,3 +588,59 @@ BOOST_AUTO_TEST_CASE ( test_kdtree_erase_key )
     BOOST_REQUIRE(iter == tree.end());
   }
 }
+
+BOOST_AUTO_TEST_CASE (test_kdtree_equal)
+{
+  {
+    // These 2 trees should be equal (contents are equivalent)
+    idle_boxmap_fix<quad, std::string> one;
+    one.container.insert(std::make_pair(quad(2, 2, 1, 1), ""));
+    one.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    one.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    idle_boxmap_fix<quad, std::string> two;
+    two.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    two.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    two.container.insert(std::make_pair(quad(2, 2, 1, 1), ""));
+    BOOST_CHECK(one.container == two.container);
+  }
+  {
+    // These 2 trees should be different.
+    idle_boxmap_fix<quad, std::string> one;
+    one.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    one.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    one.container.insert(std::make_pair(quad(2, 2, 1, 1), ""));
+    idle_boxmap_fix<quad, std::string> two;
+    two.container.insert(std::make_pair(quad(2, 2, 1, 1), ""));
+    two.container.insert(std::make_pair(quad(2, 2, 1, 1), ""));
+    two.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    BOOST_CHECK(one.container != two.container);
+  }
+}
+
+BOOST_AUTO_TEST_CASE (test_kdtree_lexicographic)
+{
+  {
+    // These 2 trees should be equal (contents are equivalent)
+    idle_boxmap_fix<quad, std::string> one;
+    one.container.insert(std::make_pair(quad(2, 2, 1, 1), ""));
+    one.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    one.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    idle_boxmap_fix<quad, std::string> two;
+    two.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    two.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    two.container.insert(std::make_pair(quad(2, 2, 1, 1), ""));
+    BOOST_CHECK(!(one.container < two.container
+                  || one.container > two.container));
+  }
+  {
+    // These one is a "prefix" of two lexicographically
+    idle_boxmap_fix<quad, std::string> one;
+    one.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    one.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    idle_boxmap_fix<quad, std::string> two;
+    two.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    two.container.insert(std::make_pair(quad(1, 2, 1, 1), ""));
+    two.container.insert(std::make_pair(quad(2, 2, 1, 1), ""));
+    BOOST_CHECK(one.container < two.container);
+  }
+}

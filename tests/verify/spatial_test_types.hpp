@@ -191,6 +191,18 @@ inline bool operator!= (const quad& a, const quad& b)
   return !(a == b);
 }
 
+//! \return true if a is less than b
+inline bool operator< (const quad& a, const quad& b)
+{
+  return (a.x < b.x
+            || (a.x == b.x
+                && (a.y < b.y
+                    || (a.y == b.y
+                        && (a.z < b.z
+                            || (a.z == b.z
+                                && a.w < b.w))))));
+}
+
 //! A comparator for the type quad.
 struct quad_less
 {
@@ -237,13 +249,7 @@ struct quad_ordered_less
 {
   bool operator() (const quad& a, const quad& b) const
   {
-    return (a.x < b.x
-            || (a.x == b.x
-                && (a.y < b.y
-                    || (a.y == b.y
-                        && (a.z < b.z
-                            || (a.z == b.z
-                                && a.w < b.w))))));
+    return (a < b);
   }
 };
 

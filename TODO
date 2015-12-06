@@ -7,10 +7,6 @@ Minor version updates
 1. Some test cases now require lots of RAM to compile, therefore we
    need to break things up.
 
-2. Use case missing for equal and lexicographic compare of containers.
-   Today it is not proven that it works flawlessly (although the
-   implementation is straight-forward).
-
 3. Support for C++11 initializer lists
 
 4. Support C++11 for loops will require a redesign of iterator

@@ -716,6 +716,10 @@ namespace spatial
      *  they match, the elements are compared sequentially using algorithm
      *  std::equal, which stops at the first mismatch. The sequence of element
      *  in each container is extracted using \ref ordered_iterator.
+     *
+     *  The Value type of containers must provide equal comparison operator
+     *  in order to use this operation.
+     *
      *  \param lhs Left-hand side container.
      *  \param rhs Right-hand side container.
      */
@@ -748,6 +752,10 @@ namespace spatial
      *  lexicographical_compare, which compares the elements sequentially using
      *  operator< reflexively, stopping at the first mismatch. The sequence of
      *  element in each container is extracted using \ref ordered_iterator.
+     *
+     *  The Value type of containers must provide less than comparison operator
+     *  in order to use these operations.
+     *
      *  \param lhs Left-hand side container.
      *  \param rhs Right-hand side container.
      */
