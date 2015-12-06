@@ -1,0 +1,5 @@
+/**
+\example runtime_container_rank.cpp
+Shows how to create containers for which the rank (or dimension) can be set at
+runtime (not defined at compile-time).
+*/

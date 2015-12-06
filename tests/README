@@ -1,0 +1,8 @@
+Spatial test README
+===================
+
+In this folder are located the unit test files for the library. Since this
+folder is supposed to be used to unit test the current development of the library,
+the #include directives in this folder are using relative path to find the
+files in the src/ directory. Therefore the tests/ directory goes along with the
+src/ directory.

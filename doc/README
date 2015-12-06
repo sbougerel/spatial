@@ -1,0 +1,60 @@
+Spatial Documentation
+=====================
+
+Generating the documentation
+----------------------------
+
+From this directory, execute Doxygen:
+
+$ doxygen
+
+Dependancies the documentation
+------------------------------
+
+To generate the bare documentation only Doxygen is required. You can download
+Doxygen from its official website:
+
+http://www.stack.nl/~dimitri/doxygen/index.html
+
+A recent version of Doxygen is needed since some of the features required in the
+configuration will only be available in the latest version of Doxygen. So it is
+best you upgrade your Doxygen version if it is a little old.
+
+Note that Doxygen will not be able to generate the output for the formulas all
+by itself. You also require the following tools:
+
+     * latex
+     * dvips
+     * gs
+
+These tools are part of most TeX distributions. On Linux and BSDs it is
+generally not an issue to get these, but on Windows you will need pre-packaged
+TeX distributions, such as the one from:
+
+     * http://www.miktex.org/
+     * http://w32tex.org/
+
+If you do not have these tools, Doxygen will still include the formulas in the
+documentation, however they will appear as LaTeX sources.
+
+
+Writing the documentation
+-------------------------
+
+If you are not documenting a source files from the ../src directory, then you
+need to add a file to the meta directory. The meta directory contains all the
+files that are not directly linked to the sources, such as the tutorial and the
+library description.
+
+
+License
+-------
+
+The static documentation files and images are all provided under the terms of
+the Boost license. See COPYING.
+
+The generated files are yours and you can do whatever you please with them. Just
+please respect the library and their authors, should you publish or provide any
+commercial work based on the library.
+
+Enjoy.
