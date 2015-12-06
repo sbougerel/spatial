@@ -29,22 +29,13 @@ multiset or \c map containers.
 
 A brief overview of \Spatial's features is provided below:
 
-- Based on \kdtrees which provide good overall performance for only 3
-  `std::ptrdiff_t` (\ref spatial::details::Relaxed_kdtree
-  "and sometimes 1 extra \c std::size_t") of overhead per node
-
-- Sort objects along several dimensions that may be of different types
-
-- static (compile-time) or dynamic (run-time) determination of the number of
+- Static (compile-time) or dynamic (run-time) determination of the number of
   dimensions
 
-- Policy-based rebalancing of the \kdtree, limiting worst-case
-  performance, upon insertion and removal
+- Generic design that mimic \STL containers, and iterators
 
-- Insertions in logarithmic amortized time, removals in fractional amortized
-  time
-
-- Closely resemble the \STL in design, with compatible containers and iterators
+- Feature rebalancing \kdtree preventing worst-case run time on many
+  operations
 
 - Iteration over orthogonal range with custom predicates and support for points
   or boxes
@@ -53,7 +44,7 @@ A brief overview of \Spatial's features is provided below:
 
 - Iteration over a single dimension, independantly from others
 
-- and more...
+- Heavily unit-tested and production ready
 
 \Spatial provides what is generally needed to get you started on simple spatial
 analysis. Check out \ref tutorial "Quick Starting Guide" to get you started on
