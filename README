@@ -1,0 +1,29 @@
+Spatial README
+==============
+
+Introduction
+------------
+
+The Spatial C++ Library provides header-only, generic containers and iterators
+algorithms for general purpose operations in multi-dimensions, such as
+orthogonal range search, nearest neighbor search or simply, ordering in multi-
+dimension.
+
+Instructions and Manual
+-----------------------
+
+You can find installation instructions in the file INSTALL, and the
+documentation manual can by generated via Doxygen, from the 'doc' folder. The
+same manual can be found on-line, at:
+
+http://spatial.sourceforge.net/
+
+
+License
+-------
+
+This library is provided under the Boost lisence. See COPYING.
+
+
+
+Have fun using Spatial.

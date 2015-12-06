@@ -1,0 +1,41 @@
+# Containers
+#
+ALIASES += "point_multiset=\ref spatial::point_multiset"
+ALIASES += "idle_point_multiset=\ref spatial::idle_point_multiset"
+ALIASES += "box_multiset=\ref spatial::box_multiset"
+ALIASES += "idle_box_multiset=\ref spatial::idle_box_multiset"
+ALIASES += "point_multimap=\ref spatial::point_multimap"
+ALIASES += "idle_point_multimap=\ref spatial::idle_point_multimap"
+ALIASES += "box_multimap=\ref spatial::box_multimap"
+ALIASES += "idle_box_multimap=\ref spatial::idle_box_multimap"
+
+# Iterators
+#
+ALIASES += "region_iterator=\ref spatial::region_iterator"
+ALIASES += "neighbor_iterator=\ref spatial::neighbor_iterator"
+ALIASES += "mapping_iterator=\ref spatial::mapping_iterator"
+ALIASES += "ordered_iterator=\ref spatial::ordered_iterator"
+ALIASES += "region_iterator_pair=\ref spatial::region_iterator_pair"
+ALIASES += "neighbor_iterator_pair=\ref spatial::neighbor_iterator_pair"
+ALIASES += "mapping_iterator_pair=\ref spatial::mapping_iterator_pair"
+ALIASES += "ordered_iterator_pair=\ref spatial::ordered_iterator_pair"
+ALIASES += "equal_iterator=\ref spatial::equal_iterator"
+ALIASES += "equal_iterator_pair=\ref spatial::equal_iterator_pair"
+ALIASES += "overlap_region_iterator=\ref spatial::overlap_region_iterator"
+ALIASES += "enclosed_region_iterator=\ref spatial::enclosed_region_iterator"
+ALIASES += "closed_region_iterator=\ref spatial::closed_region_iterator"
+ALIASES += "open_region_iterator=\ref spatial::open_region_iterator"
+ALIASES += "euclidian_neighbor_iterator=\ref spatial::euclidian_neighbor_iterator"
+ALIASES += "quadrance_neighbor_iterator=\ref spatial::quadrance_neighbor_iterator"
+ALIASES += "manhattan_neighbor_iterator=\ref spatial::manhattan_neighbor_iterator"
+
+# Metrics
+#
+ALIASES += "euclidian=\ref spatial::euclidian"
+ALIASES += "quadrance=\ref spatial::quadrance"
+ALIASES += "manhattan=\ref spatial::manhattan"
+
+# Others
+#
+ALIASES += "static_rank=\ref spatial::details::Static_rank"
+ALIASES += "dynamic_rank=\ref spatial::details::Dynamic_rank"
