@@ -801,7 +801,7 @@ namespace spatial
     inline std::pair<NodePtr, dimension_type>
     increment_mapping
     (NodePtr node, dimension_type dim, Rank rank, dimension_type map,
-     KeyCompare key_comp)
+     const KeyCompare& key_comp)
     {
       SPATIAL_ASSERT_CHECK(dim < rank());
       SPATIAL_ASSERT_CHECK(!header(node));
@@ -923,7 +923,7 @@ namespace spatial
     inline std::pair<NodePtr, dimension_type>
     decrement_mapping
     (NodePtr node, dimension_type dim, Rank rank, dimension_type map,
-     KeyCompare key_comp)
+     const KeyCompare& key_comp)
     {
       SPATIAL_ASSERT_CHECK(dim < rank());
       if (header(node))
@@ -1045,7 +1045,7 @@ namespace spatial
     inline std::pair<NodePtr, dimension_type>
     lower_bound_mapping
     (NodePtr node, dimension_type dim, Rank rank, dimension_type map,
-     KeyCompare key_comp, const KeyType& bound)
+     const KeyCompare& key_comp, const KeyType& bound)
     {
       SPATIAL_ASSERT_CHECK(map < rank());
       SPATIAL_ASSERT_CHECK(dim < rank());
@@ -1130,7 +1130,7 @@ namespace spatial
     inline std::pair<NodePtr, dimension_type>
     upper_bound_mapping
     (NodePtr node, dimension_type dim, Rank rank, dimension_type map,
-     KeyCompare key_comp, const KeyType& bound)
+     const KeyCompare& key_comp, const KeyType& bound)
     {
       SPATIAL_ASSERT_CHECK(map < rank());
       SPATIAL_ASSERT_CHECK(dim < rank());

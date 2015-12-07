@@ -417,7 +417,7 @@ namespace spatial
     template <typename NodePtr, typename Rank, typename KeyCompare, typename Key>
     inline std::pair<NodePtr, dimension_type>
     first_equal(NodePtr node, dimension_type dim, Rank rank,
-                KeyCompare key_comp, const Key& key)
+                const KeyCompare& key_comp, const Key& key)
     {
       // Write in pre-order fashion
       NodePtr end = node->parent;

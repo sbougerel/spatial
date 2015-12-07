@@ -54,7 +54,7 @@ namespace spatial
     template <typename NodePtr, typename Rank, typename KeyCompare>
     inline std::pair<NodePtr, dimension_type>
     minimum_mapping(NodePtr node, dimension_type dim, Rank rank,
-                    dimension_type map, KeyCompare key_comp)
+                    dimension_type map, const KeyCompare& key_comp)
     {
       SPATIAL_ASSERT_CHECK(map < rank());
       SPATIAL_ASSERT_CHECK(dim < rank());
@@ -128,7 +128,7 @@ namespace spatial
     template <typename NodePtr, typename Rank, typename KeyCompare>
     inline std::pair<NodePtr, dimension_type>
     maximum_mapping(NodePtr node, dimension_type dim, Rank rank,
-                    dimension_type map, KeyCompare key_comp)
+                    dimension_type map, const KeyCompare& key_comp)
     {
       SPATIAL_ASSERT_CHECK(map < rank());
       SPATIAL_ASSERT_CHECK(dim < rank());
