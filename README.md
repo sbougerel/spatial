@@ -51,7 +51,12 @@ Once the above is done, you should be able to simply use the library by calling 
 #include <spatial/point_multiset.hpp>
 ```
 
+
 ## Licensing
 
 Spatial C++ Library is provided under the term of the [Boost 1.0 License](http://www.boost.org/LICENSE_1_0.txt). Alternatively, see the file `COPYING` provided with your copy of the library.
 
+
+## Documentation
+
+Currently, the documentation is still hosted on [Sourceforge](http://spatial.sourceforge.net/). Github-page hosting is coming.
