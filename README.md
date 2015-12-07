@@ -45,10 +45,13 @@ Using MSVC++ on Windows, you may install them under:
 %Visual Studio location%\VC\include\spatial\
 ```
 
-Once the above is done, you should be able to simply use the library by adding:
+Once the above is done, you should be able to simply use the library by calling one of its headers, such as `point_multiset`:
 
 ```
-#include <spatial/pointset.hpp>
+#include <spatial/point_multiset.hpp>
 ```
 
-#
+## Licensing
+
+Spatial C++ Library is provided under the term of the [Boost 1.0 License](http://www.boost.org/LICENSE_1_0.txt). Alternatively, see the file `COPYING` provided with your copy of the library.
+
