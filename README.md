@@ -31,7 +31,7 @@ Web: https://sourceforge.net/projects/spatial/
 ## Installation
 
 Spatial is a header-only library and all you have to do is to copy the content
-of the 'src' folder in a folder named 'spatial' under the appropriate header
+of the `src` folder in a folder named `spatial` under the appropriate header
 directory for your project or your environment.
 
 Typically on Linux, this just means:
@@ -45,7 +45,8 @@ Using MSVC++ on Windows, you may install them under:
 %Visual Studio location%\VC\include\spatial\
 ```
 
-Once the above is done, you should be able to simply use the library by calling one of its headers, such as `point_multiset`:
+Once the above is done, you should be able to simply use the library by calling
+one of its headers, such as `point_multiset`:
 
 ```
 #include <spatial/point_multiset.hpp>
@@ -54,9 +55,22 @@ Once the above is done, you should be able to simply use the library by calling 
 
 ## Licensing
 
-Spatial C++ Library is provided under the term of the [Boost 1.0 License](http://www.boost.org/LICENSE_1_0.txt). Alternatively, see the file `COPYING` provided with your copy of the library.
+Spatial C++ Library is provided under the term of the
+[Boost 1.0 License](http://www.boost.org/LICENSE_1_0.txt).
+Alternatively, see the file `COPYING` provided with your copy of the library.
 
 
 ## Documentation
 
-Currently, the documentation is still hosted on [Sourceforge](http://spatial.sourceforge.net/). Github-page hosting is coming.
+Currently, the documentation is still hosted on
+[Sourceforge](http://spatial.sourceforge.net/). Github-page hosting is coming.
+
+If you which to generate the documentation yourself, first install
+[Doxygen](http://www.stack.nl/~dimitri/doxygen/) and
+[LaTeX](https://www.latex-project.org/), then:
+
+```
+cd doc; doxygen
+```
+
+This should generate the `html` and `latex` folders with the documentation.
