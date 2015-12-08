@@ -26,6 +26,7 @@ namespace utils
   struct random_engine
   {
     random_engine () { ::srand(::time(0)); }
+    random_engine (unsigned int seed) { ::srand(seed); }
   };
 
   /**
