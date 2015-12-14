@@ -239,13 +239,6 @@ namespace spatial
 
   template <typename Ct>
   inline open_region_iterator<const Ct>
-  open_region_end(const Ct& container,
-                    const typename container_traits<Ct>::key_type& lower,
-                    const typename container_traits<Ct>::key_type& upper)
-  { return region_end(container, make_open_bounds(container, lower, upper)); }
-
-  template <typename Ct>
-  inline open_region_iterator<const Ct>
   open_region_cend(const Ct& container,
                      const typename container_traits<Ct>::key_type& lower,
                      const typename container_traits<Ct>::key_type& upper)
@@ -254,13 +247,6 @@ namespace spatial
   template <typename Ct>
   inline open_region_iterator<Ct>
   open_region_begin(Ct& container,
-                    const typename container_traits<Ct>::key_type& lower,
-                    const typename container_traits<Ct>::key_type& upper)
-  { return region_begin(container, make_open_bounds(container, lower, upper)); }
-
-  template <typename Ct>
-  inline open_region_iterator<const Ct>
-  open_region_begin(const Ct& container,
                     const typename container_traits<Ct>::key_type& lower,
                     const typename container_traits<Ct>::key_type& upper)
   { return region_begin(container, make_open_bounds(container, lower, upper)); }
@@ -277,13 +263,6 @@ namespace spatial
   template <typename Ct>
   inline open_region_iterator_pair<Ct>
   open_region_range(Ct& container,
-                    const typename container_traits<Ct>::key_type& lower,
-                    const typename container_traits<Ct>::key_type& upper)
-  { return region_range(container, make_open_bounds(container, lower, upper)); }
-
-  template <typename Ct>
-  inline open_region_iterator_pair<const Ct>
-  open_region_range(const Ct& container,
                     const typename container_traits<Ct>::key_type& lower,
                     const typename container_traits<Ct>::key_type& upper)
   { return region_range(container, make_open_bounds(container, lower, upper)); }

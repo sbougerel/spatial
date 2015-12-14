@@ -1056,7 +1056,7 @@ namespace spatial
                                          invariant_category(node))))
         { node = node->left; dim = incr_dim(rank, dim); }
       NodePtr best = 0;
-      dimension_type best_dim;
+      dimension_type best_dim = 0;
       if (!key_comp(map, const_key(node), bound))
         { best = node; best_dim = dim; }
       for (;;)
@@ -1140,7 +1140,7 @@ namespace spatial
                  || key_comp(map, bound, const_key(node))))
         { node = node->left; dim = incr_dim(rank, dim); }
       NodePtr best = 0;
-      dimension_type best_dim;
+      dimension_type best_dim = 0;
       if (key_comp(map, bound, const_key(node)))
         { best = node; best_dim = dim; }
       for (;;)

@@ -32,18 +32,6 @@
 #define SPATIAL_VERSION 20108
 ///@}
 
-// For compatibility with older environments
-#ifdef SPATIAL_BAD_CSTDDEF
-#include <stddef.h>
-namespace std
-{
-  using ::size_t;
-  using ::ptrdiff_t;
-}
-#else
-#include <cstddef>
-#endif
-
 /**
  *  The main namespace used in the library. All types, functions and variables
  *  defined in the library are contained within this namespace. Declaring
@@ -58,22 +46,20 @@ namespace std
  */
 namespace spatial
 {
-
   /**
-   *  Defines a positive integral type for counting objects or storing
-   *  absolute values.
+   *  Defines a positive integral type for counting objects.
    */
   typedef std::size_t size_type;
 
   /**
-   *  Defines the type for the dimension as being a size.
+   *  Defines the type for the dimension as a positive, native integer.
    */
-  typedef std::size_t dimension_type;
+  typedef unsigned dimension_type;
 
   /**
-   *  Defines weight as being a size.
+   *  Defines the weight as a positive, native integer.
    */
-  typedef std::size_t weight_type;
+  typedef unsigned weight_type;
 
   /**
    *  Defines values for relative ordering.

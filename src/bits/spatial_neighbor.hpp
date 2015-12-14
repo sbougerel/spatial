@@ -1506,7 +1506,8 @@ namespace spatial
                       && (best == 0
                           || (met.distance_to_plane(rank(), dim, target,
                                                     const_key(node))
-                              < best_dist)))
+                              <= best_dist))
+                      )
                     { node = far; dim = incr_dim(rank, dim); }
                   else if (near != 0)
                     { node = near; dim = incr_dim(rank, dim); }
@@ -1551,7 +1552,7 @@ namespace spatial
       NodePtr best = 0;
       dimension_type best_dim = dim;
       typename Metric::distance_type best_dist = node_dist;
-      // Looks backaward to find an equal or lower next best. If an equal next
+      // Looks backward to find an equal or lower next best. If an equal next
       // best is found, then no need to look further. 'Forward' and 'backward'
       // refer to tree walking in near-pre-order.
       NodePtr prev_node = node;

@@ -1008,25 +1008,6 @@ in lexicographic order, or the titles in lexicographic order, etc.
 \page compileopts Compilation Options
 \tableofcontents
 
-\section compileopts_1 SPATIAL_BAD_CSTDDEF
-
-If you encounter too many errors at compilation due to undefined `std::size_t`
-or `std::ptrdiff_t`, set this preprocessor variable in order to prevent
-compilation to fail. This will force back `size_t` and `ptrdiff_t` in the
-namespace `std`.
-
-\code
-#define SPATIAL_BAD_CSTDDEF
-#include <spatial/point_multiset.hpp>
-\endcode
-
-Alternativerly you can use it in your compiler or environment definition
-\code
-$ export CXXFLAGS="-DSPATIAL_BAD_CSTDDEF"
-\endcode
-
-This variable is simply a define and does not require any associated value.
-
 \section compileopts_2 SPATIAL_SAFER_ARITHMETICS
 
 When dealing with objects in space that are scattered over the entire range of

@@ -220,13 +220,6 @@ namespace spatial
 
   template <typename Ct>
   inline closed_region_iterator<const Ct>
-  closed_region_end(const Ct& container,
-                    const typename container_traits<Ct>::key_type& lower,
-                    const typename container_traits<Ct>::key_type& upper)
-  { return region_end(container, make_closed_bounds(container, lower, upper)); }
-
-  template <typename Ct>
-  inline closed_region_iterator<const Ct>
   closed_region_cend(const Ct& container,
                      const typename container_traits<Ct>::key_type& lower,
                      const typename container_traits<Ct>::key_type& upper)
@@ -237,15 +230,6 @@ namespace spatial
   template <typename Ct>
   inline closed_region_iterator<Ct>
   closed_region_begin(Ct& container,
-                      const typename container_traits<Ct>::key_type& lower,
-                      const typename container_traits<Ct>::key_type& upper)
-  {
-    return region_begin(container, make_closed_bounds(container, lower, upper));
-  }
-
-  template <typename Ct>
-  inline closed_region_iterator<const Ct>
-  closed_region_begin(const Ct& container,
                       const typename container_traits<Ct>::key_type& lower,
                       const typename container_traits<Ct>::key_type& upper)
   {
@@ -265,15 +249,6 @@ namespace spatial
   template <typename Ct>
   inline closed_region_iterator_pair<Ct>
   closed_region_range(Ct& container,
-                      const typename container_traits<Ct>::key_type& lower,
-                      const typename container_traits<Ct>::key_type& upper)
-  {
-    return region_range(container, make_closed_bounds(container, lower, upper));
-  }
-
-  template <typename Ct>
-  inline closed_region_iterator_pair<const Ct>
-  closed_region_range(const Ct& container,
                       const typename container_traits<Ct>::key_type& lower,
                       const typename container_traits<Ct>::key_type& upper)
   {

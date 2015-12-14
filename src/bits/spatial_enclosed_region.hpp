@@ -303,25 +303,6 @@ namespace spatial
 
   template <typename Ct>
   inline enclosed_region_iterator<const Ct>
-  enclosed_region_end(const Ct& container,
-                      const typename container_traits<Ct>::key_type& target)
-  {
-    return _regionend
-      (container, make_enclosed_bounds(container, target, llhh_layout_tag()));
-  }
-
-  template <typename Ct, typename Layout>
-  inline enclosed_region_iterator<const Ct, Layout>
-  enclosed_region_end(const Ct& container,
-                      const typename container_traits<Ct>::key_type& target,
-                      const Layout& layout)
-  {
-    return region_end
-      (container, make_enclosed_bounds(container, target, layout));
-  }
-
-  template <typename Ct>
-  inline enclosed_region_iterator<const Ct>
   enclosed_region_cend(const Ct& container,
                        const typename container_traits<Ct>::key_type& target)
   {
@@ -369,25 +350,6 @@ namespace spatial
 
   template <typename Ct, typename Layout>
   inline enclosed_region_iterator<const Ct, Layout>
-  enclosed_region_begin(const Ct& container,
-                        const typename container_traits<Ct>::key_type& target,
-                        const Layout& layout)
-  {
-    return region_begin
-      (container, make_enclosed_bounds(container, target, layout));
-  }
-
-  template <typename Ct>
-  inline enclosed_region_iterator<const Ct>
-  enclosed_region_cbegin(const Ct& container,
-                   const typename container_traits<Ct>::key_type& target)
-  {
-    return region_cbegin
-      (container, make_enclosed_bounds(container, target, llhh_layout_tag()));
-  }
-
-  template <typename Ct, typename Layout>
-  inline enclosed_region_iterator<const Ct, Layout>
   enclosed_region_cbegin(const Ct& container,
                    const typename container_traits<Ct>::key_type& target,
                    const Layout& layout)
@@ -408,25 +370,6 @@ namespace spatial
   template <typename Ct, typename Layout>
   inline enclosed_region_iterator_pair<Ct, Layout>
   enclosed_region_range(Ct& container,
-                        const typename container_traits<Ct>::key_type& target,
-                        const Layout& layout)
-  {
-    return region_range
-      (container, make_enclosed_bounds(container, target, layout));
-  }
-
-  template <typename Ct>
-  inline enclosed_region_iterator_pair<const Ct>
-  enclosed_region_range(const Ct& container,
-                        const typename container_traits<Ct>::key_type& target)
-  {
-    return region_range
-      (container, make_enclosed_bounds(container, target, llhh_layout_tag()));
-  }
-
-  template <typename Ct, typename Layout>
-  inline enclosed_region_iterator_pair<const Ct, Layout>
-  enclosed_region_range(const Ct& container,
                         const typename container_traits<Ct>::key_type& target,
                         const Layout& layout)
   {

@@ -25,10 +25,8 @@ void compare_libraries
     spatial::idle_point_multiset<N, Point> cobaye;
     cobaye.insert_rebalance(data.begin(), data.end());
     utils::time_point start = utils::process_timer_now();
-    // for (spatial::ordered_iterator<spatial::idle_point_multiset<N, Point> >
-    //        i = ordered_begin(cobaye); i != ordered_end(cobaye); ++i);
-    for (int i = 0; i < data_size; ++i)
-      ordered_begin(cobaye);
+    for (spatial::ordered_iterator<spatial::idle_point_multiset<N, Point> >
+           i = ordered_begin(cobaye); i != ordered_end(cobaye); ++i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
     std::cout << "\t\tidle_point_multiset (reverse):\t" << std::flush;
@@ -45,10 +43,8 @@ void compare_libraries
     spatial::point_multiset<N, Point> cobaye;
     cobaye.insert(data.begin(), data.end());
     utils::time_point start = utils::process_timer_now();
-    // for (spatial::ordered_iterator<spatial::point_multiset<N, Point> >
-    //        i = ordered_begin(cobaye); i != ordered_end(cobaye); ++i);
-    for (int i = 0; i < data_size; ++i)
-      ordered_begin(cobaye);
+    for (spatial::ordered_iterator<spatial::point_multiset<N, Point> >
+           i = ordered_begin(cobaye); i != ordered_end(cobaye); ++i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
     std::cout << "\t\tpoint_multiset (reverse):\t" << std::flush;
