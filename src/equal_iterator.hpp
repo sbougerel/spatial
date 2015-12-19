@@ -99,15 +99,6 @@ namespace spatial
 
   template <typename Container>
   inline equal_iterator_pair<const Container>
-  equal_range(const Container& container,
-              const typename equal_iterator<Container>::key_type& model)
-  {
-    return equal_iterator_pair<const Container>
-      (equal_begin(container, model), equal_end(container, model));
-  }
-
-  template <typename Container>
-  inline equal_iterator_pair<const Container>
   equal_crange(const Container& container,
                const typename equal_iterator<Container>::key_type& model)
   {

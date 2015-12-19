@@ -171,19 +171,22 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 ( test_ordered_increment, Tp, double6_sets )
 {
   { // test the invarient of the increment
-    Tp fix(100, randomize(-1, 1));
+    Tp fix(20, randomize(-1, 1));
     ordered_iterator<typename Tp::container_type>
       iter = ordered_begin(fix.container),
       end = ordered_end(fix.container);
-    int count = 0;
-    double6 tmp = *iter;
-    for (; iter != end; ++iter)
+    std::vector<double6> vec(fix.container.size());
+    std::copy(fix.container.begin(), fix.container.end(), vec.begin());
+    std::sort(vec.begin(), vec.end(), double6_ordered_less());
+    std::vector<double6>::iterator track = vec.begin();
+    BOOST_CHECK(*track == *iter);
+    unsigned count = 0;
+    for (; iter != end; ++iter, ++track)
       {
-        BOOST_CHECK(!double6_ordered_less()(*iter, tmp));
-        tmp = *iter;
-        if (++count > 100) break;
+        BOOST_CHECK(*track == *iter);
+        if (++count > fix.container.size()) break;
       }
-    BOOST_CHECK_EQUAL(count, 100);
+    BOOST_CHECK_EQUAL(count, fix.container.size());
   }
   { // test at the limit: a tree where all elements are the same
     Tp fix(100, same());
@@ -410,7 +413,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     BOOST_CHECK(iter == ordered_end(fix.container)
                 || quad_ordered_less()(in, iter->first));
     BOOST_CHECK(iter == ordered_begin(fix.container)
-                || !quad_ordered_less()((--iter)->first, in));
+                || !quad_ordered_less()(in, (--iter)->first));
     iter = ordered_upper_bound(fix.container, lower);
     BOOST_CHECK(iter == ordered_begin(fix.container));
     iter = ordered_upper_bound(fix.container, upper);

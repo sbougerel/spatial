@@ -202,7 +202,7 @@ namespace spatial
     assert_inspect_node
     (const Compare& cmp, dimension_type rank, std::ostream& o,
      const details::Node<details::Kdtree_link<Key, Value> >* node,
-     std::size_t depth)
+     dimension_type depth)
     {
       for (std::size_t i = 0; i < depth; ++i) o << ".";
       if (header(node->parent)) o << "T";
@@ -211,7 +211,7 @@ namespace spatial
       else o << "E";
       const details::Node<details::Kdtree_link<Key, Value> >
         *test = node;
-      std::size_t test_depth = depth;
+      dimension_type test_depth = depth;
       while (!header(test->parent))
         {
           if (test->parent->left == test)
@@ -246,7 +246,7 @@ namespace spatial
     assert_inspect_node
     (const Compare& cmp, dimension_type rank, std::ostream& o,
      const details::Node<details::Relaxed_kdtree_link<Key, Value> >* node,
-     std::size_t depth)
+     dimension_type depth)
     {
       if (node->left)
         assert_inspect_node(cmp, rank, o, node->left, depth + 1);
@@ -257,7 +257,7 @@ namespace spatial
       else o << "E";
       const details::Node<details::Relaxed_kdtree_link<Key, Value> >
         *test = node;
-      std::size_t test_depth = depth;
+      dimension_type test_depth = depth;
       while (!header(test->parent))
         {
           if (test->parent->left == test)

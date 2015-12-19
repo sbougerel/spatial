@@ -53,18 +53,6 @@ drand()
   return out;
 }
 
-/**
- *  Creates a random float between 0 and 1.
- */
-inline
-float
-frand()
-{
-  float out = static_cast<float>(std::rand())/static_cast<float>(RAND_MAX);
-  out = (static_cast<float>(std::rand()) + out)/static_cast<float>(RAND_MAX);
-  return out;
-}
-
 template <typename Manip>
 struct to_first
 {
@@ -76,7 +64,7 @@ struct to_first
   std::pair<Tp1, Tp2>& operator()
     (std::pair<Tp1, Tp2>& p, int i, int n) const
   {
-    Manip()(p.first, i, n);
+    manip(p.first, i, n);
     return p;
   }
 };
@@ -175,12 +163,12 @@ struct randomize
   }
   double6& operator()(double6& d, int, int) const
   {
-    d[0] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
-    d[1] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
-    d[2] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
-    d[3] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
-    d[4] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
-    d[5] = drand() * static_cast<double>(higher) + static_cast<double>(lower);
+    d[0] = drand() * static_cast<double>(higher - lower) + static_cast<double>(lower);
+    d[1] = drand() * static_cast<double>(higher - lower) + static_cast<double>(lower);
+    d[2] = drand() * static_cast<double>(higher - lower) + static_cast<double>(lower);
+    d[3] = drand() * static_cast<double>(higher - lower) + static_cast<double>(lower);
+    d[4] = drand() * static_cast<double>(higher - lower) + static_cast<double>(lower);
+    d[5] = drand() * static_cast<double>(higher - lower) + static_cast<double>(lower);
     return d;
   }
 };
@@ -291,12 +279,10 @@ struct runtime_fixture
 {
   typedef Container container_type;
   container_type container;
-  typedef std::vector<Tp> record_type;
-  std::vector<Tp> record;
-  runtime_fixture() : container(Dim), record() { }
+  runtime_fixture() : container(Dim) { }
   template<typename Manip>
   runtime_fixture(int n, const Manip& manip = same())
-    : container(Dim), record()
+    : container(Dim)
   {
     for (int i = 0; i < n; ++i)
       {
@@ -304,7 +290,6 @@ struct runtime_fixture
         typename container_type::const_iterator
           it = container.insert(manip(tp, i, n));
         BOOST_CHECK(*it == tp);
-        record.push_back(tp);
       }
   }
 };
