@@ -344,21 +344,21 @@ namespace spatial
     }
 
     /**
-     *  Move the iterator given in parameter to the minimum value along the
-     *  iterator's ordered dimension but only in the sub-tree composed of the
-     *  node pointed to by the iterator and its children.
+     *  Within the sub-tree of node, find the node with the minimum value
+     *  according to the iterator's ordering rule.
      *
      *  \tparam Container The type of container to iterate.
-     *  \param iter An iterator that points to the root node of the search.
-     *  \return The iterator given in parameter is moved to the value with the
-     *  smallest coordinate along \c iter's \c ordered_dim, and among the
-     *  children of the node pointed to by \c iter.
+     *  \param node The node pointed to by the iterator
+     *  \param dim  The dimension of the node pointed to by the iterator.
+     *  \param rank The rank of the container which node belongs to.
+     *  \param cmp  The comparator used by the container which node belongs to.
+     *  \return A pair of node, dimension pointing to the minimum element in
+     *  the ordered iteration.
      *
-     *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking for \ref
-     *  ordered_begin(). In any case, use it cautiously, as this function does
-     *  not perform any sanity checks on the iterator given in parameter.
+     *  Since Container is based on a \kdtree and \kdtrees exhibit good locality
+     *  of reference (for arranging values in space, not for values location in
+     *  memory), the function will run with time complexity close to \Onlognk in
+     *  practice.
      *
      *  \fractime
      */
@@ -408,21 +408,21 @@ namespace spatial
     }
 
     /**
-     *  Move the iterator given in parameter to the maximum value along the
-     *  iterator's ordered dimension but only in the sub-tree composed of the
-     *  node pointed to by the iterator and its children.
+     *  Within the sub-tree of node, find the node with the maximum value
+     *  according to the iterator's ordering rule.
      *
      *  \tparam Container The type of container to iterate.
-     *  \param iter An iterator that points to the root node of the search.
-     *  \return The iterator given in parameter is moved to the value with the
-     *  largest coordinate along \c iter's \c ordered_dim, among the children of
-     *  the node pointed to by \c iter.
+     *  \param node The node pointed to by the iterator
+     *  \param dim  The dimension of the node pointed to by the iterator.
+     *  \param rank The rank of the container which node belongs to.
+     *  \param cmp  The comparator used by the container which node belongs to.
+     *  \return A pair of node, dimension pointing to the maximum element in
+     *  the ordered iteration.
      *
-     *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking for \ref
-     *  ordered_begin(). In any case, use it cautiously, as this function does
-     *  not perform any sanity checks on the iterator given in parameter.
+     *  Since Container is based on a \kdtree and \kdtrees exhibit good locality
+     *  of reference (for arranging values in space, not for values location in
+     *  memory), the function will run with time complexity close to \Onlognk in
+     *  practice.
      *
      *  \fractime
      */
@@ -469,23 +469,20 @@ namespace spatial
     }
 
     /**
-     *  Move the pointer given in parameter to the next element in the ordered
-     *  iteration of values along the ordered dimension.
+     *  Move the pointer given in parameter to the next element in the
+     *  iteration.
      *
      *  \tparam Container The type of container to iterate.
-     *  \param iter The reference iterator that points to the current node.
-     *  \return An iterator pointing to the value with the smallest coordinate
-     *  along \c iter's \c ordered_dim, and among the children of the node
-     *  pointed to by \c iter.
-     *
-     *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking to increment an
-     *  \ordered_iterator via the overloaded \c operator++().
+     *  \param node The node pointed to by the iterator
+     *  \param dim  The dimension of the node pointed to by the iterator.
+     *  \param rank The rank of the container which node belongs to.
+     *  \param cmp  The comparator used by the container which node belongs to.
+     *  \return A pair of node, dimension pointing to the next element in the
+     *  ordered iteration.
      *
      *  Since Container is based on a \kdtree and \kdtrees exhibit good locality
      *  of reference (for arranging values in space, not for values location in
-     *  memory), the function will run with time complexity close to \Olog in
+     *  memory), the function will run with time complexity close to \Onlognk in
      *  practice.
      *
      *  \fractime
@@ -576,22 +573,19 @@ namespace spatial
 
     /**
      *  Move the pointer given in parameter to the previous element in the
-     *  ordered iteration of values along the ordered dimension.
+     *  iteration.
      *
      *  \tparam Container The type of container to iterate.
-     *  \param iter The reference iterator that points to the current node.
-     *  \return An iterator pointing to the value with the smallest coordinate
-     *  along \c iter's \c ordered_dim, and among the children of the node
-     *  pointed to by \c iter.
-     *
-     *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking to decrement an
-     *  \ordered_iterator via the overloaded \c operator--().
+     *  \param node The node pointed to by the iterator
+     *  \param dim  The dimension of the node pointed to by the iterator.
+     *  \param rank The rank of the container which node belongs to.
+     *  \param cmp  The comparator used by the container which node belongs to.
+     *  \return A pair of node, dimension pointing to the previous element in
+     *  the ordered iteration.
      *
      *  Since Container is based on a \kdtree and \kdtrees exhibit good locality
      *  of reference (for arranging values in space, not for values location in
-     *  memory), the function will run with time complexity close to \Olog in
+     *  memory), the function will run with time complexity close to \Onlognk in
      *  practice.
      *
      *  \fractime

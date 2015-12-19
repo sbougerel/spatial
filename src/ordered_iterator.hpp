@@ -22,24 +22,23 @@ namespace spatial
   namespace details
   {
     /**
-     *  Move the iterator given in parameter to the value with the smallest
-     *  coordinate greater or equal to \c bound along the ordered dimension of
-     *  \c iter, but only in the sub-tree composed of the node pointed to by the
-     *  iterator and its children. If no such value exists, then move the
-     *  iterator to the parent of the value currently pointed to.
-     *
-     *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking for \ref
-     *  ordered_begin(). In any case, use it cautiously, as this function does
-     *  not perform any sanity checks on the iterator given in parameter.
+     *  Within the sub-tree of node, find the node with the smallest value
+     *  greater or equal to bound, according to the iterator's ordering rule.
      *
      *  \tparam Container The type of container to iterate.
-     *  \param iter An iterator that points to the root node of the search.
-     *  \param bound The lower bound to the iterator position.
-     *  \return An iterator pointing to the value with the smallest coordinate
-     *  greater or equal to \c bound along \c iter's \c ordered_dim, or to the
-     *  parent of the value pointed to.
+     *  \param node The node pointed to by the iterator
+     *  \param dim  The dimension of the node pointed to by the iterator.
+     *  \param rank The rank of the container which node belongs to.
+     *  \param cmp  The comparator used by the container which node belongs to.
+     *  \param bound The lowest bound to the iterator position.
+     *  \return A pair of node, dimension pointing to the element with the
+     *  smallest value greater or equal to bound, according to the iterator's
+     *  ordering rule.
+     *
+     *  Since Container is based on a \kdtree and \kdtrees exhibit good locality
+     *  of reference (for arranging values in space, not for values location in
+     *  memory), the function will run with time complexity close to \Onlognk in
+     *  practice.
      *
      *  \fractime
      */
@@ -95,24 +94,23 @@ namespace spatial
     }
 
     /**
-     *  Move the iterator given in parameter to the value with the largest
-     *  coordinate strictly lower than \c bound along the ordered dimension of
-     *  \c iter, but only in the sub-tree composed of the node pointed to by the
-     *  iterator and its children. If no such value exists, then move the
-     *  iterator to the parent of the value currently pointed to.
-     *
-     *  \attention This function is meant to be used by other algorithms in the
-     *  library, but not by the end users of the library. If you feel that you
-     *  must use this function, maybe you were actually looking for \ref
-     *  ordered_begin(). In any case, use it cautiously, as this function does
-     *  not perform any sanity checks on the iterator given in parameter.
+     *  Within the sub-tree of node, find the node with the smallest value
+     *  greater than bound, according to the iterator's ordering rule.
      *
      *  \tparam Container The type of container to iterate.
-     *  \param iter An iterator that points to the root node of the search.
-     *  \param bound The upper bound to the iterator position.
-     *  \return \c iter moved to the value with the largest coordinate strictly
-     *  less than \c bound along \c iter's \c ordered_dim, or to the
-     *  parent of the value pointed to.
+     *  \param node The node pointed to by the iterator
+     *  \param dim  The dimension of the node pointed to by the iterator.
+     *  \param rank The rank of the container which node belongs to.
+     *  \param cmp  The comparator used by the container which node belongs to.
+     *  \param bound The lowest bound to the iterator position.
+     *  \return A pair of node, dimension pointing to the element with the
+     *  smallest value greater than bound, according to the iterator's
+     *  ordering rule.
+     *
+     *  Since Container is based on a \kdtree and \kdtrees exhibit good locality
+     *  of reference (for arranging values in space, not for values location in
+     *  memory), the function will run with time complexity close to \Onlognk in
+     *  practice.
      *
      *  \fractime
      */
