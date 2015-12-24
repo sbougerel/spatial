@@ -550,19 +550,16 @@ namespace spatial
       find(const key_type& key)
       {
         if (empty()) return end();
-        return iterator(preorder_first(get_root(), 0, rank(),
-                                       details::Equal<Self>(key_comp(), key))
-                        .first);
+        return iterator(first_equal(get_root(), 0, rank(),
+                                    key_comp(), key).first);
       }
 
       const_iterator
       find(const key_type& key) const
       {
         if (empty()) return end();
-        return const_iterator(preorder_first(get_root(), 0, rank(),
-                                             details::Equal<Self>
-                                             (key_comp(), key))
-                              .first);
+        return const_iterator(first_equal(get_root(), 0, rank(),
+                                          key_comp(), key).first);
       }
       ///@}
 
@@ -1159,9 +1156,8 @@ namespace spatial
       if (empty()) return 0;
       node_ptr node = get_root();
       dimension_type dim;
-      details::Equal<Self> equal_query(key_comp(), key);
-      details::assign(node, dim,
-                      preorder_first(node, 0, rank(), equal_query));
+      import::tie(node, dim)
+        = first_equal(node, 0, rank(), key_comp(), key);
       if (header(node)) return 0;
       size_type cnt = 0;
       for (;;)
@@ -1169,8 +1165,8 @@ namespace spatial
           node_ptr tmp = erase_node(dim, node);
           ++cnt;
           if (tmp == 0) break; // no further node to erase for sure!
-          details::assign(node, dim,
-                          preorder_first(tmp, dim, rank(), equal_query));
+          import::tie(node, dim)
+            = first_equal(tmp, dim, rank(), key_comp(), key);
           if (tmp->parent == node) break; // no more match
         }
       return cnt;
