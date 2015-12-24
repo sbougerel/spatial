@@ -58,9 +58,9 @@ namespace spatial
                 }
             }
           // Walk the tree to find an equal target
-          if (walk_left && node->left != 0)
+          if (walk_right && node->right != 0)
             {
-              if (walk_right && node->right != 0)
+              if (walk_left && node->left != 0)
                 {
                   // Go recursively in this case only, left first
                   NodePtr other;
@@ -70,16 +70,161 @@ namespace spatial
                                   rank, key_comp, key);
                   if (other != node)
                     { return std::make_pair(other, other_dim); }
-                  node = node->right; dim = incr_dim(rank, dim);
                 }
-              else
-                { node = node->left; dim = incr_dim(rank, dim); }
+              node = node->right; dim = incr_dim(rank, dim);
             }
-          else if (walk_right && node->right != 0)
-            { node = node->right; dim = incr_dim(rank, dim); }
+          else if (walk_left && node->left != 0)
+            { node = node->left; dim = incr_dim(rank, dim); }
           else { return std::make_pair(end, end_dim); }
         }
     }
+
+    template <typename NodePtr, typename Rank, typename KeyCompare,
+              typename Key>
+    inline std::pair<NodePtr, dimension_type>
+    last_equal(NodePtr node, dimension_type dim, const Rank rank,
+               const KeyCompare& key_comp, const Key& key)
+    {
+      SPATIAL_ASSERT_CHECK(!header(node));
+      SPATIAL_ASSERT_CHECK(node != 0);
+      SPATIAL_ASSERT_CHECK(dim < rank());
+      for (;;)
+        {
+          if (node->right != 0
+              && !key_comp(dim, key, const_key(node)))
+            { node = node->right; dim = incr_dim(rank, dim); }
+          else if (node->left != 0
+                   && !key_comp(dim, const_key(node), key))
+            { node = node->left; dim = incr_dim(rank, dim); }
+          else break;
+        }
+      for (;;)
+        {
+          dimension_type test = 0;
+          for(; test < rank() && !(key_comp(test, key, const_key(node))
+                                   || key_comp(test, const_key(node), key));
+              ++test);
+          if (test == rank())
+            { return std::make_pair(node, dim); }
+          NodePtr copy_node = node;
+          dimension_type copy_dim = dim;
+          node = node->parent;
+          dim = decr_dim(rank, dim);
+          if (header(node))
+            { return std::make_pair(node, dim); }
+          if (node->right == copy_node && node->left != 0
+              && !key_comp(dim, const_key(node), key))
+            {
+              node = node->left;
+              dim = copy_dim;
+              for (;;)
+                {
+                  if (node->right != 0
+                      && !key_comp(dim, key, const_key(node)))
+                    { node = node->right; dim = incr_dim(rank, dim); }
+                  else if (node->left != 0
+                           && !key_comp(dim, const_key(node), key))
+                    { node = node->left; dim = incr_dim(rank, dim); }
+                  else break;
+                }
+            }
+        }
+    }
+
+    template <typename NodePtr, typename Rank, typename Query>
+    inline std::pair<NodePtr, dimension_type>
+    increment_equal(NodePtr node, dimension_type dim, Rank rank,
+                       const Query& query)
+    {
+      SPATIAL_ASSERT_CHECK(!header(node));
+      SPATIAL_ASSERT_CHECK(node != 0);
+      SPATIAL_ASSERT_CHECK(dim < rank());
+      do
+        {
+          if (node->left != 0 && left_traversal(node, dim, query))
+            {
+              node = node->left;
+              dim = incr_dim(rank, dim);
+            }
+          else if (node->right != 0 && right_traversal(node, dim, query))
+            {
+              node = node->right;
+              dim = incr_dim(rank, dim);
+            }
+          else
+            {
+              NodePtr prev_node = node;
+              node = node->parent;
+              dim = decr_dim(rank, dim);
+              while (!header(node)
+                     && (prev_node == node->right
+                         || node->right == 0
+                         || !right_traversal(node, dim, query)))
+                {
+                  prev_node = node;
+                  node = node->parent;
+                  dim = decr_dim(rank, dim);
+                }
+              if (!header(node))
+                {
+                  node = node->right;
+                  dim = incr_dim(rank, dim);
+                }
+              else break;
+            }
+        }
+      while (!stop_traversal(node, rank, query));
+      SPATIAL_ASSERT_CHECK(dim < rank());
+      SPATIAL_ASSERT_CHECK(node != 0);
+      return std::make_pair(node, dim);
+    }
+
+    template <typename NodePtr, typename Rank, typename Query>
+    inline std::pair<NodePtr, dimension_type>
+    decrement_equal(NodePtr node, dimension_type dim, Rank rank,
+                       const Query& query)
+    {
+      if (header(node))
+        { return preorder_last(node->parent, 0, rank, query); }
+      SPATIAL_ASSERT_CHECK(node != 0);
+      SPATIAL_ASSERT_CHECK(dim < rank());
+      NodePtr copy_node = node;
+      dimension_type copy_dim = dim;
+      node = node->parent;
+      dim = decr_dim(rank, dim);
+      while (!header(node))
+        {
+          if (node->right == copy_node
+              && node->left != 0 && left_traversal(node, dim, query))
+            {
+              node = node->left;
+              dim = copy_dim;
+              for (;;)
+                {
+                  if (node->right != 0 && right_traversal(node, dim, query))
+                    {
+                      node = node->right;
+                      dim = incr_dim(rank, dim);
+                    }
+                  else if (node->left != 0 && left_traversal(node, dim, query))
+                    {
+                      node = node->left;
+                      dim = incr_dim(rank, dim);
+                    }
+                  else break;
+                }
+            }
+          if (stop_traversal(node, rank, query)) break;
+          copy_node = node;
+          copy_dim = dim;
+          node = node->parent;
+          dim = decr_dim(rank, dim);
+        }
+      SPATIAL_ASSERT_CHECK(dim < rank());
+      SPATIAL_ASSERT_CHECK(node != 0);
+      return std::make_pair(node, dim);
+    }
+
 
   } // namespace details
 
