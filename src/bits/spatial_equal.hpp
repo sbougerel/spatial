@@ -29,14 +29,15 @@ namespace spatial
     template <typename NodePtr, typename Rank, typename KeyCompare,
               typename Key>
     inline std::pair<NodePtr, dimension_type>
-    first_equal(NodePtr node, dimension_type dim, const Rank rank,
+    first_equal(NodePtr node, dimension_type depth, const Rank rank,
                 const KeyCompare& key_comp, const Key& key)
     {
       // Write in pre-order fashion
       NodePtr end = node->parent;
-      dimension_type end_dim = decr_dim(rank, dim);
+      dimension_type end_depth = depth - 1;
       for (;;)
         {
+          dimension_type dim = depth % rank();
           // Test coordinates of node's key, retain results for dim
           bool walk_left = !key_comp(dim, const_key(node), key);
           bool walk_right = !key_comp(dim, key, const_key(node));
@@ -64,38 +65,37 @@ namespace spatial
                 {
                   // Go recursively in this case only, left first
                   NodePtr other;
-                  dimension_type other_dim;
-                  import::tie(other, other_dim)
-                    = first_equal(node->left, incr_dim(rank, dim),
+                  dimension_type other_depth;
+                  import::tie(other, other_depth)
+                    = first_equal(node->left, depth + 1,
                                   rank, key_comp, key);
                   if (other != node)
-                    { return std::make_pair(other, other_dim); }
+                    { return std::make_pair(other, other_depth); }
                 }
-              node = node->right; dim = incr_dim(rank, dim);
+              node = node->right; ++depth;
             }
           else if (walk_left && node->left != 0)
-            { node = node->left; dim = incr_dim(rank, dim); }
-          else { return std::make_pair(end, end_dim); }
+            { node = node->left; ++depth; }
+          else { return std::make_pair(end, end_depth); }
         }
     }
 
     template <typename NodePtr, typename Rank, typename KeyCompare,
               typename Key>
     inline std::pair<NodePtr, dimension_type>
-    last_equal(NodePtr node, dimension_type dim, const Rank rank,
+    last_equal(NodePtr node, dimension_type depth, const Rank rank,
                const KeyCompare& key_comp, const Key& key)
     {
       SPATIAL_ASSERT_CHECK(!header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
-      SPATIAL_ASSERT_CHECK(dim < rank());
       for (;;)
         {
           if (node->right != 0
-              && !key_comp(dim, key, const_key(node)))
-            { node = node->right; dim = incr_dim(rank, dim); }
+              && !key_comp(depth % rank(), key, const_key(node)))
+            { node = node->right; ++depth; }
           else if (node->left != 0
-                   && !key_comp(dim, const_key(node), key))
-            { node = node->left; dim = incr_dim(rank, dim); }
+                   && !key_comp(depth % rank(), const_key(node), key))
+            { node = node->left; ++depth; }
           else break;
         }
       for (;;)
@@ -105,214 +105,108 @@ namespace spatial
                                    || key_comp(test, const_key(node), key));
               ++test);
           if (test == rank())
-            { return std::make_pair(node, dim); }
-          NodePtr copy_node = node;
-          dimension_type copy_dim = dim;
-          node = node->parent;
-          dim = decr_dim(rank, dim);
+            { return std::make_pair(node, depth); }
+          NodePtr prev_node = node;
+          node = node->parent; --depth;
           if (header(node))
-            { return std::make_pair(node, dim); }
-          if (node->right == copy_node && node->left != 0
-              && !key_comp(dim, const_key(node), key))
+            { return std::make_pair(node, depth); }
+          if (node->right == prev_node && node->left != 0
+              && !key_comp(depth % rank(), const_key(node), key))
             {
-              node = node->left;
-              dim = copy_dim;
+              node = node->left; ++depth;
               for (;;)
                 {
                   if (node->right != 0
-                      && !key_comp(dim, key, const_key(node)))
-                    { node = node->right; dim = incr_dim(rank, dim); }
+                      && !key_comp(depth % rank(), key, const_key(node)))
+                    { node = node->right; ++depth; }
                   else if (node->left != 0
-                           && !key_comp(dim, const_key(node), key))
-                    { node = node->left; dim = incr_dim(rank, dim); }
+                           && !key_comp(depth % rank(), const_key(node), key))
+                    { node = node->left; ++depth; }
                   else break;
                 }
             }
         }
     }
 
-    template <typename NodePtr, typename Rank, typename Query>
+    template <typename NodePtr, typename Rank, typename KeyCompare,
+              typename Key>
     inline std::pair<NodePtr, dimension_type>
-    increment_equal(NodePtr node, dimension_type dim, Rank rank,
-                       const Query& query)
+    increment_equal(NodePtr node, dimension_type depth, const Rank rank,
+                    const KeyCompare& key_comp, const Key& key)
     {
       SPATIAL_ASSERT_CHECK(!header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
-      SPATIAL_ASSERT_CHECK(dim < rank());
-      do
+      for (;;)
         {
-          if (node->left != 0 && left_traversal(node, dim, query))
-            {
-              node = node->left;
-              dim = incr_dim(rank, dim);
-            }
-          else if (node->right != 0 && right_traversal(node, dim, query))
-            {
-              node = node->right;
-              dim = incr_dim(rank, dim);
-            }
+          if (node->left != 0
+              && !key_comp(depth % rank(), const_key(node), key))
+            { node = node->left; ++depth; }
+          else if (node->right != 0
+                   && !key_comp(depth % rank(), key, const_key(node)))
+            { node = node->right; ++depth; }
           else
             {
               NodePtr prev_node = node;
-              node = node->parent;
-              dim = decr_dim(rank, dim);
+              node = node->parent; --depth;
               while (!header(node)
                      && (prev_node == node->right
                          || node->right == 0
-                         || !right_traversal(node, dim, query)))
+                         || key_comp(depth % rank(), key, const_key(node))))
                 {
                   prev_node = node;
-                  node = node->parent;
-                  dim = decr_dim(rank, dim);
+                  node = node->parent; --depth;
                 }
               if (!header(node))
-                {
-                  node = node->right;
-                  dim = incr_dim(rank, dim);
-                }
-              else break;
+                { node = node->right; ++depth; }
+              else { return std::make_pair(node, depth); }
             }
+          dimension_type test = 0;
+          for(; test < rank() && !(key_comp(test, key, const_key(node))
+                                   || key_comp(test, const_key(node), key));
+              ++test);
+          if (test == rank())
+            { return std::make_pair(node, depth); }
         }
-      while (!stop_traversal(node, rank, query));
-      SPATIAL_ASSERT_CHECK(dim < rank());
-      SPATIAL_ASSERT_CHECK(node != 0);
-      return std::make_pair(node, dim);
     }
 
-    template <typename NodePtr, typename Rank, typename Query>
+    template <typename NodePtr, typename Rank, typename KeyCompare,
+              typename Key>
     inline std::pair<NodePtr, dimension_type>
-    decrement_equal(NodePtr node, dimension_type dim, Rank rank,
-                       const Query& query)
+    decrement_equal(NodePtr node, dimension_type depth, const Rank rank,
+                    const KeyCompare& key_comp, const Key& key)
     {
       if (header(node))
-        { return preorder_last(node->parent, 0, rank, query); }
+        { return last_equal(node->parent, 0, rank, key_comp, key); }
       SPATIAL_ASSERT_CHECK(node != 0);
-      SPATIAL_ASSERT_CHECK(dim < rank());
-      NodePtr copy_node = node;
-      dimension_type copy_dim = dim;
-      node = node->parent;
-      dim = decr_dim(rank, dim);
+      NodePtr prev_node = node;
+      node = node->parent; --depth;
       while (!header(node))
         {
-          if (node->right == copy_node
-              && node->left != 0 && left_traversal(node, dim, query))
+          if (node->right == prev_node && node->left != 0
+              && !key_comp(depth % rank(), const_key(node), key))
             {
-              node = node->left;
-              dim = copy_dim;
+              node = node->left; ++depth;
               for (;;)
                 {
-                  if (node->right != 0 && right_traversal(node, dim, query))
-                    {
-                      node = node->right;
-                      dim = incr_dim(rank, dim);
-                    }
-                  else if (node->left != 0 && left_traversal(node, dim, query))
-                    {
-                      node = node->left;
-                      dim = incr_dim(rank, dim);
-                    }
+                  if (node->right != 0
+                      && !key_comp(depth % rank(), key, const_key(node)))
+                    { node = node->right; ++depth; }
+                  else if (node->left != 0
+                           && !key_comp(depth % rank(), const_key(node), key))
+                    { node = node->left; ++depth; }
                   else break;
                 }
             }
-          if (stop_traversal(node, rank, query)) break;
-          copy_node = node;
-          copy_dim = dim;
-          node = node->parent;
-          dim = decr_dim(rank, dim);
+          dimension_type test = 0;
+          for(; test < rank() && !(key_comp(test, key, const_key(node))
+                                   || key_comp(test, const_key(node), key));
+              ++test);
+          if (test == rank()) break;
+          prev_node = node;
+          node = node->parent; --depth;
         }
-      SPATIAL_ASSERT_CHECK(dim < rank());
-      SPATIAL_ASSERT_CHECK(node != 0);
-      return std::make_pair(node, dim);
+      return std::make_pair(node, depth);
     }
-
-
-  } // namespace details
-
-  namespace details
-  {
-    template <typename Container>
-    struct Equal : private Container::key_compare // empty member optimization
-    {
-      Equal() { }
-
-      Equal(const typename Container::key_compare& cmp,
-            const typename Container::key_type& value_)
-        : Container::key_compare(cmp), value(value_) { }
-
-      typename Container::key_compare key_comp() const
-      { return *static_cast<const typename Container::key_compare*>(this); }
-
-      typename Container::key_type value;
-    };
-
-    template <typename Container>
-    inline bool
-    right_traversal(typename Container::mode_type::const_node_ptr node,
-                    dimension_type dim,
-                    const Equal<Container>& equal)
-    {
-      return !equal.key_comp()(dim, equal.value, const_key(node));
-    }
-
-    /**
-     *  Return a boolean indicating whether all of \c x's coordinates are
-     *  equal to \c y's coordinates.
-     *
-     *  The key at \c node y are tested across all dimensions using the
-     *  comparator \c equal provided by a container.
-     *  \tparam Rank Either \static_rank or \dynamic_rank.
-     *  \tparam Key A key type defined in the container as the \c Compare.
-     *  \tparam Compare A \trivial_compare type defined in the same
-     *  container as \c Key.
-     *  \param rank The magnitude of the rank.
-     *  \param node A pointer to the node being inspected.
-     *  \param equal A functor with all parameters for the query
-     */
-    template <typename Container>
-    inline bool
-    stop_traversal(typename Container::mode_type::const_node_ptr node,
-                    typename Container::rank_type rank,
-                    const Equal<Container>& equal)
-    {
-      dimension_type i = 0;
-      for (; i < rank()
-             && !equal.key_comp()(i, const_key(node), equal.value)
-             && !equal.key_comp()(i, equal.value, const_key(node));
-           ++i) { }
-      return (i == rank());
-    }
-
-    template <typename Container>
-    inline bool
-    left_traversal(typename Container::mode_type::const_node_ptr node,
-                   dimension_type dim,
-                   const Equal<Container>& equal,
-                   relaxed_invariant_tag)
-    {
-      return !equal.key_comp()(dim, const_key(node), equal.value);
-    }
-
-    template <typename Container>
-    inline bool
-    left_traversal(typename Container::mode_type::const_node_ptr node,
-                   dimension_type dim,
-                   const Equal<Container>& equal,
-                   strict_invariant_tag)
-    {
-      return equal.key_comp()(dim, equal.value, const_key(node));
-    }
-
-    template <typename Container>
-    inline bool
-    left_traversal(typename Container::mode_type::const_node_ptr node,
-                   dimension_type dim,
-                   const Equal<Container>& equal)
-    {
-      return left_traversal
-        (node, dim, equal,
-         typename Container::mode_type::invariant_category());
-    }
-
   } // namespace details
 
   /**
@@ -359,13 +253,13 @@ namespace spatial
      *  bounded by \Olog when the container is perfectly balanced.
      *
      *  \param container The container being iterated.
-     *  \param value_ The key to look for.
+     *  \param value The key to look for.
      *  \param iter An iterator on the type Ct.
      */
-    equal_iterator(Container& container, const key_type& value_,
+    equal_iterator(Container& container, const key_type& value,
                    typename container_traits<Container>::iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        _query(container.key_comp(), value_) { }
+        _data(container.key_comp(), value) { }
 
     /**
      *  Build an equal iterator from the node and current dimension of a
@@ -380,15 +274,15 @@ namespace spatial
      *  performance of your application in any major way.
      *
      *  \param container The container being iterated.
-     *  \param value_ The key to look for.
+     *  \param value The key to look for.
      *  \param ptr An iterator on the type Ct.
      *  \param dim The node's dimension for the node pointed to by node.
      *  \param container The container being iterated.
      */
     equal_iterator
-    (Container& container, const key_type& value_, dimension_type dim,
+    (Container& container, const key_type& value, dimension_type dim,
      typename container_traits<Container>::mode_type::node_ptr ptr)
-      : Base(container.rank(), ptr, dim), _query(container.key_comp(), value_)
+      : Base(container.rank(), ptr, dim), _data(container.key_comp(), value)
     { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
@@ -396,7 +290,7 @@ namespace spatial
     equal_iterator<Container>& operator++()
     {
       import::tie(node, node_dim)
-        = preorder_increment(node, node_dim, rank(), _query);
+        = increment_equal(node, node_dim, rank(), _data.base(), _data());
       return *this;
     }
 
@@ -406,7 +300,7 @@ namespace spatial
     {
       equal_iterator<Container> x(*this);
       import::tie(node, node_dim)
-        = preorder_increment(node, node_dim, rank(), _query);
+        = increment_equal(node, node_dim, rank(), _data.base(), _data());
       return x;
     }
 
@@ -415,7 +309,7 @@ namespace spatial
     equal_iterator<Container>& operator--()
     {
       import::tie(node, node_dim)
-        = preorder_decrement(node, node_dim, rank(), _query);
+        = decrement_equal(node, node_dim, rank(), _data.base(), _data());
       return *this;
     }
 
@@ -425,19 +319,19 @@ namespace spatial
     {
       equal_iterator<Container> x(*this);
       import::tie(node, node_dim)
-        = preorder_decrement(node, node_dim, rank(), _query);
+        = decrement_equal(node, node_dim, rank(), _data.base(), _data());
       return x;
     }
 
     //! Return the value of key used to find equal keys in the container.
-    key_type value() const { return _query.value; }
+    key_type value() const { return _data(); }
 
     //! Return the functor used to compare keys in this iterator.
-    key_compare key_comp() const { return _query.key_comp(); }
+    key_compare key_comp() const { return _data.base(); }
 
   private:
     //! The model key used to find equal keys in the container.
-    details::Equal<Container> _query;
+    details::Compress<key_compare, key_type> _data;
   };
 
   /**
@@ -485,13 +379,13 @@ namespace spatial
      *  bounded by \Olog when the container is perfectly balanced.
      *
      *  \param container The container being iterated.
-     *  \param value_ The key to look for.
+     *  \param value The key to look for.
      *  \param iter An iterator from the container.
      */
-    equal_iterator(const Container& container, const key_type& value_,
+    equal_iterator(const Container& container, const key_type& value,
                    typename container_traits<Container>::const_iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
-        _query(container.key_comp(), value_) { }
+        _data(container.key_comp(), value) { }
 
     /**
      *  Build an equal iterator from the node and current dimension of a
@@ -503,28 +397,28 @@ namespace spatial
      *  dimension does not have to be calculated.
      *
      *  \param container The container being iterated.
-     *  \param value_ The key to look for.
+     *  \param value The key to look for.
      *  \param dim The dimension associated with \c ptr when checking the
      *  invariant in \c container.
      *  \param ptr A pointer to a node belonging to \c container.
      */
     equal_iterator
-    (const Container& container, const key_type& value_, dimension_type dim,
+    (const Container& container, const key_type& value, dimension_type dim,
      typename container_traits<Container>::mode_type::const_node_ptr ptr)
-      : Base(container.rank(), ptr, dim), _query(container.key_comp(), value_)
+      : Base(container.rank(), ptr, dim), _data(container.key_comp(), value)
     { }
 
     //! Convertion of an iterator into a const_iterator is permitted.
     equal_iterator(const equal_iterator<Container>& iter)
       : Base(iter.rank(), iter.node, iter.node_dim),
-        _query(iter.key_comp(), iter.value()) { }
+        _data(iter.key_comp(), iter.value()) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
     equal_iterator<const Container>& operator++()
     {
       import::tie(node, node_dim)
-        = preorder_increment(node, node_dim, rank(), _query);
+        = increment_equal(node, node_dim, rank(), _data.base(), _data());
       return *this;
     }
 
@@ -534,7 +428,7 @@ namespace spatial
     {
       equal_iterator<const Container> x(*this);
       import::tie(node, node_dim)
-        = preorder_increment(node, node_dim, rank(), _query);
+        = increment_equal(node, node_dim, rank(), _data.base(), _data());
       return x;
     }
 
@@ -543,7 +437,7 @@ namespace spatial
     equal_iterator<const Container>& operator--()
     {
       import::tie(node, node_dim)
-        = preorder_decrement(node, node_dim, rank(), _query);
+        = decrement_equal(node, node_dim, rank(), _data.base(), _data());
       return *this;
     }
 
@@ -553,19 +447,19 @@ namespace spatial
     {
       equal_iterator<const Container> x(*this);
       import::tie(node, node_dim)
-        = preorder_decrement(node, node_dim, rank(), _query);
+        = preorder_decrement(node, node_dim, rank(), _data.base(), _data());
       return x;
     }
 
     //! Returns the value used to find equivalent keys in the container.
-    key_type value() const { return _query.value; }
+    key_type value() const { return _data(); }
 
     //! Returns the functor used to compare keys in this iterator.
-    key_compare key_comp() const { return _query.key_comp(); }
+    key_compare key_comp() const { return _data.base(); }
 
   private:
     //! The model key used to find equal keys in the container.
-    details::Equal<Container> _query;
+    details::Compress<key_compare, key_type> _data;
   };
 
   template <typename Container>
