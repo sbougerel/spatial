@@ -714,29 +714,17 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(target_node != 0);
       SPATIAL_ASSERT_CHECK(target_node->right == 0);
       SPATIAL_ASSERT_CHECK(target_node->left == 0);
+      const key_type& target_key = const_key(target_node);
       node_ptr node = get_root();
       dimension_type node_dim = 0;
-      if (header(node))
-        {
-          SPATIAL_ASSERT_CHECK(_impl._count() == 0);
-          target_node->parent = get_header();
-          set_root(target_node);
-          set_leftmost(target_node);
-          set_rightmost(target_node);
-          ++_impl._count();
-        }
-      else
+      if (!header(node))
         {
           while (true)
             {
-              if (key_comp()(node_dim,
-                             const_key(target_node), const_key(node)))
+              if (key_comp()(node_dim % rank()(), target_key, const_key(node)))
                 {
                   if (node->left != 0)
-                    {
-                      node = node->left;
-                      node_dim = incr_dim(rank(), node_dim);
-                    }
+                    { node = node->left; ++node_dim; }
                   else
                     {
                       node->left = target_node;
@@ -749,10 +737,7 @@ namespace spatial
               else
                 {
                   if (node->right != 0)
-                    {
-                      node = node->right;
-                      node_dim = incr_dim(rank(), node_dim);
-                    }
+                    { node = node->right; ++node_dim; }
                   else
                     {
                       node->right = target_node;
@@ -764,6 +749,15 @@ namespace spatial
                     }
                 }
             }
+        }
+      else
+        {
+          SPATIAL_ASSERT_CHECK(_impl._count() == 0);
+          target_node->parent = get_header();
+          set_root(target_node);
+          set_leftmost(target_node);
+          set_rightmost(target_node);
+          ++_impl._count();
         }
       SPATIAL_ASSERT_CHECK(empty() == false);
       SPATIAL_ASSERT_CHECK(_impl._count() != 0);
