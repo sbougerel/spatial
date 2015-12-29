@@ -20,7 +20,7 @@
 #include "spatial_rank.hpp"
 #include "spatial_except.hpp"
 #include "spatial_compress.hpp"
-#include "spatial_preorder.hpp"
+#include "spatial_import_tuple.hpp"
 
 namespace spatial
 {
@@ -90,11 +90,11 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(node != 0);
       for (;;)
         {
-          if (node->right != 0
-              && !key_comp(depth % rank(), key, const_key(node)))
+          if (!key_comp(depth % rank(), key, const_key(node))
+              && node->right != 0)
             { node = node->right; ++depth; }
-          else if (node->left != 0
-                   && !key_comp(depth % rank(), const_key(node), key))
+          else if (!key_comp(depth % rank(), const_key(node), key)
+                   && node->left != 0)
             { node = node->left; ++depth; }
           else break;
         }
@@ -110,17 +110,18 @@ namespace spatial
           node = node->parent; --depth;
           if (header(node))
             { return std::make_pair(node, depth); }
-          if (node->right == prev_node && node->left != 0
-              && !key_comp(depth % rank(), const_key(node), key))
+          if (node->right == prev_node
+              && !key_comp(depth % rank(), const_key(node), key)
+              && node->left != 0)
             {
               node = node->left; ++depth;
               for (;;)
                 {
-                  if (node->right != 0
-                      && !key_comp(depth % rank(), key, const_key(node)))
+                  if (!key_comp(depth % rank(), key, const_key(node))
+                      && node->right != 0)
                     { node = node->right; ++depth; }
-                  else if (node->left != 0
-                           && !key_comp(depth % rank(), const_key(node), key))
+                  else if (!key_comp(depth % rank(), const_key(node), key)
+                           && node->left != 0)
                     { node = node->left; ++depth; }
                   else break;
                 }
@@ -138,11 +139,11 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(node != 0);
       for (;;)
         {
-          if (node->left != 0
-              && !key_comp(depth % rank(), const_key(node), key))
+          if (!key_comp(depth % rank(), const_key(node), key)
+              && node->left != 0)
             { node = node->left; ++depth; }
-          else if (node->right != 0
-                   && !key_comp(depth % rank(), key, const_key(node)))
+          else if (!key_comp(depth % rank(), key, const_key(node))
+                   && node->right != 0)
             { node = node->right; ++depth; }
           else
             {
@@ -150,8 +151,8 @@ namespace spatial
               node = node->parent; --depth;
               while (!header(node)
                      && (prev_node == node->right
-                         || node->right == 0
-                         || key_comp(depth % rank(), key, const_key(node))))
+                         || key_comp(depth % rank(), key, const_key(node))
+                         || node->right == 0))
                 {
                   prev_node = node;
                   node = node->parent; --depth;
@@ -182,17 +183,18 @@ namespace spatial
       node = node->parent; --depth;
       while (!header(node))
         {
-          if (node->right == prev_node && node->left != 0
-              && !key_comp(depth % rank(), const_key(node), key))
+          if (node->right == prev_node
+              && !key_comp(depth % rank(), const_key(node), key)
+              && node->left != 0)
             {
               node = node->left; ++depth;
               for (;;)
                 {
-                  if (node->right != 0
-                      && !key_comp(depth % rank(), key, const_key(node)))
+                  if (!key_comp(depth % rank(), key, const_key(node))
+                      && node->right != 0)
                     { node = node->right; ++depth; }
-                  else if (node->left != 0
-                           && !key_comp(depth % rank(), const_key(node), key))
+                  else if (!key_comp(depth % rank(), const_key(node), key)
+                           && node->left != 0)
                     { node = node->left; ++depth; }
                   else break;
                 }

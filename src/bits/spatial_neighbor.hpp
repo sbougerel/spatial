@@ -19,6 +19,7 @@
 #include "../metric.hpp"
 #include "../traits.hpp"
 #include "spatial_bidirectional.hpp"
+#include "spatial_compress.hpp"
 
 namespace spatial
 {
@@ -280,11 +281,23 @@ namespace spatial
     metric_type
     metric() const { return _data._target.base(); }
 
-    //! Read-only accessor to the last valid distance of the iterator
+    /**
+     *  Read-only accessor to the last valid distance of the iterator.
+     *
+     *  If the iterator is past-the-end (in other words, equal to an iterator
+     *  returned by \ref neighbor_end()), then the value returned by distance()
+     *  is undefined.
+     */
     const distance_type&
     distance() const { return _data._distance; }
 
-    //! Read/write accessor to the last valid distance of the iterator
+    /**
+     *  Read/write accessor to the last valid distance of the iterator.
+     *
+     *  If the iterator is past-the-end (in other words, equal to an iterator
+     *  returned by \ref neighbor_end()), then the value returned by distance()
+     *  is undefined.
+     */
     distance_type&
     distance() { return _data._distance; }
 
@@ -507,11 +520,23 @@ namespace spatial
     metric_type
     metric() const { return _data._target.base(); }
 
-    //! Read-only accessor to the last valid distance of the iterator
+    /**
+     *  Read-only accessor to the last valid distance of the iterator.
+     *
+     *  If the iterator is past-the-end (in other words, equal to an iterator
+     *  returned by \ref neighbor_end()), then the value returned by distance()
+     *  is undefined.
+     */
     distance_type
     distance() const { return _data._distance; }
 
-    //! Read/write accessor to the last valid distance of the iterator
+    /**
+     *  Read/write accessor to the last valid distance of the iterator.
+     *
+     *  If the iterator is past-the-end (in other words, equal to an iterator
+     *  returned by \ref neighbor_end()), then the value returned by distance()
+     *  is undefined.
+     */
     distance_type&
     distance() { return _data._distance; }
 

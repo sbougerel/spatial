@@ -6,10 +6,11 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
+#define SPATIAL_ENABLE_ASSERT // detect interal issues that should not occur
 
-#include "spatial_test_fixtures.hpp"
+#include <boost/test/unit_test.hpp>
 #include "../../src/equal_iterator.hpp"
+#include "spatial_test_fixtures.hpp"
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_equal_basics, Tp, every_quad)
 {

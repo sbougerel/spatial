@@ -21,8 +21,6 @@
 
 #include <boost/mpl/list.hpp>
 
-#define SPATIAL_ENABLE_ASSERT // detect interal issues that should not occur
-
 #include "spatial_test_types.hpp"
 #include "../../src/point_multiset.hpp"
 #include "../../src/idle_point_multiset.hpp"

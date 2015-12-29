@@ -6,6 +6,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #define BOOST_TEST_DYN_LINK
+#define SPATIAL_ENABLE_ASSERT // detect interal issues that should not occur
+
 #include <boost/test/unit_test.hpp>
 #include "../../src/point_multiset.hpp"
 #include "spatial_test_types.hpp"
