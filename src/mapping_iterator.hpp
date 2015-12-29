@@ -13,9 +13,7 @@
 #ifndef SPATIAL_MAPPING_ITERATOR_HPP
 #define SPATIAL_MAPPING_ITERATOR_HPP
 
-#include <utility> // std::pair
 #include "spatial.hpp"
-#include "traits.hpp"
 #include "bits/spatial_bidirectional.hpp"
 #include "bits/spatial_rank.hpp"
 #include "bits/spatial_except.hpp"
@@ -92,20 +90,20 @@ namespace spatial
   template<typename Ct>
   class mapping_iterator
     : public details::Bidirectional_iterator
-  <typename container_traits<Ct>::mode_type,
-   typename container_traits<Ct>::rank_type>
+  <typename Ct::mode_type,
+   typename Ct::rank_type>
   {
   private:
     typedef details::Bidirectional_iterator
-    <typename container_traits<Ct>::mode_type,
-     typename container_traits<Ct>::rank_type> Base;
+    <typename Ct::mode_type,
+     typename Ct::rank_type> Base;
 
   public:
     using Base::node;
     using Base::node_dim;
     using Base::rank;
 
-    typedef typename container_traits<Ct>::key_compare key_compare;
+    typedef typename Ct::key_compare key_compare;
 
     //! Uninitialized iterator.
     mapping_iterator() { }
@@ -121,7 +119,7 @@ namespace spatial
      *                     iteration.
      */
     mapping_iterator(Ct& container, dimension_type mapping_dim,
-                     typename container_traits<Ct>::iterator iter)
+                     typename Ct::iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
         _data(container.key_comp(), mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
@@ -150,7 +148,7 @@ namespace spatial
      */
     mapping_iterator(Ct& container, dimension_type mapping_dim,
                      dimension_type dim,
-                     typename container_traits<Ct>::mode_type::node_ptr ptr)
+                     typename Ct::mode_type::node_ptr ptr)
       : Base(container.rank(), ptr, dim),
         _data(container.key_comp(), mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
@@ -247,13 +245,13 @@ namespace spatial
   template<typename Ct>
   class mapping_iterator<const Ct>
     : public details::Const_bidirectional_iterator
-  <typename container_traits<Ct>::mode_type,
-   typename container_traits<Ct>::rank_type>
+  <typename Ct::mode_type,
+   typename Ct::rank_type>
   {
   private:
     typedef details::Const_bidirectional_iterator
-    <typename container_traits<Ct>::mode_type,
-     typename container_traits<Ct>::rank_type> Base;
+    <typename Ct::mode_type,
+     typename Ct::rank_type> Base;
 
   public:
     using Base::node;
@@ -261,7 +259,7 @@ namespace spatial
     using Base::rank;
 
     //! Alias for the key_compare type used by the iterator.
-    typedef typename container_traits<Ct>::key_compare key_compare;
+    typedef typename Ct::key_compare key_compare;
 
     //! Build an uninitialized iterator.
     mapping_iterator() { }
@@ -277,7 +275,7 @@ namespace spatial
      *  iteration.
      */
     mapping_iterator(const Ct& container, dimension_type mapping_dim,
-                     typename container_traits<Ct>::const_iterator iter)
+                     typename Ct::const_iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
         _data(container.key_comp(), mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
@@ -309,7 +307,7 @@ namespace spatial
      */
     mapping_iterator
     (const Ct& container, dimension_type mapping_dim, dimension_type dim,
-     typename container_traits<Ct>::mode_type::const_node_ptr ptr)
+     typename Ct::mode_type::const_node_ptr ptr)
       : Base(container.rank(), ptr, dim),
         _data(container.key_comp(), mapping_dim)
     { except::check_dimension(container.dimension(), mapping_dim); }
@@ -678,7 +676,7 @@ namespace spatial
   template <typename Container>
   inline mapping_iterator<Container>
   mapping_lower_bound(Container& container, dimension_type mapping_dim,
-                      const typename container_traits<Container>::key_type&
+                      const typename Container::key_type&
                       bound)
   {
     if (container.empty()) return mapping_end(container, mapping_dim);
@@ -696,7 +694,7 @@ namespace spatial
   inline mapping_iterator<const Container>
   mapping_clower_bound
   (const Container& container, dimension_type mapping_dim,
-   const typename container_traits<Container>::key_type& bound)
+   const typename Container::key_type& bound)
   { return mapping_lower_bound(container, mapping_dim, bound); }
   ///@}
 
@@ -729,7 +727,7 @@ namespace spatial
   inline mapping_iterator<Container>
   mapping_upper_bound
   (Container& container, dimension_type mapping_dim,
-   const typename container_traits<Container>::key_type& bound)
+   const typename Container::key_type& bound)
   {
     if (container.empty()) return mapping_end(container, mapping_dim);
     except::check_dimension(container.dimension(), mapping_dim);
@@ -746,7 +744,7 @@ namespace spatial
   inline mapping_iterator<const Container>
   mapping_cupper_bound
   (const Container& container, dimension_type mapping_dim,
-   const typename container_traits<Container>::key_type& bound)
+   const typename Container::key_type& bound)
   { return mapping_upper_bound(container, mapping_dim, bound); }
   ///@}
 

@@ -28,6 +28,8 @@ namespace spatial
     first_equal(NodePtr node, dimension_type depth, const Rank rank,
                 const KeyCompare& key_comp, const Key& key)
     {
+      SPATIAL_ASSERT_CHECK(!header(node));
+      SPATIAL_ASSERT_CHECK(node != 0);
       // Write in pre-order fashion
       NodePtr end = node->parent;
       dimension_type end_depth = depth - 1;
@@ -74,136 +76,6 @@ namespace spatial
             { node = node->left; ++depth; }
           else { return std::make_pair(end, end_depth); }
         }
-    }
-
-    template <typename NodePtr, typename Rank, typename KeyCompare,
-              typename Key>
-    inline std::pair<NodePtr, dimension_type>
-    last_equal(NodePtr node, dimension_type depth, const Rank rank,
-               const KeyCompare& key_comp, const Key& key)
-    {
-      SPATIAL_ASSERT_CHECK(!header(node));
-      SPATIAL_ASSERT_CHECK(node != 0);
-      for (;;)
-        {
-          if (!key_comp(depth % rank(), key, const_key(node))
-              && node->right != 0)
-            { node = node->right; ++depth; }
-          else if (!key_comp(depth % rank(), const_key(node), key)
-                   && node->left != 0)
-            { node = node->left; ++depth; }
-          else break;
-        }
-      for (;;)
-        {
-          dimension_type test = 0;
-          for(; test < rank() && !(key_comp(test, key, const_key(node))
-                                   || key_comp(test, const_key(node), key));
-              ++test);
-          if (test == rank())
-            { return std::make_pair(node, depth); }
-          NodePtr prev_node = node;
-          node = node->parent; --depth;
-          if (header(node))
-            { return std::make_pair(node, depth); }
-          if (node->right == prev_node
-              && !key_comp(depth % rank(), const_key(node), key)
-              && node->left != 0)
-            {
-              node = node->left; ++depth;
-              for (;;)
-                {
-                  if (!key_comp(depth % rank(), key, const_key(node))
-                      && node->right != 0)
-                    { node = node->right; ++depth; }
-                  else if (!key_comp(depth % rank(), const_key(node), key)
-                           && node->left != 0)
-                    { node = node->left; ++depth; }
-                  else break;
-                }
-            }
-        }
-    }
-
-    template <typename NodePtr, typename Rank, typename KeyCompare,
-              typename Key>
-    inline std::pair<NodePtr, dimension_type>
-    increment_equal(NodePtr node, dimension_type depth, const Rank rank,
-                    const KeyCompare& key_comp, const Key& key)
-    {
-      SPATIAL_ASSERT_CHECK(!header(node));
-      SPATIAL_ASSERT_CHECK(node != 0);
-      for (;;)
-        {
-          if (!key_comp(depth % rank(), const_key(node), key)
-              && node->left != 0)
-            { node = node->left; ++depth; }
-          else if (!key_comp(depth % rank(), key, const_key(node))
-                   && node->right != 0)
-            { node = node->right; ++depth; }
-          else
-            {
-              NodePtr prev_node = node;
-              node = node->parent; --depth;
-              while (!header(node)
-                     && (prev_node == node->right
-                         || key_comp(depth % rank(), key, const_key(node))
-                         || node->right == 0))
-                {
-                  prev_node = node;
-                  node = node->parent; --depth;
-                }
-              if (!header(node))
-                { node = node->right; ++depth; }
-              else { return std::make_pair(node, depth); }
-            }
-          dimension_type test = 0;
-          for(; test < rank() && !(key_comp(test, key, const_key(node))
-                                   || key_comp(test, const_key(node), key));
-              ++test);
-          if (test == rank())
-            { return std::make_pair(node, depth); }
-        }
-    }
-
-    template <typename NodePtr, typename Rank, typename KeyCompare,
-              typename Key>
-    inline std::pair<NodePtr, dimension_type>
-    decrement_equal(NodePtr node, dimension_type depth, const Rank rank,
-                    const KeyCompare& key_comp, const Key& key)
-    {
-      if (header(node))
-        { return last_equal(node->parent, 0, rank, key_comp, key); }
-      SPATIAL_ASSERT_CHECK(node != 0);
-      NodePtr prev_node = node;
-      node = node->parent; --depth;
-      while (!header(node))
-        {
-          if (node->right == prev_node
-              && !key_comp(depth % rank(), const_key(node), key)
-              && node->left != 0)
-            {
-              node = node->left; ++depth;
-              for (;;)
-                {
-                  if (!key_comp(depth % rank(), key, const_key(node))
-                      && node->right != 0)
-                    { node = node->right; ++depth; }
-                  else if (!key_comp(depth % rank(), const_key(node), key)
-                           && node->left != 0)
-                    { node = node->left; ++depth; }
-                  else break;
-                }
-            }
-          dimension_type test = 0;
-          for(; test < rank() && !(key_comp(test, key, const_key(node))
-                                   || key_comp(test, const_key(node), key));
-              ++test);
-          if (test == rank()) break;
-          prev_node = node;
-          node = node->parent; --depth;
-        }
-      return std::make_pair(node, depth);
     }
 
   } // namespace details

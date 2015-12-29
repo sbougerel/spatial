@@ -190,6 +190,18 @@ namespace spatial
     preorder_increment(const Node<Link>* x);
 
     /**
+     *  Calculate the depth of a given node. The returned value is undefined if
+     *  the node is a header node.
+     */
+    template <typename Link> inline dimension_type
+    depth(const Node<Link>* x)
+    {
+      dimension_type d = 0;
+      while (!header(x)) { x = x->parent; ++d; }
+      return d - 1;
+    }
+
+    /**
      *  The category of invariants for a \kdtree node: strict or relaxed.
      *
      *  This tag is an indicator for one of the library's most central concepts:

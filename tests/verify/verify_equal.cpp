@@ -34,9 +34,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_equal_deference, Tp, double6_maps )
   Tp fix(1, same()); // insert 1 key containing (1.0, 1.0, 1.0...)
   double6 model; std::fill(model.begin(), model.end(), 1.0);
   equal_iterator<typename Tp::container_type>
-    a(fix.container, model, fix.container.begin());
+    a(fix.container, model, 0, fix.container.end().node->parent);
   equal_iterator<const typename Tp::container_type>
-    b(fix.container, model, fix.container.begin());
+    b(fix.container, model, 0, fix.container.end().node->parent);
   BOOST_CHECK((*a).first == fix.container.begin()->first);
   (*a).second = "some string";
   BOOST_CHECK(a->first == fix.container.begin()->first);

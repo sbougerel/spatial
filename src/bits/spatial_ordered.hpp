@@ -13,10 +13,8 @@
 #ifndef SPATIAL_ORDERED_HPP
 #define SPATIAL_ORDERED_HPP
 
-#include "../traits.hpp"
+#include <utility> // provides ::std::pair<>
 #include "spatial_bidirectional.hpp"
-#include "spatial_rank.hpp"
-#include "spatial_except.hpp"
 #include "spatial_import_tuple.hpp"
 
 namespace spatial
@@ -29,16 +27,15 @@ namespace spatial
    *  lowest to the highest value along a particular dimension. The key
    *  comparator of the container is used for comparision.
    */
-  template<typename Ct>
+  template<typename Container>
   class ordered_iterator
-    : public details::Bidirectional_iterator
-  <typename container_traits<Ct>::mode_type,
-   typename container_traits<Ct>::rank_type>
+    : public details::Bidirectional_iterator<typename Container::mode_type,
+                                             typename Container::rank_type>
   {
   private:
-    typedef details::Bidirectional_iterator
-    <typename container_traits<Ct>::mode_type,
-     typename container_traits<Ct>::rank_type> Base;
+    typedef details::Bidirectional_iterator<typename Container::mode_type,
+                                            typename Container::rank_type>
+    Base;
 
   public:
     using Base::node;
@@ -46,53 +43,42 @@ namespace spatial
     using Base::rank;
 
     //! Alias for the key_compare type used by the iterator.
-    typedef typename container_traits<Ct>::key_compare key_compare;
+    typedef typename Container::key_compare key_compare;
 
     //! Uninitialized iterator.
     ordered_iterator() { }
 
     /**
-     *  The standard way to build this iterator: specify a ordered dimension, an
-     *  iterator on a container, and that container.
+     *  This constructor provides a convert a container's iterator into an
+     *  ordered iterator pointing at the same node.
      *
      *  \param container   The container to iterate.
      *  \param iter        Use the value of \c iter as the start point for the
      *                     iteration.
      */
-    ordered_iterator(Ct& container,
-                     typename container_traits<Ct>::iterator iter)
-      : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
+    ordered_iterator(Container& container,
+                     typename Container::iterator iter)
+      : Base(container.rank(), iter.node, depth(iter.node)),
         _cmp(container.key_comp())
     { }
 
     /**
-     *  When the information of the dimension for the current node being
-     *  pointed to by the iterator is known, this function saves some CPU
-     *  cycle, by comparison to the other.
-     *
-     *  In order to iterate through nodes in the \kdtree built in the
-     *  container, the algorithm must know at each node which dimension is
-     *  used to partition the space. Some algorithms will provide this
-     *  dimension, such as the function \ref spatial::details::modulo().
-     *
-     *  \attention Specifying the incorrect dimension value for the node will
-     *  result in unknown behavior. It is recommended that you do not use this
-     *  constructor if you are not sure about this dimension, and use the
-     *  other constructors instead.
+     *  This constructor builds an ordered iterator from a container's node
+     *  and its related depth.
      *
      *  \param container The container to iterate.
-     *  \param dim The dimension of the node pointed to by iterator.
-     *  \param ptr Use the value of node as the start point for the
-     *             iteration.
+     *  \param depth     The depth of the node pointed to by iterator.
+     *  \param ptr       Use the value of node as the start point for the
+     *                   iteration.
      */
-    ordered_iterator(Ct& container, dimension_type dim,
-                     typename container_traits<Ct>::mode_type::node_ptr ptr)
-      : Base(container.rank(), ptr, dim), _cmp(container.key_comp())
+    ordered_iterator(Container& container, dimension_type depth,
+                     typename Container::mode_type::node_ptr ptr)
+      : Base(container.rank(), ptr, depth), _cmp(container.key_comp())
     { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
-    ordered_iterator<Ct>& operator++()
+    ordered_iterator<Container>& operator++()
     {
       spatial::import::tie(node, node_dim)
         = increment_ordered(node, node_dim, rank(), key_comp());
@@ -101,9 +87,9 @@ namespace spatial
 
     //! Increments the iterator but returns the value of the iterator before
     //! the increment. Prefer to use the other form in \c for loops.
-    ordered_iterator<Ct> operator++(int)
+    ordered_iterator<Container> operator++(int)
     {
-      ordered_iterator<Ct> x(*this);
+      ordered_iterator<Container> x(*this);
       spatial::import::tie(node, node_dim)
         = increment_ordered(node, node_dim, rank(), key_comp());
       return x;
@@ -111,7 +97,7 @@ namespace spatial
 
     //! Decrements the iterator and returns the decremented value. Prefer to
     //! use this form in \c for loops.
-    ordered_iterator<Ct>& operator--()
+    ordered_iterator<Container>& operator--()
     {
       spatial::import::tie(node, node_dim)
         = decrement_ordered(node, node_dim, rank(), key_comp());
@@ -120,9 +106,9 @@ namespace spatial
 
     //! Decrements the iterator but returns the value of the iterator before
     //! the decrement. Prefer to use the other form in \c for loops.
-    ordered_iterator<Ct> operator--(int)
+    ordered_iterator<Container> operator--(int)
     {
-      ordered_iterator<Ct> x(*this);
+      ordered_iterator<Container> x(*this);
       spatial::import::tie(node, node_dim)
         = decrement_ordered(node, node_dim, rank(), key_comp());
       return x;
@@ -144,16 +130,15 @@ namespace spatial
    *
    *  Object deferenced by this iterator are always constant.
    */
-  template<typename Ct>
-  class ordered_iterator<const Ct>
-    : public details::Const_bidirectional_iterator
-  <typename container_traits<Ct>::mode_type,
-   typename container_traits<Ct>::rank_type>
+  template<typename Container>
+  class ordered_iterator<const Container>
+    : public details::Const_bidirectional_iterator<typename Container::mode_type,
+                                                   typename Container::rank_type>
   {
   private:
-    typedef details::Const_bidirectional_iterator
-    <typename container_traits<Ct>::mode_type,
-     typename container_traits<Ct>::rank_type> Base;
+    typedef details::Const_bidirectional_iterator<typename Container::mode_type,
+                                                  typename Container::rank_type>
+    Base;
 
   public:
     using Base::node;
@@ -161,58 +146,48 @@ namespace spatial
     using Base::rank;
 
     //! Alias for the key_compare type used by the iterator.
-    typedef typename container_traits<Ct>::key_compare key_compare;
+    typedef typename Container::key_compare key_compare;
 
     //! Build an uninitialized iterator.
     ordered_iterator() { }
 
     /**
-     *  The standard way to build this iterator: specify a ordered dimension,
-     *  an iterator on a container, and that container.
+     *  This constructor provides a convert a container's iterator into an
+     *  ordered iterator pointing at the same node.
      *
-     *  \param container The container to iterate.
-     *  \param iter Use the iterator \c iter as the start point for the
-     *  iteration.
+     *  \param container   The container to iterate.
+     *  \param iter        Use the value of \c iter as the start point for the
+     *                     iteration.
      */
-    ordered_iterator(const Ct& container,
-                     typename container_traits<Ct>::const_iterator iter)
-      : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
+    ordered_iterator(const Container& container,
+                     typename Container::const_iterator iter)
+      : Base(container.rank(), iter.node, depth(iter.node)),
         _cmp(container.key_comp())
     { }
 
     /**
-     *  When the information of the dimension for the current node being
-     *  pointed to by the iterator is known, this function saves some CPU
-     *  cycle, by comparison to the other.
+     *  This constructor builds an ordered iterator from a container's node
+     *  and its related depth.
      *
      *  \param container The container to iterate.
-     *  \param dim The dimension of the node pointed to by iterator.
-     *  \param ptr Use \c node as the start point for the iteration.
-     *
-     *  In order to iterate through nodes in the \kdtree built in the
-     *  container, the algorithm must know at each node which dimension is
-     *  used to partition the space. Some algorithms will provide this
-     *  dimension, such as the function \ref spatial::details::modulo().
-     *
-     *  \attention Specifying the incorrect dimension value for the node will
-     *  result in unknown behavior. It is recommended that you do not use this
-     *  constructor if you are not sure about this dimension, and use the
-     *  other constructors instead.
+     *  \param depth     The depth of the node pointed to by iterator.
+     *  \param ptr       Use the value of node as the start point for the
+     *                   iteration.
      */
     ordered_iterator
-    (const Ct& container, dimension_type dim,
-     typename container_traits<Ct>::mode_type::const_node_ptr ptr)
-      : Base(container.rank(), ptr, dim), _cmp(container.key_comp())
+    (const Container& container, dimension_type depth,
+     typename Container::mode_type::const_node_ptr ptr)
+      : Base(container.rank(), ptr, depth), _cmp(container.key_comp())
     { }
 
     //! Convertion of mutable iterator into a constant iterator is permitted.
-    ordered_iterator(const ordered_iterator<Ct>& iter)
+    ordered_iterator(const ordered_iterator<Container>& iter)
       : Base(iter.rank(), iter.node, iter.node_dim), _cmp(iter.key_comp())
     { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
-    ordered_iterator<const Ct>& operator++()
+    ordered_iterator<const Container>& operator++()
     {
       spatial::import::tie(node, node_dim)
         = increment_ordered(node, node_dim, rank(), key_comp());
@@ -221,9 +196,9 @@ namespace spatial
 
     //! Increments the iterator but returns the value of the iterator before
     //! the increment. Prefer to use the other form in \c for loops.
-    ordered_iterator<const Ct> operator++(int)
+    ordered_iterator<const Container> operator++(int)
     {
-      ordered_iterator<const Ct> x(*this);
+      ordered_iterator<const Container> x(*this);
       spatial::import::tie(node, node_dim)
         = increment_ordered(node, node_dim, rank(), key_comp());
       return x;
@@ -231,7 +206,7 @@ namespace spatial
 
     //! Decrements the iterator and returns the decremented value. Prefer to
     //! use this form in \c for loops.
-    ordered_iterator<const Ct>& operator--()
+    ordered_iterator<const Container>& operator--()
     {
       spatial::import::tie(node, node_dim)
         = decrement_ordered(node, node_dim, rank(), key_comp());
@@ -240,9 +215,9 @@ namespace spatial
 
     //! Decrements the iterator but returns the value of the iterator before
     //! the decrement. Prefer to use the other form in \c for loops.
-    ordered_iterator<const Ct> operator--(int)
+    ordered_iterator<const Container> operator--(int)
     {
-      ordered_iterator<const Ct> x(*this);
+      ordered_iterator<const Container> x(*this);
       spatial::import::tie(node, node_dim)
         = decrement_ordered(node, node_dim, rank(), key_comp());
       return x;

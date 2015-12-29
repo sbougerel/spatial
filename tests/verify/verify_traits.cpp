@@ -9,6 +9,7 @@
 #define SPATIAL_ENABLE_ASSERT // detect interal issues that should not occur
 
 #include <boost/test/unit_test.hpp>
+#include "../../src/traits.hpp"
 #include "../../src/point_multiset.hpp"
 #include "../../src/idle_point_multiset.hpp"
 #include "spatial_test_types.hpp"
