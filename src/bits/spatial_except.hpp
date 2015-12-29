@@ -105,8 +105,8 @@ namespace spatial
      *  \exception invalid_empty_container is thrown if checks fails.
      *  \param cont the container that must not be empty.
      */
-    template<typename Tp>
-    inline void check_empty_container(const Tp& cont)
+    template<typename Container>
+    inline void check_empty_container(const Container& cont)
     {
       if (cont.empty())
         throw invalid_empty_container("container is empty");
@@ -124,11 +124,11 @@ namespace spatial
      *  This check is performed mainly upon creation of a \ref open_bounds
      *  predicate.
      */
-    template<typename Tp>
+    template<typename Container>
     inline void check_open_bounds
-    (const Tp& container,
-     const typename container_traits<Tp>::key_type& lower,
-     const typename container_traits<Tp>::key_type& upper)
+    (const Container& container,
+     const typename Container::key_type& lower,
+     const typename Container::key_type& upper)
     {
       for (dimension_type dim = 0; dim < container.dimension(); ++dim)
         if (!container.key_comp()(dim, lower, upper))
@@ -145,11 +145,11 @@ namespace spatial
      *  This check is performed mainly upon creation of a \ref bounds
      *  predicate.
      */
-    template<typename Tp>
+    template<typename Container>
     inline void check_bounds
-    (const Tp& container,
-     const typename container_traits<Tp>::key_type& lower,
-     const typename container_traits<Tp>::key_type& upper)
+    (const Container& container,
+     const typename Container::key_type& lower,
+     const typename Container::key_type& upper)
     {
         return check_open_bounds(container, lower, upper);
     }
@@ -163,11 +163,11 @@ namespace spatial
      *  This check is performed mainly upon creation of a \ref
      *  closed_bounds predicate.
      */
-    template<typename Tp>
+    template<typename Container>
     inline void check_closed_bounds
-    (const Tp& container,
-     const typename container_traits<Tp>::key_type& lower,
-     const typename container_traits<Tp>::key_type& upper)
+    (const Container& container,
+     const typename Container::key_type& lower,
+     const typename Container::key_type& upper)
     {
       for (dimension_type dim = 0; dim < container.dimension(); ++dim)
         if (container.key_comp()(dim, upper, lower))
@@ -185,10 +185,10 @@ namespace spatial
      *  \param container that could be used to store the box
      *  \param box the box that must be checked.
      */
-    template <typename Tp>
+    template <typename Container>
     inline void check_box
-    (const Tp& container,
-     const typename container_traits<Tp>::key_type& box,
+    (const Container& container,
+     const typename Container::key_type& box,
      llhh_layout_tag)
     {
       dimension_type rank = container.dimension() >> 1;
@@ -198,10 +198,10 @@ namespace spatial
             ("box does not follow specified layout or coordinates are invalid");
     }
 
-    template <typename Tp>
+    template <typename Container>
     inline void check_box
-    (const Tp& container,
-     const typename container_traits<Tp>::key_type& box,
+    (const Container& container,
+     const typename Container::key_type& box,
      hhll_layout_tag)
     {
       dimension_type rank = container.dimension() >> 1;
@@ -211,10 +211,10 @@ namespace spatial
             ("box does not follow specified layout or coordinates are invalid");
     }
 
-    template <typename Tp>
+    template <typename Container>
     inline void check_box
-    (const Tp& container,
-     const typename container_traits<Tp>::key_type& box,
+    (const Container& container,
+     const typename Container::key_type& box,
      lhlh_layout_tag)
     {
       for (dimension_type i = 0; i < container.dimension(); i += 2)
@@ -223,10 +223,10 @@ namespace spatial
             ("box does not follow specified layout or coordinates are invalid");
     }
 
-    template <typename Tp>
+    template <typename Container>
     inline void check_box
-    (const Tp& container,
-     const typename container_traits<Tp>::key_type& box,
+    (const Container& container,
+     const typename Container::key_type& box,
      hlhl_layout_tag)
     {
       for (dimension_type i = 0; i < container.dimension(); i += 2)
