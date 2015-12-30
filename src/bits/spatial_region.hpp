@@ -591,6 +591,54 @@ namespace spatial
       return true;
     }
 
+    template <typename NodePtr, typename Rank, typename Predicate>
+    inline std::pair<NodePtr, dimension_type>
+    region_first(NodePtr node, dimension_type depth, const Rank rank,
+                 const Predicate& pred)
+    {
+      NodePtr end = node->parent;
+      dimension_type end_depth = depth - 1;
+      SPATIAL_ASSERT_CHECK(!header(node));
+      SPATIAL_ASSERT_CHECK(node != 0);
+      for (;;)
+        {
+          dimension_type dim = depth % rank();
+          relative_order rel = pred(dim, rank(), const_key(node));
+          if (rel == matching)
+            {
+              dimension_type test = 0;
+              for (; test < dim
+                     && pred(test, rank(), const_key(node)) == matching;
+                   ++test);
+              if (test == dim)
+                {
+                  test = dim + 1;
+                  for (; test < rank()
+                         && pred(test, rank(), const_key(node)) == matching;
+                       ++test);
+                  if (test == rank())
+                    { return std::make_pair(node, depth); }
+                }
+            }
+          if (rel != above && node->right != 0)
+            {
+              if (rel != below && node->left != 0)
+                {
+                  NodePtr other;
+                  dimension_type other_depth;
+                  import::tie(other, other_depth)
+                    = region_first(node->left, depth + 1, rank, pred);
+                  if (other != node)
+                    { return std::make_pair(other, other_depth); }
+                }
+              node = node->right; ++depth;
+            }
+          else if (rel != below && node->left != 0)
+            { node = node->left; ++depth; }
+          else { return std::make_pair(end, end_depth); }
+        }
+    }
+
     template <typename Container, typename Predicate>
     inline region_iterator<Container, Predicate>&
     increment_region(region_iterator<Container, Predicate>& iter)

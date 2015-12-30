@@ -53,7 +53,7 @@ namespace spatial
                               || key_comp(test, const_key(node), key));
                        ++test);
                   if (test == rank())
-                    { return std::make_pair(node, dim); }
+                    { return std::make_pair(node, depth); }
                 }
             }
           // Walk the tree to find an equal target
