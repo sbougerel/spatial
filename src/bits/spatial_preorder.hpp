@@ -14,7 +14,7 @@
 #define SPATIAL_PREORDER_HPP
 
 #include "../spatial.hpp"
-#include "spatial_assign.hpp"
+#include "spatial_import_tuple.hpp"
 
 namespace spatial
 {
@@ -35,8 +35,8 @@ namespace spatial
           if (node->left != 0 && left_traversal(node, dim, query))
             {
               NodePtr left = node->left;
-              assign(node, dim,
-                     preorder_first(left, incr_dim(rank, dim), rank, query));
+              import::tie(node, dim)
+                = preorder_first(left, incr_dim(rank, dim), rank, query);
               if (left->parent != node) break; // We found the first
             }
           if (node->right != 0 && right_traversal(node, dim, query))

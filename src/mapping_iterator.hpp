@@ -17,8 +17,8 @@
 #include "bits/spatial_bidirectional.hpp"
 #include "bits/spatial_rank.hpp"
 #include "bits/spatial_except.hpp"
-#include "bits/spatial_assign.hpp"
 #include "bits/spatial_mapping.hpp"
+#include "bits/spatial_import_tuple.hpp"
 
 namespace spatial
 {
@@ -157,9 +157,9 @@ namespace spatial
     //! use this form in \c for loops.
     mapping_iterator<Ct>& operator++()
     {
-      details::assign(node, node_dim,
-                      increment_mapping(node, node_dim, rank(),
-                                        _data.mapping_dim, key_comp()));
+      import::tie(node, node_dim)
+        = increment_mapping(node, node_dim, rank(),
+                            _data.mapping_dim, key_comp());
       return *this;
     }
 
@@ -168,9 +168,9 @@ namespace spatial
     mapping_iterator<Ct> operator++(int)
     {
       mapping_iterator<Ct> x(*this);
-      details::assign(node, node_dim,
-                      increment_mapping(node, node_dim, rank(),
-                                        _data.mapping_dim, key_comp()));
+      import::tie(node, node_dim)
+        = increment_mapping(node, node_dim, rank(),
+                            _data.mapping_dim, key_comp());
       return x;
     }
 
@@ -178,9 +178,9 @@ namespace spatial
     //! use this form in \c for loops.
     mapping_iterator<Ct>& operator--()
     {
-      details::assign(node, node_dim,
-                      decrement_mapping(node, node_dim, rank(),
-                                        _data.mapping_dim, key_comp()));
+      import::tie(node, node_dim)
+        = decrement_mapping(node, node_dim, rank(),
+                            _data.mapping_dim, key_comp());
       return *this;
     }
 
@@ -189,9 +189,9 @@ namespace spatial
     mapping_iterator<Ct> operator--(int)
     {
       mapping_iterator<Ct> x(*this);
-      details::assign(node, node_dim,
-                      decrement_mapping(node, node_dim, rank(),
-                                        _data.mapping_dim, key_comp()));
+      import::tie(node, node_dim)
+        = decrement_mapping(node, node_dim, rank(),
+                            _data.mapping_dim, key_comp());
       return x;
     }
 
@@ -321,9 +321,9 @@ namespace spatial
     //! use this form in \c for loops.
     mapping_iterator<const Ct>& operator++()
     {
-      details::assign(node, node_dim,
-                      increment_mapping(node, node_dim, rank(),
-                                        _data.mapping_dim, key_comp()));
+      import::tie(node, node_dim)
+        = increment_mapping(node, node_dim, rank(),
+                            _data.mapping_dim, key_comp());
       return *this;
     }
 
@@ -332,9 +332,9 @@ namespace spatial
     mapping_iterator<const Ct> operator++(int)
     {
       mapping_iterator<const Ct> x(*this);
-      details::assign(node, node_dim,
-                      increment_mapping(node, node_dim, rank(),
-                                        _data.mapping_dim, key_comp()));
+      import::tie(node, node_dim)
+        = increment_mapping(node, node_dim, rank(),
+                            _data.mapping_dim, key_comp());
       return x;
     }
 
@@ -342,9 +342,9 @@ namespace spatial
     //! use this form in \c for loops.
     mapping_iterator<const Ct>& operator--()
     {
-      details::assign(node, node_dim,
-                      decrement_mapping(node, node_dim, rank(),
-                                        _data.mapping_dim, key_comp()));
+      import::tie(node, node_dim)
+        = decrement_mapping(node, node_dim, rank(),
+                            _data.mapping_dim, key_comp());
       return *this;
     }
 
@@ -353,9 +353,9 @@ namespace spatial
     mapping_iterator<const Ct> operator--(int)
     {
       mapping_iterator<const Ct> x(*this);
-      details::assign(node, node_dim,
-                      decrement_mapping(node, node_dim, rank(),
-                                        _data.mapping_dim, key_comp()));
+      import::tie(node, node_dim)
+        = decrement_mapping(node, node_dim, rank(),
+                            _data.mapping_dim, key_comp());
       return x;
     }
 
@@ -483,10 +483,10 @@ namespace spatial
     typename mapping_iterator<Container>::node_ptr node
       = container.end().node->parent;
     dimension_type dim;
-    details::assign(node, dim,
-                    minimum_mapping(node, 0,
-                                    container.rank(), mapping_dim,
-                                    container.key_comp()));
+    import::tie(node, dim)
+      = minimum_mapping(node, 0,
+                        container.rank(), mapping_dim,
+                        container.key_comp());
     return mapping_iterator<Container>(container, mapping_dim, dim, node);
   }
 
@@ -684,9 +684,9 @@ namespace spatial
     typename mapping_iterator<Container>::node_ptr node
       = container.end().node->parent;
     dimension_type dim;
-    details::assign(node, dim,
-                    lower_bound_mapping(node, 0, container.rank(), mapping_dim,
-                                        container.key_comp(), bound));
+    import::tie(node, dim)
+      = lower_bound_mapping(node, 0, container.rank(), mapping_dim,
+                            container.key_comp(), bound);
     return mapping_iterator<Container>(container, mapping_dim, dim, node);
   }
 
@@ -734,9 +734,9 @@ namespace spatial
     typename mapping_iterator<Container>::node_ptr node
       = container.end().node->parent;
     dimension_type dim;
-    details::assign(node, dim,
-                    upper_bound_mapping(node, 0, container.rank(), mapping_dim,
-                                        container.key_comp(), bound));
+    import::tie(node, dim)
+      = upper_bound_mapping(node, 0, container.rank(), mapping_dim,
+                            container.key_comp(), bound);
     return mapping_iterator<Container>(container, mapping_dim, dim, node);
   }
 
