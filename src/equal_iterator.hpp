@@ -282,11 +282,11 @@ namespace spatial
     if (container.empty()) return equal_end(container, value);
     typename equal_iterator<Container>::node_ptr node
       = container.end().node->parent;
-    dimension_type dim;
-    import::tie(node, dim)
+    dimension_type depth;
+    import::tie(node, depth)
       = first_equal(node, 0, container.rank(),
                     container.key_comp(), value);
-    return equal_iterator<Container>(container, value, dim, node);
+    return equal_iterator<Container>(container, value, depth, node);
   }
 
   template <typename Container>
