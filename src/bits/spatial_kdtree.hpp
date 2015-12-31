@@ -1150,18 +1150,18 @@ namespace spatial
     {
       if (empty()) return 0;
       node_ptr node = get_root();
-      dimension_type dim;
-      import::tie(node, dim)
+      dimension_type depth;
+      import::tie(node, depth)
         = first_equal(node, 0, rank(), key_comp(), key);
       if (header(node)) return 0;
       size_type cnt = 0;
       for (;;)
         {
-          node_ptr tmp = erase_node(dim, node);
+          node_ptr tmp = erase_node(depth % rank()(), node);
           ++cnt;
           if (tmp == 0) break; // no further node to erase for sure!
-          import::tie(node, dim)
-            = first_equal(tmp, dim, rank(), key_comp(), key);
+          import::tie(node, depth)
+            = first_equal(tmp, depth, rank(), key_comp(), key);
           if (tmp->parent == node) break; // no more match
         }
       return cnt;

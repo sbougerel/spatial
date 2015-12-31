@@ -100,166 +100,166 @@ namespace spatial
    *  \return a constructed \ref closed_bounds object.
    *  \throws invalid_bounds
    */
-  template <typename Tp>
-  closed_bounds<typename container_traits<Tp>::key_type,
-                typename container_traits<Tp>::key_compare>
+  template <typename Container>
+  closed_bounds<typename Container::key_type,
+                typename Container::key_compare>
   make_closed_bounds
-  (const Tp& container,
-   const typename container_traits<Tp>::key_type& lower,
-   const typename container_traits<Tp>::key_type& upper)
+  (const Container& container,
+   const typename Container::key_type& lower,
+   const typename Container::key_type& upper)
   {
     except::check_closed_bounds(container, lower, upper);
     return closed_bounds
-      <typename container_traits<Tp>::key_type,
-      typename container_traits<Tp>::key_compare>
+      <typename Container::key_type,
+       typename Container::key_compare>
       (container.key_comp(), lower, upper);
   }
 
-  template<typename Ct>
+  template<typename Container>
   struct closed_region_iterator
     : region_iterator
-      <Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                         typename container_traits<Ct>::key_compare> >
+      <Container, closed_bounds<typename Container::key_type,
+                                typename Container::key_compare> >
   {
     closed_region_iterator() { }
 
     closed_region_iterator
     (const region_iterator
-     <Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                        typename container_traits<Ct>::key_compare> >&
+     <Container, closed_bounds<typename Container::key_type,
+                               typename Container::key_compare> >&
      other)
       : region_iterator
-        <Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                           typename container_traits<Ct>::key_compare> >
+        <Container, closed_bounds<typename Container::key_type,
+                                  typename Container::key_compare> >
         (other) { }
   };
 
-  template<typename Ct>
-  struct closed_region_iterator<const Ct>
+  template<typename Container>
+  struct closed_region_iterator<const Container>
     : region_iterator
-      <const Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                               typename container_traits<Ct>::key_compare> >
+      <const Container, closed_bounds<typename Container::key_type,
+                                      typename Container::key_compare> >
   {
     closed_region_iterator() { }
 
     closed_region_iterator
     (const region_iterator
-     <const Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                              typename container_traits<Ct>::key_compare> >&
+     <const Container, closed_bounds<typename Container::key_type,
+                                     typename Container::key_compare> >&
      other)
       : region_iterator
-        <const Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                                 typename container_traits<Ct>::key_compare> >
+        <const Container, closed_bounds<typename Container::key_type,
+                                        typename Container::key_compare> >
         (other) { }
 
     closed_region_iterator
     (const region_iterator
-     <Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                        typename container_traits<Ct>::key_compare> >&
+     <Container, closed_bounds<typename Container::key_type,
+                               typename Container::key_compare> >&
      other)
       : region_iterator
-        <const Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                                 typename container_traits<Ct>::key_compare> >
+        <const Container, closed_bounds<typename Container::key_type,
+                                        typename Container::key_compare> >
         (other) { }
   };
 
-  template<typename Ct>
+  template<typename Container>
   struct closed_region_iterator_pair
     : region_iterator_pair
-  <Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                     typename container_traits<Ct>::key_compare> >
+  <Container, closed_bounds<typename Container::key_type,
+                            typename Container::key_compare> >
   {
   closed_region_iterator_pair() { }
 
   closed_region_iterator_pair
   (const region_iterator
-   <Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                      typename container_traits<Ct>::key_compare> >& a,
+   <Container, closed_bounds<typename Container::key_type,
+                             typename Container::key_compare> >& a,
    const region_iterator
-    <Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                       typename container_traits<Ct>::key_compare> >& b)
+    <Container, closed_bounds<typename Container::key_type,
+                              typename Container::key_compare> >& b)
     : region_iterator_pair
-      <Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                         typename container_traits<Ct>::key_compare> >
+      <Container, closed_bounds<typename Container::key_type,
+                                typename Container::key_compare> >
       (a, b) { }
   };
 
-  template<typename Ct>
-  struct closed_region_iterator_pair<const Ct>
+  template<typename Container>
+  struct closed_region_iterator_pair<const Container>
     : region_iterator_pair
-      <const Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                               typename container_traits<Ct>::key_compare> >
+      <const Container, closed_bounds<typename Container::key_type,
+                                      typename Container::key_compare> >
   {
     closed_region_iterator_pair() { }
 
     closed_region_iterator_pair
     (const region_iterator
-     <const Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                              typename container_traits<Ct>::key_compare> >& a,
+     <const Container, closed_bounds<typename Container::key_type,
+                                     typename Container::key_compare> >& a,
      const region_iterator
-     <const Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                              typename container_traits<Ct>::key_compare> >& b)
+     <const Container, closed_bounds<typename Container::key_type,
+                                     typename Container::key_compare> >& b)
       : region_iterator_pair
-        <const Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                                 typename container_traits<Ct>::key_compare> >
+        <const Container, closed_bounds<typename Container::key_type,
+                                        typename Container::key_compare> >
         (a, b) { }
 
-    closed_region_iterator_pair(const closed_region_iterator_pair<Ct>& other)
+    closed_region_iterator_pair(const closed_region_iterator_pair<Container>& other)
       : region_iterator_pair
-        <const Ct, closed_bounds<typename container_traits<Ct>::key_type,
-                                 typename container_traits<Ct>::key_compare> >
+        <const Container, closed_bounds<typename Container::key_type,
+                                        typename Container::key_compare> >
         (other) { }
   };
 
-  template <typename Ct>
-  inline closed_region_iterator<Ct>
-  closed_region_end(Ct& container,
-                    const typename container_traits<Ct>::key_type& lower,
-                    const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline closed_region_iterator<Container>
+  closed_region_end(Container& container,
+                    const typename Container::key_type& lower,
+                    const typename Container::key_type& upper)
   { return region_end(container, make_closed_bounds(container, lower, upper)); }
 
-  template <typename Ct>
-  inline closed_region_iterator<const Ct>
-  closed_region_cend(const Ct& container,
-                     const typename container_traits<Ct>::key_type& lower,
-                     const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline closed_region_iterator<const Container>
+  closed_region_cend(const Container& container,
+                     const typename Container::key_type& lower,
+                     const typename Container::key_type& upper)
   {
     return region_cend(container, make_closed_bounds(container, lower, upper));
   }
 
-  template <typename Ct>
-  inline closed_region_iterator<Ct>
-  closed_region_begin(Ct& container,
-                      const typename container_traits<Ct>::key_type& lower,
-                      const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline closed_region_iterator<Container>
+  closed_region_begin(Container& container,
+                      const typename Container::key_type& lower,
+                      const typename Container::key_type& upper)
   {
     return region_begin(container, make_closed_bounds(container, lower, upper));
   }
 
-  template <typename Ct>
-  inline closed_region_iterator<const Ct>
-  closed_region_cbegin(const Ct& container,
-                       const typename container_traits<Ct>::key_type& lower,
-                       const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline closed_region_iterator<const Container>
+  closed_region_cbegin(const Container& container,
+                       const typename Container::key_type& lower,
+                       const typename Container::key_type& upper)
   {
     return region_cbegin(container,
                          make_closed_bounds(container, lower, upper));
   }
 
-  template <typename Ct>
-  inline closed_region_iterator_pair<Ct>
-  closed_region_range(Ct& container,
-                      const typename container_traits<Ct>::key_type& lower,
-                      const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline closed_region_iterator_pair<Container>
+  closed_region_range(Container& container,
+                      const typename Container::key_type& lower,
+                      const typename Container::key_type& upper)
   {
     return region_range(container, make_closed_bounds(container, lower, upper));
   }
 
-  template <typename Ct>
-  inline closed_region_iterator_pair<const Ct>
-  closed_region_crange(const Ct& container,
-                       const typename container_traits<Ct>::key_type& lower,
-                       const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline closed_region_iterator_pair<const Container>
+  closed_region_crange(const Container& container,
+                       const typename Container::key_type& lower,
+                       const typename Container::key_type& upper)
   {
     return region_crange(container,
                          make_closed_bounds(container, lower, upper));

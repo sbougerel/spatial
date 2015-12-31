@@ -32,9 +32,6 @@ Minor version updates
 9. Make the code smaller, simpler. Refactor regions? Iterator
    constness to be deduced from node type?
 
-10. Overlapping box is gone, it seems. It may be implemented within the
-   enclosed iterator by using it in a very weird way.
-
 
 Major version update
 --------------------

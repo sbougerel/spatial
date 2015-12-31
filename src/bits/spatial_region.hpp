@@ -16,10 +16,10 @@
 #define SPATIAL_REGION_HPP
 
 #include <utility> // std::pair<> and std::make_pair()
-#include "../traits.hpp"
 #include "spatial_bidirectional.hpp"
 #include "spatial_rank.hpp"
 #include "spatial_except.hpp"
+#include "spatial_import_tuple.hpp"
 
 namespace spatial
 {
@@ -106,17 +106,17 @@ namespace spatial
    *  \throws invalid_bounds
    */
   template <typename Tp>
-  bounds<typename container_traits<Tp>::key_type,
-         typename container_traits<Tp>::key_compare>
+  bounds<typename Tp::key_type,
+         typename Tp::key_compare>
   make_bounds
   (const Tp& container,
-   const typename container_traits<Tp>::key_type& lower,
-   const typename container_traits<Tp>::key_type& upper)
+   const typename Tp::key_type& lower,
+   const typename Tp::key_type& upper)
   {
     except::check_bounds(container, lower, upper);
     return bounds
-      <typename container_traits<Tp>::key_type,
-      typename container_traits<Tp>::key_compare>
+      <typename Tp::key_type,
+      typename Tp::key_compare>
       (container.key_comp(), lower, upper);
   }
 
@@ -134,18 +134,18 @@ namespace spatial
    *  \see region_query<>::iterator
    *  \see region_query<>::const_iterator
    */
-  template <typename Ct, typename Predicate
-            = bounds<typename container_traits<Ct>::key_type,
-                     typename container_traits<Ct>::key_compare> >
+  template <typename Container, typename Predicate
+            = bounds<typename Container::key_type,
+                     typename Container::key_compare> >
   class region_iterator
     : public details::Bidirectional_iterator
-      <typename container_traits<Ct>::mode_type,
-       typename container_traits<Ct>::rank_type>
+      <typename Container::mode_type,
+       typename Container::rank_type>
   {
   private:
     typedef typename details::Bidirectional_iterator
-    <typename container_traits<Ct>::mode_type,
-     typename container_traits<Ct>::rank_type> Base;
+    <typename Container::mode_type,
+     typename Container::rank_type> Base;
 
   public:
     //! Uninitialized iterator.
@@ -165,8 +165,8 @@ namespace spatial
      *  \param pred A model of the \region_predicate concept.
      *  \param iter An iterator on the type Ct.
      */
-    region_iterator(Ct& container, const Predicate& pred,
-                    typename container_traits<Ct>::iterator iter)
+    region_iterator(Container& container, const Predicate& pred,
+                    typename Container::iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
         _pred(pred) { }
 
@@ -188,34 +188,34 @@ namespace spatial
      *  \param container The container being iterated.
      */
     region_iterator
-    (Ct& container, const Predicate& pred, dimension_type dim,
-     typename container_traits<Ct>::mode_type::node_ptr ptr)
+    (Container& container, const Predicate& pred, dimension_type dim,
+     typename Container::mode_type::node_ptr ptr)
       : Base(container.rank(), ptr, dim), _pred(pred) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
-    region_iterator<Ct, Predicate>& operator++()
+    region_iterator<Container, Predicate>& operator++()
     { return increment_region(*this); }
 
     //! Increments the iterator but returns the value of the iterator before
     //! the increment. Prefer to use the other form in \c for loops.
-    region_iterator<Ct, Predicate> operator++(int)
+    region_iterator<Container, Predicate> operator++(int)
     {
-      region_iterator<Ct, Predicate> x(*this);
+      region_iterator<Container, Predicate> x(*this);
       increment_region(*this);
       return x;
     }
 
     //! Decrements the iterator and returns the decremented value. Prefer to
     //! use this form in \c for loops.
-    region_iterator<Ct, Predicate>& operator--()
+    region_iterator<Container, Predicate>& operator--()
     { return decrement_region(*this); }
 
     //! Decrements the iterator but returns the value of the iterator before
     //! the decrement. Prefer to use the other form in \c for loops.
-    region_iterator<Ct, Predicate> operator--(int)
+    region_iterator<Container, Predicate> operator--(int)
     {
-      region_iterator<Ct, Predicate> x(*this);
+      region_iterator<Container, Predicate> x(*this);
       decrement_region(*this);
       return x;
     }
@@ -242,16 +242,16 @@ namespace spatial
    *  \see region_query<>::iterator
    *  \see region_query<>::const_iterator
    */
-  template <typename Ct, typename Predicate>
-  class region_iterator<const Ct, Predicate>
+  template <typename Container, typename Predicate>
+  class region_iterator<const Container, Predicate>
     : public details::Const_bidirectional_iterator
-      <typename container_traits<Ct>::mode_type,
-       typename container_traits<Ct>::rank_type>
+      <typename Container::mode_type,
+       typename Container::rank_type>
   {
   private:
     typedef details::Const_bidirectional_iterator
-    <typename container_traits<Ct>::mode_type,
-     typename container_traits<Ct>::rank_type> Base;
+    <typename Container::mode_type,
+     typename Container::rank_type> Base;
 
   public:
     //! \empty
@@ -271,8 +271,8 @@ namespace spatial
      *  reached. This iteration is bounded by \Olog in case the tree is
      *  perfectly balanced.
      */
-    region_iterator(const Ct& container, const Predicate& pred,
-                    typename container_traits<Ct>::const_iterator iter)
+    region_iterator(const Container& container, const Predicate& pred,
+                    typename Container::const_iterator iter)
       : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
         _pred(pred) { }
 
@@ -295,38 +295,38 @@ namespace spatial
      *  performance of your application in any major way.
      */
     region_iterator
-    (const Ct& container, const Predicate& pred, dimension_type dim,
-     typename container_traits<Ct>::mode_type::const_node_ptr ptr)
+    (const Container& container, const Predicate& pred, dimension_type dim,
+     typename Container::mode_type::const_node_ptr ptr)
       : Base(container.rank(), ptr, dim), _pred(pred) { }
 
     //! Convertion of an iterator into a const_iterator is permitted.
-    region_iterator(const region_iterator<Ct, Predicate>& iter)
+    region_iterator(const region_iterator<Container, Predicate>& iter)
       : Base(iter.rank(), iter.node, iter.node_dim), _pred(iter.predicate()) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
-    region_iterator<const Ct, Predicate>& operator++()
+    region_iterator<const Container, Predicate>& operator++()
     { return increment_region(*this); }
 
     //! Increments the iterator but returns the value of the iterator before
     //! the increment. Prefer to use the other form in \c for loops.
-    region_iterator<const Ct, Predicate> operator++(int)
+    region_iterator<const Container, Predicate> operator++(int)
     {
-      region_iterator<const Ct, Predicate> x(*this);
+      region_iterator<const Container, Predicate> x(*this);
       increment_region(*this);
       return x;
     }
 
     //! Decrements the iterator and returns the decremented value. Prefer to
     //! use this form in \c for loops.
-    region_iterator<const Ct, Predicate>& operator--()
+    region_iterator<const Container, Predicate>& operator--()
     { return decrement_region(*this); }
 
     //! Decrements the iterator but returns the value of the iterator before
     //! the decrement. Prefer to use the other form in \c for loops.
-    region_iterator<const Ct, Predicate> operator--(int)
+    region_iterator<const Container, Predicate> operator--(int)
     {
-      region_iterator<const Ct, Predicate> x(*this);
+      region_iterator<const Container, Predicate> x(*this);
       decrement_region(*this);
       return x;
     }
@@ -350,9 +350,9 @@ namespace spatial
      *  \tparam Ct The type of container to iterate.
      *  \return  An iterator pointing the next matching value.
      */
-    template <typename Ct, typename Predicate>
-    region_iterator<Ct, Predicate>&
-    increment_region(region_iterator<Ct, Predicate>& iter);
+    template <typename Container, typename Predicate>
+    region_iterator<Container, Predicate>&
+    increment_region(region_iterator<Container, Predicate>& iter);
 
     /**
      *  From \c iter, returns the previous matching iterator in the region
@@ -366,9 +366,9 @@ namespace spatial
      *  If \c iter is a past-the-end iterator (pointing to a header node), the
      *  function will return the maximum iterator in region.
      */
-    template <typename Ct, typename Predicate>
-    region_iterator<Ct, Predicate>&
-    decrement_region(region_iterator<Ct, Predicate>& iter);
+    template <typename Container, typename Predicate>
+    region_iterator<Container, Predicate>&
+    decrement_region(region_iterator<Container, Predicate>& iter);
 
     /**
      *  In the children of the node pointed to by \c iter, find the first
@@ -380,9 +380,9 @@ namespace spatial
      *  \tparam Ct The type of container to look up.
      *  \return  An iterator pointing the minimum, or past-the-end.
      */
-    template <typename Ct, typename Predicate>
-    region_iterator<Ct, Predicate>&
-    minimum_region(region_iterator<Ct, Predicate>& iter);
+    template <typename Container, typename Predicate>
+    region_iterator<Container, Predicate>&
+    minimum_region(region_iterator<Container, Predicate>& iter);
 
     /**
      *  In the children of the node pointed to by \c iter, find the last
@@ -394,67 +394,67 @@ namespace spatial
      *  \tparam Ct The type of container to look up.
      *  \return  An iterator pointing the maximum, or past-the-end.
      */
-    template <typename Ct, typename Predicate>
-    region_iterator<Ct, Predicate>&
-    maximum_region(region_iterator<Ct, Predicate>& iter);
+    template <typename Container, typename Predicate>
+    region_iterator<Container, Predicate>&
+    maximum_region(region_iterator<Container, Predicate>& iter);
 
   } // namespace details
 
-  template <typename Ct, typename Predicate>
-  inline region_iterator<Ct, Predicate>
-  region_end(Ct& container, const Predicate& pred)
+  template <typename Container, typename Predicate>
+  inline region_iterator<Container, Predicate>
+  region_end(Container& container, const Predicate& pred)
   {
-    return region_iterator<Ct, Predicate>
+    return region_iterator<Container, Predicate>
       (container, pred, container.dimension() - 1,
        container.end().node); // At header, dim = rank - 1
   }
 
-  template <typename Ct, typename Predicate>
-  inline region_iterator<const Ct, Predicate>
-  region_cend(const Ct& container, const Predicate& pred)
+  template <typename Container, typename Predicate>
+  inline region_iterator<const Container, Predicate>
+  region_cend(const Container& container, const Predicate& pred)
   { return region_end(container, pred); }
 
-  template <typename Ct>
-  inline region_iterator<Ct>
-  region_end(Ct& container,
-             const typename container_traits<Ct>::key_type& lower,
-             const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline region_iterator<Container>
+  region_end(Container& container,
+             const typename Container::key_type& lower,
+             const typename Container::key_type& upper)
   { return region_end(container, make_bounds(container, lower, upper)); }
 
-  template <typename Ct>
-  inline region_iterator<const Ct>
-  region_cend(const Ct& container,
-              const typename container_traits<Ct>::key_type& lower,
-              const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline region_iterator<const Container>
+  region_cend(const Container& container,
+              const typename Container::key_type& lower,
+              const typename Container::key_type& upper)
   { return region_cend(container, make_bounds(container, lower, upper)); }
 
-  template <typename Ct, typename Predicate>
-  inline region_iterator<Ct, Predicate>
-  region_begin(Ct& container, const Predicate& pred)
+  template <typename Container, typename Predicate>
+  inline region_iterator<Container, Predicate>
+  region_begin(Container& container, const Predicate& pred)
   {
     if (container.empty()) return region_end(container, pred);
-    region_iterator<Ct, Predicate>
+    region_iterator<Container, Predicate>
       it(container, pred, 0, container.end().node->parent); // At root, dim = 0
     return details::minimum_region(it);
   }
 
-  template <typename Ct, typename Predicate>
-  inline region_iterator<const Ct, Predicate>
-  region_cbegin(const Ct& container, const Predicate& pred)
+  template <typename Container, typename Predicate>
+  inline region_iterator<const Container, Predicate>
+  region_cbegin(const Container& container, const Predicate& pred)
   { return region_begin(container, pred); }
 
-  template <typename Ct>
-  inline region_iterator<Ct>
-  region_begin(Ct& container,
-               const typename container_traits<Ct>::key_type& lower,
-               const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline region_iterator<Container>
+  region_begin(Container& container,
+               const typename Container::key_type& lower,
+               const typename Container::key_type& upper)
   { return region_begin(container, make_bounds(container, lower, upper)); }
 
-  template <typename Ct>
-  inline region_iterator<const Ct>
-  region_cbegin(const Ct& container,
-                const typename container_traits<Ct>::key_type& lower,
-                const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline region_iterator<const Container>
+  region_cbegin(const Container& container,
+                const typename Container::key_type& lower,
+                const typename Container::key_type& upper)
   { return region_begin(container, make_bounds(container, lower, upper)); }
 
   /**
@@ -463,27 +463,27 @@ namespace spatial
    *  \tparam Ct The container to which these iterator relate to.
    *  \see region_iterator
    */
-  template <typename Ct, typename Predicate
-            = bounds<typename container_traits<Ct>::key_type,
-                     typename container_traits<Ct>::key_compare> >
+  template <typename Container, typename Predicate
+            = bounds<typename Container::key_type,
+                     typename Container::key_compare> >
   struct region_iterator_pair
-    : std::pair<region_iterator<Ct, Predicate>,
-                region_iterator<Ct, Predicate> >
+    : std::pair<region_iterator<Container, Predicate>,
+                region_iterator<Container, Predicate> >
   {
     /**
      *  A pair of iterators that represents a range (that is: a range of
      *  elements to iterate, and not an orthogonal range).
      */
-    typedef std::pair<region_iterator<Ct, Predicate>,
-                      region_iterator<Ct, Predicate> > Base;
+    typedef std::pair<region_iterator<Container, Predicate>,
+                      region_iterator<Container, Predicate> > Base;
 
     //! Empty constructor.
     region_iterator_pair() { }
 
     //! Regular constructor that builds a region_iterator_pair out of 2
     //! region_iterators.
-    region_iterator_pair(const region_iterator<Ct, Predicate>& a,
-                         const region_iterator<Ct, Predicate>& b)
+    region_iterator_pair(const region_iterator<Container, Predicate>& a,
+                         const region_iterator<Container, Predicate>& b)
           : Base(a, b) { }
   };
 
@@ -493,30 +493,30 @@ namespace spatial
    *  \tparam Ct The container to which these iterator relate to.
    *  \see region_iterator
    */
-  template <typename Ct, typename Predicate>
-  struct region_iterator_pair<const Ct, Predicate>
-    : std::pair<region_iterator<const Ct, Predicate>,
-                region_iterator<const Ct, Predicate> >
+  template <typename Container, typename Predicate>
+  struct region_iterator_pair<const Container, Predicate>
+    : std::pair<region_iterator<const Container, Predicate>,
+                region_iterator<const Container, Predicate> >
   {
     /**
      *  A pair of iterators that represents a range (that is: a range of
      *  elements to iterate, and not an orthogonal range).
      */
-    typedef std::pair<region_iterator<const Ct, Predicate>,
-                      region_iterator<const Ct, Predicate> > Base;
+    typedef std::pair<region_iterator<const Container, Predicate>,
+                      region_iterator<const Container, Predicate> > Base;
 
     //! Empty constructor.
     region_iterator_pair() { }
 
     //! Regular constructor that builds a region_iterator_pair out of 2
     //! region_iterators.
-    region_iterator_pair(const region_iterator<const Ct, Predicate>& a,
-                         const region_iterator<const Ct, Predicate>& b)
+    region_iterator_pair(const region_iterator<const Container, Predicate>& a,
+                         const region_iterator<const Container, Predicate>& b)
       : Base(a, b) { }
 
     //! Convert a mutable region iterator pair into a const region iterator
     //! pair.
-    region_iterator_pair(const region_iterator_pair<Ct, Predicate>& p)
+    region_iterator_pair(const region_iterator_pair<Container, Predicate>& p)
       : Base(p.first, p.second) { }
   };
 
@@ -532,38 +532,38 @@ namespace spatial
    *  \param pred The predicate used for the search.
    */
   ///@{
-  template <typename Ct, typename Predicate>
-  inline region_iterator_pair<Ct, Predicate>
-  region_range(Ct& container, const Predicate& pred)
+  template <typename Container, typename Predicate>
+  inline region_iterator_pair<Container, Predicate>
+  region_range(Container& container, const Predicate& pred)
   {
-    return region_iterator_pair<Ct, Predicate>
+    return region_iterator_pair<Container, Predicate>
       (region_begin(container, pred), region_end(container, pred));
   }
 
   //! This overload works only on constant containers and will return a set of
   //! constant iterators, where the value dereferrenced by the iterator is
   //! constant.
-  template <typename Ct, typename Predicate>
-  inline region_iterator_pair<const Ct, Predicate>
-  region_crange(const Ct& container, const Predicate& pred)
+  template <typename Container, typename Predicate>
+  inline region_iterator_pair<const Container, Predicate>
+  region_crange(const Container& container, const Predicate& pred)
   {
-    return region_iterator_pair<const Ct, Predicate>
+    return region_iterator_pair<const Container, Predicate>
       (region_begin(container, pred), region_end(container, pred));
   }
   ///@}
 
-  template <typename Ct>
-  inline region_iterator_pair<Ct>
-  region_range(Ct& container,
-                 const typename container_traits<Ct>::key_type& lower,
-                 const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline region_iterator_pair<Container>
+  region_range(Container& container,
+                 const typename Container::key_type& lower,
+                 const typename Container::key_type& upper)
   { return region_range(container, make_bounds(container, lower, upper)); }
 
-  template <typename Ct>
-  inline region_iterator_pair<const Ct>
-  region_crange(const Ct& container,
-                  const typename container_traits<Ct>::key_type& lower,
-                  const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline region_iterator_pair<const Container>
+  region_crange(const Container& container,
+                  const typename Container::key_type& lower,
+                  const typename Container::key_type& upper)
   { return region_crange(container, make_bounds(container, lower, upper)); }
 
   namespace details
@@ -593,7 +593,7 @@ namespace spatial
 
     template <typename NodePtr, typename Rank, typename Predicate>
     inline std::pair<NodePtr, dimension_type>
-    region_first(NodePtr node, dimension_type depth, const Rank rank,
+    first_region(NodePtr node, dimension_type depth, const Rank rank,
                  const Predicate& pred)
     {
       NodePtr end = node->parent;
@@ -639,11 +639,58 @@ namespace spatial
         }
     }
 
+    template <typename NodePtr, typename Rank, typename Predicate>
+    inline std::pair<NodePtr, dimension_type>
+    last_region(NodePtr node, dimension_type depth, const Rank rank,
+                const Predicate& pred)
+    {
+      SPATIAL_ASSERT_CHECK(!header(node));
+      SPATIAL_ASSERT_CHECK(node != 0);
+      for (;;)
+        {
+          if (pred(depth % rank(), rank(), const_key(node)) != above
+              && node->right != 0)
+            { node = node->right; ++depth; }
+          else if (pred(depth % rank(), rank(), const_key(node)) != below
+                   && node->left != 0)
+            { node = node->left; ++depth; }
+          else break;
+        }
+      for (;;)
+        {
+          dimension_type test = 0;
+          for(; test < rank()
+                && pred(test, rank(), const_key(node)) == matching; ++test);
+          if (test == rank())
+            { return std::make_pair(node, depth); }
+          NodePtr prev_node = node;
+          node = node->parent; --depth;
+          if (header(node))
+            { return std::make_pair(node, depth); }
+          if (node->right == prev_node
+              && prev(depth % rank(), rank(), const_key(node) != below)
+              && node->left != 0)
+            {
+              node = node->left; ++depth;
+              for (;;)
+                {
+                  if (pred(depth % rank(), rank(), const_key(node)) != above
+                      && node->right != 0)
+                    { node = node->right; ++depth; }
+                  else if (pred(depth % rank(), rank(), const_key(node)) != below
+                           && node->left != 0)
+                    { node = node->left; ++depth; }
+                  else break;
+                }
+            }
+        }
+    }
+
     template <typename Container, typename Predicate>
     inline region_iterator<Container, Predicate>&
     increment_region(region_iterator<Container, Predicate>& iter)
     {
-      const typename container_traits<Container>::rank_type rank(iter.rank());
+      const typename Container::rank_type rank(iter.rank());
       const Predicate pred(iter.predicate());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
       SPATIAL_ASSERT_CHECK(iter.node != 0);
@@ -688,7 +735,7 @@ namespace spatial
     inline region_iterator<Container, Predicate>&
     decrement_region(region_iterator<Container, Predicate>& iter)
     {
-      const typename container_traits<Container>::rank_type rank(iter.rank());
+      const typename Container::rank_type rank(iter.rank());
       const Predicate pred(iter.predicate());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
@@ -738,7 +785,7 @@ namespace spatial
     inline region_iterator<Container, Predicate>&
     minimum_region(region_iterator<Container, Predicate>& iter)
     {
-      const typename container_traits<Container>::rank_type rank(iter.rank());
+      const typename Container::rank_type rank(iter.rank());
       const Predicate pred(iter.predicate());
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
       SPATIAL_ASSERT_CHECK(!header(iter.node));
@@ -800,7 +847,7 @@ namespace spatial
     inline region_iterator<Container, Predicate>&
     maximum_region(region_iterator<Container, Predicate>& iter)
     {
-      const typename container_traits<Container>::rank_type rank(iter.rank());
+      const typename Container::rank_type rank(iter.rank());
       const Predicate pred(iter.predicate());
       SPATIAL_ASSERT_CHECK(iter.node != 0);
       SPATIAL_ASSERT_CHECK(iter.node_dim < rank());

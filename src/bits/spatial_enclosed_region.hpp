@@ -147,249 +147,249 @@ namespace spatial
    *  coordinates are indeed lower or equal to its higher coordinates.
    */
   ///@{
-  template <typename Tp, typename Layout>
-  enclosed_bounds<typename container_traits<Tp>::key_type,
-                 typename container_traits<Tp>::key_compare,
-                 Layout>
+  template <typename Container, typename Layout>
+  enclosed_bounds<typename Container::key_type,
+                  typename Container::key_compare,
+                  Layout>
   make_enclosed_bounds
-  (const Tp& container,
-   const typename container_traits<Tp>::key_type& target,
+  (const Container& container,
+   const typename Container::key_type& target,
    Layout tag)
   {
     except::check_box(container, target, tag);
     return enclosed_bounds
-      <typename container_traits<Tp>::key_type,
-       typename container_traits<Tp>::key_compare, Layout>
+      <typename Container::key_type,
+       typename Container::key_compare, Layout>
       (container.key_comp(), target);
   }
 
-  template <typename Tp>
-  enclosed_bounds<typename container_traits<Tp>::key_type,
-                 typename container_traits<Tp>::key_compare>
+  template <typename Container>
+  enclosed_bounds<typename Container::key_type,
+                  typename Container::key_compare>
   make_enclosed_bounds
-  (const Tp& container,
-   const typename container_traits<Tp>::key_type& target)
+  (const Container& container,
+   const typename Container::key_type& target)
   { return make_enclosed_bounds(container, target, llhh_layout_tag()); }
   ///@}
 
-  template<typename Ct, typename Layout = llhh_layout_tag>
+  template<typename Container, typename Layout = llhh_layout_tag>
   struct enclosed_region_iterator
     : region_iterator
-      <Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                           typename container_traits<Ct>::key_compare,
-                           Layout> >
+      <Container, enclosed_bounds<typename Container::key_type,
+                                  typename Container::key_compare,
+                                  Layout> >
   {
     enclosed_region_iterator() { }
 
     enclosed_region_iterator
     (const region_iterator
-     <Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                          typename container_traits<Ct>::key_compare,
-                          Layout> >& other)
+     <Container, enclosed_bounds<typename Container::key_type,
+                                 typename Container::key_compare,
+                                 Layout> >& other)
       : region_iterator
-        <Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                             typename container_traits<Ct>::key_compare,
-                             Layout> >(other) { }
+        <Container, enclosed_bounds<typename Container::key_type,
+                                    typename Container::key_compare,
+                                    Layout> >(other) { }
   };
 
-  template<typename Ct, typename Layout>
-  struct enclosed_region_iterator<const Ct, Layout>
+  template<typename Container, typename Layout>
+  struct enclosed_region_iterator<const Container, Layout>
     : region_iterator
-      <const Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                                 typename container_traits<Ct>::key_compare,
-                                 Layout> >
+      <const Container, enclosed_bounds<typename Container::key_type,
+                                        typename Container::key_compare,
+                                        Layout> >
   {
     enclosed_region_iterator() { }
 
     enclosed_region_iterator
     (const region_iterator
-     <const Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                                typename container_traits<Ct>::key_compare,
-                                Layout> >& other)
+     <const Container, enclosed_bounds<typename Container::key_type,
+                                       typename Container::key_compare,
+                                       Layout> >& other)
       : region_iterator
-        <const Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                                   typename container_traits<Ct>::key_compare,
-                                   Layout> >
+        <const Container, enclosed_bounds<typename Container::key_type,
+                                          typename Container::key_compare,
+                                          Layout> >
         (other) { }
 
     enclosed_region_iterator
     (const region_iterator
-     <Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                          typename container_traits<Ct>::key_compare,
-                          Layout> >& other)
+     <Container, enclosed_bounds<typename Container::key_type,
+                                 typename Container::key_compare,
+                                 Layout> >& other)
       : region_iterator
-        <const Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                                   typename container_traits<Ct>::key_compare,
-                                   Layout> >
+        <const Container, enclosed_bounds<typename Container::key_type,
+                                          typename Container::key_compare,
+                                          Layout> >
         (other) { }
   };
 
-  template<typename Ct, typename Layout = llhh_layout_tag>
+  template<typename Container, typename Layout = llhh_layout_tag>
   struct enclosed_region_iterator_pair
     : region_iterator_pair
-      <Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                           typename container_traits<Ct>::key_compare,
-                           Layout> >
+      <Container, enclosed_bounds<typename Container::key_type,
+                                  typename Container::key_compare,
+                                  Layout> >
   {
     enclosed_region_iterator_pair() { }
 
     enclosed_region_iterator_pair
     (const region_iterator
-     <Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                          typename container_traits<Ct>::key_compare,
-                          Layout> >& a,
+     <Container, enclosed_bounds<typename Container::key_type,
+                                 typename Container::key_compare,
+                                 Layout> >& a,
      const region_iterator
-     <Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                          typename container_traits<Ct>::key_compare,
-                          Layout> >& b)
+     <Container, enclosed_bounds<typename Container::key_type,
+                                 typename Container::key_compare,
+                                 Layout> >& b)
       : region_iterator_pair
-        <Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                             typename container_traits<Ct>::key_compare,
-                             Layout> >
+        <Container, enclosed_bounds<typename Container::key_type,
+                                    typename Container::key_compare,
+                                    Layout> >
         (a, b) { }
   };
 
-  template<typename Ct, typename Layout>
-  struct enclosed_region_iterator_pair<const Ct, Layout>
+  template<typename Container, typename Layout>
+  struct enclosed_region_iterator_pair<const Container, Layout>
     : region_iterator_pair
-      <const Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                                 typename container_traits<Ct>::key_compare,
-                                 Layout> >
+      <const Container, enclosed_bounds<typename Container::key_type,
+                                        typename Container::key_compare,
+                                        Layout> >
   {
     enclosed_region_iterator_pair() { }
 
     enclosed_region_iterator_pair
     (const region_iterator
-     <const Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                                typename container_traits<Ct>::key_compare,
-                                Layout> >& a,
+     <const Container, enclosed_bounds<typename Container::key_type,
+                                       typename Container::key_compare,
+                                       Layout> >& a,
      const region_iterator
-     <const Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                                typename container_traits<Ct>::key_compare,
-                                Layout> >& b)
+     <const Container, enclosed_bounds<typename Container::key_type,
+                                       typename Container::key_compare,
+                                       Layout> >& b)
       : region_iterator_pair
-        <const Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                                   typename container_traits<Ct>::key_compare,
-                                   Layout> >
+        <const Container, enclosed_bounds<typename Container::key_type,
+                                          typename Container::key_compare,
+                                          Layout> >
     (a, b) { }
 
     enclosed_region_iterator_pair
-    (const enclosed_region_iterator_pair<Ct>& other)
+    (const enclosed_region_iterator_pair<Container>& other)
       : region_iterator_pair
-        <const Ct, enclosed_bounds<typename container_traits<Ct>::key_type,
-                                   typename container_traits<Ct>::key_compare,
-                                   Layout> >
+        <const Container, enclosed_bounds<typename Container::key_type,
+                                          typename Container::key_compare,
+                                          Layout> >
         (other) { }
   };
 
-  template <typename Ct>
-  inline enclosed_region_iterator<Ct>
-  enclosed_region_end(Ct& container,
-                      const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline enclosed_region_iterator<Container>
+  enclosed_region_end(Container& container,
+                      const typename Container::key_type& target)
   {
     return region_end
       (container, make_enclosed_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline enclosed_region_iterator<Ct, Layout>
-  enclosed_region_end(Ct& container,
-                      const typename container_traits<Ct>::key_type& target,
+  template <typename Container, typename Layout>
+  inline enclosed_region_iterator<Container, Layout>
+  enclosed_region_end(Container& container,
+                      const typename Container::key_type& target,
                       const Layout& layout)
   {
     return region_end
       (container, make_enclosed_bounds(container, target, layout));
   }
 
-  template <typename Ct>
-  inline enclosed_region_iterator<const Ct>
-  enclosed_region_cend(const Ct& container,
-                       const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline enclosed_region_iterator<const Container>
+  enclosed_region_cend(const Container& container,
+                       const typename Container::key_type& target)
   {
     return region_cend
       (container, make_enclosed_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline enclosed_region_iterator<const Ct, Layout>
-  enclosed_region_cend(const Ct& container,
-                       const typename container_traits<Ct>::key_type& target,
+  template <typename Container, typename Layout>
+  inline enclosed_region_iterator<const Container, Layout>
+  enclosed_region_cend(const Container& container,
+                       const typename Container::key_type& target,
                        const Layout& layout)
   {
     return region_cend
       (container, make_enclosed_bounds(container, target, layout));
   }
 
-  template <typename Ct>
-  inline enclosed_region_iterator<Ct>
-  enclosed_region_begin(Ct& container,
-                  const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline enclosed_region_iterator<Container>
+  enclosed_region_begin(Container& container,
+                        const typename Container::key_type& target)
   {
     return region_begin
       (container, make_enclosed_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline enclosed_region_iterator<Ct, Layout>
-  enclosed_region_begin(Ct& container,
-                        const typename container_traits<Ct>::key_type& target,
+  template <typename Container, typename Layout>
+  inline enclosed_region_iterator<Container, Layout>
+  enclosed_region_begin(Container& container,
+                        const typename Container::key_type& target,
                         const Layout& layout)
   {
     return region_begin
       (container, make_enclosed_bounds(container, target, layout));
   }
 
-  template <typename Ct>
-  inline enclosed_region_iterator<const Ct>
-  enclosed_region_begin(const Ct& container,
-                        const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline enclosed_region_iterator<const Container>
+  enclosed_region_begin(const Container& container,
+                        const typename Container::key_type& target)
   {
     return _regionbegin
       (container, make_enclosed_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline enclosed_region_iterator<const Ct, Layout>
-  enclosed_region_cbegin(const Ct& container,
-                   const typename container_traits<Ct>::key_type& target,
-                   const Layout& layout)
+  template <typename Container, typename Layout>
+  inline enclosed_region_iterator<const Container, Layout>
+  enclosed_region_cbegin(const Container& container,
+                         const typename Container::key_type& target,
+                         const Layout& layout)
   {
     return region_cbegin
       (container, make_enclosed_bounds(container, target, layout));
   }
 
-  template <typename Ct>
-  inline enclosed_region_iterator_pair<Ct>
-  enclosed_region_range(Ct& container,
-                        const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline enclosed_region_iterator_pair<Container>
+  enclosed_region_range(Container& container,
+                        const typename Container::key_type& target)
   {
     return region_range
       (container, make_enclosed_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline enclosed_region_iterator_pair<Ct, Layout>
-  enclosed_region_range(Ct& container,
-                        const typename container_traits<Ct>::key_type& target,
+  template <typename Container, typename Layout>
+  inline enclosed_region_iterator_pair<Container, Layout>
+  enclosed_region_range(Container& container,
+                        const typename Container::key_type& target,
                         const Layout& layout)
   {
     return region_range
       (container, make_enclosed_bounds(container, target, layout));
   }
 
-  template <typename Ct>
-  inline enclosed_region_iterator_pair<const Ct>
-  enclosed_region_crange(const Ct& container,
-                         const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline enclosed_region_iterator_pair<const Container>
+  enclosed_region_crange(const Container& container,
+                         const typename Container::key_type& target)
   {
     return region_crange
       (container, make_enclosed_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline enclosed_region_iterator_pair<const Ct, Layout>
-  enclosed_region_crange(const Ct& container,
-                         const typename container_traits<Ct>::key_type& target,
+  template <typename Container, typename Layout>
+  inline enclosed_region_iterator_pair<const Container, Layout>
+  enclosed_region_crange(const Container& container,
+                         const typename Container::key_type& target,
                          const Layout& layout)
   {
     return region_crange

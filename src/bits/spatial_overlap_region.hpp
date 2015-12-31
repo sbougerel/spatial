@@ -139,310 +139,310 @@ namespace spatial
    */
   ///@{
   template <typename Tp, typename Layout>
-  overlap_bounds<typename container_traits<Tp>::key_type,
-                 typename container_traits<Tp>::key_compare,
+  overlap_bounds<typename Tp::key_type,
+                 typename Tp::key_compare,
                  Layout>
   make_overlap_bounds
   (const Tp& container,
-   const typename container_traits<Tp>::key_type& target,
+   const typename Tp::key_type& target,
    Layout tag)
   {
     ::spatial::except::check_box(container, target, tag);
     return overlap_bounds
-      <typename container_traits<Tp>::key_type,
-      typename container_traits<Tp>::key_compare, Layout>
+      <typename Tp::key_type,
+       typename Tp::key_compare, Layout>
       (container.key_comp(), target);
   }
 
   template <typename Tp>
-  overlap_bounds<typename container_traits<Tp>::key_type,
-                 typename container_traits<Tp>::key_compare>
+  overlap_bounds<typename Tp::key_type,
+                 typename Tp::key_compare>
   make_overlap_bounds
   (const Tp& container,
-   const typename container_traits<Tp>::key_type& target)
+   const typename Tp::key_type& target)
   { return make_overlap_bounds(container, target, llhh_layout_tag()); }
   ///@}
 
-  template<typename Ct, typename Layout = llhh_layout_tag>
+  template<typename Container, typename Layout = llhh_layout_tag>
   struct overlap_region_iterator
     : region_iterator
-      <Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                          typename container_traits<Ct>::key_compare,
-                          Layout> >
+      <Container, overlap_bounds<typename Container::key_type,
+                                 typename Container::key_compare,
+                                 Layout> >
   {
     /// defctor
     overlap_region_iterator() { }
 
     overlap_region_iterator
-    (const region_iterator
-    <Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                        typename container_traits<Ct>::key_compare,
-                        Layout> >& other)
+    (const region_iterator<Container,
+                           overlap_bounds<typename Container::key_type,
+                                          typename Container::key_compare,
+                                          Layout> >& other)
       : region_iterator
-        <Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                            typename container_traits<Ct>::key_compare,
-                            Layout> >(other) { }
+        <Container, overlap_bounds<typename Container::key_type,
+                                   typename Container::key_compare,
+                                   Layout> >(other) { }
   };
 
-  template<typename Ct, typename Layout>
-  struct overlap_region_iterator<const Ct, Layout>
+  template<typename Container, typename Layout>
+  struct overlap_region_iterator<const Container, Layout>
     : region_iterator
-      <const Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                                typename container_traits<Ct>::key_compare,
-                                Layout> >
+      <const Container, overlap_bounds<typename Container::key_type,
+                                       typename Container::key_compare,
+                                       Layout> >
   {
     /// defctor
     overlap_region_iterator() { }
 
     overlap_region_iterator
     (const region_iterator
-     <const Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                               typename container_traits<Ct>::key_compare,
-                               Layout> >& other)
+     <const Container, overlap_bounds<typename Container::key_type,
+                                      typename Container::key_compare,
+                                      Layout> >& other)
       : region_iterator
-        <const Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                                  typename container_traits<Ct>::key_compare,
-                                  Layout> >
+        <const Container, overlap_bounds<typename Container::key_type,
+                                         typename Container::key_compare,
+                                         Layout> >
         (other) { }
 
     overlap_region_iterator
     (const region_iterator
-     <Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                         typename container_traits<Ct>::key_compare,
-                         Layout> >& other)
+     <Container, overlap_bounds<typename Container::key_type,
+                                typename Container::key_compare,
+                                Layout> >& other)
       : region_iterator
-        <const Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                                  typename container_traits<Ct>::key_compare,
-                                  Layout> >
+        <const Container, overlap_bounds<typename Container::key_type,
+                                         typename Container::key_compare,
+                                         Layout> >
         (other) { }
   };
 
-  template<typename Ct, typename Layout = llhh_layout_tag>
+  template<typename Container, typename Layout = llhh_layout_tag>
   struct overlap_region_iterator_pair
     : region_iterator_pair
-      <Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                          typename container_traits<Ct>::key_compare,
-                          Layout> >
+      <Container, overlap_bounds<typename Container::key_type,
+                                 typename Container::key_compare,
+                                 Layout> >
   {
     /// defctor
     overlap_region_iterator_pair() { }
 
     overlap_region_iterator_pair
     (const region_iterator
-     <Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                         typename container_traits<Ct>::key_compare,
-                         Layout> >& a,
+     <Container, overlap_bounds<typename Container::key_type,
+                                typename Container::key_compare,
+                                Layout> >& a,
      const region_iterator
-     <Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                         typename container_traits<Ct>::key_compare,
-                         Layout> >& b)
+     <Container, overlap_bounds<typename Container::key_type,
+                                typename Container::key_compare,
+                                Layout> >& b)
       : region_iterator_pair
-        <Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                            typename container_traits<Ct>::key_compare,
-                            Layout> >
+        <Container, overlap_bounds<typename Container::key_type,
+                                   typename Container::key_compare,
+                                   Layout> >
     (a, b) { }
   };
 
-  template<typename Ct, typename Layout>
-  struct overlap_region_iterator_pair<const Ct, Layout>
+  template<typename Container, typename Layout>
+  struct overlap_region_iterator_pair<const Container, Layout>
     : region_iterator_pair
-      <const Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                                typename container_traits<Ct>::key_compare,
-                                Layout> >
+      <const Container, overlap_bounds<typename Container::key_type,
+                                       typename Container::key_compare,
+                                       Layout> >
   {
     /// defctor
     overlap_region_iterator_pair() { }
 
     overlap_region_iterator_pair
     (const region_iterator
-     <const Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                               typename container_traits<Ct>::key_compare,
-                               Layout> >& a,
+     <const Container, overlap_bounds<typename Container::key_type,
+                                      typename Container::key_compare,
+                                      Layout> >& a,
      const region_iterator
-     <const Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                               typename container_traits<Ct>::key_compare,
-                               Layout> >& b)
+     <const Container, overlap_bounds<typename Container::key_type,
+                                      typename Container::key_compare,
+                                      Layout> >& b)
       : region_iterator_pair
-        <const Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                                  typename container_traits<Ct>::key_compare,
-                                  Layout> >
+        <const Container, overlap_bounds<typename Container::key_type,
+                                         typename Container::key_compare,
+                                         Layout> >
     (a, b) { }
 
     overlap_region_iterator_pair
-    (const overlap_region_iterator_pair<Ct>& other)
+    (const overlap_region_iterator_pair<Container>& other)
       : region_iterator_pair
-        <const Ct, overlap_bounds<typename container_traits<Ct>::key_type,
-                                  typename container_traits<Ct>::key_compare,
-                                  Layout> >
+        <const Container, overlap_bounds<typename Container::key_type,
+                                         typename Container::key_compare,
+                                         Layout> >
         (other) { }
   };
 
-  template <typename Ct>
-  inline overlap_region_iterator<Ct>
-  overlap_region_end(Ct& container,
-                      const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline overlap_region_iterator<Container>
+  overlap_region_end(Container& container,
+                     const typename Container::key_type& target)
   {
     return region_end
       (container, make_overlap_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline overlap_region_iterator<Ct, Layout>
-  overlap_region_end(Ct& container,
-                      const typename container_traits<Ct>::key_type& target,
-                      const Layout& layout)
+  template <typename Container, typename Layout>
+  inline overlap_region_iterator<Container, Layout>
+  overlap_region_end(Container& container,
+                     const typename Container::key_type& target,
+                     const Layout& layout)
   {
     return region_end
       (container, make_overlap_bounds(container, target, layout));
   }
 
-  template <typename Ct>
-  inline overlap_region_iterator<const Ct>
-  overlap_region_end(const Ct& container,
-                      const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline overlap_region_iterator<const Container>
+  overlap_region_end(const Container& container,
+                     const typename Container::key_type& target)
   {
     return _regionend
       (container, make_overlap_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline overlap_region_iterator<const Ct, Layout>
-  overlap_region_end(const Ct& container,
-                      const typename container_traits<Ct>::key_type& target,
-                      const Layout& layout)
+  template <typename Container, typename Layout>
+  inline overlap_region_iterator<const Container, Layout>
+  overlap_region_end(const Container& container,
+                     const typename Container::key_type& target,
+                     const Layout& layout)
   {
     return region_end
       (container, make_overlap_bounds(container, target, layout));
   }
 
-  template <typename Ct>
-  inline overlap_region_iterator<const Ct>
-  overlap_region_cend(const Ct& container,
-                       const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline overlap_region_iterator<const Container>
+  overlap_region_cend(const Container& container,
+                      const typename Container::key_type& target)
   {
     return region_cend
       (container, make_overlap_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline overlap_region_iterator<const Ct, Layout>
-  overlap_region_cend(const Ct& container,
-                       const typename container_traits<Ct>::key_type& target,
+  template <typename Container, typename Layout>
+  inline overlap_region_iterator<const Container, Layout>
+  overlap_region_cend(const Container& container,
+                      const typename Container::key_type& target,
+                      const Layout& layout)
+  {
+    return region_cend
+      (container, make_overlap_bounds(container, target, layout));
+  }
+
+  template <typename Container>
+  inline overlap_region_iterator<Container>
+  overlap_region_begin(Container& container,
+                       const typename Container::key_type& target)
+  {
+    return region_begin
+      (container, make_overlap_bounds(container, target, llhh_layout_tag()));
+  }
+
+  template <typename Container, typename Layout>
+  inline overlap_region_iterator<Container, Layout>
+  overlap_region_begin(Container& container,
+                       const typename Container::key_type& target,
                        const Layout& layout)
   {
-    return region_cend
-      (container, make_overlap_bounds(container, target, layout));
-  }
-
-  template <typename Ct>
-  inline overlap_region_iterator<Ct>
-  overlap_region_begin(Ct& container,
-                  const typename container_traits<Ct>::key_type& target)
-  {
-    return region_begin
-      (container, make_overlap_bounds(container, target, llhh_layout_tag()));
-  }
-
-  template <typename Ct, typename Layout>
-  inline overlap_region_iterator<Ct, Layout>
-  overlap_region_begin(Ct& container,
-                        const typename container_traits<Ct>::key_type& target,
-                        const Layout& layout)
-  {
     return region_begin
       (container, make_overlap_bounds(container, target, layout));
   }
 
-  template <typename Ct>
-  inline overlap_region_iterator<const Ct>
-  overlap_region_begin(const Ct& container,
-                        const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline overlap_region_iterator<const Container>
+  overlap_region_begin(const Container& container,
+                       const typename Container::key_type& target)
   {
     return _regionbegin
       (container, make_overlap_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline overlap_region_iterator<const Ct, Layout>
-  overlap_region_begin(const Ct& container,
-                        const typename container_traits<Ct>::key_type& target,
-                        const Layout& layout)
+  template <typename Container, typename Layout>
+  inline overlap_region_iterator<const Container, Layout>
+  overlap_region_begin(const Container& container,
+                       const typename Container::key_type& target,
+                       const Layout& layout)
   {
     return region_begin
       (container, make_overlap_bounds(container, target, layout));
   }
 
-  template <typename Ct>
-  inline overlap_region_iterator<const Ct>
-  overlap_region_cbegin(const Ct& container,
-                   const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline overlap_region_iterator<const Container>
+  overlap_region_cbegin(const Container& container,
+                        const typename Container::key_type& target)
   {
     return region_cbegin
       (container, make_overlap_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline overlap_region_iterator<const Ct, Layout>
-  overlap_region_cbegin(const Ct& container,
-                   const typename container_traits<Ct>::key_type& target,
-                   const Layout& layout)
+  template <typename Container, typename Layout>
+  inline overlap_region_iterator<const Container, Layout>
+  overlap_region_cbegin(const Container& container,
+                        const typename Container::key_type& target,
+                        const Layout& layout)
   {
     return region_cbegin
       (container, make_overlap_bounds(container, target, layout));
   }
 
-  template <typename Ct>
-  inline overlap_region_iterator_pair<Ct>
-  overlap_region_range(Ct& container,
-                        const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline overlap_region_iterator_pair<Container>
+  overlap_region_range(Container& container,
+                       const typename Container::key_type& target)
   {
     return region_range
       (container, make_overlap_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline overlap_region_iterator_pair<Ct, Layout>
-  overlap_region_range(Ct& container,
-                        const typename container_traits<Ct>::key_type& target,
-                        const Layout& layout)
+  template <typename Container, typename Layout>
+  inline overlap_region_iterator_pair<Container, Layout>
+  overlap_region_range(Container& container,
+                       const typename Container::key_type& target,
+                       const Layout& layout)
   {
     return region_range
       (container, make_overlap_bounds(container, target, layout));
   }
 
-  template <typename Ct>
-  inline overlap_region_iterator_pair<const Ct>
-  overlap_region_range(const Ct& container,
-                        const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline overlap_region_iterator_pair<const Container>
+  overlap_region_range(const Container& container,
+                       const typename Container::key_type& target)
   {
     return region_range
       (container, make_overlap_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline overlap_region_iterator_pair<const Ct, Layout>
-  overlap_region_range(const Ct& container,
-                        const typename container_traits<Ct>::key_type& target,
-                        const Layout& layout)
+  template <typename Container, typename Layout>
+  inline overlap_region_iterator_pair<const Container, Layout>
+  overlap_region_range(const Container& container,
+                       const typename Container::key_type& target,
+                       const Layout& layout)
   {
     return region_range
       (container, make_overlap_bounds(container, target, layout));
   }
 
-  template <typename Ct>
-  inline overlap_region_iterator_pair<const Ct>
-  overlap_region_crange(const Ct& container,
-                         const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline overlap_region_iterator_pair<const Container>
+  overlap_region_crange(const Container& container,
+                        const typename Container::key_type& target)
   {
     return region_crange
       (container, make_overlap_bounds(container, target, llhh_layout_tag()));
   }
 
-  template <typename Ct, typename Layout>
-  inline overlap_region_iterator_pair<const Ct, Layout>
-  overlap_region_crange(const Ct& container,
-                         const typename container_traits<Ct>::key_type& target,
-                         const Layout& layout)
+  template <typename Container, typename Layout>
+  inline overlap_region_iterator_pair<const Container, Layout>
+  overlap_region_crange(const Container& container,
+                        const typename Container::key_type& target,
+                        const Layout& layout)
   {
     return region_crange
       (container, make_overlap_bounds(container, target, layout));

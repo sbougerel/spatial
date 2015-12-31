@@ -119,159 +119,160 @@ namespace spatial
    *  \throws invalid_bounds
    */
   template <typename Tp>
-  open_bounds<typename container_traits<Tp>::key_type,
-                    typename container_traits<Tp>::key_compare>
+  open_bounds<typename Tp::key_type,
+                    typename Tp::key_compare>
   make_open_bounds
   (const Tp& container,
-   const typename container_traits<Tp>::key_type& lower,
-   const typename container_traits<Tp>::key_type& upper)
+   const typename Tp::key_type& lower,
+   const typename Tp::key_type& upper)
   {
     except::check_open_bounds(container, lower, upper);
     return open_bounds
-      <typename container_traits<Tp>::key_type,
-      typename container_traits<Tp>::key_compare>
+      <typename Tp::key_type,
+      typename Tp::key_compare>
       (container.key_comp(), lower, upper);
   }
 
-  template<typename Ct>
+  template<typename Container>
   struct open_region_iterator
-    : region_iterator
-      <Ct, open_bounds<typename container_traits<Ct>::key_type,
-                       typename container_traits<Ct>::key_compare> >
+    : region_iterator<Container,
+                      open_bounds<typename Container::key_type,
+                                  typename Container::key_compare> >
   {
     open_region_iterator() { }
 
     open_region_iterator
-    (const region_iterator
-     <Ct, open_bounds<typename container_traits<Ct>::key_type,
-                      typename container_traits<Ct>::key_compare> >& other)
+    (const region_iterator<Container,
+     open_bounds <typename Container::key_type,
+     typename Container::key_compare> >& other)
       : region_iterator
-        <Ct, open_bounds<typename container_traits<Ct>::key_type,
-                         typename container_traits<Ct>::key_compare> >
+        <Container, open_bounds<typename Container::key_type,
+                                typename Container::key_compare> >
         (other) { }
   };
 
-  template<typename Ct>
-  struct open_region_iterator<const Ct>
-    : region_iterator
-      <const Ct, open_bounds<typename container_traits<Ct>::key_type,
-                             typename container_traits<Ct>::key_compare> >
+  template<typename Container>
+  struct open_region_iterator<const Container>
+    : region_iterator<const Container,
+                      open_bounds<typename Container::key_type,
+                                  typename Container::key_compare> >
   {
     open_region_iterator() { }
 
     open_region_iterator
-    (const region_iterator
-     <const Ct, open_bounds<typename container_traits<Ct>::key_type,
-                            typename container_traits<Ct>::key_compare> >&
+    (const region_iterator<const Container,
+                           open_bounds<typename Container::key_type,
+                                       typename Container::key_compare> >&
+     other)
+      : region_iterator<const Container,
+                        open_bounds<typename Container::key_type,
+                                    typename Container::key_compare> >
+      (other) { }
+
+    open_region_iterator
+    (const region_iterator<Container,
+                           open_bounds<typename Container::key_type,
+                                       typename Container::key_compare> >&
      other)
       : region_iterator
-        <const Ct, open_bounds<typename container_traits<Ct>::key_type,
-                               typename container_traits<Ct>::key_compare> >
-        (other) { }
-
-    open_region_iterator
-    (const region_iterator
-     <Ct, open_bounds<typename container_traits<Ct>::key_type,
-                      typename container_traits<Ct>::key_compare> >& other)
-      : region_iterator
-        <const Ct, open_bounds<typename container_traits<Ct>::key_type,
-                               typename container_traits<Ct>::key_compare> >
+        <const Container, open_bounds<typename Container::key_type,
+                                      typename Container::key_compare> >
         (other) { }
   };
 
-  template<typename Ct>
+  template<typename Container>
   struct open_region_iterator_pair
-    : region_iterator_pair
-      <Ct, open_bounds<typename container_traits<Ct>::key_type,
-                       typename container_traits<Ct>::key_compare> >
+    : region_iterator_pair<Container,
+                           open_bounds<typename Container::key_type,
+                                       typename Container::key_compare> >
   {
     open_region_iterator_pair() { }
 
     open_region_iterator_pair
-    (const region_iterator
-     <Ct, open_bounds<typename container_traits<Ct>::key_type,
-                      typename container_traits<Ct>::key_compare> >& a,
-     const region_iterator
-     <Ct, open_bounds<typename container_traits<Ct>::key_type,
-                      typename container_traits<Ct>::key_compare> >& b)
-      : region_iterator_pair
-        <Ct, open_bounds<typename container_traits<Ct>::key_type,
-                         typename container_traits<Ct>::key_compare> >
+    (const region_iterator<Container,
+                           open_bounds<typename Container::key_type,
+                                       typename Container::key_compare> >& a,
+     const region_iterator<Container,
+                           open_bounds<typename Container::key_type,
+                                       typename Container::key_compare> >& b)
+      : region_iterator_pair<Container,
+                             open_bounds<typename Container::key_type,
+                                         typename Container::key_compare> >
         (a, b) { }
   };
 
-  template<typename Ct>
-  struct open_region_iterator_pair<const Ct>
+  template<typename Container>
+  struct open_region_iterator_pair<const Container>
     : region_iterator_pair
-      <const Ct, open_bounds<typename container_traits<Ct>::key_type,
-                             typename container_traits<Ct>::key_compare> >
+      <const Container, open_bounds<typename Container::key_type,
+                                    typename Container::key_compare> >
   {
     open_region_iterator_pair() { }
 
     open_region_iterator_pair
     (const region_iterator
-     <const Ct, open_bounds<typename container_traits<Ct>::key_type,
-                            typename container_traits<Ct>::key_compare> >& a,
+     <const Container, open_bounds<typename Container::key_type,
+                                   typename Container::key_compare> >& a,
      const region_iterator
-     <const Ct, open_bounds<typename container_traits<Ct>::key_type,
-                            typename container_traits<Ct>::key_compare> >& b)
+     <const Container, open_bounds<typename Container::key_type,
+                                   typename Container::key_compare> >& b)
       : region_iterator_pair
-        <const Ct, open_bounds<typename container_traits<Ct>::key_type,
-                               typename container_traits<Ct>::key_compare> >
+        <const Container, open_bounds<typename Container::key_type,
+                                      typename Container::key_compare> >
         (a, b) { }
 
     open_region_iterator_pair
     (const region_iterator_pair
-     <Ct, open_bounds<typename container_traits<Ct>::key_type,
-                      typename container_traits<Ct>::key_compare> >& other)
+     <Container, open_bounds<typename Container::key_type,
+                             typename Container::key_compare> >& other)
       : region_iterator_pair
-        <const Ct, open_bounds<typename container_traits<Ct>::key_type,
-                               typename container_traits<Ct>::key_compare> >
+        <const Container, open_bounds<typename Container::key_type,
+                                      typename Container::key_compare> >
         (other) { }
   };
 
-  template <typename Ct>
-  inline open_region_iterator<Ct>
-  open_region_end(Ct& container,
-                    const typename container_traits<Ct>::key_type& lower,
-                    const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline open_region_iterator<Container>
+  open_region_end(Container& container,
+                  const typename Container::key_type& lower,
+                  const typename Container::key_type& upper)
   { return region_end(container, make_open_bounds(container, lower, upper)); }
 
-  template <typename Ct>
-  inline open_region_iterator<const Ct>
-  open_region_cend(const Ct& container,
-                     const typename container_traits<Ct>::key_type& lower,
-                     const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline open_region_iterator<const Container>
+  open_region_cend(const Container& container,
+                   const typename Container::key_type& lower,
+                   const typename Container::key_type& upper)
   { return region_cend(container, make_open_bounds(container, lower, upper)); }
 
-  template <typename Ct>
-  inline open_region_iterator<Ct>
-  open_region_begin(Ct& container,
-                    const typename container_traits<Ct>::key_type& lower,
-                    const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline open_region_iterator<Container>
+  open_region_begin(Container& container,
+                    const typename Container::key_type& lower,
+                    const typename Container::key_type& upper)
   { return region_begin(container, make_open_bounds(container, lower, upper)); }
 
-  template <typename Ct>
-  inline open_region_iterator<const Ct>
-  open_region_cbegin(const Ct& container,
-                     const typename container_traits<Ct>::key_type& lower,
-                     const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline open_region_iterator<const Container>
+  open_region_cbegin(const Container& container,
+                     const typename Container::key_type& lower,
+                     const typename Container::key_type& upper)
   {
     return region_cbegin(container, make_open_bounds(container, lower, upper));
   }
 
-  template <typename Ct>
-  inline open_region_iterator_pair<Ct>
-  open_region_range(Ct& container,
-                    const typename container_traits<Ct>::key_type& lower,
-                    const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline open_region_iterator_pair<Container>
+  open_region_range(Container& container,
+                    const typename Container::key_type& lower,
+                    const typename Container::key_type& upper)
   { return region_range(container, make_open_bounds(container, lower, upper)); }
 
-  template <typename Ct>
-  inline open_region_iterator_pair<const Ct>
-  open_region_crange(const Ct& container,
-                     const typename container_traits<Ct>::key_type& lower,
-                     const typename container_traits<Ct>::key_type& upper)
+  template <typename Container>
+  inline open_region_iterator_pair<const Container>
+  open_region_crange(const Container& container,
+                     const typename Container::key_type& lower,
+                     const typename Container::key_type& upper)
   {
     return region_crange(container, make_open_bounds(container, lower, upper));
   }

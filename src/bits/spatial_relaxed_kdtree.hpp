@@ -1160,11 +1160,11 @@ namespace spatial
       while (!empty())
         {
           node_ptr node;
-          dimension_type dim;
-          import::tie(node, dim)
+          dimension_type depth;
+          import::tie(node, depth)
             = first_equal(get_root(), 0, rank(), key_comp(), key);
           if (node == get_header()) break;
-          erase_node_balance(dim, node);
+          erase_node_balance(depth % rank()(), node);
           destroy_node(node);
           ++cnt;
         }
