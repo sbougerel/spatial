@@ -148,6 +148,10 @@ namespace spatial
      typename Container::rank_type> Base;
 
   public:
+    using Base::node;
+    using Base::node_dim;
+    using Base::rank;
+
     //! Uninitialized iterator.
     region_iterator() { }
 
@@ -195,28 +199,38 @@ namespace spatial
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
     region_iterator<Container, Predicate>& operator++()
-    { return increment_region(*this); }
+    {
+      import::tie(node, node_dim)
+        = increment_region(node, node_dim, rank(), _pred);
+      return *this;
+    }
 
     //! Increments the iterator but returns the value of the iterator before
     //! the increment. Prefer to use the other form in \c for loops.
     region_iterator<Container, Predicate> operator++(int)
     {
       region_iterator<Container, Predicate> x(*this);
-      increment_region(*this);
+      import::tie(node, node_dim)
+        = increment_region(node, node_dim, rank(), _pred);
       return x;
     }
 
     //! Decrements the iterator and returns the decremented value. Prefer to
     //! use this form in \c for loops.
     region_iterator<Container, Predicate>& operator--()
-    { return decrement_region(*this); }
+    {
+      import::tie(node, node_dim)
+        = decrement_region(node, node_dim, rank(), _pred);
+      return *this;
+    }
 
     //! Decrements the iterator but returns the value of the iterator before
     //! the decrement. Prefer to use the other form in \c for loops.
     region_iterator<Container, Predicate> operator--(int)
     {
       region_iterator<Container, Predicate> x(*this);
-      decrement_region(*this);
+      import::tie(node, node_dim)
+        = decrement_region(node, node_dim, rank(), _pred);
       return x;
     }
 
@@ -254,6 +268,10 @@ namespace spatial
      typename Container::rank_type> Base;
 
   public:
+    using Base::node;
+    using Base::node_dim;
+    using Base::rank;
+
     //! \empty
     region_iterator() { }
 
@@ -306,28 +324,38 @@ namespace spatial
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
     region_iterator<const Container, Predicate>& operator++()
-    { return increment_region(*this); }
+    {
+      import::tie(node, node_dim)
+        = increment_region(node, node_dim, rank(), _pred);
+      return *this;
+    }
 
     //! Increments the iterator but returns the value of the iterator before
     //! the increment. Prefer to use the other form in \c for loops.
     region_iterator<const Container, Predicate> operator++(int)
     {
       region_iterator<const Container, Predicate> x(*this);
-      increment_region(*this);
+      import::tie(node, node_dim)
+        = increment_region(node, node_dim, rank(), _pred);
       return x;
     }
 
     //! Decrements the iterator and returns the decremented value. Prefer to
     //! use this form in \c for loops.
     region_iterator<const Container, Predicate>& operator--()
-    { return decrement_region(*this); }
+    {
+      import::tie(node, node_dim)
+        = decrement_region(node, node_dim, rank(), _pred);
+      return *this;
+    }
 
     //! Decrements the iterator but returns the value of the iterator before
     //! the decrement. Prefer to use the other form in \c for loops.
     region_iterator<const Container, Predicate> operator--(int)
     {
       region_iterator<const Container, Predicate> x(*this);
-      decrement_region(*this);
+      import::tie(node, node_dim)
+        = decrement_region(node, node_dim, rank(), _pred);
       return x;
     }
 
@@ -433,9 +461,12 @@ namespace spatial
   region_begin(Container& container, const Predicate& pred)
   {
     if (container.empty()) return region_end(container, pred);
-    region_iterator<Container, Predicate>
-      it(container, pred, 0, container.end().node->parent); // At root, dim = 0
-    return details::minimum_region(it);
+    typename region_iterator<Container>::node_ptr node
+      = container.end().node->parent;
+    dimension_type depth;
+    import::tie(node, depth)
+      = first_region(node, 0, container.rank(), pred);
+    return region_iterator<Container, Predicate>(container, pred, depth, node);
   }
 
   template <typename Container, typename Predicate>
@@ -627,7 +658,7 @@ namespace spatial
                   NodePtr other;
                   dimension_type other_depth;
                   import::tie(other, other_depth)
-                    = region_first(node->left, depth + 1, rank, pred);
+                    = first_region(node->left, depth + 1, rank, pred);
                   if (other != node)
                     { return std::make_pair(other, other_depth); }
                 }
@@ -648,11 +679,10 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(node != 0);
       for (;;)
         {
-          if (pred(depth % rank(), rank(), const_key(node)) != above
-              && node->right != 0)
+          relative_order rel = pred(depth % rank(), rank(), const_key(node));
+          if (rel != above && node->right != 0)
             { node = node->right; ++depth; }
-          else if (pred(depth % rank(), rank(), const_key(node)) != below
-                   && node->left != 0)
+          else if (rel != below && node->left != 0)
             { node = node->left; ++depth; }
           else break;
         }
@@ -668,22 +698,97 @@ namespace spatial
           if (header(node))
             { return std::make_pair(node, depth); }
           if (node->right == prev_node
-              && prev(depth % rank(), rank(), const_key(node) != below)
+              && pred(depth % rank(), rank(), const_key(node)) != below
               && node->left != 0)
             {
               node = node->left; ++depth;
               for (;;)
                 {
-                  if (pred(depth % rank(), rank(), const_key(node)) != above
-                      && node->right != 0)
+                  relative_order rel = pred(depth % rank(), rank(), const_key(node));
+                  if (rel != above && node->right != 0)
                     { node = node->right; ++depth; }
-                  else if (pred(depth % rank(), rank(), const_key(node)) != below
-                           && node->left != 0)
+                  else if (rel != below && node->left != 0)
                     { node = node->left; ++depth; }
                   else break;
                 }
             }
         }
+    }
+
+    template <typename NodePtr, typename Rank, typename Predicate>
+    inline std::pair<NodePtr, dimension_type>
+    increment_region(NodePtr node, dimension_type depth, const Rank rank,
+                     const Predicate& pred)
+    {
+      SPATIAL_ASSERT_CHECK(!header(node));
+      SPATIAL_ASSERT_CHECK(node != 0);
+      for (;;)
+        {
+          relative_order rel = pred(depth % rank(), rank(), const_key(node));
+          if (rel != below && node->left != 0)
+            { node = node->left; ++depth; }
+          else if (rel != above && node->right != 0)
+            { node = node->right; ++depth; }
+          else
+            {
+              NodePtr prev_node = node;
+              node = node->parent; --depth;
+              while (!header(node)
+                     && (prev_node == node->right
+                         || pred(depth % rank(), rank(),
+                                 const_key(node)) == above
+                         || node->right == 0))
+                {
+                  prev_node = node;
+                  node = node->parent; --depth;
+                }
+              if (!header(node))
+                { node = node->right; ++depth; }
+              else { return std::make_pair(node, depth); }
+            }
+          dimension_type test = 0;
+          for(; test < rank()
+                && pred(test, rank(), const_key(node)) == matching; ++test);
+          if (test == rank())
+            { return std::make_pair(node, depth); }
+        }
+    }
+
+    template <typename NodePtr, typename Rank, typename Predicate>
+    inline std::pair<NodePtr, dimension_type>
+    decrement_region(NodePtr node, dimension_type depth, const Rank rank,
+                     const Predicate& pred)
+    {
+      if (header(node))
+        { return last_region(node->parent, 0, rank, pred); }
+      SPATIAL_ASSERT_CHECK(node != 0);
+      NodePtr prev_node = node;
+      node = node->parent; --depth;
+      while (!header(node))
+        {
+          if (node->right == prev_node
+              && pred(depth % rank(), rank(), const_key(node)) != below
+              && node->left != 0)
+            {
+              node = node->left; ++depth;
+              for (;;)
+                {
+                  relative_order rel = pred(depth % rank(), rank(), const_key(node));
+                  if (rel != above && node->right != 0)
+                    { node = node->right; ++depth; }
+                  else if (rel != below && node->left != 0)
+                    { node = node->left; ++depth; }
+                  else break;
+                }
+            }
+          dimension_type test = 0;
+          for(; test < rank()
+                && pred(test, rank(), const_key(node)) == matching; ++test);
+          if (test == rank()) break;
+          prev_node = node;
+          node = node->parent; --depth;
+        }
+      return std::make_pair(node, depth);
     }
 
     template <typename Container, typename Predicate>
