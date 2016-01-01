@@ -50,6 +50,13 @@ A brief overview of \Spatial's features is provided below:
 analysis. Check out \ref tutorial "Quick Starting Guide" to get you started on
 using \Spatial.
 
+\section update Change from previous version
+
+Classes container_traits and metric_traits are removed since they
+provided no benefit and inflated the code needlessly. If you used
+these classes, just remove them from your code, calling the types from
+containers or metrics directly.
+
 \section source Getting the Source
 
 ZIP packages are available at the \project_page.
@@ -120,6 +127,13 @@ contributing "Contributing".
 /**
 \page changelog Change Log
 \tableofcontents
+
+\section ver219 Version 2.1.9
+
+- Completed Feature #9 improving the performance of region_iterator
+  and Feature #8 improving performance of equal_iterator. Removed
+  container_traits and metric_traits classes which give no additional
+  benefit.
 
 \section ver218 Version 2.1.8
 
