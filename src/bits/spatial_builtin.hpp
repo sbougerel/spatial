@@ -57,9 +57,9 @@ namespace spatial
      *  to one of the builtin library comparators or not. Designed to be used
      *  with \ref enable_if.
      */
-    template <typename Ct>
+    template <typename Container>
     struct is_compare_builtin
-      : is_compare_builtin_helper<typename container_traits<Ct>::key_compare>
+      : is_compare_builtin_helper<typename Container::key_compare>
     { };
 
     /**
@@ -137,14 +137,14 @@ namespace spatial
       ///@}
 
       typedef typename builtin_difference
-      <typename container_traits<Container>::key_compare>::type type;
+      <typename Container::key_compare>::type type;
 
       //! Constructs the difference type from the built-in container's key
       //! compare operator.
       type operator()(const Container& container) const
       {
         return builtin_difference
-          <typename container_traits<Container>::key_compare>()
+          <typename Container::key_compare>()
           (container.key_comp());
       }
     };
@@ -155,9 +155,8 @@ namespace spatial
      *  Inherits \c import::true_type if it is one of the built-in difference
      *  functors, \c import::false_type if it is not. Designed to be used with
      *  \ref spatial::enable_if.
-     *
-     *  @{
      */
+    ///@{
     template <typename>
     struct is_difference_builtin : import::false_type { };
     template <typename Tp, typename Unit>
@@ -172,9 +171,7 @@ namespace spatial
     template <typename Accessor, typename Tp, typename Unit>
     struct is_difference_builtin<accessor_minus<Accessor, Tp, Unit> >
       : import::true_type { };
-    /**
-     *  @}
-     */
+    ///@}
 
     /**
      *  If \c Diff is a builtin difference type, change the current unit of Diff

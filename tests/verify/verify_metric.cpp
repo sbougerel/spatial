@@ -12,38 +12,6 @@
 #include "../../src/metric.hpp"
 #include "spatial_test_fixtures.hpp"
 
-BOOST_AUTO_TEST_CASE(test_metric_trait)
-{
-  using namespace spatial::details;
-  check_is_same
-    <metric_traits<quadrance
-                     <point_multiset<2, int2>, int,
-                      paren_minus<int2, int> > >::distance_type,
-     quadrance<point_multiset<2, int2>, int,
-               paren_minus<int2, int> >::distance_type>();
-  check_is_same
-    <metric_traits<euclidian
-                   <box_multiset<6, double6>, double,
-                    bracket_minus<double6, double> > >::distance_type,
-     euclidian<box_multiset<6, double6>, double,
-               bracket_minus<double6, double> >::distance_type>();
-  // The following will not compile, but I comment it out to test enable_if
-  //check_is_same
-  //  <metric_traits<euclidian
-  //                   <boxmap<2, quad, std::string>, int,
-  //                    accessor_minus<quad_access, quad, int> > >
-  //                   ::distance_type,
-  //   euclidian<boxmap<2, quad, std::string>, int,
-  //                   accessor_minus<quad_access, quad, int> >
-  //                   ::distance_type>();
-  check_is_same
-    <metric_traits<manhattan
-                   <idle_point_multiset<2, int2>, int,
-                    paren_minus<int2, int> > >::distance_type,
-     manhattan<idle_point_multiset<2, int2>, int,
-               paren_minus<int2, int> >::distance_type>();
-}
-
 BOOST_AUTO_TEST_CASE(test_difference_bracket)
 {
   bracket_minus<int2, int>

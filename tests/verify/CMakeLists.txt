@@ -65,7 +65,6 @@ include_directories(${Boost_INCLUDE_DIRS})
 #
 # The verify exectuables checks correctness
 add_executable (verify verify.cpp
-                verify_traits.cpp
                 verify_details.cpp
                 verify_node.cpp
                 verify_exception.cpp

@@ -17,7 +17,6 @@
 #define SPATIAL_METRIC_HPP
 
 #include "function.hpp"
-#include "traits.hpp"
 #include "bits/spatial_math.hpp"
 #include "bits/spatial_builtin.hpp"
 
@@ -38,7 +37,7 @@ namespace spatial
    *  uses the hypot algorithm which has much less chance to overflow or
    *  underflow than \ref quadrance. However is it also much slower.
    */
-  template<typename Ct, typename DistanceType, typename Diff>
+  template<typename Container, typename DistanceType, typename Diff>
   class euclidian : Diff
   {
     // Check that DistanceType is a fundamental floating point type
@@ -57,7 +56,7 @@ namespace spatial
     /**
      *  The key_type of the container being used for calculations.
      */
-    typedef typename container_traits<Ct>::key_type key_type;
+    typedef typename Container::key_type key_type;
 
   public:
     /**
@@ -70,7 +69,7 @@ namespace spatial
 
     //! Copy the metric from another metric with any DistanceType.
     template <typename AnyDistanceType>
-    euclidian(const euclidian<Ct, AnyDistanceType, Diff>& other)
+    euclidian(const euclidian<Container, AnyDistanceType, Diff>& other)
       : Diff(other.difference()) { }
 
     /**
@@ -134,7 +133,7 @@ namespace spatial
    *  \c \#define \c SPATIAL_SAFER_ARITHEMTICS.
    *
    */
-  template<typename Ct, typename DistanceType, typename Diff>
+  template<typename Container, typename DistanceType, typename Diff>
   class quadrance : Diff
   {
     // Check that DistanceType is a fundamental floating point type
@@ -153,7 +152,7 @@ namespace spatial
     /**
      *  The key_type of the container being used for calculations.
      */
-    typedef typename container_traits<Ct>::key_type key_type;
+    typedef typename Container::key_type key_type;
 
   public:
     typedef DistanceType distance_type;
@@ -163,7 +162,7 @@ namespace spatial
 
     //! Copy the metric from another metric with any DistanceType.
     template <typename AnyDistanceType>
-    quadrance(const quadrance<Ct, AnyDistanceType, Diff>& other)
+    quadrance(const quadrance<Container, AnyDistanceType, Diff>& other)
       : Diff(other.difference()) { }
 
     /**
@@ -227,7 +226,7 @@ namespace spatial
    *  arithmetic_error exception upon overflow, compile your application with
    *  \c \#define \c SPATIAL_SAFER_ARITHEMTICS.
    */
-  template<typename Ct, typename DistanceType, typename Diff>
+  template<typename Container, typename DistanceType, typename Diff>
   class manhattan : Diff
   {
     // Check that DistanceType is a fundamental floating point type
@@ -246,7 +245,7 @@ namespace spatial
     /**
      *  The key_type of the container being used for calculations.
      */
-    typedef typename container_traits<Ct>::key_type key_type;
+    typedef typename Container::key_type key_type;
 
   public:
     typedef DistanceType distance_type;
@@ -256,7 +255,7 @@ namespace spatial
 
     //! Copy the metric from another metric with any DistanceType.
     template <typename AnyDistanceType>
-    manhattan(const manhattan<Ct, AnyDistanceType, Diff>& other)
+    manhattan(const manhattan<Container, AnyDistanceType, Diff>& other)
       : Diff(other.difference()) { }
 
     /**

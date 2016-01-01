@@ -5,7 +5,7 @@ Minor version updates
 --------------------
 
 1. Some test cases now require lots of RAM to compile, therefore we
-   need to break things up.
+   need to break things up. Such as verify_region.hpp.
 
 2. Remove inter iterator conversion by making bidirectional template
    after the iterators' data
@@ -63,7 +63,12 @@ Major version update
    box. Defining box_multiset would then be put into
    question. Ultimately this would result into less code as well.
 
-4. Create the cache-oblivious point_index and box_index once the above
+4. Predicate interface for region_iterator should change. It should be
+   composed of 2 functions "greater_than_upper_bound" and
+   "less_than_lower_bound" which should lower the amount of
+   computation in region_iterator.
+
+5. Create the cache-oblivious point_index and box_index once the above
    is done. Which would be a real achievement at this point. Index are
    flat array representation of the tree which maintain perfect
    balancing. It is also more economical in memory since only 1

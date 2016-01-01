@@ -17,7 +17,6 @@
 
 #include <utility> // std::pair<> and std::make_pair()
 #include "spatial_bidirectional.hpp"
-#include "spatial_rank.hpp"
 #include "spatial_except.hpp"
 #include "spatial_import_tuple.hpp"
 
@@ -171,7 +170,7 @@ namespace spatial
      */
     region_iterator(Container& container, const Predicate& pred,
                     typename Container::iterator iter)
-      : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
+      : Base(container.rank(), iter.node, depth(iter.node)),
         _pred(pred) { }
 
     /**
@@ -291,7 +290,7 @@ namespace spatial
      */
     region_iterator(const Container& container, const Predicate& pred,
                     typename Container::const_iterator iter)
-      : Base(container.rank(), iter.node, modulo(iter.node, container.rank())),
+      : Base(container.rank(), iter.node, depth(iter.node)),
         _pred(pred) { }
 
     /**
@@ -369,35 +368,6 @@ namespace spatial
 
   namespace details
   {
-    /**
-     *  From \c iter, returns the next matching iterator in the region delimited
-     *  by \c Predicate, using in-order transversal.
-     *
-     *  \param iter A valid region iterator.
-     *  \tparam Predicate  The type of predicate for the orthogonal query.
-     *  \tparam Ct The type of container to iterate.
-     *  \return  An iterator pointing the next matching value.
-     */
-    template <typename Container, typename Predicate>
-    region_iterator<Container, Predicate>&
-    increment_region(region_iterator<Container, Predicate>& iter);
-
-    /**
-     *  From \c iter, returns the previous matching iterator in the region
-     *  delimited by \c Predicate, using in-order transversal.
-     *
-     *  \param iter A valid region iterator or a past-the-end iterator.
-     *  \tparam Predicate  The type of predicate for the orthogonal query.
-     *  \tparam Ct The type of container to iterate.
-     *  \return  An iterator pointing the previous value.
-     *
-     *  If \c iter is a past-the-end iterator (pointing to a header node), the
-     *  function will return the maximum iterator in region.
-     */
-    template <typename Container, typename Predicate>
-    region_iterator<Container, Predicate>&
-    decrement_region(region_iterator<Container, Predicate>& iter);
-
     /**
      *  In the children of the node pointed to by \c iter, find the first
      *  matching iterator in the region delimited by \c Predicate, using
@@ -600,28 +570,17 @@ namespace spatial
   namespace details
   {
     /**
-     *  Return a boolean indicating whether all of \c key's coordinates are
-     *  within range or not.
+     *  In the children of the node pointed to by \c node, find the first
+     *  matching node in the region delimited by \c Predicate, with pre-order
+     *  transversal.  If no match can be found, returns a node pointing to \c
+     *  node's parent.
      *
-     *  The key is simply tested across all dimesions over the predicate.
-     *  \tparam Rank Either \static_rank or \dynamic_rank.
-     *  \tparam Key The key type that is used in the comparison.
-     *  \tparam Predicate A type that is a model of \region_predicate.
-     *  \param rank The magnitude of the rank.
-     *  \param key The key whose coordinates are verified to be within the
-     *  range.
-     *  \param predicate The \region_predicate object used to represent the
-     *  range.
+     *  \param node  The node currently pointed to.
+     *  \param depth The depth at which the node is located in the tree.
+     *  \param rank  The rank for the container.
+     *  \param pred  The predicate used to find matching nodes.
+     *  \tparam Predicate  The type of predicate for the orthogonal query.
      */
-    template <typename Rank, typename Key, typename Predicate>
-    inline bool
-    match_all(const Rank& rank, const Key& key, const Predicate& predicate)
-    {
-      for (dimension_type i = 0; i < rank(); ++i)
-        { if (predicate(i, rank(), key) != matching) { return false; } }
-      return true;
-    }
-
     template <typename NodePtr, typename Rank, typename Predicate>
     inline std::pair<NodePtr, dimension_type>
     first_region(NodePtr node, dimension_type depth, const Rank rank,
@@ -670,6 +629,18 @@ namespace spatial
         }
     }
 
+    /**
+     *  In the children of the node pointed to by \c node, find the last
+     *  matching node in the region delimited by \c Predicate, with pre-order
+     *  transversal.  If no match can be found, returns a node pointing to \c
+     *  node's parent
+     *
+     *  \param node  The node currently pointed to.
+     *  \param depth The depth at which the node is located in the tree.
+     *  \param rank  The rank for the container.
+     *  \param pred  The predicate used to find matching nodes.
+     *  \tparam Predicate  The type of predicate for the orthogonal query.
+     */
     template <typename NodePtr, typename Rank, typename Predicate>
     inline std::pair<NodePtr, dimension_type>
     last_region(NodePtr node, dimension_type depth, const Rank rank,
@@ -715,6 +686,17 @@ namespace spatial
         }
     }
 
+    /**
+     *  Returns the next matching node in the region delimited by \c Predicate,
+     *  with pre-order transversal. If node is past-the-end, then the behavior
+     *  is unspecified.
+     *
+     *  \param node  The node currently pointed to.
+     *  \param depth The depth at which the node is located in the tree.
+     *  \param rank  The rank for the container.
+     *  \param pred  The predicate used to find matching nodes.
+     *  \tparam Predicate  The type of predicate for the orthogonal query.
+     */
     template <typename NodePtr, typename Rank, typename Predicate>
     inline std::pair<NodePtr, dimension_type>
     increment_region(NodePtr node, dimension_type depth, const Rank rank,
@@ -754,6 +736,17 @@ namespace spatial
         }
     }
 
+    /**
+     *  Returns the previous matching node in the region delimited by \c
+     *  Predicate, with pre-order transversal. If node is at the start of the
+     *  range, then the behavior is unspecified.
+     *
+     *  \param node  The node currently pointed to.
+     *  \param depth The depth at which the node is located in the tree.
+     *  \param rank  The rank for the container.
+     *  \param pred  The predicate used to find matching nodes.
+     *  \tparam Predicate  The type of predicate for the orthogonal query.
+     */
     template <typename NodePtr, typename Rank, typename Predicate>
     inline std::pair<NodePtr, dimension_type>
     decrement_region(NodePtr node, dimension_type depth, const Rank rank,
@@ -789,224 +782,6 @@ namespace spatial
           node = node->parent; --depth;
         }
       return std::make_pair(node, depth);
-    }
-
-    template <typename Container, typename Predicate>
-    inline region_iterator<Container, Predicate>&
-    increment_region(region_iterator<Container, Predicate>& iter)
-    {
-      const typename Container::rank_type rank(iter.rank());
-      const Predicate pred(iter.predicate());
-      SPATIAL_ASSERT_CHECK(!header(iter.node));
-      SPATIAL_ASSERT_CHECK(iter.node != 0);
-      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
-      do
-        {
-          if (iter.node->right != 0
-              && pred(iter.node_dim, rank(), const_key(iter.node)) != above)
-            {
-              iter.node = iter.node->right;
-              iter.node_dim = incr_dim(rank, iter.node_dim);
-              while (iter.node->left != 0
-                     && pred(iter.node_dim, rank(),
-                             const_key(iter.node)) != below)
-                {
-                  iter.node = iter.node->left;
-                  iter.node_dim = incr_dim(rank, iter.node_dim);
-                }
-            }
-          else
-            {
-              typename region_iterator<Container, Predicate>::node_ptr p
-                = iter.node->parent;
-              while (!header(p) && iter.node == p->right)
-                {
-                  iter.node = p;
-                  iter.node_dim = decr_dim(rank, iter.node_dim);
-                  p = iter.node->parent;
-                }
-              iter.node = p;
-              iter.node_dim = decr_dim(rank, iter.node_dim);
-            }
-        }
-      while (!header(iter.node)
-             && match_all(rank, const_key(iter.node), pred) == false);
-      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
-      SPATIAL_ASSERT_CHECK(iter.node != 0);
-      return iter;
-    }
-
-    template <typename Container, typename Predicate>
-    inline region_iterator<Container, Predicate>&
-    decrement_region(region_iterator<Container, Predicate>& iter)
-    {
-      const typename Container::rank_type rank(iter.rank());
-      const Predicate pred(iter.predicate());
-      SPATIAL_ASSERT_CHECK(iter.node != 0);
-      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
-      if (header(iter.node))
-        {
-          iter.node = iter.node->parent;
-          iter.node_dim = 0; // root is always compared on dimension 0
-          return maximum_region(iter);
-        }
-      do
-        {
-          if (iter.node->left != 0
-              && pred(iter.node_dim, rank(), const_key(iter.node)) != below)
-            {
-              iter.node = iter.node->left;
-              iter.node_dim = incr_dim(rank, iter.node_dim);
-              while (iter.node->right != 0
-                     && pred(iter.node_dim, rank(),
-                             const_key(iter.node)) != above)
-                {
-                  iter.node = iter.node->right;
-                  iter.node_dim = incr_dim(rank, iter.node_dim);
-                }
-            }
-          else
-            {
-              typename region_iterator<Container, Predicate>::node_ptr p
-                = iter.node->parent;
-              while (!header(p) && iter.node == p->left)
-                {
-                  iter.node = p;
-                  iter.node_dim = decr_dim(rank, iter.node_dim);
-                  p = iter.node->parent;
-                }
-              iter.node = p;
-              iter.node_dim = decr_dim(rank, iter.node_dim);
-            }
-        }
-      while (!header(iter.node)
-             && match_all(rank, const_key(iter.node), pred) == false);
-      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
-      SPATIAL_ASSERT_CHECK(iter.node != 0);
-      return iter;
-    }
-
-    template <typename Container, typename Predicate>
-    inline region_iterator<Container, Predicate>&
-    minimum_region(region_iterator<Container, Predicate>& iter)
-    {
-      const typename Container::rank_type rank(iter.rank());
-      const Predicate pred(iter.predicate());
-      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
-      SPATIAL_ASSERT_CHECK(!header(iter.node));
-      SPATIAL_ASSERT_CHECK(iter.node != 0);
-      typename region_iterator<Container, Predicate>::node_ptr end
-        = iter.node->parent;
-      // Quick positioning according to in-order transversal.
-      while(iter.node->right != 0
-            && pred(iter.node_dim, rank(), const_key(iter.node)) == below)
-        {
-          iter.node = iter.node->right;
-          iter.node_dim = incr_dim(rank, iter.node_dim);
-        }
-      while(iter.node->left != 0
-            && pred(iter.node_dim, rank(), const_key(iter.node)) != below)
-        {
-          iter.node = iter.node->left;
-          iter.node_dim = incr_dim(rank, iter.node_dim);
-        }
-      // Start algorithm.
-      do
-        {
-          if (match_all(rank, const_key(iter.node), pred) == true) { break; }
-          if (iter.node->right != 0
-              && pred(iter.node_dim, rank(),
-                      const_key(iter.node)) != above)
-            {
-              iter.node = iter.node->right;
-              iter.node_dim = incr_dim(rank, iter.node_dim);
-              while (iter.node->left != 0
-                     && pred(iter.node_dim, rank(),
-                             const_key(iter.node)) != below)
-                {
-                  iter.node = iter.node->left;
-                  iter.node_dim = incr_dim(rank, iter.node_dim);
-                }
-            }
-          else
-            {
-              typename region_iterator<Container, Predicate>::node_ptr p
-                = iter.node->parent;
-              while (p != end && iter.node == p->right)
-                {
-                  iter.node = p;
-                  iter.node_dim = decr_dim(rank, iter.node_dim);
-                  p = iter.node->parent;
-                }
-              iter.node = p;
-              iter.node_dim = decr_dim(rank, iter.node_dim);
-            }
-        }
-      while (iter.node != end);
-      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
-      SPATIAL_ASSERT_CHECK(iter.node != 0);
-      return iter;
-    }
-
-    template <typename Container, typename Predicate>
-    inline region_iterator<Container, Predicate>&
-    maximum_region(region_iterator<Container, Predicate>& iter)
-    {
-      const typename Container::rank_type rank(iter.rank());
-      const Predicate pred(iter.predicate());
-      SPATIAL_ASSERT_CHECK(iter.node != 0);
-      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
-      SPATIAL_ASSERT_CHECK(!header(iter.node));
-      typename region_iterator<Container, Predicate>::node_ptr end
-        = iter.node->parent;
-      // Quick positioning according to in-order transversal.
-      while (iter.node->left != 0
-             && pred(iter.node_dim, rank(), const_key(iter.node)) == above)
-        {
-          iter.node = iter.node->left;
-          iter.node_dim = incr_dim(rank, iter.node_dim);
-        }
-      while (iter.node->right != 0
-             && pred(iter.node_dim, rank(), const_key(iter.node)) != above)
-        {
-          iter.node = iter.node->right;
-          iter.node_dim = incr_dim(rank, iter.node_dim);
-        }
-      // Start algorithm.
-      do
-        {
-          if (match_all(rank, const_key(iter.node), pred) == true) { break; }
-          if (iter.node->left != 0
-              && pred(iter.node_dim, rank(), const_key(iter.node)) != below)
-            {
-              iter.node = iter.node->left;
-              iter.node_dim = incr_dim(rank, iter.node_dim);
-              while (iter.node->right != 0
-                     && pred(iter.node_dim, rank(),
-                             const_key(iter.node)) != above)
-                {
-                  iter.node = iter.node->right;
-                  iter.node_dim = incr_dim(rank, iter.node_dim);
-                }
-            }
-          else
-            {
-              typename region_iterator<Container, Predicate>::node_ptr p
-                = iter.node->parent;
-              while (p != end && iter.node == p->left)
-                {
-                  iter.node = p;
-                  iter.node_dim = decr_dim(rank, iter.node_dim);
-                  p = iter.node->parent;
-                }
-              iter.node = p;
-              iter.node_dim = decr_dim(rank, iter.node_dim);
-            }
-        }
-      while (iter.node != end);
-      SPATIAL_ASSERT_CHECK(iter.node_dim < rank());
-      SPATIAL_ASSERT_CHECK(iter.node != 0);
-      return iter;
     }
 
   } // namespace details

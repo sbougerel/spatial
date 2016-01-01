@@ -17,7 +17,6 @@
 
 #include "spatial_import_tuple.hpp"
 #include "../metric.hpp"
-#include "../traits.hpp"
 #include "spatial_bidirectional.hpp"
 #include "spatial_compress.hpp"
 
@@ -35,12 +34,12 @@ namespace spatial
      *  information needs to be modified, it is probably recommended to create a
      *  new iterator altogether.
      *
-     *  \tparam Ct The container to which these iterator relate to.
+     *  \tparam Container The container to which these iterator relate to.
      *  \tparam Metric The type of \metric applied to the iterator.
      *  \tparam DistanceType The type used to store the distance value.
      */
-    template<typename Ct, typename Metric>
-    struct Neighbor_data : container_traits<Ct>::key_compare
+    template<typename Container, typename Metric>
+    struct Neighbor_data : Container::key_compare
     {
       //! Build an unintialized neighbor data object.
       Neighbor_data() { }
@@ -56,18 +55,18 @@ namespace spatial
        *  distance computation.
        */
       Neighbor_data
-      (const typename container_traits<Ct>::key_compare& container,
+      (const typename Container::key_compare& container,
        const Metric& metric,
-       const typename container_traits<Ct>::key_type& key,
+       const typename Container::key_type& key,
        typename Metric::distance_type distance)
-        : container_traits<Ct>::key_compare(container), _target(metric, key),
+        : Container::key_compare(container), _target(metric, key),
           _distance(distance) { }
 
       /**
        *  The target of the iteration; element of the container are iterate
        *  from the closest to the element furthest away from the target.
        */
-      Compress<Metric, typename container_traits<Ct>::key_type> _target;
+      Compress<Metric, typename Container::key_type> _target;
 
       /**
        *  The last valid computed value of the distance. The value stored is
@@ -78,11 +77,11 @@ namespace spatial
   } // namespace details
 
   /**
-   *  A spatial iterator for a container \c Ct that goes through the nearest
+   *  A spatial iterator for a container \c Container that goes through the nearest
    *  to the furthest element from a target key, with distances applied
    *  according to a user-defined geometric space that is a model of \metric.
    *
-   *  \tparam Ct The container type bound to the iterator.
+   *  \tparam Container The container type bound to the iterator.
    *  \tparam DistanceType The type used to represent distances.
    *  \tparam Metric An type that is a model of \metric.
    *
@@ -109,19 +108,19 @@ namespace spatial
    *  more metrics needs to be defined, see the explanation in the \metric
    *  concept.
    */
-  template <typename Ct, typename Metric =
-            euclidian<typename details::mutate<Ct>::type,
-                      double,
-                      typename details::with_builtin_difference<Ct>::type> >
+  template <typename Container, typename Metric =
+            euclidian<typename details::mutate<Container>::type, double,
+                      typename details::with_builtin_difference<Container>
+                      ::type> >
   class neighbor_iterator
     : public details::Bidirectional_iterator
-  <typename container_traits<Ct>::mode_type,
-   typename container_traits<Ct>::rank_type>
+  <typename Container::mode_type,
+   typename Container::rank_type>
   {
   private:
     typedef typename details::Bidirectional_iterator
-    <typename container_traits<Ct>::mode_type,
-     typename container_traits<Ct>::rank_type> Base;
+    <typename Container::mode_type,
+     typename Container::rank_type> Base;
 
   public:
     using Base::node;
@@ -129,7 +128,7 @@ namespace spatial
     using Base::rank;
 
     //! Key comparator type transferred from the container
-    typedef typename container_traits<Ct>::key_compare key_compare;
+    typedef typename Container::key_compare key_compare;
 
     //! The metric type used by the iterator
     typedef Metric metric_type;
@@ -138,7 +137,7 @@ namespace spatial
     typedef typename Metric::distance_type distance_type;
 
     //! The key type that is used as a target for the nearest neighbor search
-    typedef typename container_traits<Ct>::key_type key_type;
+    typedef typename Container::key_type key_type;
 
     //! Uninitialized iterator.
     neighbor_iterator() { }
@@ -155,9 +154,9 @@ namespace spatial
      *  from target.
      */
     neighbor_iterator
-    (Ct& container_, const Metric& metric_,
-     const typename container_traits<Ct>::key_type& target_,
-     const typename container_traits<Ct>::iterator& iter_,
+    (Container& container_, const Metric& metric_,
+     const typename Container::key_type& target_,
+     const typename Container::iterator& iter_,
      typename Metric::distance_type distance_)
       : Base(container_.rank(), iter_.node,
              modulo(iter_.node, container_.rank())),
@@ -188,10 +187,10 @@ namespace spatial
      *  other constructors instead.
      */
     neighbor_iterator
-    (Ct& container_, const Metric& metric_,
-     const typename container_traits<Ct>::key_type& target_,
+    (Container& container_, const Metric& metric_,
+     const typename Container::key_type& target_,
      dimension_type node_dim_,
-     typename container_traits<Ct>::mode_type::node_ptr node_,
+     typename Container::mode_type::node_ptr node_,
      typename Metric::distance_type distance_)
       : Base(container_.rank(), node_, node_dim_),
         _data(container_.key_comp(), metric_, target_, distance_) { }
@@ -221,19 +220,19 @@ namespace spatial
      *  to \c metric_.
      */
     neighbor_iterator
-    (const typename container_traits<Ct>::rank_type& rank_,
-     const typename container_traits<Ct>::key_compare& key_comp_,
+    (const typename Container::rank_type& rank_,
+     const typename Container::key_compare& key_comp_,
      const Metric& metric_,
-     const typename container_traits<Ct>::key_type& target_,
+     const typename Container::key_type& target_,
      dimension_type node_dim_,
-     typename container_traits<Ct>::mode_type::node_ptr node_,
+     typename Container::mode_type::node_ptr node_,
      typename Metric::distance_type distance_)
       : Base(rank_, node_, node_dim_),
         _data(key_comp_, metric_, target_, distance_) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
-    neighbor_iterator<Ct, Metric>& operator++()
+    neighbor_iterator<Container, Metric>& operator++()
     {
       import::tie(node, node_dim, distance())
         = increment_neighbor(node, node_dim, rank(), key_comp(),
@@ -243,9 +242,9 @@ namespace spatial
 
     //! Increments the iterator but returns the value of the iterator before
     //! the increment. Prefer to use the other form in \c for loops.
-    neighbor_iterator<Ct, Metric> operator++(int)
+    neighbor_iterator<Container, Metric> operator++(int)
     {
-      neighbor_iterator<Ct, Metric> x(*this);
+      neighbor_iterator<Container, Metric> x(*this);
       import::tie(node, node_dim, distance())
         = increment_neighbor(node, node_dim, rank(), key_comp(),
                              metric(), target_key(), distance());
@@ -254,7 +253,7 @@ namespace spatial
 
     //! Decrements the iterator and returns the decremented value. Prefer to
     //! use this form in \c for loops.
-    neighbor_iterator<Ct, Metric>& operator--()
+    neighbor_iterator<Container, Metric>& operator--()
     {
       import::tie(node, node_dim, distance())
         = decrement_neighbor(node, node_dim, rank(), key_comp(),
@@ -264,9 +263,9 @@ namespace spatial
 
     //! Decrements the iterator but returns the value of the iterator before
     //! the decrement. Prefer to use the other form in \c for loops.
-    neighbor_iterator<Ct, Metric> operator--(int)
+    neighbor_iterator<Container, Metric> operator--(int)
     {
-      neighbor_iterator<Ct, Metric> x(*this);
+      neighbor_iterator<Container, Metric> x(*this);
       import::tie(node, node_dim, distance())
         = decrement_neighbor(node, node_dim, rank(), key_comp(),
                              metric(), target_key(), distance());
@@ -311,11 +310,11 @@ namespace spatial
 
   private:
     //! The related data for the iterator.
-    details::Neighbor_data<Ct, Metric> _data;
+    details::Neighbor_data<Container, Metric> _data;
   };
 
   /**
-   *  A spatial iterator for a container \c Ct that goes through the nearest
+   *  A spatial iterator for a container \c Container that goes through the nearest
    *  to the furthest element from a target key, with distances applied
    *  according to a user-defined geometric space of type \c Metric.
    *
@@ -345,20 +344,20 @@ namespace spatial
    *
    *  This iterator only returns constant objects.
    *
-   *  \tparam Ct The container type bound to the iterator.
+   *  \tparam Container The container type bound to the iterator.
    *  \tparam DistanceType The type used to represent distances.
    *  \tparam Metric An type that follow the \metric concept.
    */
-  template<typename Ct, typename Metric>
-  class neighbor_iterator<const Ct, Metric>
+  template<typename Container, typename Metric>
+  class neighbor_iterator<const Container, Metric>
     : public details::Const_bidirectional_iterator
-      <typename container_traits<Ct>::mode_type,
-       typename container_traits<Ct>::rank_type>
+      <typename Container::mode_type,
+       typename Container::rank_type>
   {
   private:
     typedef typename details::Const_bidirectional_iterator
-    <typename container_traits<Ct>::mode_type,
-     typename container_traits<Ct>::rank_type> Base;
+    <typename Container::mode_type,
+     typename Container::rank_type> Base;
 
   public:
     using Base::node;
@@ -366,7 +365,7 @@ namespace spatial
     using Base::rank;
 
     //! Key comparator type transferred from the container
-    typedef typename container_traits<Ct>::key_compare key_compare;
+    typedef typename Container::key_compare key_compare;
 
     //! The metric type used by the iterator
     typedef Metric metric_type;
@@ -375,7 +374,7 @@ namespace spatial
     typedef typename Metric::distance_type distance_type;
 
     //! The key type that is used as a target for the nearest neighbor search
-    typedef typename container_traits<Ct>::key_type key_type;
+    typedef typename Container::key_type key_type;
 
     //! \empty
     neighbor_iterator() { }
@@ -392,9 +391,9 @@ namespace spatial
      *  and \c target_ according to \c metric_.
      */
     neighbor_iterator
-    (const Ct& container_, const Metric& metric_,
-     const typename container_traits<Ct>::key_type& target_,
-     typename container_traits<Ct>::const_iterator iter_,
+    (const Container& container_, const Metric& metric_,
+     const typename Container::key_type& target_,
+     typename Container::const_iterator iter_,
      typename Metric::distance_type distance_)
       : Base(container_.rank(), iter_.node,
              modulo(iter_.node, container_.rank())),
@@ -425,10 +424,10 @@ namespace spatial
      *  other constructors instead.
      */
     neighbor_iterator
-    (const Ct& container_, const Metric& metric_,
-     const typename container_traits<Ct>::key_type& target_,
+    (const Container& container_, const Metric& metric_,
+     const typename Container::key_type& target_,
      dimension_type node_dim_,
-     typename container_traits<Ct>::mode_type::const_node_ptr node_,
+     typename Container::mode_type::const_node_ptr node_,
      typename Metric::distance_type distance_)
       : Base(container_.rank(), node_, node_dim_),
         _data(container_.key_comp(), metric_, target_, distance_) { }
@@ -454,25 +453,25 @@ namespace spatial
      *  other constructors instead.
      */
     neighbor_iterator
-    (const typename container_traits<Ct>::rank_type& rank_,
-     const typename container_traits<Ct>::key_compare& key_comp_,
+    (const typename Container::rank_type& rank_,
+     const typename Container::key_compare& key_comp_,
      const Metric& metric_,
-     const typename container_traits<Ct>::key_type& target_,
+     const typename Container::key_type& target_,
      dimension_type node_dim_,
-     typename container_traits<Ct>::mode_type::const_node_ptr node_,
+     typename Container::mode_type::const_node_ptr node_,
      typename Metric::distance_type distance_)
       : Base(rank_, node_, node_dim_),
         _data(key_comp_, metric_, target_, distance_) { }
 
     //! Convertion of mutable iterator into a constant iterator.
-    neighbor_iterator(const neighbor_iterator<Ct, Metric>& iter)
+    neighbor_iterator(const neighbor_iterator<Container, Metric>& iter)
       : Base(iter.rank(), iter.node, iter.node_dim),
         _data(iter.key_comp(), iter.metric(),
               iter.target_key(), iter.distance()) { }
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
-    neighbor_iterator<const Ct, Metric>& operator++()
+    neighbor_iterator<const Container, Metric>& operator++()
     {
       import::tie(node, node_dim, distance())
         = increment_neighbor(node, node_dim, rank(), key_comp(),
@@ -482,9 +481,9 @@ namespace spatial
 
     //! Increments the iterator but returns the value of the iterator before
     //! the increment. Prefer to use the other form in \c for loops.
-    neighbor_iterator<const Ct, Metric> operator++(int)
+    neighbor_iterator<const Container, Metric> operator++(int)
     {
-      neighbor_iterator<const Ct, Metric> x(*this);
+      neighbor_iterator<const Container, Metric> x(*this);
       import::tie(node, node_dim, distance())
         = increment_neighbor(node, node_dim, rank(), key_comp(),
                              metric(), target_key(), distance());
@@ -493,7 +492,7 @@ namespace spatial
 
     //! Decrements the iterator and returns the decremented value. Prefer to
     //! use this form in \c for loops.
-    neighbor_iterator<const Ct, Metric>& operator--()
+    neighbor_iterator<const Container, Metric>& operator--()
     {
       import::tie(node, node_dim, distance())
         = decrement_neighbor(node, node_dim, rank(), key_comp(),
@@ -503,9 +502,9 @@ namespace spatial
 
     //! Decrements the iterator but returns the value of the iterator before
     //! the decrement. Prefer to use the other form in \c for loops.
-    neighbor_iterator<const Ct, Metric> operator--(int)
+    neighbor_iterator<const Container, Metric> operator--(int)
     {
-      neighbor_iterator<const Ct, Metric> x(*this);
+      neighbor_iterator<const Container, Metric> x(*this);
       import::tie(node, node_dim, distance())
         = decrement_neighbor(node, node_dim, rank(), key_comp(),
                              metric(), target_key(), distance());
@@ -550,7 +549,7 @@ namespace spatial
 
   private:
     //! The related data for the iterator.
-    details::Neighbor_data<Ct, Metric> _data;
+    details::Neighbor_data<Container, Metric> _data;
   };
 
   /**
@@ -559,14 +558,14 @@ namespace spatial
    *  the iterator does not point past-the-end.
    */
   ///@{
-  template <typename Ct, typename Metric>
+  template <typename Container, typename Metric>
   inline typename Metric::distance_type
-  distance(const neighbor_iterator<Ct, Metric>& iter)
+  distance(const neighbor_iterator<Container, Metric>& iter)
   { return iter.distance(); }
 
-  template <typename Ct, typename Metric>
+  template <typename Container, typename Metric>
   inline void
-  distance(neighbor_iterator<Ct, Metric>& iter,
+  distance(neighbor_iterator<Container, Metric>& iter,
            const typename Metric::distance_type& distance)
   { iter.distance() = distance; }
   ///@}
@@ -575,75 +574,75 @@ namespace spatial
    *  A quick accessor for neighbor iterators that retrive the key that is the
    *  target for the nearest neighbor iteration.
    */
-  template <typename Ct, typename Metric>
-  inline const typename container_traits<Ct>::key_type&
-  target_key(const neighbor_iterator<Ct, Metric>& iter)
+  template <typename Container, typename Metric>
+  inline const typename Container::key_type&
+  target_key(const neighbor_iterator<Container, Metric>& iter)
   { return iter.target_key(); }
 
   /**
    *  This structure defines a pair of neighbor iterator.
    *
-   *  \tparam Ct The container to which these iterator relate to.
+   *  \tparam Container The container to which these iterator relate to.
    *  \tparam Metric The metric used by the iterator.
    *  \see neighbor_iterator
    */
-  template <typename Ct, typename Metric
-            = euclidian<typename details::mutate<Ct>::type,
-                        double, typename details::with_builtin_difference<Ct>
+  template <typename Container, typename Metric
+            = euclidian<typename details::mutate<Container>::type, double,
+                        typename details::with_builtin_difference<Container>
                         ::type> >
   struct neighbor_iterator_pair
-    : std::pair<neighbor_iterator<Ct, Metric>,
-                neighbor_iterator<Ct, Metric> >
+    : std::pair<neighbor_iterator<Container, Metric>,
+                neighbor_iterator<Container, Metric> >
   {
     /**
      *  A pair of iterators that represents a range (that is: a range of
      *  elements to iterate, and not an orthogonal range).
      */
-    typedef std::pair<neighbor_iterator<Ct, Metric>,
-                      neighbor_iterator<Ct, Metric> > Base;
+    typedef std::pair<neighbor_iterator<Container, Metric>,
+                      neighbor_iterator<Container, Metric> > Base;
 
     //! Empty constructor.
     neighbor_iterator_pair() { }
 
     //! Regular constructor that builds a neighbor_iterator_pair out of 2
     //! neighbor_iterators.
-    neighbor_iterator_pair(const neighbor_iterator<Ct, Metric>& a,
-                           const neighbor_iterator<Ct, Metric>& b)
+    neighbor_iterator_pair(const neighbor_iterator<Container, Metric>& a,
+                           const neighbor_iterator<Container, Metric>& b)
       : Base(a, b) { }
   };
 
   /**
    *  This structure defines a pair of constant neighbor iterator.
    *
-   *  \tparam Ct The container to which these iterator relate to.
+   *  \tparam Container The container to which these iterator relate to.
    *  \tparam Metric The metric used by the iterator.
    *  \see neighbor_iterator
    */
-  template <typename Ct, typename Metric>
-  struct neighbor_iterator_pair<const Ct, Metric>
-    : std::pair<neighbor_iterator<const Ct, Metric>,
-                neighbor_iterator<const Ct, Metric> >
+  template <typename Container, typename Metric>
+  struct neighbor_iterator_pair<const Container, Metric>
+    : std::pair<neighbor_iterator<const Container, Metric>,
+                neighbor_iterator<const Container, Metric> >
   {
     /**
      *  A pair of iterators that represents a range (that is: a range of
      *  elements to iterate, and not an orthogonal range).
      */
-    typedef std::pair<neighbor_iterator<const Ct, Metric>,
-                      neighbor_iterator<const Ct, Metric> > Base;
+    typedef std::pair<neighbor_iterator<const Container, Metric>,
+                      neighbor_iterator<const Container, Metric> > Base;
 
     //! Empty constructor.
     neighbor_iterator_pair() { }
 
     //! Regular constructor that builds a neighbor_iterator_pair out of 2
     //! neighbor_iterators.
-    neighbor_iterator_pair(const neighbor_iterator<const Ct, Metric>& a,
-                           const neighbor_iterator<const Ct, Metric>& b)
+    neighbor_iterator_pair(const neighbor_iterator<const Container, Metric>& a,
+                           const neighbor_iterator<const Container, Metric>& b)
       : Base(a, b)
     { }
 
     //! Convert a mutable neighbor iterator pair into a const neighbor iterator
     //!pair.
-    neighbor_iterator_pair(const neighbor_iterator_pair<Ct, Metric>& p)
+    neighbor_iterator_pair(const neighbor_iterator_pair<Container, Metric>& p)
       : Base(p.first, p.second) { }
   };
 
@@ -654,30 +653,20 @@ namespace spatial
    *  \param target The target key used in the neighbor search.
    */
   ///@{
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator<Ct, Metric>
-  neighbor_end(Ct& container, const Metric& metric,
-               const typename container_traits<Ct>::key_type& target)
+  template <typename Container, typename Metric>
+  inline neighbor_iterator<Container, Metric>
+  neighbor_end(Container& container, const Metric& metric,
+               const typename Container::key_type& target)
   {
-    return neighbor_iterator<Ct, Metric>
+    return neighbor_iterator<Container, Metric>
       (container, metric, target, container.dimension() - 1,
        container.end().node, typename Metric::distance_type());
   }
 
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator<const Ct, Metric>
-  neighbor_end(const Ct& container, const Metric& metric,
-               const typename container_traits<Ct>::key_type& target)
-  {
-    return neighbor_iterator<const Ct, Metric>
-      (container, metric, target, container.dimension() - 1,
-       container.end().node, typename Metric::distance_type());
-  }
-
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator<const Ct, Metric>
-  neighbor_cend(const Ct& container, const Metric& metric,
-                const typename container_traits<Ct>::key_type& target)
+  template <typename Container, typename Metric>
+  inline neighbor_iterator<const Container, Metric>
+  neighbor_cend(const Container& container, const Metric& metric,
+                const typename Container::key_type& target)
   {
     return neighbor_end(container, metric, target,
                         typename Metric::distance_type());
@@ -692,45 +681,31 @@ namespace spatial
    *  \param target The target key used in the neighbor search.
    */
   ///@{
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator<Ct> >::type
-  neighbor_end(Ct& container,
-               const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline typename enable_if<details::is_compare_builtin<Container>,
+                            neighbor_iterator<Container> >::type
+  neighbor_end(Container& container,
+               const typename Container::key_type& target)
   {
     return neighbor_end
       (container,
-       euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct>::type>
-         (details::with_builtin_difference<Ct>()(container)),
+       euclidian<typename details::mutate<Container>::type, double,
+                 typename details::with_builtin_difference<Container>::type>
+       (details::with_builtin_difference<Container>()(container)),
        target);
   }
 
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator<const Ct> >::type
-  neighbor_end(const Ct& container,
-               const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline typename enable_if<details::is_compare_builtin<Container>,
+                            neighbor_iterator<const Container> >::type
+  neighbor_cend(const Container& container,
+                const typename Container::key_type& target)
   {
     return neighbor_end
       (container,
-       euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct>::type>
-         (details::with_builtin_difference<Ct>()(container)),
-       target);
-  }
-
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator<const Ct> >::type
-  neighbor_cend(const Ct& container,
-                const typename container_traits<Ct>::key_type& target)
-  {
-    return neighbor_end
-      (container,
-       euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct>::type>
-         (details::with_builtin_difference<Ct>()(container)),
+       euclidian<Container, double,
+                 typename details::with_builtin_difference<Container>::type>
+         (details::with_builtin_difference<Container>()(container)),
        target);
   }
   ///@}
@@ -743,42 +718,26 @@ namespace spatial
    *  \param target The target key used in the neighbor search.
    */
   ///@{
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator<Ct, Metric>
-  neighbor_begin(Ct& container, const Metric& metric,
-                 const typename container_traits<Ct>::key_type& target)
+  template <typename Container, typename Metric>
+  inline neighbor_iterator<Container, Metric>
+  neighbor_begin(Container& container, const Metric& metric,
+                 const typename Container::key_type& target)
   {
     if (container.empty()) return neighbor_end(container, metric, target);
-    typename Ct::mode_type::node_ptr node = container.end().node->parent;
+    typename Container::mode_type::node_ptr node = container.end().node->parent;
     dimension_type dim = 0;
     typename Metric::distance_type dist;
     import::tie(node, dim, dist)
       = first_neighbor(node, dim, container.rank(), container.key_comp(),
                        metric, target);
-    return neighbor_iterator<Ct, Metric>(container, metric, target,
-                                         dim, node, dist);
+    return neighbor_iterator<Container, Metric>
+      (container, metric, target, dim, node, dist);
   }
 
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator<const Ct, Metric>
-  neighbor_begin(const Ct& container, const Metric& metric,
-                 const typename container_traits<Ct>::key_type& target)
-  {
-    if (container.empty()) return neighbor_end(container, metric, target);
-    typename Ct::mode_type::const_node_ptr node = container.end().node->parent;
-    dimension_type dim = 0;
-    typename Metric::distance_type dist;
-    import::tie(node, dim, dist)
-      = first_neighbor(node, dim, container.rank(), container.key_comp(),
-                       metric, target);
-    return neighbor_iterator<const Ct, Metric>(container, metric, target,
-                                               dim, node, dist);
-  }
-
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator<const Ct, Metric>
-  neighbor_cbegin(const Ct& container, const Metric& metric,
-                  const typename container_traits<Ct>::key_type& target)
+  template <typename Container, typename Metric>
+  inline neighbor_iterator<const Container, Metric>
+  neighbor_cbegin(const Container& container, const Metric& metric,
+                  const typename Container::key_type& target)
   { return neighbor_begin(container, metric, target); }
   ///@}
 
@@ -791,45 +750,31 @@ namespace spatial
    *  \param target The target key used in the neighbor search.
    */
   ///@{
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator<Ct> >::type
-  neighbor_begin(Ct& container,
-                 const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline typename enable_if<details::is_compare_builtin<Container>,
+                            neighbor_iterator<Container> >::type
+  neighbor_begin(Container& container,
+                 const typename Container::key_type& target)
   {
     return neighbor_begin
       (container,
-       euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct>::type>
-         (details::with_builtin_difference<Ct>()(container)),
+       euclidian<typename details::mutate<Container>::type, double,
+                 typename details::with_builtin_difference<Container>::type>
+         (details::with_builtin_difference<Container>()(container)),
        target);
   }
 
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator<const Ct> >::type
-  neighbor_begin(const Ct& container,
-                 const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline typename enable_if<details::is_compare_builtin<Container>,
+                            neighbor_iterator<const Container> >::type
+  neighbor_cbegin(const Container& container,
+                  const typename Container::key_type& target)
   {
     return neighbor_begin
       (container,
-       euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct>::type>
-         (details::with_builtin_difference<Ct>()(container)),
-       target);
-  }
-
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator<const Ct> >::type
-  neighbor_cbegin(const Ct& container,
-                  const typename container_traits<Ct>::key_type& target)
-  {
-    return neighbor_begin
-      (container,
-       euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct>::type>
-         (details::with_builtin_difference<Ct>()(container)),
+       euclidian<Container, double,
+                 typename details::with_builtin_difference<Container>::type>
+         (details::with_builtin_difference<Container>()(container)),
        target);
   }
   ///@}
@@ -845,44 +790,27 @@ namespace spatial
    *  \param bound The minimum distance from the target.
    */
   ///@{
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator<Ct, Metric>
-  neighbor_lower_bound(Ct& container, const Metric& metric,
-                       const typename container_traits<Ct>::key_type& target,
+  template <typename Container, typename Metric>
+  inline neighbor_iterator<Container, Metric>
+  neighbor_lower_bound(Container& container, const Metric& metric,
+                       const typename Container::key_type& target,
                        typename Metric::distance_type bound)
   {
     if (container.empty()) return neighbor_end(container, metric, target);
-    typename Ct::mode_type::node_ptr node = container.end().node->parent;
+    typename Container::mode_type::node_ptr node = container.end().node->parent;
     dimension_type dim = 0;
     typename Metric::distance_type dist;
     import::tie(node, dim, dist)
       = lower_bound_neighbor(node, dim, container.rank(), container.key_comp(),
                              metric, target, bound);
-    return neighbor_iterator<Ct, Metric>(container, metric, target,
-                                         dim, node, dist);
+    return neighbor_iterator<Container, Metric>
+      (container, metric, target, dim, node, dist);
   }
 
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator<const Ct, Metric>
-  neighbor_lower_bound(const Ct& container, const Metric& metric,
-                       const typename container_traits<Ct>::key_type& target,
-                       typename Metric::distance_type bound)
-  {
-    if (container.empty()) return neighbor_end(container, metric, target);
-    typename Ct::mode_type::const_node_ptr node = container.end().node->parent;
-    dimension_type dim = 0;
-    typename Metric::distance_type dist;
-    import::tie(node, dim, dist)
-      = lower_bound_neighbor(node, dim, container.rank(), container.key_comp(),
-                             metric, target, bound);
-    return neighbor_iterator<const Ct, Metric>(container, metric, target,
-                                               dim, node, dist);
-  }
-
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator<const Ct, Metric>
-  neighbor_clower_bound(const Ct& container, const Metric& metric,
-                        const typename container_traits<Ct>::key_type& target,
+  template <typename Container, typename Metric>
+  inline neighbor_iterator<const Container, Metric>
+  neighbor_clower_bound(const Container& container, const Metric& metric,
+                        const typename Container::key_type& target,
                         typename Metric::distance_type bound)
   { return neighbor_lower_bound(container, metric, target, bound); }
   ///@}
@@ -899,48 +827,33 @@ namespace spatial
    *  \param bound The minimum distance from the target.
    */
   ///@{
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator<Ct> >::type
-  neighbor_lower_bound(Ct& container,
-                       const typename container_traits<Ct>::key_type& target,
+  template <typename Container>
+  inline typename enable_if<details::is_compare_builtin<Container>,
+                            neighbor_iterator<Container> >::type
+  neighbor_lower_bound(Container& container,
+                       const typename Container::key_type& target,
                        double bound)
   {
     return neighbor_lower_bound
       (container,
-       euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct>::type>
-         (details::with_builtin_difference<Ct>()(container)),
+       euclidian<typename details::mutate<Container>::type, double,
+                 typename details::with_builtin_difference<Container>::type>
+         (details::with_builtin_difference<Container>()(container)),
        target, bound);
   }
 
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator<const Ct> >::type
-  neighbor_lower_bound(const Ct& container,
-                       const typename container_traits<Ct>::key_type& target,
-                       double bound)
-  {
-    return neighbor_lower_bound
-      (container,
-       euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct>::type>
-         (details::with_builtin_difference<Ct>()(container)),
-       target, bound);
-  }
-
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator<const Ct> >::type
-  neighbor_clower_bound(const Ct& container,
-                        const typename container_traits<Ct>::key_type& target,
+  template <typename Container>
+  inline typename enable_if<details::is_compare_builtin<Container>,
+                            neighbor_iterator<const Container> >::type
+  neighbor_clower_bound(const Container& container,
+                        const typename Container::key_type& target,
                         double bound)
   {
     return neighbor_lower_bound
       (container,
-       euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct>::type>
-         (details::with_builtin_difference<Ct>()(container)),
+       euclidian<Container, double,
+                 typename details::with_builtin_difference<Container>::type>
+         (details::with_builtin_difference<Container>()(container)),
        target, bound);
   }
   ///@}
@@ -956,44 +869,27 @@ namespace spatial
    *  \param bound The minimum distance from the target.
    */
   ///@{
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator<Ct, Metric>
-  neighbor_upper_bound(Ct& container, const Metric& metric,
-                       const typename container_traits<Ct>::key_type& target,
+  template <typename Container, typename Metric>
+  inline neighbor_iterator<Container, Metric>
+  neighbor_upper_bound(Container& container, const Metric& metric,
+                       const typename Container::key_type& target,
                        typename Metric::distance_type bound)
   {
     if (container.empty()) return neighbor_end(container, metric, target);
-    typename Ct::mode_type::node_ptr node = container.end().node->parent;
+    typename Container::mode_type::node_ptr node = container.end().node->parent;
     dimension_type dim = 0;
     typename Metric::distance_type dist;
     import::tie(node, dim, dist)
       = upper_bound_neighbor(node, dim, container.rank(), container.key_comp(),
                              metric, target, bound);
-    return neighbor_iterator<Ct, Metric>(container, metric, target, dim,
-                                         node, dist);
+    return neighbor_iterator<Container, Metric>
+      (container, metric, target, dim, node, dist);
   }
 
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator<const Ct, Metric>
-  neighbor_upper_bound(const Ct& container, const Metric& metric,
-                       const typename container_traits<Ct>::key_type& target,
-                       typename Metric::distance_type bound)
-  {
-    if (container.empty()) return neighbor_end(container, metric, target);
-    typename Ct::mode_type::const_node_ptr node = container.end().node->parent;
-    dimension_type dim = 0;
-    typename Metric::distance_type dist;
-    import::tie(node, dim, dist)
-      = upper_bound_neighbor(node, dim, container.rank(), container.key_comp(),
-                             metric, target, bound);
-    return neighbor_iterator<const Ct, Metric>(container, metric, target,
-                                               dim, node, dist);
-  }
-
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator<const Ct, Metric>
-  neighbor_cupper_bound(const Ct& container, const Metric& metric,
-                        const typename container_traits<Ct>::key_type& target,
+  template <typename Container, typename Metric>
+  inline neighbor_iterator<const Container, Metric>
+  neighbor_cupper_bound(const Container& container, const Metric& metric,
+                        const typename Container::key_type& target,
                         typename Metric::distance_type bound)
   { return neighbor_upper_bound(container, metric, target, bound); }
   ///@}
@@ -1010,48 +906,33 @@ namespace spatial
    *  \param bound The minimum distance to the target.
    */
   ///@{
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator<Ct> >::type
-  neighbor_upper_bound(Ct& container,
-                       const typename container_traits<Ct>::key_type& target,
+  template <typename Container>
+  inline typename enable_if<details::is_compare_builtin<Container>,
+                            neighbor_iterator<Container> >::type
+  neighbor_upper_bound(Container& container,
+                       const typename Container::key_type& target,
                        double bound)
   {
     return neighbor_upper_bound
       (container,
-       euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct>::type>
-         (details::with_builtin_difference<Ct>()(container)),
+       euclidian<typename details::mutate<Container>::type, double,
+                 typename details::with_builtin_difference<Container>::type>
+         (details::with_builtin_difference<Container>()(container)),
        target, bound);
   }
 
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator<const Ct> >::type
-  neighbor_upper_bound(const Ct& container,
-                       const typename container_traits<Ct>::key_type& target,
-                       double bound)
-  {
-    return neighbor_upper_bound
-      (container,
-       euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct>::type>
-         (details::with_builtin_difference<Ct>()(container)),
-       target, bound);
-  }
-
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator<const Ct> >::type
-  neighbor_cupper_bound(const Ct& container,
-                        const typename container_traits<Ct>::key_type& target,
+  template <typename Container>
+  inline typename enable_if<details::is_compare_builtin<Container>,
+                            neighbor_iterator<const Container> >::type
+  neighbor_cupper_bound(const Container& container,
+                        const typename Container::key_type& target,
                         double bound)
   {
     return neighbor_upper_bound
       (container,
-       euclidian<Ct, double,
-                 typename details::with_builtin_difference<Ct>::type>
-         (details::with_builtin_difference<Ct>()(container)),
+       euclidian<Container, double,
+                 typename details::with_builtin_difference<Container>::type>
+         (details::with_builtin_difference<Container>()(container)),
        target, bound);
   }
   ///@}
@@ -1066,32 +947,22 @@ namespace spatial
    *  \param target The target key used in the neighbor search.
    */
   ///@{
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator_pair<Ct, Metric>
-  neighbor_range(Ct& container, const Metric& metric,
-                 const typename container_traits<Ct>::key_type& target)
+  template <typename Container, typename Metric>
+  inline neighbor_iterator_pair<Container, Metric>
+  neighbor_range(Container& container, const Metric& metric,
+                 const typename Container::key_type& target)
   {
-    return neighbor_iterator_pair<Ct, Metric>
+    return neighbor_iterator_pair<Container, Metric>
       (neighbor_begin(container, metric, target),
        neighbor_end(container, metric, target));
   }
 
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator_pair<const Ct, Metric>
-  neighbor_range(const Ct& container, const Metric& metric,
-                 const typename container_traits<Ct>::key_type& target)
+  template <typename Container, typename Metric>
+  inline neighbor_iterator_pair<const Container, Metric>
+  neighbor_crange(const Container& container, const Metric& metric,
+                  const typename Container::key_type& target)
   {
-    return neighbor_iterator_pair<const Ct, Metric>
-      (neighbor_begin(container, metric, target),
-       neighbor_end(container, metric, target));
-  }
-
-  template <typename Ct, typename Metric>
-  inline neighbor_iterator_pair<const Ct, Metric>
-  neighbor_crange(const Ct& container, const Metric& metric,
-                  const typename container_traits<Ct>::key_type& target)
-  {
-    return neighbor_iterator_pair<const Ct, Metric>
+    return neighbor_iterator_pair<const Container, Metric>
       (neighbor_begin(container, metric, target),
        neighbor_end(container, metric, target));
   }
@@ -1108,33 +979,23 @@ namespace spatial
    *  \param target The target key used in the neighbor search.
    */
   ///@{
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator_pair<Ct> >::type
-  neighbor_range(Ct& container,
-                 const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline typename enable_if<details::is_compare_builtin<Container>,
+                            neighbor_iterator_pair<Container> >::type
+  neighbor_range(Container& container,
+                 const typename Container::key_type& target)
   {
-    return neighbor_iterator_pair<Ct>
+    return neighbor_iterator_pair<Container>
       (neighbor_begin(container, target), neighbor_end(container, target));
   }
 
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator_pair<const Ct> >::type
-  neighbor_range(const Ct& container,
-                 const typename container_traits<Ct>::key_type& target)
+  template <typename Container>
+  inline typename enable_if<details::is_compare_builtin<Container>,
+                            neighbor_iterator_pair<const Container> >::type
+  neighbor_crange(const Container& container,
+                  const typename Container::key_type& target)
   {
-    return neighbor_iterator_pair<const Ct>
-      (neighbor_begin(container, target), neighbor_end(container, target));
-  }
-
-  template <typename Ct>
-  inline typename enable_if<details::is_compare_builtin<Ct>,
-                            neighbor_iterator_pair<const Ct> >::type
-  neighbor_crange(const Ct& container,
-                  const typename container_traits<Ct>::key_type& target)
-  {
-    return neighbor_iterator_pair<const Ct>
+    return neighbor_iterator_pair<const Container>
       (neighbor_begin(container, target), neighbor_end(container, target));
   }
   ///@}

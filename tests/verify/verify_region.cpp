@@ -12,32 +12,6 @@
 #include "../../src/region_iterator.hpp"
 #include "spatial_test_fixtures.hpp"
 
-BOOST_AUTO_TEST_CASE( test_match_all )
-{
-  pointset_fix<int2> fix;
-  int2 x   (0, 0);
-  int2 y   (1, 1);
-  int2 z   (1, 0);
-  int2 w   (0, 1);
-  int2 _x  (0, -1);
-  int2 y_  (2, 0);
-  int2 _w_ (2, 2);
-  BOOST_CHECK(details::match_all
-              (fix.container.rank(), x, closed_test_range()));
-  BOOST_CHECK(details::match_all
-              (fix.container.rank(), y, closed_test_range()));
-  BOOST_CHECK(details::match_all
-              (fix.container.rank(), z, closed_test_range()));
-  BOOST_CHECK(details::match_all
-              (fix.container.rank(), w, closed_test_range()));
-  BOOST_CHECK(!details::match_all
-              (fix.container.rank(), _x, closed_test_range()));
-  BOOST_CHECK(!details::match_all
-              (fix.container.rank(), y_, closed_test_range()));
-  BOOST_CHECK(!details::match_all
-              (fix.container.rank(), _w_, closed_test_range()));
-}
-
 BOOST_AUTO_TEST_CASE( test_open_bounds )
 {
   int2 l(1, 1);
@@ -107,6 +81,14 @@ BOOST_AUTO_TEST_CASE( test_closed_bounds )
   BOOST_CHECK(bounds(1, 2, w) == above);
 }
 
+template <typename Rank, typename Key, typename Pred>
+inline bool match_all(const Rank& rank, const Key& key, const Pred& pred)
+{
+  dimension_type d = 0;
+  for (; d < rank() && pred(d, rank(), key) == matching; ++d);
+  return (d == rank());
+}
+
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_overlap_bounds, Tp, every_quad )
 {
   Tp fix(0);
@@ -115,88 +97,88 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_overlap_bounds, Tp, every_quad )
     overlap_bounds<quad, quad_less, llhh_layout_tag> bounds
       = make_overlap_bounds(fix.container, a);
     // A region must overlap itself (all it's element must match)
-    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), a, bounds));
     // A region must overlap a point at its center
     quad p(1, 1, 1, 1);
-    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), p, bounds));
     // A region must overlap a larger region than itself
     quad b(-1, -1, 3, 3);
-    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), b, bounds));
     // A region must *not* overlap another region whose corner only contact
     quad c(-1, -1, 0, 3);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), c, bounds));
     quad d(-1, -1, 3, 0);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), d, bounds));
     quad e(2, -1, 3, 3);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), e, bounds));
     quad f(-1, 2, 3, 3);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), f, bounds));
   }
   { // test for lhlh_layout_tag
     quad a(0, 2, 0, 2);
     overlap_bounds<quad, quad_less, lhlh_layout_tag> bounds
       = make_overlap_bounds(fix.container, a, lhlh_layout);
     // A region must overlap itself (all it's element must match)
-    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), a, bounds));
     // A region must overlap a point at its center
     quad p(1, 1, 1, 1);
-    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), p, bounds));
     // A region must overlap a larger region than itself
     quad b(-1, 3, -1, 3);
-    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), b, bounds));
     // A region must *not* overlap another region whose corner only contact
     quad c(-1, 0, -1, 3);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), c, bounds));
     quad d(-1, 3, -1, 0);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), d, bounds));
     quad e(2, 3, -1, 3);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), e, bounds));
     quad f(-1, 3, 2, 3);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), f, bounds));
   }
   { // test for hhll_layout_tag
     quad a(2, 2, 0, 0);
     overlap_bounds<quad, quad_less, hhll_layout_tag> bounds
       = make_overlap_bounds(fix.container, a, hhll_layout);
     // A region must overlap itself (all it's element must match)
-    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), a, bounds));
     // A region must overlap a point at its center
     quad p(1, 1, 1, 1);
-    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), p, bounds));
     // A region must overlap a larger region than itself
     quad b(3, 3, -1, -1);
-    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), b, bounds));
     // A region must *not* overlap another region whose corner only contact
     quad c(0, 3, -1, -1);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), c, bounds));
     quad d(3, 0, -1, -1);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), d, bounds));
     quad e(3, 3, 2, -1);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), e, bounds));
     quad f(3, 3, -1, 2);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), f, bounds));
   }
   { // test for hlhl_layout_tag
     quad a(2, 0, 2, 0);
     overlap_bounds<quad, quad_less, hlhl_layout_tag> bounds
       = make_overlap_bounds(fix.container, a, hlhl_layout);
     // A region must overlap itself (all it's element must match)
-    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), a, bounds));
     // A region must overlap a point at its center
     quad p(1, 1, 1, 1);
-    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), p, bounds));
     // A region must overlap a larger region than itself
     quad b(3, -1, 3, -1);
-    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), b, bounds));
     // A region must *not* overlap another region whose corner only contact
     quad c(0, -1, 3, -1);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), c, bounds));
     quad d(3, -1, 0, -1);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), d, bounds));
     quad e(3, 2, 3, -1);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), e, bounds));
     quad f(3, -1, 3, 2);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), f, bounds));
   }
 }
 
@@ -208,88 +190,88 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_enclosed_bounds, Tp, every_quad )
     enclosed_bounds<quad, quad_less> bounds
       = make_enclosed_bounds(fix.container, a);
     // A region must enclose itself (all it's element must match)
-    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), a, bounds));
     // A region must enclose a point at its center
     quad p(1, 1, 1, 1);
-    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), p, bounds));
     // A region must enclose a smaller region than itself
     quad b(1, 1, 2, 2);
-    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), b, bounds));
     // A region must *not* enclose another larger region
     quad c(-1, 0, 3, 3);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), c, bounds));
     quad d(0, -1, 3, 3);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), d, bounds));
     quad e(0, 0, 4, 3);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), e, bounds));
     quad f(0, 0, 3, 4);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), f, bounds));
   }
   { // test for lhlh_layout_tag
     quad a(0, 3, 0, 3);
     enclosed_bounds<quad, quad_less, lhlh_layout_tag> bounds
       = make_enclosed_bounds(fix.container, a, lhlh_layout);
     // A region must enclose itself (all it's element must match)
-    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), a, bounds));
     // A region must enclose a point at its center
     quad p(1, 1, 1, 1);
-    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), p, bounds));
     // A region must enclose a smaller region than itself
     quad b(1, 2, 1, 2);
-    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), b, bounds));
     // A region must *not* enclose another larger region
     quad c(-1, 3, 0,  3);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), c, bounds));
     quad d(0, 3, -1, 3);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), d, bounds));
     quad e(0, 4, 0, 3);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), e, bounds));
     quad f(0, 3, 0, 4);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), f, bounds));
   }
   { // test for hhll_layout_tag
     quad a(3, 3, 0, 0);
     enclosed_bounds<quad, quad_less, hhll_layout_tag> bounds
       = make_enclosed_bounds(fix.container, a, hhll_layout);
     // A region must enclose itself (all it's element must match)
-    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), a, bounds));
     // A region must enclose a point at its center
     quad p(1, 1, 1, 1);
-    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), p, bounds));
     // A region must enclose a smaller region than itself
     quad b(2, 2, 1, 1);
-    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), b, bounds));
     // A region must *not* enclose another larger region
     quad c(3, 3, -1, 0);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), c, bounds));
     quad d(3, 3, 0, -1);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), d, bounds));
     quad e(4, 3, 0, 0);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), e, bounds));
     quad f(3, 4, 0, 0);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), f, bounds));
   }
   { // test for hlhl_layout_tag
     quad a(3, 0, 3, 0);
     enclosed_bounds<quad, quad_less, hlhl_layout_tag> bounds
       = make_enclosed_bounds(fix.container, a, hlhl_layout);
     // A region must enclose itself (all it's element must match)
-    BOOST_CHECK(details::match_all(fix.container.rank(), a, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), a, bounds));
     // A region must enclose a point at its center
     quad p(1, 1, 1, 1);
-    BOOST_CHECK(details::match_all(fix.container.rank(), p, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), p, bounds));
     // A region must enclose a smaller region than itself
     quad b(2, 1, 2, 1);
-    BOOST_CHECK(details::match_all(fix.container.rank(), b, bounds));
+    BOOST_CHECK(match_all(fix.container.rank(), b, bounds));
     // A region must *not* enclose another larger region
     quad c(3, -1, 3, 0);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), c, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), c, bounds));
     quad d(3, 0, 3, -1);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), d, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), d, bounds));
     quad e(4, 0, 3, 0);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), e, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), e, bounds));
     quad f(3, 0, 4, 0);
-    BOOST_CHECK(!details::match_all(fix.container.rank(), f, bounds));
+    BOOST_CHECK(!match_all(fix.container.rank(), f, bounds));
   }
 }
 
@@ -402,7 +384,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
           it = region_begin(fix.container, l, h);
         if (it == region_end(fix.container, l, h)) break;
         // Make sure it is one within [-0.8, 0.8)
-        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
+        BOOST_CHECK(match_all(fix.container.rank(), *it,
                                        make_bounds(fix.container, l, h)));
         fix.container.erase(it);
       }
@@ -436,7 +418,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
           it = open_region_begin(fix.container, l, h);
         if (it == open_region_end(fix.container, l, h)) break;
         // Make sure it is one within (10, 90)
-        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
+        BOOST_CHECK(match_all(fix.container.rank(), *it,
                                        make_open_bounds(fix.container, l, h)));
         fix.container.erase(it);
       }
@@ -452,7 +434,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_minimum, Tp, double6_sets )
           it = closed_region_begin(fix.container, l, h);
         if (it == closed_region_end(fix.container, l, h)) break;
         // Make sure it is one within (10, 90)
-        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
+        BOOST_CHECK(match_all(fix.container.rank(), *it,
                                        make_closed_bounds(fix.container, l, h)));
         fix.container.erase(it);
       }
@@ -473,7 +455,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_maximum, Tp, double6_sets )
         --it;
         if (it == region_end(fix.container, l, h)) break;
         // Make sure it is one within [-0.8, 0.8)
-        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
+        BOOST_CHECK(match_all(fix.container.rank(), *it,
                                        make_bounds(fix.container, l, h)));
         region_iterator<typename Tp::container_type> tmp = it;
         ++tmp;
@@ -517,7 +499,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_maximum, Tp, double6_sets )
         --it;
         if (it == open_region_cend(fix.container, l, h)) break;
         // Make sure it is one within (10, 90)
-        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
+        BOOST_CHECK(match_all(fix.container.rank(), *it,
                                        make_open_bounds(fix.container, l, h)));
         open_region_iterator<typename Tp::container_type> tmp = it;
         ++tmp;
@@ -537,7 +519,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_maximum, Tp, double6_sets )
         --it;
         if (it == closed_region_end(fix.container, l, h)) break;
         // Make sure it is one within (10, 90)
-        BOOST_CHECK(details::match_all(fix.container.rank(), *it,
+        BOOST_CHECK(match_all(fix.container.rank(), *it,
                                        make_closed_bounds(fix.container, l, h)));
         closed_region_iterator<typename Tp::container_type> tmp = it;
         ++tmp;
@@ -561,14 +543,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_increment, Tp, double6_sets )
         typename Tp::container_type::iterator it = fix.container.begin();
         for (; it != fix.container.end(); ++it)
           {
-            if (details::match_all(fix.container.rank(), *it, eb))
+            if (match_all(fix.container.rank(), *it, eb))
               ++count_it;
           }
         enclosed_region_iterator<typename Tp::container_type>
           re = enclosed_region_begin(fix.container, b);
         for (;re != enclosed_region_end(fix.container, b); ++re)
           {
-            BOOST_CHECK(details::match_all(fix.container.rank(), *re, eb));
+            BOOST_CHECK(match_all(fix.container.rank(), *re, eb));
             ++count_re;
           }
         BOOST_CHECK_EQUAL(count_it, count_re);
@@ -612,14 +594,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_increment, Tp, double6_sets )
         typename Tp::container_type::iterator it = fix.container.begin();
         for (; it != fix.container.end(); ++it)
           {
-            if (details::match_all(fix.container.rank(), *it, orb))
+            if (match_all(fix.container.rank(), *it, orb))
               ++count_it;
           }
         open_region_iterator<const typename Tp::container_type>
           re = open_region_begin(fix.container, l, h);
         for (;re != open_region_end(fix.container, l, h); ++re)
           {
-            BOOST_CHECK(details::match_all(fix.container.rank(), *re, orb));
+            BOOST_CHECK(match_all(fix.container.rank(), *re, orb));
             ++count_re;
           }
         BOOST_CHECK_EQUAL(count_it, count_re);
@@ -639,14 +621,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_increment, Tp, double6_sets )
         typename Tp::container_type::iterator it = fix.container.begin();
         for (; it != fix.container.end(); ++it)
           {
-            if (details::match_all(fix.container.rank(), *it, orb))
+            if (match_all(fix.container.rank(), *it, orb))
               ++count_it;
           }
         open_region_iterator<const typename Tp::container_type>
           re = open_region_begin(fix.container, l, h);
         for (;re != open_region_cend(fix.container, l, h); ++re)
           {
-            BOOST_CHECK(details::match_all(fix.container.rank(), *re, orb));
+            BOOST_CHECK(match_all(fix.container.rank(), *re, orb));
             ++count_re;
           }
         BOOST_CHECK_EQUAL(count_it, count_re);
@@ -669,7 +651,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
         typename Tp::container_type::iterator it = fix.container.begin();
         for (; it != fix.container.end(); ++it)
           {
-            if (details::match_all(fix.container.rank(), *it, eb))
+            if (match_all(fix.container.rank(), *it, eb))
               ++count_it;
           }
         std::reverse_iterator
@@ -678,7 +660,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
           rend(enclosed_region_begin(fix.container, b));
         for (;re != rend; ++re)
           {
-            BOOST_CHECK(details::match_all(fix.container.rank(), *re, eb));
+            BOOST_CHECK(match_all(fix.container.rank(), *re, eb));
             ++count_re;
           }
         BOOST_CHECK_EQUAL(count_it, count_re);
@@ -725,7 +707,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
         typename Tp::container_type::iterator it = fix.container.begin();
         for (; it != fix.container.end(); ++it)
           {
-            if (details::match_all(fix.container.rank(), *it, orb))
+            if (match_all(fix.container.rank(), *it, orb))
               ++count_it;
           }
         std::reverse_iterator
@@ -734,7 +716,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
           rend(open_region_cbegin(fix.container, l, h));
         for (;re != rend; ++re)
           {
-            BOOST_CHECK(details::match_all(fix.container.rank(), *re, orb));
+            BOOST_CHECK(match_all(fix.container.rank(), *re, orb));
             ++count_re;
           }
         BOOST_CHECK_EQUAL(count_it, count_re);
@@ -754,7 +736,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
         typename Tp::container_type::iterator it = fix.container.begin();
         for (; it != fix.container.end(); ++it)
           {
-            if (details::match_all(fix.container.rank(), *it, orb))
+            if (match_all(fix.container.rank(), *it, orb))
               ++count_it;
           }
         std::reverse_iterator
@@ -763,7 +745,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_region_decrement, Tp, double6_sets )
           rend(open_region_cbegin(fix.container, l, h));
         for (;re != rend; ++re)
           {
-            BOOST_CHECK(details::match_all(fix.container.rank(), *re, orb));
+            BOOST_CHECK(match_all(fix.container.rank(), *re, orb));
             ++count_re;
           }
         BOOST_CHECK_EQUAL(count_it, count_re);
