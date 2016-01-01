@@ -50,7 +50,7 @@ A brief overview of \Spatial's features is provided below:
 analysis. Check out \ref tutorial "Quick Starting Guide" to get you started on
 using \Spatial.
 
-\section update Change from previous version
+\section update Minor version change from 2.1 to 2.2
 
 Classes container_traits and metric_traits are removed since they
 provided no benefit and inflated the code needlessly. If you used
@@ -127,6 +127,12 @@ contributing "Contributing".
 /**
 \page changelog Change Log
 \tableofcontents
+
+\section ver220 Version 2.2.0
+
+- Removed container_traits and metric_traits classes which gave no
+  additional benefit. The types from containers or metrics can be
+  called directly instead, if you were using them.
 
 \section ver219 Version 2.1.9
 

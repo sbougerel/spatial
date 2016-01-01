@@ -1,7 +1,8 @@
 2016-01-01  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 
-        * v.2.1.9 Improved performance of equal and region iterators and removed
-        the container traits information, which was not useful.
+        * v2.2.0 Removed the container traits information, which was not useful.
+
+        * v2.1.9 Improved performance of equal and region iterators.
 
 2015-12-06  Sylvain Bougerel  <sylvain.bougerel.devel@gmail.com>
 

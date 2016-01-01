@@ -27,6 +27,12 @@ Web: https://sourceforge.net/projects/spatial/
 - Heavily unit-tested and production ready
 
 
+## Minor version change from 2.1 to 2.2
+
+Classes container_traits and metric_traits are removed since they provided no
+benefit and inflated the code needlessly. If you used these classes, just remove
+them from your code, calling the types from containers or metrics directly.
+
 
 ## Installation
 
