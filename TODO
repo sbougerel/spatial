@@ -4,32 +4,29 @@ Spatial TODO List
 Minor version updates
 --------------------
 
-1. Some test cases now require lots of RAM to compile, therefore we
-   need to break things up. Such as verify_region.hpp.
+1. Relaxed kdtree should insert the new key instead of the candidate
+   because it means less rotations.
 
-2. Remove inter iterator conversion by making bidirectional template
-   after the iterators' data
+2. Algorithms need to be implemented and tested.
 
-3. Change assign for tie()
-
-4. Make pre-order node iterator the default for trees. Then tracking
+3. Make pre-order node iterator the default for trees. Then tracking
    leftmost in the trees is unnecessary.
 
-5. Change dim for depth in iterators/tree which is less computation
+4. Change dim for depth in iterators/tree which is less computation
    intensive.
 
-6. Unroll some loops in euclian implemantation (4?), in particular for
+5. Unroll some loops in euclian implemantation (4?), in particular for
    Dynamic_rank. Also care to use the Rank itself and not
    dimension_type for loop unrolling during compilation.
 
-7. Support for C++11 initializer lists
+6. Support for C++11 initializer lists
 
-8. Metrics should use template function distance(Rank, Key, Key,
+7. Metrics should use template function distance(Rank, Key, Key,
    Accessor) and partial_distance(Rank, dim, Key, Key, Accessor) as
    template types, which mean they can be expressed as
    euclidian<double> only afterwards.
 
-9. Make the code smaller, simpler. Refactor regions? Iterator
+8. Make the code smaller, simpler. Refactor regions? Iterator
    constness to be deduced from node type?
 
 
