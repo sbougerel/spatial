@@ -1,8 +1,8 @@
 Spatial TODO List
 =================
 
-Minor version updates
---------------------
+Patch version updates
+---------------------
 
 1. Relaxed kdtree should insert the new key instead of the candidate
    because it means less rotations.
@@ -65,7 +65,12 @@ Major version update
    "less_than_lower_bound" which should lower the amount of
    computation in region_iterator.
 
-5. Create the cache-oblivious point_index and box_index once the above
+5. Constructors for iterators are too heavy. Only 2 should be
+   provided: the empty constructor (public) and a (private)
+   constructor that initializes everything. *_begin and *_end, etc
+   should be made friends to use the private constructor.
+
+6. Create the cache-oblivious point_index and box_index once the above
    is done. Which would be a real achievement at this point. Index are
    flat array representation of the tree which maintain perfect
    balancing. It is also more economical in memory since only 1
