@@ -28,7 +28,7 @@ void compare_libraries
   {
     // Nearest neighbor begin into an idle_point_multiset
     std::cout << "\t\tidle_point_multiset:\t" << std::flush;
-    spatial::idle_point_multiset<N, Point> cobaye;
+    spatial::idle_point_multiset<0, Point> cobaye(N);
     cobaye.insert_rebalance(data.begin(), data.end());
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator
@@ -40,7 +40,7 @@ void compare_libraries
   {
     // Nearest neighbor begin into an idle_point_multiset
     std::cout << "\t\tpoint_multiset:\t" << std::flush;
-    spatial::point_multiset<N, Point> cobaye;
+    spatial::point_multiset<0, Point> cobaye(N);
     cobaye.insert(data.begin(), data.end());
     utils::time_point start = utils::process_timer_now();
     for (typename std::vector<Point>::const_iterator
