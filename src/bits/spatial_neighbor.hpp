@@ -159,7 +159,7 @@ namespace spatial
      const typename Container::iterator& iter_,
      typename Metric::distance_type distance_)
       : Base(container_.rank(), iter_.node,
-             modulo(iter_.node, container_.rank())),
+             depth(iter_.node) % container_.dimension()),
         _data(container_.key_comp(), metric_, target_, distance_) { }
 
     /**
@@ -180,11 +180,6 @@ namespace spatial
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
      *  dimension, such as the function \ref spatial::details::modulo().
-     *
-     *  \attention Specifying the incorrect dimension value for the node will
-     *  result in unknown behavior. It is recommended that you do not use this
-     *  constructor if you are not sure about this dimension, and use the
-     *  other constructors instead.
      */
     neighbor_iterator
     (Container& container_, const Metric& metric_,
@@ -203,11 +198,6 @@ namespace spatial
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
      *  dimension, such as the function \ref spatial::details::modulo().
-     *
-     *  \attention Specifying the incorrect dimension value for the node will
-     *  result in unknown behavior. It is recommended that you do not use this
-     *  constructor if you are not sure about this dimension, and use the
-     *  other constructors instead.
      *
      *  \param rank_ The rank of the container being iterated.
      *  \param key_comp_ The key compare functor associated with the iterator.
@@ -396,7 +386,7 @@ namespace spatial
      typename Container::const_iterator iter_,
      typename Metric::distance_type distance_)
       : Base(container_.rank(), iter_.node,
-             modulo(iter_.node, container_.rank())),
+             depth(iter_.node) % container_.rank()),
         _data(container_.key_comp(), metric_, target_, distance_) { }
 
     /**
@@ -417,11 +407,6 @@ namespace spatial
      *  container, the algorithm must know at each node which dimension is
      *  used to partition the space. Some algorithms will provide this
      *  dimension, such as the function \ref spatial::details::modulo().
-     *
-     *  \attention Specifying the incorrect dimension value for the node will
-     *  result in unknown behavior. It is recommended that you do not use this
-     *  constructor if you are not sure about this dimension, and use the
-     *  other constructors instead.
      */
     neighbor_iterator
     (const Container& container_, const Metric& metric_,

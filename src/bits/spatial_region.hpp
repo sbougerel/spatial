@@ -366,38 +366,6 @@ namespace spatial
     Predicate _pred;
   };
 
-  namespace details
-  {
-    /**
-     *  In the children of the node pointed to by \c iter, find the first
-     *  matching iterator in the region delimited by \c Predicate, using
-     *  in-order transversal.  If no match can be found, returns past-the-end.
-     *
-     *  \param iter A valid region iterator.
-     *  \tparam Predicate  The type of predicate for the orthogonal query.
-     *  \tparam Ct The type of container to look up.
-     *  \return  An iterator pointing the minimum, or past-the-end.
-     */
-    template <typename Container, typename Predicate>
-    region_iterator<Container, Predicate>&
-    minimum_region(region_iterator<Container, Predicate>& iter);
-
-    /**
-     *  In the children of the node pointed to by \c iter, find the last
-     *  matching iterator in the region delimited by \c Predicate, using
-     *  in-order transversal. If no match can be found, returns past-the-end.
-     *
-     *  \param iter A valid region iterator.
-     *  \tparam Predicate  The type of predicate for the orthogonal query.
-     *  \tparam Ct The type of container to look up.
-     *  \return  An iterator pointing the maximum, or past-the-end.
-     */
-    template <typename Container, typename Predicate>
-    region_iterator<Container, Predicate>&
-    maximum_region(region_iterator<Container, Predicate>& iter);
-
-  } // namespace details
-
   template <typename Container, typename Predicate>
   inline region_iterator<Container, Predicate>
   region_end(Container& container, const Predicate& pred)
