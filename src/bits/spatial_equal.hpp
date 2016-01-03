@@ -59,18 +59,19 @@ namespace spatial
           // Walk the tree to find an equal target
           if (walk_right && node->right != 0)
             {
+              ++depth;
               if (walk_left && node->left != 0)
                 {
                   // Go recursively in this case only, left first
                   NodePtr other;
                   dimension_type other_depth;
                   import::tie(other, other_depth)
-                    = first_equal(node->left, depth + 1,
+                    = first_equal(node->left, depth,
                                   rank, key_comp, key);
                   if (other != node)
                     { return std::make_pair(other, other_depth); }
                 }
-              node = node->right; ++depth;
+              node = node->right;
             }
           else if (walk_left && node->left != 0)
             { node = node->left; ++depth; }
