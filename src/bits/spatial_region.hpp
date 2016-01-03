@@ -580,16 +580,17 @@ namespace spatial
             }
           if (rel != above && node->right != 0)
             {
+              ++depth;
               if (rel != below && node->left != 0)
                 {
                   NodePtr other;
                   dimension_type other_depth;
                   import::tie(other, other_depth)
-                    = first_region(node->left, depth + 1, rank, pred);
+                    = first_region(node->left, depth, rank, pred);
                   if (other != node)
                     { return std::make_pair(other, other_depth); }
                 }
-              node = node->right; ++depth;
+              node = node->right;
             }
           else if (rel != below && node->left != 0)
             { node = node->left; ++depth; }
