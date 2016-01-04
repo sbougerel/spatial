@@ -21,19 +21,19 @@ void compare_libraries
     data.push_back(Point(distribution));
   {
     // Mapping begin into an idle_point_multiset
-    std::cout << "\t\tidle_point_multiset:\t" << std::flush;
     spatial::idle_point_multiset<N, Point> cobaye;
     cobaye.insert_rebalance(data.begin(), data.end());
-    utils::time_point start = utils::process_timer_now();
-    for (spatial::mapping_iterator<spatial::idle_point_multiset<N, Point> >
-           i = mapping_begin(cobaye, 0); i != mapping_end(cobaye, 0); ++i);
-    utils::time_point stop = utils::process_timer_now();
-    std::cout << (stop - start) << "sec" << std::endl;
     std::cout << "\t\tidle_point_multiset (reverse):\t" << std::flush;
-    start = utils::process_timer_now();
+    utils::time_point start = utils::process_timer_now();
     spatial::mapping_iterator<spatial::idle_point_multiset<N, Point> >
       i = mapping_end(cobaye, 0), end = mapping_begin(cobaye, 0);
     for (; i != end; --i);
+    utils::time_point stop = utils::process_timer_now();
+    std::cout << (stop - start) << "sec" << std::endl;
+    std::cout << "\t\tidle_point_multiset:\t" << std::flush;
+    start = utils::process_timer_now();
+    for (spatial::mapping_iterator<spatial::idle_point_multiset<N, Point> >
+           i = mapping_begin(cobaye, 0); i != mapping_end(cobaye, 0); ++i);
     stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
   }
@@ -70,7 +70,7 @@ int main (int argc, char **argv)
   std::istringstream argbuf(argv[1]);
   std::size_t data_size;
   argbuf >> data_size;
-  utils::random_engine engine;
+  utils::random_engine engine(43274283);
 
   std::cout << "Uniform distribution:" << std::endl;
   utils::uniform_double_distribution uniform(engine, -1.0, 1.0);
