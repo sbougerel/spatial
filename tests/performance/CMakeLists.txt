@@ -42,8 +42,8 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"
    OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   # These defines are to select the build type in cmake
   # CMAKE_BUILD_TYPE values DEBUG, RELEASE, PROFILE, COVER
-  set (CMAKE_CXX_FLAGS_DEBUG "${COMPILE_ABI} -O0 -g -Wall -Wextra -Wuninitialized")
-  set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${LINK_ABI} -lc++abi -O0 -g")
+  set (CMAKE_CXX_FLAGS_DEBUG "${COMPILE_ABI} -O2 -g -Wall -Wextra -Wuninitialized")
+  set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${LINK_ABI} -lc++abi -O2 -g")
   set (CMAKE_CXX_FLAGS_RELEASE "${COMPILE_ABI} -O4")
   set (CMAKE_EXE_LINKER_FLAGS_RELEASE "${LINK_ABI} -O4")
   set (CMAKE_CXX_FLAGS_PROFILE "${COMPILE_ABI} -O2 -g -pg")
