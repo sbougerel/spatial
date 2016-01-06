@@ -24,17 +24,17 @@ void compare_libraries
   {
     // Ordered begin into an idle_point_multiset
     std::cout << "\t\tidle_point_multiset:\t" << std::flush;
-    spatial::idle_point_multiset<N, Point> cobaye;
+    spatial::idle_point_multiset<0, Point> cobaye(N);
     cobaye.insert_rebalance(data.begin(), data.end());
     utils::time_point start = utils::process_timer_now();
-    for (spatial::ordered_iterator<spatial::idle_point_multiset<N, Point> >
+    for (spatial::ordered_iterator<spatial::idle_point_multiset<0, Point> >
            i = ordered_begin(cobaye); i != ordered_end(cobaye); ++i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
     total += stop - start;
     std::cout << "\t\tidle_point_multiset (reverse):\t" << std::flush;
     start = utils::process_timer_now();
-    spatial::ordered_iterator<spatial::idle_point_multiset<N, Point> >
+    spatial::ordered_iterator<spatial::idle_point_multiset<0, Point> >
       i = ordered_end(cobaye), end = ordered_begin(cobaye);
     for (; i != end; --i);
     stop = utils::process_timer_now();
@@ -44,17 +44,17 @@ void compare_libraries
   {
     // Ordered begin into a point_multiset
     std::cout << "\t\tpoint_multiset:\t" << std::flush;
-    spatial::point_multiset<N, Point> cobaye;
+    spatial::point_multiset<0, Point> cobaye(N);
     cobaye.insert(data.begin(), data.end());
     utils::time_point start = utils::process_timer_now();
-    for (spatial::ordered_iterator<spatial::point_multiset<N, Point> >
+    for (spatial::ordered_iterator<spatial::point_multiset<0, Point> >
            i = ordered_begin(cobaye); i != ordered_end(cobaye); ++i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
     total += stop - start;
     std::cout << "\t\tpoint_multiset (reverse):\t" << std::flush;
     start = utils::process_timer_now();
-    spatial::ordered_iterator<spatial::point_multiset<N, Point> >
+    spatial::ordered_iterator<spatial::point_multiset<0, Point> >
       i = ordered_end(cobaye), end = ordered_begin(cobaye);
     for (; i != end; --i);
     stop = utils::process_timer_now();
