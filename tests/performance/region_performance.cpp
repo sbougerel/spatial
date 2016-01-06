@@ -10,6 +10,8 @@
 #include "random.hpp"
 #include "point_type.hpp"
 
+double total = 0.;
+
 template <spatial::dimension_type N, typename Point, typename Distribution>
 void compare_libraries
 (std::size_t data_size, const Distribution& distribution)
@@ -21,14 +23,15 @@ void compare_libraries
   for (std::size_t i = 0; i < data_size; ++i)
     data.push_back(Point(distribution));
   {
-    std::cout << "\t\tidle_point_multiset:\t" << std::flush;
     spatial::idle_point_multiset<N, Point> cobaye;
     cobaye.insert_rebalance(data.begin(), data.end());
+    std::cout << "\t\tidle_point_multiset:\t" << std::flush;
     utils::time_point start = utils::process_timer_now();
     for (spatial::region_iterator<spatial::idle_point_multiset<N, Point> >
            i = region_begin(cobaye, p0, p1); i != region_end(cobaye, p0, p1); ++i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
+    total += stop - start;
     std::cout << "\t\tidle_point_multiset (reverse):\t" << std::flush;
     start = utils::process_timer_now();
     spatial::region_iterator<spatial::idle_point_multiset<N, Point> >
@@ -36,16 +39,18 @@ void compare_libraries
     for (; i != end; --i);
     stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
+    total += stop - start;
   }
   {
-    std::cout << "\t\tpoint_multiset:\t" << std::flush;
     spatial::point_multiset<N, Point> cobaye;
     cobaye.insert(data.begin(), data.end());
+    std::cout << "\t\tpoint_multiset:\t" << std::flush;
     utils::time_point start = utils::process_timer_now();
     for (spatial::region_iterator<spatial::point_multiset<N, Point> >
            i = region_begin(cobaye, p0, p1); i != region_end(cobaye, p0, p1); ++i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
+    total += stop - start;
     std::cout << "\t\tpoint_multiset (reverse):\t" << std::flush;
     start = utils::process_timer_now();
     spatial::region_iterator<spatial::point_multiset<N, Point> >
@@ -53,6 +58,7 @@ void compare_libraries
     for (; i != end; --i);
     stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
+    total += stop - start;
   }
 }
 
@@ -90,4 +96,6 @@ int main (int argc, char **argv)
     (data_size, narrow);
   compare_libraries<9, point9_type, utils::narrow_double_distribution>
     (data_size, narrow);
+
+  std::cout << "Total: " << total << std::endl;
 }
