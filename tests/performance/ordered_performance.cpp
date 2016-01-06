@@ -10,6 +10,8 @@
 #include "random.hpp"
 #include "point_type.hpp"
 
+double total = 0;
+
 template <spatial::dimension_type N, typename Point, typename Distribution>
 void compare_libraries
 (std::size_t data_size, const Distribution& distribution)
@@ -29,6 +31,7 @@ void compare_libraries
            i = ordered_begin(cobaye); i != ordered_end(cobaye); ++i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
+    total += stop - start;
     std::cout << "\t\tidle_point_multiset (reverse):\t" << std::flush;
     start = utils::process_timer_now();
     spatial::ordered_iterator<spatial::idle_point_multiset<N, Point> >
@@ -36,6 +39,7 @@ void compare_libraries
     for (; i != end; --i);
     stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
+    total += stop - start;
   }
   {
     // Ordered begin into a point_multiset
@@ -47,6 +51,7 @@ void compare_libraries
            i = ordered_begin(cobaye); i != ordered_end(cobaye); ++i);
     utils::time_point stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
+    total += stop - start;
     std::cout << "\t\tpoint_multiset (reverse):\t" << std::flush;
     start = utils::process_timer_now();
     spatial::ordered_iterator<spatial::point_multiset<N, Point> >
@@ -54,6 +59,7 @@ void compare_libraries
     for (; i != end; --i);
     stop = utils::process_timer_now();
     std::cout << (stop - start) << "sec" << std::endl;
+    total += stop - start;
   }
 }
 
@@ -92,4 +98,6 @@ int main (int argc, char **argv)
     (data_size, narrow);
   compare_libraries<9, point9_type, utils::narrow_double_distribution>
     (data_size, narrow);
+
+  std::cout << "Total: " << total << std::endl;
 }
