@@ -70,7 +70,7 @@ int main (int argc, char **argv)
   std::istringstream argbuf(argv[1]);
   std::size_t data_size;
   argbuf >> data_size;
-  utils::random_engine engine(43274283);
+  utils::random_engine engine;
 
   std::cout << "Uniform distribution:" << std::endl;
   utils::uniform_double_distribution uniform(engine, -1.0, 1.0);
