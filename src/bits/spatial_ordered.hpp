@@ -290,11 +290,11 @@ namespace spatial
     if (container.empty()) return ordered_end(container);
     typename ordered_iterator<Container>::node_ptr node
       = container.end().node->parent;
-    dimension_type dim;
-    spatial::import::tie(node, dim)
+    dimension_type dth;
+    spatial::import::tie(node, dth)
       = first_ordered(node, 0, container.rank(),
                       container.key_comp());
-    return ordered_iterator<Container>(container, dim, node);
+    return ordered_iterator<Container>(container, dth, node);
   }
 
   template <typename Container>
@@ -324,7 +324,7 @@ namespace spatial
      *
      *  \tparam Container The type of container to iterate.
      *  \param node The node pointed to by the iterator
-     *  \param dim  The dimension of the node pointed to by the iterator.
+     *  \param dth  The depth of the node pointed to by the iterator.
      *  \param rank The rank of the container which node belongs to.
      *  \param cmp  The comparator used by the container which node belongs to.
      *  \return A pair of node, dimension pointing to the minimum element in
@@ -339,16 +339,16 @@ namespace spatial
      */
     template <typename NodePtr, typename Rank, typename KeyCompare>
     inline std::pair<NodePtr, dimension_type>
-    first_ordered(NodePtr node, dimension_type dim, const Rank rank,
+    first_ordered(NodePtr node, dimension_type dth, const Rank rank,
                   const KeyCompare& cmp)
     {
       SPATIAL_ASSERT_CHECK(!header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
       NodePtr end = node->parent;
       while (node->left != 0)
-        { node = node->left; ++dim; }
+        { node = node->left; ++dth; }
       NodePtr best = node;
-      dimension_type best_dim = dim;
+      dimension_type best_dth = dth;
       // Similarly to mapping iterator, scans all nodes and prune whichever is
       // higher in the dimension 0 only. When the search is over, the lowest
       // in the total order must have been found (since all other dimensions are
@@ -356,30 +356,30 @@ namespace spatial
       for(;;)
         {
           if (node->right != 0
-              && ((dim % rank()) > 0
+              && ((dth % rank()) > 0
                   || !cmp(0, const_key(best), const_key(node))))
             {
-              node = node->right; ++dim;
+              node = node->right; ++dth;
               while (node->left != 0)
-                { node = node->left; ++dim; }
+                { node = node->left; ++dth; }
             }
           else
             {
               NodePtr prev_node = node;
-              node = node->parent; --dim;
+              node = node->parent; --dth;
               while (node != end && prev_node == node->right)
                 {
                   prev_node = node;
-                  node = node->parent; --dim;
+                  node = node->parent; --dth;
                 }
               if (node == end) break;
             }
           if (order_less(cmp, rank, const_key(node), const_key(best)))
-            { best = node; best_dim = dim; }
+            { best = node; best_dth = dth; }
         }
       SPATIAL_ASSERT_CHECK(best != 0);
       SPATIAL_ASSERT_CHECK(best != end);
-      return std::make_pair(best, best_dim);
+      return std::make_pair(best, best_dth);
     }
 
     /**
@@ -388,7 +388,7 @@ namespace spatial
      *
      *  \tparam Container The type of container to iterate.
      *  \param node The node pointed to by the iterator
-     *  \param dim  The dimension of the node pointed to by the iterator.
+     *  \param dth  The depth of the node pointed to by the iterator.
      *  \param rank The rank of the container which node belongs to.
      *  \param cmp  The comparator used by the container which node belongs to.
      *  \return A pair of node, dimension pointing to the maximum element in
@@ -403,44 +403,44 @@ namespace spatial
      */
     template <typename NodePtr, typename Rank, typename KeyCompare>
     inline std::pair<NodePtr, dimension_type>
-    last_ordered(NodePtr node, dimension_type dim, const Rank rank,
+    last_ordered(NodePtr node, dimension_type dth, const Rank rank,
                  const KeyCompare& cmp)
     {
       SPATIAL_ASSERT_CHECK(!header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
       NodePtr end = node->parent;
       while (node->right != 0)
-        { node = node->right; ++dim; }
+        { node = node->right; ++dth; }
       NodePtr best = node;
-      dimension_type best_dim = dim;
+      dimension_type best_dth = dth;
       for (;;)
         {
           if (node->left != 0
-              && ((dim % rank()) > 0
+              && ((dth % rank()) > 0
                   || !cmp(0, const_key(node), const_key(best))))
             {
-              node = node->left; ++dim;
+              node = node->left; ++dth;
               while (node->right != 0)
-                { node = node->right; ++dim; }
+                { node = node->right; ++dth; }
             }
           else
             {
               NodePtr prev_node = node;
-              node = node->parent; --dim;
+              node = node->parent; --dth;
               while (node != end
                      && prev_node == node->left)
                 {
                   prev_node = node;
-                  node = node->parent; --dim;
+                  node = node->parent; --dth;
                 }
               if (node == end) break;
             }
           if (order_less(cmp, rank, const_key(best), const_key(node)))
-            { best = node; best_dim = dim; }
+            { best = node; best_dth = dth; }
         }
       SPATIAL_ASSERT_CHECK(best != 0);
       SPATIAL_ASSERT_CHECK(best != end);
-      return std::make_pair(best, best_dim);
+      return std::make_pair(best, best_dth);
     }
 
     /**
@@ -449,7 +449,7 @@ namespace spatial
      *
      *  \tparam Container The type of container to iterate.
      *  \param node The node pointed to by the iterator
-     *  \param dim  The dimension of the node pointed to by the iterator.
+     *  \param dth  The depth of the node pointed to by the iterator.
      *  \param rank The rank of the container which node belongs to.
      *  \param cmp  The comparator used by the container which node belongs to.
      *  \return A pair of node, dimension pointing to the next element in the
@@ -465,36 +465,36 @@ namespace spatial
     template <typename NodePtr, typename Rank, typename KeyCompare>
     inline std::pair<NodePtr, dimension_type>
     increment_ordered
-    (NodePtr node, dimension_type dim, const Rank rank,
+    (NodePtr node, dimension_type dth, const Rank rank,
      const KeyCompare& cmp)
     {
       SPATIAL_ASSERT_CHECK(!header(node));
       NodePtr orig = node;
-      dimension_type orig_dim = dim;
+      dimension_type orig_dim = dth;
       NodePtr best = 0;
-      dimension_type best_dim = 0;
+      dimension_type best_dth = 0;
       // Look forward to find an equal or greater next best
       // If an equal next best is found, then no need to look further
       for (;;)
         {
           if (node->right != 0
-              && ((dim % rank()) > 0 || best == 0
+              && ((dth % rank()) > 0 || best == 0
                   || !cmp(0, const_key(best), const_key(node))))
             {
-              node = node->right; ++dim;
+              node = node->right; ++dth;
               while (node->left != 0
-                     && ((dim % rank()) > 0
+                     && ((dth % rank()) > 0
                          || !cmp(0, const_key(node), const_key(orig))))
-                { node = node->left; ++dim; }
+                { node = node->left; ++dth; }
             }
           else
             {
               NodePtr prev_node = node;
-              node = node->parent; --dim;
+              node = node->parent; --dth;
               while (!header(node) && prev_node == node->right)
                 {
                   prev_node = node;
-                  node = node->parent; --dim;
+                  node = node->parent; --dth;
                 }
               if (header(node)) break;
             }
@@ -502,48 +502,48 @@ namespace spatial
             {
               if (best == 0
                   || order_less(cmp, rank, const_key(node), const_key(best)))
-                { best = node; best_dim = dim; }
+                { best = node; best_dth = dth; }
             }
           else if (!order_less(cmp, rank, const_key(node), const_key(orig)))
-            { return std::make_pair(node, dim); }
+            { return std::make_pair(node, dth); }
         }
       SPATIAL_ASSERT_CHECK(header(node));
       // Maybe there is a better best looking backward...
       node = orig;
-      dim = orig_dim;
+      dth = orig_dim;
       for (;;)
         {
           if (node->left != 0
-              && (dim % rank() > 0
+              && (dth % rank() > 0
                   || !cmp(0, const_key(node), const_key(orig))))
             {
-              node = node->left; ++dim;
+              node = node->left; ++dth;
               while (node->right != 0
-                     && (dim % rank() > 0 || best == 0
+                     && (dth % rank() > 0 || best == 0
                          || !cmp(0, const_key(best), const_key(node))))
-                { node = node->right; ++dim; }
+                { node = node->right; ++dth; }
             }
           else
             {
               NodePtr prev_node = node;
-              node = node->parent; --dim;
+              node = node->parent; --dth;
               while (!header(node) && prev_node == node->left)
                 {
                   prev_node = node;
-                  node = node->parent; --dim;
+                  node = node->parent; --dth;
                 }
               if (header(node)) break;
             }
           if (order_less(cmp, rank, const_key(orig), const_key(node))
               && (best == 0
                   || !order_less(cmp, rank, const_key(best), const_key(node))))
-            { best = node; best_dim = dim; }
+            { best = node; best_dth = dth; }
         }
       if (best != 0)
-        { node = best; dim = best_dim; }
+        { node = best; dth = best_dth; }
       SPATIAL_ASSERT_CHECK((best == 0 && header(node))
                            || (best != 0 && !header(node)));
-      return std::make_pair(node, dim);
+      return std::make_pair(node, dth);
     }
 
     /**
@@ -552,7 +552,7 @@ namespace spatial
      *
      *  \tparam Container The type of container to iterate.
      *  \param node The node pointed to by the iterator
-     *  \param dim  The dimension of the node pointed to by the iterator.
+     *  \param dth  The depth of the node pointed to by the iterator.
      *  \param rank The rank of the container which node belongs to.
      *  \param cmp  The comparator used by the container which node belongs to.
      *  \return A pair of node, dimension pointing to the previous element in
@@ -568,37 +568,37 @@ namespace spatial
     template <typename NodePtr, typename Rank, typename KeyCompare>
     inline std::pair<NodePtr, dimension_type>
     decrement_ordered
-    (NodePtr node, dimension_type dim, const Rank rank,
+    (NodePtr node, dimension_type dth, const Rank rank,
      const KeyCompare& cmp)
     {
       if (header(node))
         return last_ordered(node->parent, 0, rank, cmp);
       NodePtr orig = node;
-      dimension_type orig_dim = dim;
+      dimension_type orig_dim = dth;
       NodePtr best = 0;
-      dimension_type best_dim = 0;
+      dimension_type best_dth = 0;
       // Look forward to find an equal or greater next best
       // If an equal next best is found, then no need to look further
       for (;;)
         {
           if (node->left != 0
-              && ((dim % rank()) > 0 || best == 0
+              && ((dth % rank()) > 0 || best == 0
                   || !cmp(0, const_key(node), const_key(best))))
             {
-              node = node->left; ++dim;
+              node = node->left; ++dth;
               while (node->right != 0
-                     && ((dim % rank()) > 0
+                     && ((dth % rank()) > 0
                          || !cmp(0, const_key(orig), const_key(node))))
-                { node = node->right; ++dim; }
+                { node = node->right; ++dth; }
             }
           else
             {
               NodePtr prev_node = node;
-              node = node->parent; --dim;
+              node = node->parent; --dth;
               while (!header(node) && prev_node == node->left)
                 {
                   prev_node = node;
-                  node = node->parent; --dim;
+                  node = node->parent; --dth;
                 }
               if (header(node)) break;
             }
@@ -606,48 +606,48 @@ namespace spatial
             {
               if (best == 0
                   || order_less(cmp, rank, const_key(best), const_key(node)))
-                { best = node; best_dim = dim; }
+                { best = node; best_dth = dth; }
             }
           else if (!order_less(cmp, rank, const_key(orig), const_key(node)))
-            { return std::make_pair(node, dim); }
+            { return std::make_pair(node, dth); }
         }
       SPATIAL_ASSERT_CHECK(header(node));
       // Maybe there is a better best looking backward...
       node = orig;
-      dim = orig_dim;
+      dth = orig_dim;
       for (;;)
         {
           if (node->right != 0
-              && ((dim % rank()) > 0
+              && ((dth % rank()) > 0
                   || !cmp(0, const_key(orig), const_key(node))))
             {
-              node = node->right; ++dim;
+              node = node->right; ++dth;
               while (node->left != 0
-                     && ((dim % rank()) > 0 || best == 0
+                     && ((dth % rank()) > 0 || best == 0
                          || !cmp(0, const_key(node), const_key(best))))
-                { node = node->left; ++dim; }
+                { node = node->left; ++dth; }
             }
           else
             {
               NodePtr prev_node = node;
-              node = node->parent; --dim;
+              node = node->parent; --dth;
               while (!header(node) && prev_node == node->right)
                 {
                   prev_node = node;
-                  node = node->parent; --dim;
+                  node = node->parent; --dth;
                 }
               if (header(node)) break;
             }
           if (order_less(cmp, rank, const_key(node), const_key(orig))
               && (best == 0
                   || !order_less(cmp, rank, const_key(node), const_key(best))))
-            { best = node; best_dim = dim; }
+            { best = node; best_dth = dth; }
         }
       if (best != 0)
-        { node = best; dim = best_dim; }
+        { node = best; dth = best_dth; }
       SPATIAL_ASSERT_CHECK((best == 0 && header(node))
                            || (best != 0 && !header(node)));
-      return std::make_pair(node, dim);
+      return std::make_pair(node, dth);
     }
 
   } // namespace details
