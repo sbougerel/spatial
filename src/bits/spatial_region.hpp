@@ -401,10 +401,10 @@ namespace spatial
     if (container.empty()) return region_end(container, pred);
     typename region_iterator<Container>::node_ptr node
       = container.end().node->parent;
-    dimension_type depth;
-    import::tie(node, depth)
+    dimension_type kth;
+    import::tie(node, kth)
       = first_region(node, 0, container.rank(), pred);
-    return region_iterator<Container, Predicate>(container, pred, depth, node);
+    return region_iterator<Container, Predicate>(container, pred, kth, node);
   }
 
   template <typename Container, typename Predicate>
@@ -544,23 +544,23 @@ namespace spatial
      *  node's parent.
      *
      *  \param node  The node currently pointed to.
-     *  \param depth The depth at which the node is located in the tree.
+     *  \param kth   The k-th dimension of the invarient on node.
      *  \param rank  The rank for the container.
      *  \param pred  The predicate used to find matching nodes.
      *  \tparam Predicate  The type of predicate for the orthogonal query.
      */
     template <typename NodePtr, typename Rank, typename Predicate>
     inline std::pair<NodePtr, dimension_type>
-    first_region(NodePtr node, dimension_type depth, const Rank rank,
+    first_region(NodePtr node, dimension_type kth, const Rank rank,
                  const Predicate& pred)
     {
       NodePtr end = node->parent;
-      dimension_type end_depth = depth - 1;
+      dimension_type end_kth = kth - 1;
       SPATIAL_ASSERT_CHECK(!header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
       for (;;)
         {
-          dimension_type dim = depth % rank();
+          dimension_type dim = kth % rank();
           relative_order rel = pred(dim, rank(), const_key(node));
           if (rel == matching)
             {
@@ -575,26 +575,26 @@ namespace spatial
                          && pred(test, rank(), const_key(node)) == matching;
                        ++test);
                   if (test == rank())
-                    { return std::make_pair(node, depth); }
+                    { return std::make_pair(node, kth); }
                 }
             }
           if (rel != above && node->right != 0)
             {
-              ++depth;
+              ++kth;
               if (rel != below && node->left != 0)
                 {
                   NodePtr other;
-                  dimension_type other_depth;
-                  import::tie(other, other_depth)
-                    = first_region(node->left, depth, rank, pred);
+                  dimension_type other_kth;
+                  import::tie(other, other_kth)
+                    = first_region(node->left, kth, rank, pred);
                   if (other != node)
-                    { return std::make_pair(other, other_depth); }
+                    { return std::make_pair(other, other_kth); }
                 }
               node = node->right;
             }
           else if (rel != below && node->left != 0)
-            { node = node->left; ++depth; }
-          else { return std::make_pair(end, end_depth); }
+            { node = node->left; ++kth; }
+          else { return std::make_pair(end, end_kth); }
         }
     }
 
@@ -605,25 +605,25 @@ namespace spatial
      *  node's parent
      *
      *  \param node  The node currently pointed to.
-     *  \param depth The depth at which the node is located in the tree.
+     *  \param kth   The k-th dimension of the invarient on node.
      *  \param rank  The rank for the container.
      *  \param pred  The predicate used to find matching nodes.
      *  \tparam Predicate  The type of predicate for the orthogonal query.
      */
     template <typename NodePtr, typename Rank, typename Predicate>
     inline std::pair<NodePtr, dimension_type>
-    last_region(NodePtr node, dimension_type depth, const Rank rank,
+    last_region(NodePtr node, dimension_type kth, const Rank rank,
                 const Predicate& pred)
     {
       SPATIAL_ASSERT_CHECK(!header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
       for (;;)
         {
-          relative_order rel = pred(depth % rank(), rank(), const_key(node));
+          relative_order rel = pred(kth % rank(), rank(), const_key(node));
           if (rel != above && node->right != 0)
-            { node = node->right; ++depth; }
+            { node = node->right; ++kth; }
           else if (rel != below && node->left != 0)
-            { node = node->left; ++depth; }
+            { node = node->left; ++kth; }
           else break;
         }
       for (;;)
@@ -632,23 +632,23 @@ namespace spatial
           for(; test < rank()
                 && pred(test, rank(), const_key(node)) == matching; ++test);
           if (test == rank())
-            { return std::make_pair(node, depth); }
+            { return std::make_pair(node, kth); }
           NodePtr prev_node = node;
-          node = node->parent; --depth;
+          node = node->parent; --kth;
           if (header(node))
-            { return std::make_pair(node, depth); }
+            { return std::make_pair(node, kth); }
           if (node->right == prev_node
-              && pred(depth % rank(), rank(), const_key(node)) != below
+              && pred(kth % rank(), rank(), const_key(node)) != below
               && node->left != 0)
             {
-              node = node->left; ++depth;
+              node = node->left; ++kth;
               for (;;)
                 {
-                  relative_order rel = pred(depth % rank(), rank(), const_key(node));
+                  relative_order rel = pred(kth % rank(), rank(), const_key(node));
                   if (rel != above && node->right != 0)
-                    { node = node->right; ++depth; }
+                    { node = node->right; ++kth; }
                   else if (rel != below && node->left != 0)
-                    { node = node->left; ++depth; }
+                    { node = node->left; ++kth; }
                   else break;
                 }
             }
@@ -661,47 +661,47 @@ namespace spatial
      *  is unspecified.
      *
      *  \param node  The node currently pointed to.
-     *  \param depth The depth at which the node is located in the tree.
+     *  \param kth   The k-th dimension of the invarient on node.
      *  \param rank  The rank for the container.
      *  \param pred  The predicate used to find matching nodes.
      *  \tparam Predicate  The type of predicate for the orthogonal query.
      */
     template <typename NodePtr, typename Rank, typename Predicate>
     inline std::pair<NodePtr, dimension_type>
-    increment_region(NodePtr node, dimension_type depth, const Rank rank,
+    increment_region(NodePtr node, dimension_type kth, const Rank rank,
                      const Predicate& pred)
     {
       SPATIAL_ASSERT_CHECK(!header(node));
       SPATIAL_ASSERT_CHECK(node != 0);
       for (;;)
         {
-          relative_order rel = pred(depth % rank(), rank(), const_key(node));
+          relative_order rel = pred(kth % rank(), rank(), const_key(node));
           if (rel != below && node->left != 0)
-            { node = node->left; ++depth; }
+            { node = node->left; ++kth; }
           else if (rel != above && node->right != 0)
-            { node = node->right; ++depth; }
+            { node = node->right; ++kth; }
           else
             {
               NodePtr prev_node = node;
-              node = node->parent; --depth;
+              node = node->parent; --kth;
               while (!header(node)
                      && (prev_node == node->right
-                         || pred(depth % rank(), rank(),
+                         || pred(kth % rank(), rank(),
                                  const_key(node)) == above
                          || node->right == 0))
                 {
                   prev_node = node;
-                  node = node->parent; --depth;
+                  node = node->parent; --kth;
                 }
               if (!header(node))
-                { node = node->right; ++depth; }
-              else { return std::make_pair(node, depth); }
+                { node = node->right; ++kth; }
+              else { return std::make_pair(node, kth); }
             }
           dimension_type test = 0;
           for(; test < rank()
                 && pred(test, rank(), const_key(node)) == matching; ++test);
           if (test == rank())
-            { return std::make_pair(node, depth); }
+            { return std::make_pair(node, kth); }
         }
     }
 
@@ -711,35 +711,35 @@ namespace spatial
      *  range, then the behavior is unspecified.
      *
      *  \param node  The node currently pointed to.
-     *  \param depth The depth at which the node is located in the tree.
+     *  \param kth   The k-th dimension of the invariant on node.
      *  \param rank  The rank for the container.
      *  \param pred  The predicate used to find matching nodes.
      *  \tparam Predicate  The type of predicate for the orthogonal query.
      */
     template <typename NodePtr, typename Rank, typename Predicate>
     inline std::pair<NodePtr, dimension_type>
-    decrement_region(NodePtr node, dimension_type depth, const Rank rank,
+    decrement_region(NodePtr node, dimension_type kth, const Rank rank,
                      const Predicate& pred)
     {
       if (header(node))
         { return last_region(node->parent, 0, rank, pred); }
       SPATIAL_ASSERT_CHECK(node != 0);
       NodePtr prev_node = node;
-      node = node->parent; --depth;
+      node = node->parent; --kth;
       while (!header(node))
         {
           if (node->right == prev_node
-              && pred(depth % rank(), rank(), const_key(node)) != below
+              && pred(kth % rank(), rank(), const_key(node)) != below
               && node->left != 0)
             {
-              node = node->left; ++depth;
+              node = node->left; ++kth;
               for (;;)
                 {
-                  relative_order rel = pred(depth % rank(), rank(), const_key(node));
+                  relative_order rel = pred(kth % rank(), rank(), const_key(node));
                   if (rel != above && node->right != 0)
-                    { node = node->right; ++depth; }
+                    { node = node->right; ++kth; }
                   else if (rel != below && node->left != 0)
-                    { node = node->left; ++depth; }
+                    { node = node->left; ++kth; }
                   else break;
                 }
             }
@@ -748,9 +748,9 @@ namespace spatial
                 && pred(test, rank(), const_key(node)) == matching; ++test);
           if (test == rank()) break;
           prev_node = node;
-          node = node->parent; --depth;
+          node = node->parent; --kth;
         }
-      return std::make_pair(node, depth);
+      return std::make_pair(node, kth);
     }
 
   } // namespace details
