@@ -72,3 +72,4 @@ add_executable (lower_bound_neighbor_performance lower_bound_neighbor_performanc
 add_executable (upper_bound_neighbor_performance upper_bound_neighbor_performance.cpp)
 add_executable (equal_performance equal_performance.cpp)
 add_executable (minmax_mapping_performance minmax_mapping_performance.cpp)
+add_executable (test_distribution test_distribution.cpp)
