@@ -397,11 +397,10 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(node != 0);
       for (;;)
         {
-          if (!key_comp(depth % rank(), key, const_key(node))
-              && node->right != 0)
+          dimension_type dim = depth % rank();
+          if (!key_comp(dim, key, const_key(node)) && node->right != 0)
             { node = node->right; ++depth; }
-          else if (!key_comp(depth % rank(), const_key(node), key)
-                   && node->left != 0)
+          else if (!key_comp(dim, const_key(node), key) && node->left != 0)
             { node = node->left; ++depth; }
           else break;
         }
@@ -424,10 +423,11 @@ namespace spatial
               node = node->left; ++depth;
               for (;;)
                 {
-                  if (!key_comp(depth % rank(), key, const_key(node))
+                  dimension_type dim = depth % rank();
+                  if (!key_comp(dim, key, const_key(node))
                       && node->right != 0)
                     { node = node->right; ++depth; }
-                  else if (!key_comp(depth % rank(), const_key(node), key)
+                  else if (!key_comp(dim, const_key(node), key)
                            && node->left != 0)
                     { node = node->left; ++depth; }
                   else break;
@@ -446,10 +446,11 @@ namespace spatial
       SPATIAL_ASSERT_CHECK(node != 0);
       for (;;)
         {
-          if (!key_comp(depth % rank(), const_key(node), key)
+          dimension_type dim = depth % rank();
+          if (!key_comp(dim, const_key(node), key)
               && node->left != 0)
             { node = node->left; ++depth; }
-          else if (!key_comp(depth % rank(), key, const_key(node))
+          else if (!key_comp(dim, key, const_key(node))
                    && node->right != 0)
             { node = node->right; ++depth; }
           else
@@ -497,10 +498,11 @@ namespace spatial
               node = node->left; ++depth;
               for (;;)
                 {
-                  if (!key_comp(depth % rank(), key, const_key(node))
+                  dimension_type dim = depth % rank();
+                  if (!key_comp(dim, key, const_key(node))
                       && node->right != 0)
                     { node = node->right; ++depth; }
-                  else if (!key_comp(depth % rank(), const_key(node), key)
+                  else if (!key_comp(dim, const_key(node), key)
                            && node->left != 0)
                     { node = node->left; ++depth; }
                   else break;
