@@ -108,14 +108,16 @@ namespace spatial
     inline Node<Link>* minimum(Node<Link>* x)
     {
       SPATIAL_ASSERT_CHECK(!header(x));
-      while (x->left != 0) x = x->left; return x;
+      while (x->left != 0) x = x->left;
+      return x;
     }
 
     template <typename Link>
     inline const Node<Link>* minimum(const Node<Link>* x)
     {
       SPATIAL_ASSERT_CHECK(!header(x));
-      while (x->left != 0) x = x->left; return x;
+      while (x->left != 0) x = x->left;
+      return x;
     }
     ///@}
 
@@ -131,14 +133,16 @@ namespace spatial
     inline Node<Link>* maximum(Node<Link>* x)
     {
       SPATIAL_ASSERT_CHECK(!header(x));
-      while (x->right != 0) x = x->right; return x;
+      while (x->right != 0) x = x->right;
+      return x;
     }
 
     template <typename Link>
     inline const Node<Link>* maximum(const Node<Link>* x)
     {
       SPATIAL_ASSERT_CHECK(!header(x));
-      while (x->right != 0) x = x->right; return x;
+      while (x->right != 0) x = x->right;
+      return x;
     }
     ///@}
 
