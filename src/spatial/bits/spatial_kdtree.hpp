@@ -79,10 +79,8 @@ namespace spatial
       typedef std::reverse_iterator<const_iterator>   const_reverse_iterator;
 
     private:
-      typedef typename Alloc::template rebind
-      <Kdtree_link<Key, Value> >::other               Link_allocator;
-      typedef typename Alloc::template rebind
-      <value_type>::other                             Value_allocator;
+      typedef typename std::allocator_traits<Alloc>::template rebind_alloc<Kdtree_link<Key, Value>> Link_allocator;
+      typedef typename std::allocator_traits<Alloc>::template rebind_alloc<value_type> Value_allocator;
 
       // The types used to deal with nodes
       typedef typename mode_type::node_ptr            node_ptr;
@@ -197,7 +195,8 @@ namespace spatial
       {
         safe_allocator safe(get_link_allocator());
         // the following may throw but we have RAII on safe_allocator
-        get_value_allocator().construct(mutate_pointer(&safe.link->value),
+        auto alloc = get_value_allocator();
+        std::allocator_traits<Value_allocator>::construct(alloc, mutate_pointer(&safe.link->value),
                                         value);
         link_ptr node = safe.release();
         // leave parent uninitialized: its value will change during insertion.
@@ -212,7 +211,8 @@ namespace spatial
       void
       destroy_node(node_ptr node)
       {
-        get_value_allocator().destroy(mutate_pointer(&value(node)));
+        auto alloc = get_value_allocator();
+        std::allocator_traits<Value_allocator>::destroy(alloc, mutate_pointer(&value(node)));
         get_link_allocator().deallocate(link(node), 1);
       }
 
