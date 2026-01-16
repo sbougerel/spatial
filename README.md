@@ -1,5 +1,5 @@
 ![Logo of Spatial](https://github.com/sbougerel/spatial/blob/master/doc/images/spatial_96.png)
-# Spatial C++ Library
+# Spatial C++ k-d tree Library
 
 Generic rebalancing k-d tree indexes for C++, with iterators
 over orthogonal ranges or nearest neighbors, modeled after the STL.
