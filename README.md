@@ -1,7 +1,7 @@
 ![Logo of Spatial](https://github.com/sbougerel/spatial/blob/master/doc/images/spatial_96.png)
 # Spatial C++ Library
 
-Generic multi-dimensional containers for C++, with iterators
+Generic rebalancing k-d tree indexes for C++, with iterators
 over orthogonal ranges or nearest neighbors, modeled after the STL.
 
 Web: https://sourceforge.net/projects/spatial/
@@ -14,7 +14,7 @@ Web: https://sourceforge.net/projects/spatial/
 
 - Generic design that mimic STL containers, and iterators
 
-- Feature rebalancing k-d tree preventing worst-case run time on many
+- Features rebalancing k-d tree preventing worst-case run time on many
   operations
 
 - Iteration over orthogonal range with custom predicates and support for points
